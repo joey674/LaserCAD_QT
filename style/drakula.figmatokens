@@ -1,0 +1,32 @@
+; Qt Creator Color Tokens - dark mode
+
+[Colors]
+
+Token_Basic_Black=ff282A36
+Token_Basic_White=fff8f8f2
+
+Token_Accent_Default=ff6272a4 ; 44475a
+Token_Accent_Muted=ffbd93f9 ; no effect
+Token_Accent_Subtle=ff00ff00 ; no effect
+
+Token_Background_Default=ff282A36
+Token_Background_Muted=ff282A36
+Token_Background_Subtle=ff44475a
+
+Token_Foreground_Default=ff6272a4
+Token_Foreground_Muted=ff44475A
+Token_Foreground_Subtle=ffbd93f9
+
+Token_Text_Default=fff8f8f2
+Token_Text_Muted=ff8be9fd
+Token_Text_Subtle=ff6272a4
+Token_Text_Accent=ff50fa7b
+
+Token_Stroke_Strong=ff8be9fd
+Token_Stroke_Muted=ffbd93f9
+Token_Stroke_Subtle=ff6272a4
+
+Token_Notification_Alert=ffff79c6
+Token_Notification_Success=ff50fa7b
+Token_Notification_Neutral=fff1fa8c
+Token_Notification_Danger=ffff5555
