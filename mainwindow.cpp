@@ -14,15 +14,14 @@
 /// \brief MainWindow::MainWindow
 /// \param parent
 ///
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     showMaximized();
 
     initGraphicsView();
-    initTreeWidget();
+    initOperationTreeWidget();
+    initPropertyTableWidget();
     initStatusBar();
 }
 MainWindow::~MainWindow()
@@ -33,7 +32,8 @@ MainWindow::~MainWindow()
 ///
 /// \brief MainWindow::initGraphicsView
 ///
-void MainWindow::initGraphicsView() {
+void MainWindow::initGraphicsView()
+{
     this->Scene=new QGraphicsScene();
     ui->graphicsView->setScene(this->Scene);
 
@@ -80,7 +80,8 @@ void MainWindow::initGraphicsView() {
             this,SLOT(on_graphicsview_mouserightclick_occurred(QPoint)));
 }
 
-void MainWindow::initStatusBar() {
+void MainWindow::initStatusBar()
+{
     this->LabelMouseCoordinate = new QLabel("coordinate: ");
     this->LabelMouseCoordinate->setMinimumWidth(150);
     ui->statusBar->addWidget(this->LabelMouseCoordinate);
@@ -89,16 +90,34 @@ void MainWindow::initStatusBar() {
     ui->statusBar->addWidget(this->LabelOperation);
 }
 
-void MainWindow::initTreeWidget()
+void MainWindow::initOperationTreeWidget()
 {
-    ui->treeWidget->setHeaderLabel("Operation List");
+    ui->operationTreeWidget->setHeaderLabel("Operation List");
 
-    QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->treeWidget, QStringList("Parent1"));
+    QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
     QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
-    ui->treeWidget->addTopLevelItem(parentItem1);
-    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->treeWidget, QStringList("Parent1"));
+    ui->operationTreeWidget->addTopLevelItem(parentItem1);
+    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
     QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
-    ui->treeWidget->addTopLevelItem(parentItem2);
+    ui->operationTreeWidget->addTopLevelItem(parentItem2);
+}
+
+void MainWindow::initPropertyTableWidget()
+{
+
+    ui->propertyTableWidget->setColumnCount(2);
+    ui->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
+
+    int row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *nameItem = new QTableWidgetItem("");
+    QTableWidgetItem *valueItem = new QTableWidgetItem("100");
+    valueItem->setFlags(valueItem->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, nameItem);
+    ui->propertyTableWidget->setItem(row, 1, valueItem);
+
+    // 这样一个控件就可以同时显示属性名称和允许编辑的属性值
+
 }
 
 void MainWindow::displayOperation(QString text)
@@ -106,6 +125,45 @@ void MainWindow::displayOperation(QString text)
     this->LabelOperation->setText("operation: "+ text);
 }
 
+void MainWindow::displayObject(QPointF pointCoordScene)
+{
+    QGraphicsItem *item = NULL;
+    item = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
+    if (item != NULL) {
+        switch (item->type()) {
+            case QGraphicsLineItem::Type:{
+                QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(item);
+                QLineF line = lineItem->line();
+
+                // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
+                QPointF dev = item->scenePos();
+                QPointF startPoint = line.p1() + dev;
+                QPointF endPoint = line.p2() + dev;
+                QPointF centerPoint = (startPoint + endPoint)/2;
+
+                QString msg = QString("click on line: "
+                                        "centerPoint:(%1, %2), "
+                                        "startPoint:(%3, %4), "
+                                        "endPoint:(%5, %6)")
+                                  .arg(qRound(centerPoint.x()))
+                                  .arg(qRound(centerPoint.y()))
+                                  .arg(qRound(startPoint.x()))
+                                  .arg(qRound(startPoint.y()))
+                                  .arg(qRound(endPoint.x()))
+                                  .arg(qRound(endPoint.y()));
+                displayOperation(msg);
+                break;
+            }
+            case QGraphicsEllipseItem::Type:{
+                QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem*>(item);
+                break;
+            }
+            default: {
+                displayOperation("00");
+            }
+        };
+    }
+}
 
 ///
 /// \brief MainWindow::resetDrawToolStatus
@@ -127,7 +185,10 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
     } else if (this->TmpLine && event == DrawEventType::LeftClick) {
         QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
         this->TmpLine->setLine(newLine);
-        Container.push_back(std::move(TmpLine));
+
+        this->TmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        Container.push_back(std::move(this->TmpLine));
+        this->CurrentDrawTool = DrawToolType::None;
     }
 }
 
@@ -171,21 +232,11 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
 
 void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
 {
-    displayOperation("left click");
+    displayOperation("mouse left click");
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
         case DrawToolType::None:{
-            QGraphicsItem *item = NULL;
-            item = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
-            if (item != NULL) {
-                QString itemType = QString::number(item->type());
-                QPointF itemCoord = item->scenePos();
-                QString message = QString("Click on item type: %1, coordinate: x=%2, y=%3")
-                                      .arg(itemType)
-                                      .arg(itemCoord.x())
-                                      .arg(itemCoord.y());
-                displayOperation(message);
-            }
+            this->displayObject(pointCoordScene);
             break;
         }
         case DrawToolType::Line:{
@@ -202,7 +253,7 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
 
 void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint)
 {
-    displayOperation("right click");
+    displayOperation("mouse right click");
 }
 
 ///

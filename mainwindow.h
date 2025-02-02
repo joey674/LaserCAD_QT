@@ -7,7 +7,6 @@
 #include <qgraphicsitem.h>
 #include <variant>
 #include <vector>
-#include "graphicsview.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -51,8 +50,10 @@ private:
 
     void initGraphicsView();
     void initStatusBar();
-    void initTreeWidget();
+    void initOperationTreeWidget();
+    void initPropertyTableWidget();
     void displayOperation(QString);
+    void displayObject(QPointF);
 
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
