@@ -156,6 +156,8 @@ void MainWindow::editItem(QPointF pointCoordScene)
                 ///
                 /// 把对象的属性映射到属性修改面板
                 ///
+                // 先blocksignal,不然会频繁触发修改属性table的回调
+                ui->propertyTableWidget->blockSignals(true);
 
                 // 映射属性
                 int row = ui->propertyTableWidget->rowCount();
@@ -193,6 +195,8 @@ void MainWindow::editItem(QPointF pointCoordScene)
                 endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
                 ui->propertyTableWidget->setItem(row, 0, endPointYName);
                 ui->propertyTableWidget->setItem(row, 1, endPointYValue);
+
+                ui->propertyTableWidget->blockSignals(false);
 
                 break;
             }
@@ -261,7 +265,7 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     // 绘制控制
     switch (this->CurrentDrawTool) {
     case DrawToolType::None:{
-        // this->editItem(pointCoordScene);
+        this->editItem(pointCoordScene);
         break;
     }
     case DrawToolType::Line:{
