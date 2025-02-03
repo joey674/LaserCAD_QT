@@ -44,6 +44,9 @@ private:
     std::unique_ptr<QGraphicsLineItem> TmpLine;
     std::unique_ptr<QGraphicsEllipseItem> TmpCircle;
 
+    // 当前编辑对象
+    QGraphicsItem *CurrentEditItem;
+
     // 状态栏
     QLabel *LabelMouseCoordinate;
     QLabel *LabelOperation;
@@ -53,7 +56,8 @@ private:
     void initOperationTreeWidget();
     void initPropertyTableWidget();
     void displayOperation(QString);
-    void displayObject(QPointF);
+
+    void editItem(QPointF);
 
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
@@ -67,6 +71,8 @@ private slots:
     // mainwindow与前端按钮绑定的槽
     void on_drawLineButton_clicked();
     void on_drawCircleButton_clicked();
+    void on_testButton_clicked();
+    void on_propertyTableWidget_cellChanged(int row, int column);
 };
 #endif // MAINWINDOW_H
 

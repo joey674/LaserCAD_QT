@@ -104,20 +104,9 @@ void MainWindow::initOperationTreeWidget()
 
 void MainWindow::initPropertyTableWidget()
 {
-
     ui->propertyTableWidget->setColumnCount(2);
-    ui->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
-
-    int row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *nameItem = new QTableWidgetItem("");
-    QTableWidgetItem *valueItem = new QTableWidgetItem("100");
-    valueItem->setFlags(valueItem->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, nameItem);
-    ui->propertyTableWidget->setItem(row, 1, valueItem);
-
-    // 这样一个控件就可以同时显示属性名称和允许编辑的属性值
-
+    ui->propertyTableWidget->setHorizontalHeaderLabels(
+        QStringList() << "property" << "value" );
 }
 
 void MainWindow::displayOperation(QString text)
@@ -125,20 +114,31 @@ void MainWindow::displayOperation(QString text)
     this->LabelOperation->setText("operation: "+ text);
 }
 
-void MainWindow::displayObject(QPointF pointCoordScene)
+///
+/// \brief MainWindow::editItem
+/// \param pointCoordScene
+///
+void MainWindow::editItem(QPointF pointCoordScene)
 {
-    QGraphicsItem *item = NULL;
-    item = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
-    if (item != NULL) {
-        switch (item->type()) {
+    // 初始化一下 如果没有选中对象时, 设置当前对象为空 且属性栏清空
+    this->CurrentEditItem = NULL;
+    ui->propertyTableWidget->clearContents();
+    ui->propertyTableWidget->setRowCount(0);
+
+    this->CurrentEditItem = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
+    if (this->CurrentEditItem != NULL) {
+        switch (this->CurrentEditItem->type()) {
             case QGraphicsLineItem::Type:{
-                QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(item);
+                ///
+                /// 先显示对象信息到状态栏
+                ///
+                QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
                 QLineF line = lineItem->line();
 
                 // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
-                QPointF dev = item->scenePos();
-                QPointF startPoint = line.p1() + dev;
-                QPointF endPoint = line.p2() + dev;
+                QPointF offset = this->CurrentEditItem->scenePos();
+                QPointF startPoint = line.p1() + offset;
+                QPointF endPoint = line.p2() + offset;
                 QPointF centerPoint = (startPoint + endPoint)/2;
 
                 QString msg = QString("click on line: "
@@ -152,13 +152,57 @@ void MainWindow::displayObject(QPointF pointCoordScene)
                                   .arg(qRound(endPoint.x()))
                                   .arg(qRound(endPoint.y()));
                 displayOperation(msg);
+
+                ///
+                /// 把对象的属性映射到属性修改面板
+                ///
+
+                // 映射属性
+                int row = ui->propertyTableWidget->rowCount();
+                ui->propertyTableWidget->insertRow(row);
+                QTableWidgetItem *startPointXName = new QTableWidgetItem("startPoint.x");
+                QTableWidgetItem *startPointXValue = new QTableWidgetItem(QString::number(startPoint.x()));
+                startPointXName->setFlags(startPointXName->flags() & ~Qt::ItemIsEditable);
+                startPointXValue->setFlags(startPointXValue->flags() | Qt::ItemIsEditable);
+                ui->propertyTableWidget->setItem(row, 0, startPointXName);
+                ui->propertyTableWidget->setItem(row, 1, startPointXValue);
+
+                row = ui->propertyTableWidget->rowCount();
+                ui->propertyTableWidget->insertRow(row);
+                QTableWidgetItem *startPointYName = new QTableWidgetItem("startPoint.y");
+                QTableWidgetItem *startPointYValue = new QTableWidgetItem(QString::number(startPoint.y()));
+                startPointYName->setFlags(startPointYName->flags() & ~Qt::ItemIsEditable);
+                startPointYValue->setFlags(startPointYValue->flags() | Qt::ItemIsEditable);
+                ui->propertyTableWidget->setItem(row, 0, startPointYName);
+                ui->propertyTableWidget->setItem(row, 1, startPointYValue);
+
+                row = ui->propertyTableWidget->rowCount();
+                ui->propertyTableWidget->insertRow(row);
+                QTableWidgetItem *endPointXName = new QTableWidgetItem("endPoint.x");
+                QTableWidgetItem *endPointXValue = new QTableWidgetItem(QString::number(endPoint.x()));
+                endPointXName->setFlags(endPointXName->flags() & ~Qt::ItemIsEditable);
+                endPointXValue->setFlags(endPointXValue->flags() | Qt::ItemIsEditable);
+                ui->propertyTableWidget->setItem(row, 0, endPointXName);
+                ui->propertyTableWidget->setItem(row, 1, endPointXValue);
+
+                row = ui->propertyTableWidget->rowCount();
+                ui->propertyTableWidget->insertRow(row);
+                QTableWidgetItem *endPointYName = new QTableWidgetItem("endPoint.y");
+                QTableWidgetItem *endPointYValue = new QTableWidgetItem(QString::number(endPoint.y()));
+                endPointYName->setFlags(endPointYName->flags() & ~Qt::ItemIsEditable);
+                endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
+                ui->propertyTableWidget->setItem(row, 0, endPointYName);
+                ui->propertyTableWidget->setItem(row, 1, endPointYValue);
+
                 break;
             }
-            case QGraphicsEllipseItem::Type:{
-                QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem*>(item);
+            case QGraphicsEllipseItem::Type:
+            {
+                // QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem*>(item);
                 break;
             }
-            default: {
+            default:
+            {
                 displayOperation("00");
             }
         };
@@ -217,6 +261,7 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     // 绘制控制
     switch (this->CurrentDrawTool) {
     case DrawToolType::None:{
+        // this->editItem(pointCoordScene);
         break;
     }
     case DrawToolType::Line:{
@@ -236,7 +281,7 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
         case DrawToolType::None:{
-            this->displayObject(pointCoordScene);
+            this->editItem(pointCoordScene);
             break;
         }
         case DrawToolType::Line:{
@@ -271,5 +316,66 @@ void MainWindow::on_drawCircleButton_clicked()
     displayOperation("drawcircle button click");
     this->resetDrawToolStatus();
     this->CurrentDrawTool = DrawToolType::Circle;
+}
+
+void MainWindow::on_testButton_clicked()
+{
+    ui->propertyTableWidget->clearContents();
+    ui->propertyTableWidget->setRowCount(0);
+}
+
+
+void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
+{
+    if (this->CurrentEditItem != NULL) {
+        switch (this->CurrentEditItem->type()) {
+            case QGraphicsLineItem::Type:{
+
+                double startX = 0.0, startY = 0.0, endX = 0.0, endY = 0.0;
+                int rowCount = ui->propertyTableWidget->rowCount();
+
+                for (int r = 0; r < rowCount; ++r) {
+                    QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
+                    QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                    if (!nameItem || !valueItem)
+                        continue;
+
+                    QString propertyName  = nameItem->text();
+                    QString propertyValue = valueItem->text();
+
+                    bool transformIsOk = false;
+                    double value = propertyValue.toDouble(&transformIsOk);
+                    if (!transformIsOk)
+                    {
+                        displayOperation("error, input right form");
+                        continue;
+                    }
+
+                    if (propertyName == "startPoint.x")
+                        startX = value;
+                    else if (propertyName == "startPoint.y")
+                        startY = value;
+                    else if (propertyName == "endPoint.x")
+                        endX = value;
+                    else if (propertyName == "endPoint.y")
+                        endY = value;
+
+                    QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
+                    QPointF newStart = QPointF(startX, startY);
+                    QPointF newEnd   = QPointF(endX, endY);
+                    QLineF newLine(newStart, newEnd);
+                    lineItem->setPos(QPointF(0,0));
+                    lineItem->setLine(newLine);
+                }
+                break;
+            }
+            case QGraphicsEllipseItem::Type:{
+                break;
+            }
+            default: {
+                displayOperation("00");
+            }
+        };
+    }
 }
 
