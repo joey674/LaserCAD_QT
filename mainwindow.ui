@@ -78,7 +78,7 @@
          <string>drawLine</string>
         </property>
         <property name="checkable">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="autoExclusive">
          <bool>true</bool>
@@ -97,7 +97,7 @@
          <string>drawCircle</string>
         </property>
         <property name="checkable">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="autoExclusive">
          <bool>true</bool>
@@ -105,51 +105,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="testButton">
+       <widget class="QToolButton" name="resetButton">
         <property name="text">
-         <string>test</string>
+         <string>reset</string>
         </property>
         <property name="checkable">
-         <bool>false</bool>
-        </property>
-        <property name="autoExclusive">
          <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButton_4">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButton_5">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="toolButton_6">
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
         </property>
         <property name="autoExclusive">
          <bool>true</bool>

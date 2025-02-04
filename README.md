@@ -13,6 +13,3 @@
 
 ## TODO
 
-- 优先教程
-- LaserItem
-  重载 itemPos():先算出中心,再每次根据 item->itemPos()计算更新(itemPos 每次初始值都会设置在 0,0 而不是物体中心);

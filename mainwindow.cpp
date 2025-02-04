@@ -78,6 +78,8 @@ void MainWindow::initGraphicsView()
             this,SLOT(on_graphicsview_mouseleftclick_occurred(QPoint)));
     connect(ui->graphicsView,SIGNAL(mouserightclick_event(QPoint)),
             this,SLOT(on_graphicsview_mouserightclick_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouserelease_event(QPoint)),
+            this,SLOT(on_graphicsview_mouserelease_occurred(QPoint)));
 }
 
 void MainWindow::initStatusBar()
@@ -126,83 +128,18 @@ void MainWindow::editItem(QPointF pointCoordScene)
     ui->propertyTableWidget->setRowCount(0);
 
     this->CurrentEditItem = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
-    if (this->CurrentEditItem != NULL) {
+    if (this->CurrentEditItem != NULL)
+    {
         switch (this->CurrentEditItem->type()) {
             case QGraphicsLineItem::Type:{
-                ///
-                /// 先显示对象信息到状态栏
-                ///
                 QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
-                QLineF line = lineItem->line();
-
-                // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
-                QPointF offset = this->CurrentEditItem->scenePos();
-                QPointF startPoint = line.p1() + offset;
-                QPointF endPoint = line.p2() + offset;
-                QPointF centerPoint = (startPoint + endPoint)/2;
-
-                QString msg = QString("click on line: "
-                                        "centerPoint:(%1, %2), "
-                                        "startPoint:(%3, %4), "
-                                        "endPoint:(%5, %6)")
-                                  .arg(qRound(centerPoint.x()))
-                                  .arg(qRound(centerPoint.y()))
-                                  .arg(qRound(startPoint.x()))
-                                  .arg(qRound(startPoint.y()))
-                                  .arg(qRound(endPoint.x()))
-                                  .arg(qRound(endPoint.y()));
-                displayOperation(msg);
-
-                ///
-                /// 把对象的属性映射到属性修改面板
-                ///
-                // 先blocksignal,不然会频繁触发修改属性table的回调
-                ui->propertyTableWidget->blockSignals(true);
-
-                // 映射属性
-                int row = ui->propertyTableWidget->rowCount();
-                ui->propertyTableWidget->insertRow(row);
-                QTableWidgetItem *startPointXName = new QTableWidgetItem("startPoint.x");
-                QTableWidgetItem *startPointXValue = new QTableWidgetItem(QString::number(startPoint.x()));
-                startPointXName->setFlags(startPointXName->flags() & ~Qt::ItemIsEditable);
-                startPointXValue->setFlags(startPointXValue->flags() | Qt::ItemIsEditable);
-                ui->propertyTableWidget->setItem(row, 0, startPointXName);
-                ui->propertyTableWidget->setItem(row, 1, startPointXValue);
-
-                row = ui->propertyTableWidget->rowCount();
-                ui->propertyTableWidget->insertRow(row);
-                QTableWidgetItem *startPointYName = new QTableWidgetItem("startPoint.y");
-                QTableWidgetItem *startPointYValue = new QTableWidgetItem(QString::number(startPoint.y()));
-                startPointYName->setFlags(startPointYName->flags() & ~Qt::ItemIsEditable);
-                startPointYValue->setFlags(startPointYValue->flags() | Qt::ItemIsEditable);
-                ui->propertyTableWidget->setItem(row, 0, startPointYName);
-                ui->propertyTableWidget->setItem(row, 1, startPointYValue);
-
-                row = ui->propertyTableWidget->rowCount();
-                ui->propertyTableWidget->insertRow(row);
-                QTableWidgetItem *endPointXName = new QTableWidgetItem("endPoint.x");
-                QTableWidgetItem *endPointXValue = new QTableWidgetItem(QString::number(endPoint.x()));
-                endPointXName->setFlags(endPointXName->flags() & ~Qt::ItemIsEditable);
-                endPointXValue->setFlags(endPointXValue->flags() | Qt::ItemIsEditable);
-                ui->propertyTableWidget->setItem(row, 0, endPointXName);
-                ui->propertyTableWidget->setItem(row, 1, endPointXValue);
-
-                row = ui->propertyTableWidget->rowCount();
-                ui->propertyTableWidget->insertRow(row);
-                QTableWidgetItem *endPointYName = new QTableWidgetItem("endPoint.y");
-                QTableWidgetItem *endPointYValue = new QTableWidgetItem(QString::number(endPoint.y()));
-                endPointYName->setFlags(endPointYName->flags() & ~Qt::ItemIsEditable);
-                endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
-                ui->propertyTableWidget->setItem(row, 0, endPointYName);
-                ui->propertyTableWidget->setItem(row, 1, endPointYValue);
-
-                ui->propertyTableWidget->blockSignals(false);
-
+                this->editLine(lineItem);
                 break;
             }
             case QGraphicsEllipseItem::Type:
             {
-                // QGraphicsEllipseItem *ellipseItem = static_cast<QGraphicsEllipseItem*>(item);
+                QGraphicsEllipseItem *CircleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
+                this->editCircle(CircleItem);
                 break;
             }
             default:
@@ -213,36 +150,192 @@ void MainWindow::editItem(QPointF pointCoordScene)
     }
 }
 
+void MainWindow::editLine(QGraphicsLineItem *lineItem)
+{
+    // 先显示对象信息到状态栏
+    // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
+    QLineF line = lineItem->line();
+    QPointF offset = lineItem->scenePos();
+    QPointF startPoint = line.p1() + offset;
+    QPointF endPoint = line.p2() + offset;
+    QPointF centerPoint = (startPoint + endPoint)/2;
+
+    QString msg = QString("click on line: "
+                          "centerPoint:(%1, %2), "
+                          "startPoint:(%3, %4), "
+                          "endPoint:(%5, %6)")
+                      .arg(qRound(centerPoint.x()))
+                      .arg(qRound(centerPoint.y()))
+                      .arg(qRound(startPoint.x()))
+                      .arg(qRound(startPoint.y()))
+                      .arg(qRound(endPoint.x()))
+                      .arg(qRound(endPoint.y()));
+    displayOperation(msg);
+
+
+    // 把对象的属性映射到属性修改面板
+    // 先blocksignal,不然会频繁触发修改属性table的回调
+    ui->propertyTableWidget->blockSignals(true);
+
+    // 映射属性
+    int row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *startPointXName = new QTableWidgetItem("startPoint.x");
+    QTableWidgetItem *startPointXValue = new QTableWidgetItem(QString::number(startPoint.x()));
+    startPointXName->setFlags(startPointXName->flags() & ~Qt::ItemIsEditable);
+    startPointXValue->setFlags(startPointXValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, startPointXName);
+    ui->propertyTableWidget->setItem(row, 1, startPointXValue);
+
+    row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *startPointYName = new QTableWidgetItem("startPoint.y");
+    QTableWidgetItem *startPointYValue = new QTableWidgetItem(QString::number(startPoint.y()));
+    startPointYName->setFlags(startPointYName->flags() & ~Qt::ItemIsEditable);
+    startPointYValue->setFlags(startPointYValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, startPointYName);
+    ui->propertyTableWidget->setItem(row, 1, startPointYValue);
+
+    row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *endPointXName = new QTableWidgetItem("endPoint.x");
+    QTableWidgetItem *endPointXValue = new QTableWidgetItem(QString::number(endPoint.x()));
+    endPointXName->setFlags(endPointXName->flags() & ~Qt::ItemIsEditable);
+    endPointXValue->setFlags(endPointXValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, endPointXName);
+    ui->propertyTableWidget->setItem(row, 1, endPointXValue);
+
+    row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *endPointYName = new QTableWidgetItem("endPoint.y");
+    QTableWidgetItem *endPointYValue = new QTableWidgetItem(QString::number(endPoint.y()));
+    endPointYName->setFlags(endPointYName->flags() & ~Qt::ItemIsEditable);
+    endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, endPointYName);
+    ui->propertyTableWidget->setItem(row, 1, endPointYValue);
+
+    ui->propertyTableWidget->blockSignals(false);
+}
+
+void MainWindow::editCircle(QGraphicsEllipseItem * circleItem)
+{
+    // 先显示对象信息到状态栏
+    QPointF offset = circleItem->scenePos();
+    QPointF centerPoint = QPointF(
+        circleItem->rect().center().x() + offset.x(),
+        circleItem->rect().center().y() + offset.y()
+        );
+
+    QString msg = QString("click on circle: "
+                          "centerPoint:(%1, %2), "
+                          "radius:%3")
+                      .arg(qRound(centerPoint.x()))
+                      .arg(qRound(centerPoint.y()))
+                      .arg(qRound(circleItem->rect().width()));
+    displayOperation(msg);
+
+
+    // 把对象的属性映射到属性修改面板
+    // 先blocksignal,不然会频繁触发修改属性table的回调
+    ui->propertyTableWidget->blockSignals(true);
+
+    // 映射属性
+    int row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *centerPointXName = new QTableWidgetItem("centerPoint.x");
+    QTableWidgetItem *centerPointXValue = new QTableWidgetItem(QString::number(centerPoint.x()));
+    centerPointXName->setFlags(centerPointXName->flags() & ~Qt::ItemIsEditable);
+    centerPointXValue->setFlags(centerPointXValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, centerPointXName);
+    ui->propertyTableWidget->setItem(row, 1, centerPointXValue);
+
+    row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *centerPointYName = new QTableWidgetItem("centerPoint.y");
+    QTableWidgetItem *centerPointYValue = new QTableWidgetItem(QString::number(centerPoint.y()));
+    centerPointYName->setFlags(centerPointYName->flags() & ~Qt::ItemIsEditable);
+    centerPointYValue->setFlags(centerPointYValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, centerPointYName);
+    ui->propertyTableWidget->setItem(row, 1, centerPointYValue);
+
+    row = ui->propertyTableWidget->rowCount();
+    ui->propertyTableWidget->insertRow(row);
+    QTableWidgetItem *radiusName = new QTableWidgetItem("radius");
+    QTableWidgetItem *radiusValue = new QTableWidgetItem(QString::number(circleItem->rect().width()));
+    radiusName->setFlags(radiusName->flags() & ~Qt::ItemIsEditable);
+    radiusValue->setFlags(radiusValue->flags() | Qt::ItemIsEditable);
+    ui->propertyTableWidget->setItem(row, 0, radiusName);
+    ui->propertyTableWidget->setItem(row, 1, radiusValue);
+
+    ui->propertyTableWidget->blockSignals(false);
+}
+
 ///
 /// \brief MainWindow::resetDrawToolStatus
 ///
 void MainWindow::resetDrawToolStatus()
 {
     this->CurrentDrawTool = DrawToolType::None;
+    this->TmpLine = NULL;
+    this->TmpCircle = NULL;
 }
 
 void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
 {
-    if (!this->TmpLine && event == DrawEventType::LeftClick) {
-        TmpLine = std::make_unique<QGraphicsLineItem>(QLineF(pointCoordScene, pointCoordScene));
-        TmpLine->setPen(QPen(Qt::black, 1));
-        Scene->addItem(TmpLine.get());
-    } else if  (this->TmpLine && event == DrawEventType::MouseMove){
+    if (!this->TmpLine && event == DrawEventType::LeftClick)
+    {
+        this->TmpLine = std::make_unique<QGraphicsLineItem>(QLineF(pointCoordScene, pointCoordScene));
+        this->TmpLine->setPen(QPen(Qt::black, 1));
+        this->Scene->addItem(this->TmpLine.get());
+    }
+    else if  (this->TmpLine && event == DrawEventType::MouseMove)
+    {
         QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
         this->TmpLine->setLine(newLine);
-    } else if (this->TmpLine && event == DrawEventType::LeftClick) {
+    }
+    else if (this->TmpLine && event == DrawEventType::LeftClick) {
         QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
         this->TmpLine->setLine(newLine);
 
         this->TmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        Container.push_back(std::move(this->TmpLine));
-        this->CurrentDrawTool = DrawToolType::None;
+        this->Container.push_back(std::move(this->TmpLine));
     }
 }
 
 void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
 {
+    if (!this->TmpCircle && event == DrawEventType::LeftClick)
+    {
+        QRectF initialRect(pointCoordScene.x(), pointCoordScene.y(), 0, 0);
+        this->TmpCircle = std::make_unique<QGraphicsEllipseItem>(initialRect);
+        this->TmpCircle->setPen(QPen(Qt::black, 1));
+        Scene->addItem(this->TmpCircle.get());
+    }
+    else if  (this->TmpCircle && event == DrawEventType::MouseMove)
+    {
+        QRectF currentRect = this->TmpCircle->rect();
+        QPointF center = currentRect.center();
+        double radius = QLineF(center, pointCoordScene).length();
+        QRectF newRect(center.x() - radius,
+                       center.y() - radius,
+                       2 * radius,
+                       2 * radius);
+        this->TmpCircle->setRect(newRect);
+    }
+    else if (this->TmpCircle && event == DrawEventType::LeftClick)
+    {
+        QRectF currentRect = this->TmpCircle->rect();
+        QPointF center = currentRect.center();
+        double radius = QLineF(center, pointCoordScene).length();
+        QRectF newRect(center.x() - radius,
+                       center.y() - radius,
+                       2 * radius,
+                       2 * radius);
+        this->TmpCircle->setRect(newRect);
 
+        this->TmpCircle->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        Container.push_back(std::move(this->TmpCircle));
+    }
 }
 
 ///
@@ -265,7 +358,7 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     // 绘制控制
     switch (this->CurrentDrawTool) {
     case DrawToolType::None:{
-        this->editItem(pointCoordScene);
+        // this->editItem(pointCoordScene);
         break;
     }
     case DrawToolType::Line:{
@@ -297,7 +390,6 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
             break;
         }
     }
-
 }
 
 void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint)
@@ -305,35 +397,37 @@ void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint)
     displayOperation("mouse right click");
 }
 
+void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
+{
+    QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
+    if (this->CurrentDrawTool == DrawToolType::None){
+        this->editItem(pointCoordScene);
+    }
+}
+
 ///
 /// \brief MainWindow::on_drawLineButton_clicked
 ///
 void MainWindow::on_drawLineButton_clicked()
 {
-    displayOperation("drawline button click");
+    displayOperation("drawLine button click");
     this->resetDrawToolStatus();
     this->CurrentDrawTool = DrawToolType::Line;
 }
 
 void MainWindow::on_drawCircleButton_clicked()
 {
-    displayOperation("drawcircle button click");
+    displayOperation("drawCircle button click");
     this->resetDrawToolStatus();
     this->CurrentDrawTool = DrawToolType::Circle;
 }
-
-void MainWindow::on_testButton_clicked()
-{
-    ui->propertyTableWidget->clearContents();
-    ui->propertyTableWidget->setRowCount(0);
-}
-
 
 void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 {
     if (this->CurrentEditItem != NULL) {
         switch (this->CurrentEditItem->type()) {
-            case QGraphicsLineItem::Type:{
+            case QGraphicsLineItem::Type:
+        {
 
                 double startX = 0.0, startY = 0.0, endX = 0.0, endY = 0.0;
                 int rowCount = ui->propertyTableWidget->rowCount();
@@ -373,13 +467,59 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
                 }
                 break;
             }
-            case QGraphicsEllipseItem::Type:{
+            case QGraphicsEllipseItem::Type:
+            {
+
+                double centerX = 0.0, centerY = 0.0,radius = 0.0;
+                int rowCount = ui->propertyTableWidget->rowCount();
+
+                for (int r = 0; r < rowCount; ++r) {
+                    QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
+                    QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                    if (!nameItem || !valueItem)
+                        continue;
+
+                    QString propertyName  = nameItem->text();
+                    QString propertyValue = valueItem->text();
+
+                    bool transformIsOk = false;
+                    double value = propertyValue.toDouble(&transformIsOk);
+                    if (!transformIsOk)
+                    {
+                        displayOperation("error, input right form");
+                        continue;
+                    }
+
+                    if (propertyName == "centerPoint.x")
+                        centerX = value;
+                    else if (propertyName == "centerPoint.y")
+                        centerY = value;
+                    else if (propertyName == "radius")
+                        radius = value;
+
+                    QGraphicsEllipseItem *circleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
+                    QRectF newRect( centerX - radius,
+                                                       centerY - radius,
+                                                       radius,
+                                                       radius);
+                    circleItem->setPos(QPointF(0,0));
+                    circleItem->setRect(newRect);
+                }
                 break;
             }
-            default: {
+            default:
+            {
                 displayOperation("00");
             }
         };
     }
+}
+
+void MainWindow::on_resetButton_clicked()
+{
+    displayOperation("reset button click");
+    this->resetDrawToolStatus();
+    ui->propertyTableWidget->clearContents();
+    ui->propertyTableWidget->setRowCount(0);
 }
 

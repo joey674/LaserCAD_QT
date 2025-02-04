@@ -24,6 +24,13 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
     QGraphicsView::mouseMoveEvent(event);
 }
 
+void GraphicsView::mouseReleaseEvent(QMouseEvent * event)
+{
+    QPoint point = event->pos();
+    emit mouserelease_event(point);
+    QGraphicsView::mouseReleaseEvent(event);
+}
+
 void GraphicsView::wheelEvent(QWheelEvent * event) {
     if (event->angleDelta().y() > 0) {
         this->scale(1.2, 1.2);
