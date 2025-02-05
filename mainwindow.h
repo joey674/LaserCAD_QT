@@ -5,8 +5,8 @@
 #include <QGraphicsScene>
 #include <QLabel>
 #include <qgraphicsitem.h>
-#include <variant>
 #include <vector>
+#include "polylineitem.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -19,20 +19,31 @@ public:
     enum DrawToolType {
         None,
         Line,
-        Circle
+        Circle,
+        Polyline,
+        Spiral,
+        Arc
     };
     enum DrawEventType {
         LeftClick,
         RightClick,
-        MouseMove
+        MouseMove,
+    };
+    enum LaserProperty {
+        GroupId = 0,
+        Power = 1,
+        Frequency = 2,
     };
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *Scene;
+
     std::vector<std::unique_ptr<QGraphicsItem>>
         Container;
+    void setAllItemsMovable(bool);
 
     // 初始化组件
     QLabel *LabelMouseCoordinate;
@@ -48,14 +59,22 @@ private:
     void editItem(QPointF);
     void editLine(QGraphicsLineItem *);
     void editCircle(QGraphicsEllipseItem *);
+    void editArc();
+    void editSpiral();
 
     // 绘制工具
     DrawToolType CurrentDrawTool = None;
     std::unique_ptr<QGraphicsLineItem> TmpLine;
     std::unique_ptr<QGraphicsEllipseItem> TmpCircle;
+    std::unique_ptr<PolylineItem> TmpPolyline;
+    std::unique_ptr<QGraphicsPathItem> TmpArc;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
+    void drawPolyline(QPointF,DrawEventType);
+    void drawArc(QPointF,DrawEventType);
+    void drawSpiral(QPointF,DrawEventType);
+
 private slots:
     // 接收graphicsview信号的槽
     void on_graphicsview_mousemove_occurred(QPoint);
@@ -68,6 +87,10 @@ private slots:
     void on_drawCircleButton_clicked();
     void on_propertyTableWidget_cellChanged(int row, int column);
     void on_resetButton_clicked();
+    void on_drawPolylineButton_clicked();
+    void on_drawTestLineButton_clicked();
+    void on_drawArcButton_clicked();
+    void on_drawSpiralButton_clicked();
 };
 #endif // MAINWINDOW_H
 

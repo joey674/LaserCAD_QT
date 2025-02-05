@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1020</width>
-    <height>529</height>
+    <width>712</width>
+    <height>294</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,6 +67,19 @@
     <item row="1" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_1">
       <item>
+       <widget class="QToolButton" name="resetButton">
+        <property name="text">
+         <string>reset</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="drawLineButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -105,9 +118,48 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="resetButton">
+       <widget class="QToolButton" name="drawArcButton">
         <property name="text">
-         <string>reset</string>
+         <string>drawArc</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawSpiralButton">
+        <property name="text">
+         <string>drawSpiral</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawPolylineButton">
+        <property name="text">
+         <string>drawPolyline</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawTestLineButton">
+        <property name="text">
+         <string>drawTestLine</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -139,7 +191,7 @@
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item alignment="Qt::AlignmentFlag::AlignLeft">
+        <item>
          <widget class="QTreeWidget" name="operationTreeWidget">
           <property name="dragEnabled">
            <bool>true</bool>
@@ -154,7 +206,7 @@
           </column>
          </widget>
         </item>
-        <item alignment="Qt::AlignmentFlag::AlignLeft">
+        <item>
          <widget class="QTableWidget" name="propertyTableWidget"/>
         </item>
        </layout>

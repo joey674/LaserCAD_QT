@@ -9,6 +9,7 @@
 #include <QColorDialog>
 #include <QTime>
 #include <QString>
+#include <QtMath>
 
 ///
 /// \brief MainWindow::MainWindow
@@ -27,6 +28,15 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::setAllItemsMovable(bool movable )
+{
+    for (auto &item : this->Container) {
+        if (item) {
+            item->setFlag(QGraphicsItem::ItemIsMovable, movable);
+        }
+    }
 }
 
 ///
@@ -67,8 +77,6 @@ void MainWindow::initGraphicsView()
     //
     ui->graphicsView->scale(1.5,1.5);
     this->Scene->setSceneRect(Scene->sceneRect()); // 锁定当前场景矩形
-
-
 
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
@@ -127,9 +135,9 @@ void MainWindow::editItem(QPointF pointCoordScene)
     ui->propertyTableWidget->clearContents();
     ui->propertyTableWidget->setRowCount(0);
 
-    this->CurrentEditItem = this->Scene->itemAt(pointCoordScene,ui->graphicsView->transform());
-    if (this->CurrentEditItem != NULL)
+    if (! this->Scene->selectedItems().empty())
     {
+        this->CurrentEditItem = this->Scene->selectedItems()[0];
         switch (this->CurrentEditItem->type()) {
             case QGraphicsLineItem::Type:{
                 QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
@@ -144,7 +152,7 @@ void MainWindow::editItem(QPointF pointCoordScene)
             }
             default:
             {
-                displayOperation("00");
+                displayOperation("undefine object");
             }
         };
     }
@@ -278,10 +286,15 @@ void MainWindow::resetDrawToolStatus()
     this->CurrentDrawTool = DrawToolType::None;
     this->TmpLine = NULL;
     this->TmpCircle = NULL;
+    this->TmpPolyline = NULL;
+    this->TmpArc = NULL;
+    // this->TmpSpiral = NULL;
 }
 
 void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
 {
+    this->setAllItemsMovable(false);
+
     if (!this->TmpLine && event == DrawEventType::LeftClick)
     {
         this->TmpLine = std::make_unique<QGraphicsLineItem>(QLineF(pointCoordScene, pointCoordScene));
@@ -304,6 +317,8 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
 
 void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
 {
+    this->setAllItemsMovable(false);
+
     if (!this->TmpCircle && event == DrawEventType::LeftClick)
     {
         QRectF initialRect(pointCoordScene.x(), pointCoordScene.y(), 0, 0);
@@ -338,9 +353,93 @@ void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
     }
 }
 
+void MainWindow::drawPolyline(QPointF pointCoordScene, DrawEventType event)
+{
+    this->setAllItemsMovable(false);
+
+    if (!this->TmpPolyline && event == DrawEventType::LeftClick)
+    {
+        this->TmpPolyline = std::make_unique<PolylineItem>(QLineF(pointCoordScene, pointCoordScene));
+        this->Scene->addItem(this->TmpPolyline.get());
+    }
+    else if  (this->TmpPolyline && event == DrawEventType::MouseMove)
+    {
+        QLineF newLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
+        this->TmpPolyline->setLine(newLine,false);
+    }
+    else if (this->TmpPolyline && event == DrawEventType::LeftClick)
+    {
+        QLineF confirmLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
+        this->TmpPolyline->setLine(confirmLine,false);
+
+        this->TmpPolyline->setLine(QLineF(pointCoordScene, pointCoordScene),true);
+    }
+    else if (this->TmpPolyline && event == DrawEventType::RightClick)
+    {
+        QLineF newLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
+        this->TmpPolyline->setLine(newLine,false);
+
+        this->TmpPolyline->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        this->Container.push_back(std::move(this->TmpPolyline));
+    }
+}
+
+void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
+{
+    this->setAllItemsMovable(false);
+
+    if (!this->TmpArc && event == DrawEventType::LeftClick)
+    {
+        this->TmpArc = std::make_unique<QGraphicsPathItem>();
+        this->TmpArc->setData(0,QPointF(pointCoordScene));
+        this->TmpArc->setPen(QPen(Qt::black, 1));
+        Scene->addItem(this->TmpArc.get());
+    }
+    else if  (this->TmpArc && event == DrawEventType::MouseMove)
+    {
+        QPointF startPoint =this->TmpArc->data(0).toPointF();
+        QPointF endPoint = pointCoordScene;
+
+        double radius = QLineF(startPoint, endPoint).length()/2;
+        QPointF centerPoint((startPoint.x()+endPoint.x())/2, (startPoint.y()+endPoint.y())/2);
+
+        QRectF newRect(QPointF(centerPoint.x() - radius, centerPoint.y() - radius),
+                       QPointF(centerPoint.x() + radius, centerPoint.y() + radius));
+
+        QLineF diameterLine(startPoint, endPoint);
+        double angle = diameterLine.angle();
+
+        QPainterPath path;
+        path.arcMoveTo(newRect, angle);
+        path.arcTo(newRect, angle, 180);
+        this->TmpArc->setPath(path);
+    }
+    else if (this->TmpArc && event == DrawEventType::LeftClick)
+    {
+        this->TmpArc->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        Container.push_back(std::move(this->TmpArc));
+    }
+}
+
+void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
+{
+    this->setAllItemsMovable(false);
+
+    if (!this->TmpLine && event == DrawEventType::LeftClick)
+    {
+    }
+    else if  (this->TmpLine && event == DrawEventType::MouseMove)
+    {
+
+    }
+    else if (this->TmpLine && event == DrawEventType::LeftClick)
+    {
+
+    }
+}
+
 ///
 /// \brief MainWindow::on_graphicsview_mouse_move_triggered
-/// \param point
 ///
 void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
 {
@@ -357,18 +456,38 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
 
     // 绘制控制
     switch (this->CurrentDrawTool) {
-    case DrawToolType::None:{
-        // this->editItem(pointCoordScene);
-        break;
-    }
-    case DrawToolType::Line:{
-        this->drawLine(pointCoordScene,DrawEventType::MouseMove);
-        break;
-    }
-    case DrawToolType::Circle:{
-        this->drawCircle(pointCoordScene,DrawEventType::MouseMove);
-        break;
-    }
+        case DrawToolType::None:
+        {
+            // this->editItem(pointCoordScene);
+            break;
+        }
+        case DrawToolType::Line:
+        {
+            this->drawLine(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        case DrawToolType::Circle:
+        {
+            this->drawCircle(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        case DrawToolType::Polyline:
+        {
+            this->drawPolyline(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        case DrawToolType::Arc:
+        {
+            this->drawArc(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        case DrawToolType::Spiral:
+        {
+            this->drawSpiral(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        default:
+        {}
     }
 }
 
@@ -377,37 +496,123 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
     displayOperation("mouse left click");
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
-        case DrawToolType::None:{
+        case DrawToolType::None:
+    {
             this->editItem(pointCoordScene);
             break;
         }
-        case DrawToolType::Line:{
+        case DrawToolType::Line:
+        {
             this->drawLine(pointCoordScene,DrawEventType::LeftClick);
             break;
         }
-        case DrawToolType::Circle:{
+        case DrawToolType::Circle:
+        {
             this->drawCircle(pointCoordScene,DrawEventType::LeftClick);
             break;
         }
+        case DrawToolType::Polyline:
+        {
+            this->drawPolyline(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+        case DrawToolType::Arc:
+        {
+            this->drawArc(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+        case DrawToolType::Spiral:
+        {
+            this->drawSpiral(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+        default:
+        {}
     }
 }
 
-void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint)
+void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint pointCoordView)
 {
     displayOperation("mouse right click");
+    QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
+    switch (this->CurrentDrawTool) {
+        case DrawToolType::Polyline:
+        {
+            this->drawPolyline(pointCoordScene,DrawEventType::RightClick);
+            break;
+        }
+        default:
+        {}
+    }
 }
 
 void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
 {
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
-    if (this->CurrentDrawTool == DrawToolType::None){
-        this->editItem(pointCoordScene);
+    switch (this->CurrentDrawTool) {
+        case DrawToolType::None:
+        {
+            this->editItem(pointCoordScene);
+            break;
+        }
+        default:
+        {}
     }
 }
 
 ///
 /// \brief MainWindow::on_drawLineButton_clicked
 ///
+void MainWindow::on_drawTestLineButton_clicked()
+{
+
+
+    ///
+    /// arc test
+    ///
+    /*QPoint startPoint(10,10);
+    QPoint endPoint(100,100);
+
+    this->TmpArc = std::make_unique<QGraphicsPathItem>();
+    this->TmpArc->setData(0,QPointF(startPoint));
+    this->TmpArc->setPen(QPen(Qt::black, 1));
+    Scene->addItem(this->TmpArc.get());
+
+
+    if(startPoint != this->TmpArc->data(0))
+    {
+        displayOperation("error");
+    }
+
+
+    double radius = QLineF(startPoint, endPoint).length()/2;
+    QPointF centerPoint((startPoint.x()+endPoint.x())/2, (startPoint.y()+endPoint.y())/2);
+
+    QRectF newRect(QPointF(centerPoint.x() - radius, centerPoint.y() - radius),
+                   QPointF(centerPoint.x() + radius, centerPoint.y() + radius));
+
+    QLineF diameterLine(startPoint, endPoint);
+    double angle = diameterLine.angle();
+
+    QPainterPath path1;
+    path1.arcMoveTo(newRect, angle);
+    path1.arcTo(newRect, angle, 180);
+    this->TmpArc->setPath(path1);*/
+
+    ///
+    /// polyline test
+    ///
+    /*QLineF line(QPointF(0,0),QPointF(100,100));
+    this->TmpPolyline = std::make_unique<PolylineItem>(line);
+    this->Scene->addItem(this->TmpPolyline.get());
+
+    QLineF line1(QPointF(0,0),QPointF(-100,100));
+    this->TmpPolyline->setLine(line1,false);
+
+    QLineF line2(QPointF(-100,100),QPointF(100,100));
+    this->TmpPolyline->setLine(line2,true);*/
+}
+
 void MainWindow::on_drawLineButton_clicked()
 {
     displayOperation("drawLine button click");
@@ -422,104 +627,130 @@ void MainWindow::on_drawCircleButton_clicked()
     this->CurrentDrawTool = DrawToolType::Circle;
 }
 
-void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
-{
-    if (this->CurrentEditItem != NULL) {
-        switch (this->CurrentEditItem->type()) {
-            case QGraphicsLineItem::Type:
-        {
-
-                double startX = 0.0, startY = 0.0, endX = 0.0, endY = 0.0;
-                int rowCount = ui->propertyTableWidget->rowCount();
-
-                for (int r = 0; r < rowCount; ++r) {
-                    QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
-                    QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
-                    if (!nameItem || !valueItem)
-                        continue;
-
-                    QString propertyName  = nameItem->text();
-                    QString propertyValue = valueItem->text();
-
-                    bool transformIsOk = false;
-                    double value = propertyValue.toDouble(&transformIsOk);
-                    if (!transformIsOk)
-                    {
-                        displayOperation("error, input right form");
-                        continue;
-                    }
-
-                    if (propertyName == "startPoint.x")
-                        startX = value;
-                    else if (propertyName == "startPoint.y")
-                        startY = value;
-                    else if (propertyName == "endPoint.x")
-                        endX = value;
-                    else if (propertyName == "endPoint.y")
-                        endY = value;
-
-                    QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
-                    QPointF newStart = QPointF(startX, startY);
-                    QPointF newEnd   = QPointF(endX, endY);
-                    QLineF newLine(newStart, newEnd);
-                    lineItem->setPos(QPointF(0,0));
-                    lineItem->setLine(newLine);
-                }
-                break;
-            }
-            case QGraphicsEllipseItem::Type:
-            {
-
-                double centerX = 0.0, centerY = 0.0,radius = 0.0;
-                int rowCount = ui->propertyTableWidget->rowCount();
-
-                for (int r = 0; r < rowCount; ++r) {
-                    QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
-                    QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
-                    if (!nameItem || !valueItem)
-                        continue;
-
-                    QString propertyName  = nameItem->text();
-                    QString propertyValue = valueItem->text();
-
-                    bool transformIsOk = false;
-                    double value = propertyValue.toDouble(&transformIsOk);
-                    if (!transformIsOk)
-                    {
-                        displayOperation("error, input right form");
-                        continue;
-                    }
-
-                    if (propertyName == "centerPoint.x")
-                        centerX = value;
-                    else if (propertyName == "centerPoint.y")
-                        centerY = value;
-                    else if (propertyName == "radius")
-                        radius = value;
-
-                    QGraphicsEllipseItem *circleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
-                    QRectF newRect( centerX - radius,
-                                                       centerY - radius,
-                                                       radius,
-                                                       radius);
-                    circleItem->setPos(QPointF(0,0));
-                    circleItem->setRect(newRect);
-                }
-                break;
-            }
-            default:
-            {
-                displayOperation("00");
-            }
-        };
-    }
-}
-
 void MainWindow::on_resetButton_clicked()
 {
     displayOperation("reset button click");
     this->resetDrawToolStatus();
     ui->propertyTableWidget->clearContents();
     ui->propertyTableWidget->setRowCount(0);
+
+    this->setAllItemsMovable(true);
+}
+
+void MainWindow::on_drawPolylineButton_clicked()
+{
+    displayOperation("drawPolyline button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Polyline;
+}
+
+void MainWindow::on_drawArcButton_clicked()
+{
+    displayOperation("drawArc button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Arc;
+}
+
+void MainWindow::on_drawSpiralButton_clicked()
+{
+    displayOperation("drawSpiral button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Spiral;
+}
+
+///
+/// \brief MainWindow::on_propertyTableWidget_cellChanged
+///
+void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
+{
+    if (this->CurrentEditItem != NULL) {
+        switch (this->CurrentEditItem->type()) {
+        case QGraphicsLineItem::Type:
+        {
+
+            double startX = 0.0, startY = 0.0, endX = 0.0, endY = 0.0;
+            int rowCount = ui->propertyTableWidget->rowCount();
+
+            for (int r = 0; r < rowCount; ++r) {
+                QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
+                QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                if (!nameItem || !valueItem)
+                    continue;
+
+                QString propertyName  = nameItem->text();
+                QString propertyValue = valueItem->text();
+
+                bool transformIsOk = false;
+                double value = propertyValue.toDouble(&transformIsOk);
+                if (!transformIsOk)
+                {
+                    displayOperation("error, input right form");
+                    continue;
+                }
+
+                if (propertyName == "startPoint.x")
+                    startX = value;
+                else if (propertyName == "startPoint.y")
+                    startY = value;
+                else if (propertyName == "endPoint.x")
+                    endX = value;
+                else if (propertyName == "endPoint.y")
+                    endY = value;
+
+                QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
+                QPointF newStart = QPointF(startX, startY);
+                QPointF newEnd   = QPointF(endX, endY);
+                QLineF newLine(newStart, newEnd);
+                lineItem->setPos(QPointF(0,0));
+                lineItem->setLine(newLine);
+            }
+            break;
+        }
+        case QGraphicsEllipseItem::Type:
+        {
+
+            double centerX = 0.0, centerY = 0.0,radius = 0.0;
+            int rowCount = ui->propertyTableWidget->rowCount();
+
+            for (int r = 0; r < rowCount; ++r) {
+                QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
+                QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                if (!nameItem || !valueItem)
+                    continue;
+
+                QString propertyName  = nameItem->text();
+                QString propertyValue = valueItem->text();
+
+                bool transformIsOk = false;
+                double value = propertyValue.toDouble(&transformIsOk);
+                if (!transformIsOk)
+                {
+                    displayOperation("error, input right form");
+                    continue;
+                }
+
+                if (propertyName == "centerPoint.x")
+                    centerX = value;
+                else if (propertyName == "centerPoint.y")
+                    centerY = value;
+                else if (propertyName == "radius")
+                    radius = value;
+
+                QGraphicsEllipseItem *circleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
+                QRectF newRect( centerX - radius,
+                               centerY - radius,
+                               radius,
+                               radius);
+                circleItem->setPos(QPointF(0,0));
+                circleItem->setRect(newRect);
+            }
+            break;
+        }
+        default:
+        {
+            displayOperation("00");
+        }
+        };
+    }
 }
 
