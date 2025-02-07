@@ -5,6 +5,13 @@
 #include <QGraphicsScene>
 
 
+void GraphicsView::dragView(QMouseEvent *, EventType eventType)
+{
+    if (eventType == EventType::RightPress) {
+
+    }
+}
+
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
@@ -13,6 +20,8 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     } else if (event->button() == Qt::RightButton) {
         QPoint point = event->pos();
         emit mouserightclick_event(point);
+
+        dragView(event, EventType::RightPress);
     }
     QGraphicsView::mousePressEvent(event);
 }
@@ -21,6 +30,9 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 {
     QPoint point = event->pos();
     emit mousemove_event(point);
+
+    dragView(event, EventType::MouseMove);
+
     QGraphicsView::mouseMoveEvent(event);
 }
 
@@ -28,6 +40,14 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent * event)
 {
     QPoint point = event->pos();
     emit mouserelease_event(point);
+
+    if (event->button() == Qt::LeftButton)
+    {
+    } else if (event->button() == Qt::RightButton)
+    {
+        dragView(event, EventType::RightRelease);
+    }
+
     QGraphicsView::mouseReleaseEvent(event);
 }
 

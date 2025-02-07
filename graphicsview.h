@@ -16,10 +16,15 @@ public:
     explicit GraphicsView(QWidget *parent = nullptr) {
         // setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
     };
-protected:
-    QSet<int> keysPressed;
+    enum EventType {
+        LeftPress,
+        RightPress,
+        LeftRelease,
+        RightRelease,
+        MouseMove,
+    };
 
-    // 重写系统事件导出到下面自定义的signals事件
+protected:
     void mousePressEvent(QMouseEvent *) override;
     void mouseMoveEvent(QMouseEvent *) override;
     void mouseReleaseEvent(QMouseEvent *) override;
