@@ -7,6 +7,7 @@
 #include <qgraphicsitem.h>
 #include <vector>
 #include "polylineitem.h"
+#include "variantlineitem.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,7 +23,8 @@ public:
         Circle,
         Polyline,
         Spiral,
-        Arc
+        Arc,
+        VariantLine
     };
     enum DrawEventType {
         LeftClick,
@@ -59,8 +61,9 @@ private:
     void editItem(QPointF);
     void editLine(QGraphicsLineItem *);
     void editCircle(QGraphicsEllipseItem *);
-    void editArc();
-    void editSpiral();
+    void editArc(); /*TODO*/
+    void editSpiral(); /*TODO*/
+    void editVariantLine(); /*TODO*/
 
     // 绘制工具
     DrawToolType CurrentDrawTool = None;
@@ -68,12 +71,14 @@ private:
     std::unique_ptr<QGraphicsEllipseItem> TmpCircle;
     std::unique_ptr<PolylineItem> TmpPolyline;
     std::unique_ptr<QGraphicsPathItem> TmpArc;
+    std::unique_ptr<VariantLineItem> TmpVariantLine;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
     void drawPolyline(QPointF,DrawEventType);
-    void drawArc(QPointF,DrawEventType);
-    void drawSpiral(QPointF,DrawEventType);
+    void drawArc(QPointF,DrawEventType); /*TODO*/
+    void drawSpiral(QPointF,DrawEventType); /*TODO*/
+    void drawVariantLine(QPointF,DrawEventType); /*TODO*/
 
 private slots:
     // 接收graphicsview信号的槽
@@ -91,6 +96,7 @@ private slots:
     void on_drawTestLineButton_clicked();
     void on_drawArcButton_clicked();
     void on_drawSpiralButton_clicked();
+    void on_drawVariantLineButton_clicked();
 };
 #endif // MAINWINDOW_H
 

@@ -3,6 +3,7 @@
 
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
+#include <QPainter>
 
 class PolylineItem: public QGraphicsItem
 {
@@ -16,6 +17,8 @@ public:
 
     void setLine(QLineF line, bool isNewLine)
     {
+        prepareGeometryChange();
+
         if (isNewLine == false)
         {
             this->TmpLine->setLine(line);
@@ -53,10 +56,11 @@ public:
 
     QRectF boundingRect() const override
     {
-        if (this->ItemList.empty())
-            return this->TmpLine->boundingRect();
-
         QRectF newRect = this->TmpLine->boundingRect();
+        if (this->ItemList.empty())
+            return newRect;
+
+
         for (auto& item: this->ItemList)
         {
             qreal minX = std::min(newRect.left(), item->boundingRect().left());
@@ -73,6 +77,7 @@ public:
     {
         Q_UNUSED(option);
         Q_UNUSED(widget);
+
         for (auto& item: this->ItemList)
         {
             item->paint(painter, option, widget);

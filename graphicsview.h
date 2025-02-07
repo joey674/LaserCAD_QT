@@ -13,7 +13,9 @@ class GraphicsView: public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit GraphicsView(QWidget *parent = nullptr) {};
+    explicit GraphicsView(QWidget *parent = nullptr) {
+        // setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+    };
 protected:
     // 重写系统事件导出到下面自定义的signals事件
     void mousePressEvent(QMouseEvent *) override;

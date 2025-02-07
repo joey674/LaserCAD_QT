@@ -278,6 +278,11 @@ void MainWindow::editCircle(QGraphicsEllipseItem * circleItem)
     ui->propertyTableWidget->blockSignals(false);
 }
 
+void MainWindow::editVariantLine()
+{
+
+}
+
 ///
 /// \brief MainWindow::resetDrawToolStatus
 ///
@@ -288,6 +293,7 @@ void MainWindow::resetDrawToolStatus()
     this->TmpCircle = NULL;
     this->TmpPolyline = NULL;
     this->TmpArc = NULL;
+    this->TmpVariantLine = NULL;
     // this->TmpSpiral = NULL;
 }
 
@@ -391,7 +397,7 @@ void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
     if (!this->TmpArc && event == DrawEventType::LeftClick)
     {
         this->TmpArc = std::make_unique<QGraphicsPathItem>();
-        this->TmpArc->setData(0,QPointF(pointCoordScene));
+        this->TmpArc->setData(0,pointCoordScene);
         this->TmpArc->setPen(QPen(Qt::black, 1));
         Scene->addItem(this->TmpArc.get());
     }
@@ -435,6 +441,38 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
     else if (this->TmpLine && event == DrawEventType::LeftClick)
     {
 
+    }
+}
+
+void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
+{
+    this->setAllItemsMovable(false);
+    displayOperation("hhhh");
+    if (!this->TmpVariantLine && event == DrawEventType::LeftClick)
+    {
+        displayOperation("h1");
+        this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(pointCoordScene));
+        this->Scene->addItem(this->TmpVariantLine.get());
+
+        this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+    }
+    else if  (this->TmpVariantLine && event == DrawEventType::MouseMove)
+    {
+        displayOperation("h2");
+        this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Line);
+    }
+    else if (this->TmpVariantLine && event == DrawEventType::LeftClick)
+    {
+        displayOperation("h3");
+        this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+    }
+    else if (this->TmpVariantLine && event == DrawEventType::RightClick)
+    {
+        displayOperation("h4");
+        this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+
+        this->TmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        this->Container.push_back(std::move(this->TmpVariantLine));
     }
 }
 
@@ -486,6 +524,11 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
             this->drawSpiral(pointCoordScene,DrawEventType::MouseMove);
             break;
         }
+        case DrawToolType::VariantLine:
+        {
+            this->drawVariantLine(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
         default:
         {}
     }
@@ -526,6 +569,11 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
             this->drawSpiral(pointCoordScene,DrawEventType::LeftClick);
             break;
         }
+        case DrawToolType::VariantLine:
+        {
+            this->drawVariantLine(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
         default:
         {}
     }
@@ -539,6 +587,11 @@ void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint pointCoordView)
         case DrawToolType::Polyline:
         {
             this->drawPolyline(pointCoordScene,DrawEventType::RightClick);
+            break;
+        }
+        case DrawToolType::VariantLine:
+        {
+            this->drawVariantLine(pointCoordScene,DrawEventType::RightClick);
             break;
         }
         default:
@@ -565,7 +618,16 @@ void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
 ///
 void MainWindow::on_drawTestLineButton_clicked()
 {
+    ///
+    /// variant test
+    ///
+    this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
+    this->Scene->addItem(this->TmpVariantLine.get());
+    this->TmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
+    this->TmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
+    this->TmpVariantLine->setLine(QPointF(0,20),true,VariantLineItem::LineType::Arc);
 
+     this->TmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);
 
     ///
     /// arc test
@@ -656,6 +718,13 @@ void MainWindow::on_drawSpiralButton_clicked()
     displayOperation("drawSpiral button click");
     this->resetDrawToolStatus();
     this->CurrentDrawTool = DrawToolType::Spiral;
+}
+
+void MainWindow::on_drawVariantLineButton_clicked()
+{
+    displayOperation("drawVariantLine button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::VariantLine;
 }
 
 ///
@@ -753,4 +822,5 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
         };
     }
 }
+
 

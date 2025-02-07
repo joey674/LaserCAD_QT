@@ -157,6 +157,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="drawVariantLineButton">
+        <property name="text">
+         <string>drawVariantline</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="drawTestLineButton">
         <property name="text">
          <string>drawTestLine</string>
@@ -193,6 +206,12 @@
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <item>
          <widget class="QTreeWidget" name="operationTreeWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="dragEnabled">
            <bool>true</bool>
           </property>
@@ -207,7 +226,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QTableWidget" name="propertyTableWidget"/>
+         <widget class="QTableWidget" name="propertyTableWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
