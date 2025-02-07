@@ -74,9 +74,9 @@ void MainWindow::initGraphicsView()
     this->Scene->addItem(yArrowL);
     this->Scene->addItem(yArrowR);
 
-    //
+    // 锁定当前场景矩形
     ui->graphicsView->scale(1.5,1.5);
-    this->Scene->setSceneRect(Scene->sceneRect()); // 锁定当前场景矩形
+    this->Scene->setSceneRect(Scene->sceneRect());
 
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
@@ -88,6 +88,8 @@ void MainWindow::initGraphicsView()
             this,SLOT(on_graphicsview_mouserightclick_occurred(QPoint)));
     connect(ui->graphicsView,SIGNAL(mouserelease_event(QPoint)),
             this,SLOT(on_graphicsview_mouserelease_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mousedoubleclick_event(QPoint)),
+            this,SLOT(on_graphicsview_mousedoubleclick_occurred(QPoint)));
 }
 
 void MainWindow::initStatusBar()
@@ -447,10 +449,8 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
 void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
-    displayOperation("hhhh");
     if (!this->TmpVariantLine && event == DrawEventType::LeftClick)
     {
-        displayOperation("h1");
         this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(pointCoordScene));
         this->Scene->addItem(this->TmpVariantLine.get());
 
@@ -458,22 +458,104 @@ void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
     }
     else if  (this->TmpVariantLine && event == DrawEventType::MouseMove)
     {
-        displayOperation("h2");
-        this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Line);
+        if (!IsShiftHold)
+            this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Line);
+        else
+            this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::LeftClick)
     {
-        displayOperation("h3");
-        this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+        if (!IsShiftHold)
+            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+        else
+            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::RightClick)
     {
-        displayOperation("h4");
-        this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+        if (!IsShiftHold)
+            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
+        else
+            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
 
         this->TmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpVariantLine));
     }
+}
+
+void MainWindow::drawRect(QPointF, DrawEventType)
+{
+
+}
+
+void MainWindow::drawPolygon(QPointF, DrawEventType)
+{
+
+}
+
+void MainWindow::drawEllipse(QPointF, DrawEventType)
+{
+
+}
+
+///
+/// \brief MainWindow::keyPressEvent
+/// \param event
+///
+void MainWindow::keyPressEvent(QKeyEvent * event)
+{
+    switch(event->key()) {
+    case Qt::Key_Shift:
+    {
+        this->IsShiftHold = true;
+        break;
+    }
+    case Qt::Key_Control:
+    {
+        this->IsControlHold = true;
+        break;
+    }
+    case Qt::Key_C:
+    {
+        this->IsCPressed = !this->IsCPressed;
+        VariantLineItem::arcDirectionIsClockwise = !VariantLineItem::arcDirectionIsClockwise;
+        break;
+    }
+    case Qt::Key_1:
+    {
+        ui->resetButton->setChecked(true);
+        this->on_resetButton_clicked();
+        break;
+    }
+    case Qt::Key_2:
+    {
+        ui->drawVariantLineButton->setChecked(true);
+        this->on_drawVariantLineButton_clicked();
+        break;
+    }
+    case Qt::Key_3:
+    {
+        ui->drawCircleButton->setChecked(true);
+        this->on_drawCircleButton_clicked();
+        break;
+    }
+    }
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent * event)
+{
+    switch(event->key()) {
+    case Qt::Key_Shift:
+    {
+        this->IsShiftHold = false;
+        break;
+    }
+    case Qt::Key_Control:
+    {
+        this->IsControlHold = false;
+        break;
+    }
+    }
+    displayOperation("keyrelease");
 }
 
 ///
@@ -611,6 +693,12 @@ void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
         default:
         {}
     }
+}
+
+void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView)
+{
+    ui->resetButton->setChecked(true);
+    this->on_resetButton_clicked();
 }
 
 ///

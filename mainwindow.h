@@ -56,7 +56,7 @@ private:
     void initPropertyTableWidget();
     void displayOperation(QString);
 
-    // 编辑对象
+    // 编辑组件
     QGraphicsItem *CurrentEditItem;
     void editItem(QPointF);
     void editLine(QGraphicsLineItem *);
@@ -78,7 +78,19 @@ private:
     void drawPolyline(QPointF,DrawEventType);
     void drawArc(QPointF,DrawEventType); /*TODO*/
     void drawSpiral(QPointF,DrawEventType); /*TODO*/
-    void drawVariantLine(QPointF,DrawEventType); /*TODO*/
+    void drawVariantLine(QPointF,DrawEventType);
+    void drawRect(QPointF,DrawEventType); /*TODO*/
+    void drawPolygon(QPointF,DrawEventType); /*TODO*/
+    void drawEllipse(QPointF,DrawEventType); /*TODO*/
+
+    // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
+    bool IsControlHold = false;
+    bool IsShiftHold = false;
+    bool IsCPressed = false;
+
+protected:
+    void keyPressEvent(QKeyEvent* ) override;
+    void keyReleaseEvent(QKeyEvent* ) override;
 
 private slots:
     // 接收graphicsview信号的槽
@@ -86,6 +98,9 @@ private slots:
     void on_graphicsview_mouseleftclick_occurred(QPoint);
     void on_graphicsview_mouserightclick_occurred(QPoint);
     void on_graphicsview_mouserelease_occurred(QPoint);
+    void on_graphicsview_mousedoubleclick_occurred(QPoint);
+    // void on_graphicsview_keypressed_occurred(int);
+    // void on_graphicsview_keyrelease_occurred(int);
 
     // mainwindow与前端按钮绑定的槽
     void on_drawLineButton_clicked();

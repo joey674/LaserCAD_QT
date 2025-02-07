@@ -1,5 +1,8 @@
 # LaserCAD
 
+## DevLogs
+https://bo7zwj4hof.larksuite.com/docx/S4YudowaZowtVMxJ7Goua4irsJg?from=from_copylink
+
 ## Qt style
 
 - color scheme: style/.xml
@@ -10,6 +13,4 @@
 - Qt 框架重载函数: Camel Case;
 - 普通成员函数: Camel Case;
 - 自定义 signals/函数: Snake Case;
-
-## TODO
 

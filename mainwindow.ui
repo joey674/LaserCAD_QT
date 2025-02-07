@@ -80,15 +80,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawLineButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
+       <widget class="QToolButton" name="drawVariantLineButton">
         <property name="text">
-         <string>drawLine</string>
+         <string>drawVariantline</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -118,19 +112,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawArcButton">
-        <property name="text">
-         <string>drawArc</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="drawSpiralButton">
         <property name="text">
          <string>drawSpiral</string>
@@ -144,28 +125,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawPolylineButton">
+       <widget class="QToolButton" name="toolButton_3">
         <property name="text">
-         <string>drawPolyline</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawVariantLineButton">
-        <property name="text">
-         <string>drawVariantline</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
+         <string>...</string>
         </property>
        </widget>
       </item>
@@ -173,6 +135,51 @@
        <widget class="QToolButton" name="drawTestLineButton">
         <property name="text">
          <string>drawTestLine</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawLineButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>drawLine</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawArcButton">
+        <property name="text">
+         <string>drawArc</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawPolylineButton">
+        <property name="text">
+         <string>drawPolyline</string>
         </property>
         <property name="checkable">
          <bool>true</bool>

@@ -31,11 +31,20 @@ void GraphicsView::mouseReleaseEvent(QMouseEvent * event)
     QGraphicsView::mouseReleaseEvent(event);
 }
 
-void GraphicsView::wheelEvent(QWheelEvent * event) {
+void GraphicsView::wheelEvent(QWheelEvent * event)
+{
     if (event->angleDelta().y() > 0) {
         this->scale(1.2, 1.2);
     } else {
         this->scale(0.8, 0.8);
     }
     event->accept();
+}
+
+void GraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    QPoint point = event->pos();
+    if (event->button() == Qt::RightButton) {
+        emit mousedoubleclick_event(point);
+    }
 }

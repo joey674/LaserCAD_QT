@@ -11,6 +11,7 @@ public:
         Line,
         Arc
     };
+    static bool  arcDirectionIsClockwise;
 
     VariantLineItem(QPointF point)
     {
@@ -65,7 +66,7 @@ public:
             double angle = diameterLine.angle();
             QPainterPath path;
             path.arcMoveTo(newRect, angle);
-            path.arcTo(newRect, angle, 180);
+            path.arcTo(newRect, angle, arcDirectionIsClockwise ? 180 : -180);
             tmparc->setPath(path);
             break;
         }
@@ -74,27 +75,20 @@ public:
         update();
     }
 
-    void setFlags(GraphicsItemFlags flags)
-    {
-        // if (this->ItemList.empty())
-        // {
-        //     this->TmpLine->setFlags(flags);
-        //     this->TmpArc->setFlags(flags);
-        //     return;
-        // }
+    // void setVariantLineFlags(GraphicsItemFlags flags)
+    // {
+    //     this->TmpLine->setFlags(flags);
+    //     if (this->ItemList.empty())
+    //         return;
 
-        // for (auto& item: this->ItemList)
-        // {
-        //     this->TmpLine->setFlags(flags);
-        //     this->TmpArc->setFlags(flags);
-        //     item->setFlags(flags);
-        // }
-    }
+    //     for (auto& item: this->ItemList)
+    //         item->setFlags(flags);
+    // }
 
     QRectF boundingRect() const override
     {
         if (this->ItemList.empty())
-            return QRectF(QPointF(0,0),QPointF(0,0));
+            return this->TmpLine->boundingRect();
 
         QRectF newRect = this->TmpLine->boundingRect();
         for (auto& item: this->ItemList)
