@@ -291,6 +291,7 @@ void MainWindow::editVariantLine()
 void MainWindow::resetDrawToolStatus()
 {
     this->CurrentDrawTool = DrawToolType::None;
+    this->PolygonEdgeNum = 3;
     this->TmpLine = NULL;
     this->TmpCircle = NULL;
     this->TmpPolyline = NULL;
@@ -318,8 +319,8 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
         this->TmpLine->setLine(newLine);
     }
     else if (this->TmpLine && event == DrawEventType::LeftClick) {
-        QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
-        this->TmpLine->setLine(newLine);
+        // QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
+        // this->TmpLine->setLine(newLine);
 
         this->TmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpLine));
@@ -513,14 +514,112 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
     }
 }
 
-void MainWindow::drawPolygon(QPointF, DrawEventType)
+void MainWindow::drawPolygon(QPointF pointCoordScene, DrawEventType event)
 {
+    this->setAllItemsMovable(false);
 
+    if (!this->TmpPolygon && event == DrawEventType::LeftClick)
+    {
+        this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
+        this->TmpPolygon->setData(0,pointCoordScene);
+        this->TmpPolygon->setPen(QPen(Qt::black, 1));
+        this->Scene->addItem(this->TmpPolygon.get());
+    }
+    else if  (this->TmpPolygon && event == DrawEventType::MouseMove)
+    {
+        QPolygonF newPolygon;
+
+        QPointF centerPoint = this->TmpPolygon->data(0).toPointF();
+        double radius = QLineF(centerPoint,pointCoordScene).length();
+        int edgeNum = PolygonEdgeNum;
+
+        double angleStep = 2 * M_PI / edgeNum;
+        for (int i =0;i<edgeNum;i++) {
+            double angle = i * angleStep - M_PI/2;
+            QPointF Vertex(centerPoint.x()+radius*cos(angle),centerPoint.y()+radius*sin(angle));
+            newPolygon << Vertex;
+        }
+
+        this->TmpPolygon->setPolygon(newPolygon);
+    }
+    else if (this->TmpPolygon && event == DrawEventType::LeftClick) {
+        QPolygonF newPolygon;
+
+        QPointF centerPoint = this->TmpPolygon->data(0).toPointF();
+        double radius = QLineF(centerPoint,pointCoordScene).length();
+        int edgeNum = PolygonEdgeNum;
+
+        double angleStep = 2 * M_PI / edgeNum;
+        for (int i =0;i<edgeNum;i++) {
+            double angle = i * angleStep- M_PI/2;
+            QPointF Vertex(centerPoint.x()+radius*cos(angle),centerPoint.y()+radius*sin(angle));
+            newPolygon << Vertex;
+        }
+
+        this->TmpPolygon->setPolygon(newPolygon);
+
+        this->TmpPolygon->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        this->Container.push_back(std::move(this->TmpPolygon));
+    }
 }
 
-void MainWindow::drawEllipse(QPointF, DrawEventType)
+void MainWindow::drawEllipse(QPointF pointCoordScene, DrawEventType event)
 {
+    this->setAllItemsMovable(false);
 
+    if (!this->TmpEllipse && event == DrawEventType::LeftClick)
+    {
+        QRectF initialRect(pointCoordScene.x(), pointCoordScene.y(), 0, 0);
+        this->TmpEllipse = std::make_unique<QGraphicsEllipseItem>(initialRect);
+        this->TmpEllipse->setPen(QPen(Qt::black, 1));
+        Scene->addItem(this->TmpEllipse.get());
+    }
+    else if  (this->TmpEllipse && event == DrawEventType::MouseMove)
+    {
+        if (!this->TmpEllipse->data(0).isValid()) {
+            QRectF currentRect = this->TmpEllipse->rect();
+            QPointF center = currentRect.center();
+            double radius = QLineF(center, pointCoordScene).length();
+            QRectF newRect(center.x() - radius,
+                           center.y() - radius,
+                           2 * radius,
+                           2 * radius);
+            this->TmpEllipse->setRect(newRect);
+        } else {
+            QPointF firstAxisPoint = this->TmpEllipse->data(0).toPointF();
+            QRectF currentRect = this->TmpEllipse->rect();
+            QPointF center = currentRect.center();
+
+            double majorAxis = QLineF(center, firstAxisPoint).length();
+
+            double dx = firstAxisPoint.x() - center.x();
+            double dy = firstAxisPoint.y() - center.y();
+            double theta = atan2(dy, dx);
+
+            QLineF axisLine(center, firstAxisPoint);
+            QLineF perpendicularLine = axisLine.normalVector();
+            QPointF perpendicularPoint = perpendicularLine.p2();
+            double minorAxis = QLineF(center, pointCoordScene).length();
+
+            QRectF finalRect(center.x() - majorAxis, center.y() - minorAxis,
+                             2 * majorAxis, 2 * minorAxis);
+
+            this->TmpEllipse->setRect(finalRect);
+
+            this->TmpEllipse->setTransformOriginPoint(center);
+            this->TmpEllipse->setRotation(theta * 180 / M_PI);
+        }
+
+    }
+    else if (this->TmpEllipse && event == DrawEventType::LeftClick)
+    {
+        if (!this->TmpEllipse->data(0).isValid()) {
+            this->TmpEllipse->setData(0,pointCoordScene);
+        } else {
+            this->TmpEllipse->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+            Container.push_back(std::move(this->TmpEllipse));
+        }
+    }
 }
 
 ///
@@ -544,6 +643,28 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
     {
         this->IsCPressed = !this->IsCPressed;
         VariantLineItem::arcDirectionIsClockwise = !VariantLineItem::arcDirectionIsClockwise;
+        break;
+    }
+    case Qt::Key_W:
+    {
+        this->PolygonEdgeNum +=1;
+        break;
+    }
+    case Qt::Key_S:
+    {
+        if (this->PolygonEdgeNum>3){
+            this->PolygonEdgeNum -=1;
+        }
+        break;
+    }
+    case Qt::Key_A:
+    {
+
+        break;
+    }
+    case Qt::Key_D:
+    {
+
         break;
     }
     case Qt::Key_1:
@@ -642,6 +763,17 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
             this->drawRect(pointCoordScene,DrawEventType::MouseMove);
             break;
         }
+        case DrawToolType::Polygon:
+        {
+            this->drawPolygon(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        case DrawToolType::Ellipse:
+        {
+            this->drawEllipse(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+
         default:
         {}
     }
@@ -692,6 +824,17 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
             this->drawRect(pointCoordScene,DrawEventType::LeftClick);
             break;
         }
+        case DrawToolType::Polygon:
+        {
+            this->drawPolygon(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+        case DrawToolType::Ellipse:
+        {
+            this->drawEllipse(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+
         default:
         {}
     }
@@ -710,6 +853,11 @@ void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint pointCoordView)
         case DrawToolType::VariantLine:
         {
             this->drawVariantLine(pointCoordScene,DrawEventType::RightClick);
+            break;
+        }
+        case DrawToolType::Ellipse:
+        {
+            this->drawEllipse(pointCoordScene,DrawEventType::RightClick);
             break;
         }
         default:
@@ -743,9 +891,15 @@ void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
-    ///  test
+    /// polygon  test
     ///
+    this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
+    this->TmpPolygon->setPen(QPen(Qt::black, 1));
+    this->Scene->addItem(this->TmpPolygon.get());
 
+    QPolygonF newPolygon;
+    newPolygon << QPointF(0,0) << QPointF(100,100) << QPointF(100,0);
+    this->TmpPolygon->setPolygon(newPolygon);
 
     ///
     /// rect test

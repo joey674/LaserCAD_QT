@@ -70,6 +70,7 @@ private:
 
     // 绘制工具
     DrawToolType CurrentDrawTool = None;
+    int PolygonEdgeNum = 3;
     std::unique_ptr<QGraphicsLineItem> TmpLine;
     std::unique_ptr<QGraphicsEllipseItem> TmpCircle;
     std::unique_ptr<PolylineItem> TmpPolyline;
@@ -77,23 +78,24 @@ private:
     std::unique_ptr<VariantLineItem> TmpVariantLine;
     std::unique_ptr<QGraphicsRectItem> TmpRect;
     std::unique_ptr<QGraphicsPathItem> TmpSpiral;
-    std::unique_ptr<QGraphicsItem> TmpPolygon;
-    std::unique_ptr<QGraphicsItem> TmpEllipse;
+    std::unique_ptr<QGraphicsPolygonItem> TmpPolygon;
+    std::unique_ptr<QGraphicsEllipseItem> TmpEllipse;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
     void drawPolyline(QPointF,DrawEventType);
     void drawArc(QPointF,DrawEventType);
     void drawVariantLine(QPointF,DrawEventType);
-    void drawRect(QPointF,DrawEventType); /*TODO*/
+    void drawRect(QPointF,DrawEventType);
     void drawSpiral(QPointF,DrawEventType); /*TODO*/
-    void drawPolygon(QPointF,DrawEventType); /*TODO*/
+    void drawPolygon(QPointF,DrawEventType);
     void drawEllipse(QPointF,DrawEventType); /*TODO*/
 
     // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
     bool IsControlHold = false;
     bool IsShiftHold = false;
     bool IsCPressed = false;
+    bool IsZPressed = false;
 
 protected:
     void keyPressEvent(QKeyEvent* ) override;

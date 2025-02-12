@@ -68,6 +68,12 @@
      <layout class="QHBoxLayout" name="horizontalLayout_1">
       <item>
        <widget class="QToolButton" name="resetButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;指针工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;可以选中对象进行操作；&lt;/p&gt;&lt;p&gt;当使用其他绘制工具时，双击右键可切换&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>reset</string>
         </property>
@@ -81,6 +87,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="drawVariantLineButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按shift切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>drawVariantline</string>
         </property>
@@ -100,6 +112,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;圆形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制圆&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>drawCircle</string>
         </property>
@@ -113,6 +131,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="drawSpiralButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;螺旋线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制螺旋线&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>drawSpiral</string>
         </property>
@@ -126,6 +150,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="drawRectButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;矩形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制矩形&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="styleSheet">
          <string notr="true"/>
         </property>
@@ -142,6 +172,12 @@
       </item>
       <item>
        <widget class="QToolButton" name="drawPolygonButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多边形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制正多边形&lt;/p&gt;&lt;p&gt;按w添加多边形边数；按s减少多边形变数（最小为3）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>drawPolygon</string>
         </property>
@@ -155,8 +191,20 @@
       </item>
       <item>
        <widget class="QToolButton" name="drawEllipseButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;椭圆工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制椭圆&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
         <property name="text">
          <string>drawEllipse</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
