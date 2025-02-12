@@ -315,13 +315,17 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
     }
     else if  (this->TmpLine && event == DrawEventType::MouseMove)
     {
-        QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
+        QLineF newLine;
+        QPointF endPoint = pointCoordScene;
+        if (IsXHold)
+            endPoint = QPointF(pointCoordScene.x(), this->TmpLine->line().p1().y());
+        else if (IsYHold)
+                    endPoint = QPointF(this->TmpLine->line().p1().x(), pointCoordScene.y());
+        newLine = QLineF(this->TmpLine->line().p1(), endPoint);
         this->TmpLine->setLine(newLine);
+        this->TmpLine->setTransformOriginPoint(newLine.center());
     }
     else if (this->TmpLine && event == DrawEventType::LeftClick) {
-        // QLineF newLine(this->TmpLine->line().p1(), pointCoordScene);
-        // this->TmpLine->setLine(newLine);
-
         this->TmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpLine));
     }
@@ -348,18 +352,10 @@ void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
                        2 * radius,
                        2 * radius);
         this->TmpCircle->setRect(newRect);
+        this->TmpCircle->setTransformOriginPoint(center);
     }
     else if (this->TmpCircle && event == DrawEventType::LeftClick)
     {
-        QRectF currentRect = this->TmpCircle->rect();
-        QPointF center = currentRect.center();
-        double radius = QLineF(center, pointCoordScene).length();
-        QRectF newRect(center.x() - radius,
-                       center.y() - radius,
-                       2 * radius,
-                       2 * radius);
-        this->TmpCircle->setRect(newRect);
-
         this->TmpCircle->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Container.push_back(std::move(this->TmpCircle));
     }
@@ -445,25 +441,20 @@ void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
     }
     else if  (this->TmpVariantLine && event == DrawEventType::MouseMove)
     {
-        if (!IsShiftHold)
+        if (!IsControlHold)
             this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Line);
         else
             this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::LeftClick)
     {
-        if (!IsShiftHold)
+        if (!IsControlHold)
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
         else
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::RightClick)
     {
-        if (!IsShiftHold)
-            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
-        else
-            this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
-
         this->TmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpVariantLine));
     }
@@ -487,11 +478,7 @@ void MainWindow::drawRect(QPointF pointCoordScene, DrawEventType event)
         this->TmpRect->setRect(newRect);
     }
     else if (this->TmpRect && event == DrawEventType::LeftClick) {
-        qreal width = pointCoordScene.x() - this->TmpRect->rect().topLeft().x();
-        qreal height = pointCoordScene.y() - this->TmpRect->rect().topLeft().y();
-        QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),width,height);
-        this->TmpRect->setRect(newRect);
-
+        this->TmpRect->setTransformOriginPoint(this->TmpRect->rect().center());
         this->TmpRect->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpRect));
     }
@@ -500,17 +487,53 @@ void MainWindow::drawRect(QPointF pointCoordScene, DrawEventType event)
 void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
+    /* center：螺旋的中心点
+        radius：螺旋的初始半径
+        spacing：每圈的间距
+        turns：螺旋的圈数*/
 
-    if (!this->TmpLine && event == DrawEventType::LeftClick)
+    if (!this->TmpSpiral && event == DrawEventType::LeftClick)
     {
+        QPointF centerPoint  = pointCoordScene;
+        this->TmpSpiral =  std::make_unique<QGraphicsPathItem>();
+        this->TmpSpiral->setData(0,pointCoordScene);
+        this->TmpSpiral->setPen(QPen(Qt::black, 1));
+        Scene->addItem(this->TmpSpiral.get());
     }
-    else if  (this->TmpLine && event == DrawEventType::MouseMove)
+    else if  (this->TmpSpiral && event == DrawEventType::MouseMove)
     {
+        // 这里都是设置了一个演示默认值；
+        QPointF centerPoint = this->TmpSpiral->data(0).toPointF();
+        QPointF endPoint = pointCoordScene;
+        int turns = 3;
+        double radius = QLineF(centerPoint,endPoint).length()/2;
+        double spacing = QLineF(centerPoint,endPoint).length()/6;
+        double dx = endPoint.x() - centerPoint.x();
+        double dy = endPoint.y() - centerPoint.y();
 
+        QPainterPath path;
+        bool start = true;
+        for (double theta = 0; theta < turns * 2 * M_PI; theta += 0.1) {
+            double r = radius + spacing * theta / (2 * M_PI);
+            double x = centerPoint.x() + r * cos(theta);
+            double y = centerPoint.y() + r * sin(theta);
+
+            if (start == true) {
+                path.moveTo(centerPoint.x() + r * cos(theta),centerPoint.y()+r* sin(theta));
+                start = false;
+            } else {
+                path.lineTo(x, y);
+            }
+        }
+        this->TmpSpiral->setTransformOriginPoint(centerPoint);
+        this->TmpSpiral->setRotation(atan2(dy, dx)* 180 / M_PI);
+
+        this->TmpSpiral->setPath(path);
     }
-    else if (this->TmpLine && event == DrawEventType::LeftClick)
+    else if (this->TmpSpiral && event == DrawEventType::LeftClick)
     {
-
+        this->TmpSpiral->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        Container.push_back(std::move(this->TmpSpiral));
     }
 }
 
@@ -541,23 +564,9 @@ void MainWindow::drawPolygon(QPointF pointCoordScene, DrawEventType event)
         }
 
         this->TmpPolygon->setPolygon(newPolygon);
+        this->TmpPolygon->setTransformOriginPoint(centerPoint);
     }
     else if (this->TmpPolygon && event == DrawEventType::LeftClick) {
-        QPolygonF newPolygon;
-
-        QPointF centerPoint = this->TmpPolygon->data(0).toPointF();
-        double radius = QLineF(centerPoint,pointCoordScene).length();
-        int edgeNum = PolygonEdgeNum;
-
-        double angleStep = 2 * M_PI / edgeNum;
-        for (int i =0;i<edgeNum;i++) {
-            double angle = i * angleStep- M_PI/2;
-            QPointF Vertex(centerPoint.x()+radius*cos(angle),centerPoint.y()+radius*sin(angle));
-            newPolygon << Vertex;
-        }
-
-        this->TmpPolygon->setPolygon(newPolygon);
-
         this->TmpPolygon->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpPolygon));
     }
@@ -639,12 +648,30 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
         this->IsControlHold = true;
         break;
     }
+
+    case Qt::Key_X:
+    {
+        this->IsXHold = true;
+        break;
+    }
+    case Qt::Key_Y:
+    {
+        this->IsYHold = true;
+        break;
+    }
+    case Qt::Key_Z:
+    {
+        this->IsZHold = true;
+        break;
+    }
+
     case Qt::Key_C:
     {
         this->IsCPressed = !this->IsCPressed;
         VariantLineItem::arcDirectionIsClockwise = !VariantLineItem::arcDirectionIsClockwise;
         break;
     }
+
     case Qt::Key_W:
     {
         this->PolygonEdgeNum +=1;
@@ -667,6 +694,7 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 
         break;
     }
+
     case Qt::Key_1:
     {
         ui->resetButton->setChecked(true);
@@ -699,6 +727,21 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
     case Qt::Key_Control:
     {
         this->IsControlHold = false;
+        break;
+    }
+    case Qt::Key_X:
+    {
+        this->IsXHold = false;
+        break;
+    }
+    case Qt::Key_Y:
+    {
+        this->IsYHold = false;
+        break;
+    }
+    case Qt::Key_Z:
+    {
+        this->IsZHold = false;
         break;
     }
     }
@@ -898,8 +941,11 @@ void MainWindow::on_drawTestLineButton_clicked()
     this->Scene->addItem(this->TmpPolygon.get());
 
     QPolygonF newPolygon;
-    newPolygon << QPointF(0,0) << QPointF(100,100) << QPointF(100,0);
+    newPolygon << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100);
     this->TmpPolygon->setPolygon(newPolygon);
+
+    this->TmpPolygon->setTransformOriginPoint(QPointF(50,50));
+    this->TmpPolygon->setRotation(180);
 
     ///
     /// rect test
@@ -1139,4 +1185,19 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 }
 
 
+///
+/// \brief MainWindow::on_rotateButton_clicked
+///
+void MainWindow::on_rotateButton_clicked()
+{
+    if (!this->CurrentEditItem) return;
+
+    auto angle = this->CurrentEditItem->rotation();
+    this->CurrentEditItem->setRotation(angle + 90);
+}
+
+void MainWindow::on_centerButton_clicked()
+{
+
+}
 

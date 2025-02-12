@@ -24,7 +24,7 @@
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QToolButton" name="toolButton_2">
+       <widget class="QToolButton" name="rotateButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -32,12 +32,12 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>tool1</string>
+         <string>rotate</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="toolButton">
+       <widget class="QToolButton" name="centerButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -45,7 +45,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>tool2</string>
+         <string>center</string>
         </property>
        </widget>
       </item>
@@ -88,13 +88,26 @@
       <item>
        <widget class="QToolButton" name="drawVariantLineButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按shift切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按ctrl切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="toolTipDuration">
          <number>0</number>
         </property>
         <property name="text">
          <string>drawVariantline</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawArcButton">
+        <property name="text">
+         <string>drawArc</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -238,19 +251,6 @@
         </property>
         <property name="text">
          <string>drawLine</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawArcButton">
-        <property name="text">
-         <string>drawArc</string>
         </property>
         <property name="checkable">
          <bool>true</bool>

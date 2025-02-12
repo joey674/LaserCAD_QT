@@ -7,7 +7,8 @@
 class VariantLineItem: public QGraphicsItem
 {
 public:
-    enum LineType {
+    enum LineType
+    {
         Line,
         Arc
     };
@@ -75,16 +76,6 @@ public:
         update();
     }
 
-    // void setVariantLineFlags(GraphicsItemFlags flags)
-    // {
-    //     this->TmpLine->setFlags(flags);
-    //     if (this->ItemList.empty())
-    //         return;
-
-    //     for (auto& item: this->ItemList)
-    //         item->setFlags(flags);
-    // }
-
     QRectF boundingRect() const override
     {
         if (this->ItemList.empty())
@@ -118,7 +109,6 @@ public:
     }
 
 private:
-    QGraphicsScene *Scene;
     std::unique_ptr<QGraphicsItem> TmpLine;
     QPen Pen = QPen(Qt::black, 1);
 

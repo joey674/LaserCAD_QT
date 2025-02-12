@@ -94,8 +94,10 @@ private:
     // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
     bool IsControlHold = false;
     bool IsShiftHold = false;
+    bool IsXHold = false;
+    bool IsZHold = false;
+    bool IsYHold = false;
     bool IsCPressed = false;
-    bool IsZPressed = false;
 
 protected:
     void keyPressEvent(QKeyEvent* ) override;
@@ -124,6 +126,9 @@ private slots:
     void on_drawRectButton_clicked();
     void on_drawPolygonButton_clicked();
     void on_drawEllipseButton_clicked();
+
+    void on_rotateButton_clicked();
+    void on_centerButton_clicked();
 };
 #endif // MAINWINDOW_H
 
