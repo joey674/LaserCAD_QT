@@ -125,7 +125,43 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="toolButton_3">
+       <widget class="QToolButton" name="drawRectButton">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>drawRect</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawPolygonButton">
+        <property name="text">
+         <string>drawPolygon</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawEllipseButton">
+        <property name="text">
+         <string>drawEllipse</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="zzz">
         <property name="text">
          <string>...</string>
         </property>

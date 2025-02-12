@@ -24,7 +24,10 @@ public:
         Polyline,
         Spiral,
         Arc,
-        VariantLine
+        VariantLine,
+        Rect,
+        Ellipse,
+        Polygon
     };
     enum DrawEventType {
         LeftClick,
@@ -72,14 +75,18 @@ private:
     std::unique_ptr<PolylineItem> TmpPolyline;
     std::unique_ptr<QGraphicsPathItem> TmpArc;
     std::unique_ptr<VariantLineItem> TmpVariantLine;
+    std::unique_ptr<QGraphicsRectItem> TmpRect;
+    std::unique_ptr<QGraphicsPathItem> TmpSpiral;
+    std::unique_ptr<QGraphicsItem> TmpPolygon;
+    std::unique_ptr<QGraphicsItem> TmpEllipse;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
     void drawPolyline(QPointF,DrawEventType);
-    void drawArc(QPointF,DrawEventType); /*TODO*/
-    void drawSpiral(QPointF,DrawEventType); /*TODO*/
+    void drawArc(QPointF,DrawEventType);
     void drawVariantLine(QPointF,DrawEventType);
     void drawRect(QPointF,DrawEventType); /*TODO*/
+    void drawSpiral(QPointF,DrawEventType); /*TODO*/
     void drawPolygon(QPointF,DrawEventType); /*TODO*/
     void drawEllipse(QPointF,DrawEventType); /*TODO*/
 
@@ -112,6 +119,9 @@ private slots:
     void on_drawArcButton_clicked();
     void on_drawSpiralButton_clicked();
     void on_drawVariantLineButton_clicked();
+    void on_drawRectButton_clicked();
+    void on_drawPolygonButton_clicked();
+    void on_drawEllipseButton_clicked();
 };
 #endif // MAINWINDOW_H
 

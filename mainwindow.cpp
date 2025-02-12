@@ -296,7 +296,10 @@ void MainWindow::resetDrawToolStatus()
     this->TmpPolyline = NULL;
     this->TmpArc = NULL;
     this->TmpVariantLine = NULL;
-    // this->TmpSpiral = NULL;
+    this->TmpRect = NULL;
+    this->TmpSpiral = NULL;
+    this->TmpPolygon = NULL;
+    this->TmpEllipse = NULL;
 }
 
 void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
@@ -429,23 +432,6 @@ void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
     }
 }
 
-void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
-{
-    this->setAllItemsMovable(false);
-
-    if (!this->TmpLine && event == DrawEventType::LeftClick)
-    {
-    }
-    else if  (this->TmpLine && event == DrawEventType::MouseMove)
-    {
-
-    }
-    else if (this->TmpLine && event == DrawEventType::LeftClick)
-    {
-
-    }
-}
-
 void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
@@ -482,9 +468,49 @@ void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
     }
 }
 
-void MainWindow::drawRect(QPointF, DrawEventType)
+void MainWindow::drawRect(QPointF pointCoordScene, DrawEventType event)
 {
+    this->setAllItemsMovable(false);
 
+    if (!this->TmpRect && event == DrawEventType::LeftClick)
+    {
+        this->TmpRect = std::make_unique<QGraphicsRectItem>(pointCoordScene.x(), pointCoordScene.y(),0,0);
+        this->TmpRect->setPen(QPen(Qt::black, 1));
+        this->Scene->addItem(this->TmpRect.get());
+    }
+    else if  (this->TmpRect && event == DrawEventType::MouseMove)
+    {
+        qreal width = pointCoordScene.x() - this->TmpRect->rect().topLeft().x();
+        qreal height = pointCoordScene.y() - this->TmpRect->rect().topLeft().y();
+        QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),width,height);
+        this->TmpRect->setRect(newRect);
+    }
+    else if (this->TmpRect && event == DrawEventType::LeftClick) {
+        qreal width = pointCoordScene.x() - this->TmpRect->rect().topLeft().x();
+        qreal height = pointCoordScene.y() - this->TmpRect->rect().topLeft().y();
+        QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),width,height);
+        this->TmpRect->setRect(newRect);
+
+        this->TmpRect->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
+        this->Container.push_back(std::move(this->TmpRect));
+    }
+}
+
+void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
+{
+    this->setAllItemsMovable(false);
+
+    if (!this->TmpLine && event == DrawEventType::LeftClick)
+    {
+    }
+    else if  (this->TmpLine && event == DrawEventType::MouseMove)
+    {
+
+    }
+    else if (this->TmpLine && event == DrawEventType::LeftClick)
+    {
+
+    }
 }
 
 void MainWindow::drawPolygon(QPointF, DrawEventType)
@@ -611,6 +637,11 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
             this->drawVariantLine(pointCoordScene,DrawEventType::MouseMove);
             break;
         }
+        case DrawToolType::Rect:
+        {
+            this->drawRect(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
         default:
         {}
     }
@@ -654,6 +685,11 @@ void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
         case DrawToolType::VariantLine:
         {
             this->drawVariantLine(pointCoordScene,DrawEventType::LeftClick);
+            break;
+        }
+        case DrawToolType::Rect:
+        {
+            this->drawRect(pointCoordScene,DrawEventType::LeftClick);
             break;
         }
         default:
@@ -707,15 +743,30 @@ void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
+    ///  test
+    ///
+
+
+    ///
+    /// rect test
+    ///
+    /*this->TmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
+    this->TmpRect->setPen(QPen(Qt::black, 1));
+    this->Scene->addItem(this->TmpRect.get());
+
+     QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),100, 100);
+    this->TmpRect->setRect(newRect);*/
+
+    ///
     /// variant test
     ///
-    this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
+    /*this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
     this->Scene->addItem(this->TmpVariantLine.get());
     this->TmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
     this->TmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
     this->TmpVariantLine->setLine(QPointF(0,20),true,VariantLineItem::LineType::Arc);
 
-     this->TmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);
+     this->TmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);*/
 
     ///
     /// arc test
@@ -815,6 +866,28 @@ void MainWindow::on_drawVariantLineButton_clicked()
     this->CurrentDrawTool = DrawToolType::VariantLine;
 }
 
+void MainWindow::on_drawRectButton_clicked()
+{
+    displayOperation("drawRect button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Rect;
+}
+
+void MainWindow::on_drawPolygonButton_clicked()
+{
+    displayOperation("drawPolygon button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Polygon;
+}
+
+void MainWindow::on_drawEllipseButton_clicked()
+{
+    displayOperation("drawEllipse button click");
+    this->resetDrawToolStatus();
+    this->CurrentDrawTool = DrawToolType::Ellipse;
+}
+
+
 ///
 /// \brief MainWindow::on_propertyTableWidget_cellChanged
 ///
@@ -910,5 +983,6 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
         };
     }
 }
+
 
 
