@@ -10,8 +10,8 @@
 #include <QTime>
 #include <QString>
 #include <QtMath>
-#include "lib/CavalierContours/include/cavc/polyline.hpp"
-#include "lib/CavalierContours/include/cavc/polylineoffset.hpp"
+#include "header/CavalierContours/polyline.hpp"
+#include "header/CavalierContours/polylineoffset.hpp"
 
 ///
 /// \brief MainWindow::MainWindow

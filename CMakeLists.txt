@@ -13,9 +13,9 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        main.cpp         mainwindow.ui
-        mainwindow.cpp mainwindow.h
-        graphicsview.h graphicsview.cpp
+        src/main.cpp            src/mainwindow.ui
+        src/mainwindow.cpp      header/mainwindow.h
+        src/graphicsview.cpp    header/graphicsview.h 
 )
 include_directories(${PROJECT_SOURCE_DIR})
 
@@ -23,25 +23,26 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD_Designer
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-	polylineitem.h polylineitem.cpp
-	variantlineitem.h variantlineitem.cpp
-	manager.h manager.cpp
-	lib/CavalierContours/src/cavaliercontours.cpp
-	lib/CavalierContours/include/cavc/intrcircle2circle2.hpp
-	lib/CavalierContours/include/cavc/intrlineseg2circle2.hpp
-	lib/CavalierContours/include/cavc/intrlineseg2lineseg2.hpp
-	lib/CavalierContours/include/cavc/mathutils.hpp
-	lib/CavalierContours/include/cavc/plinesegment.hpp
-	lib/CavalierContours/include/cavc/polyline.hpp
-	lib/CavalierContours/include/cavc/polylinecombine.hpp
-	lib/CavalierContours/include/cavc/polylineintersects.hpp
-	lib/CavalierContours/include/cavc/polylineoffset.hpp
-	lib/CavalierContours/include/cavc/polylineoffsetislands.hpp
-	lib/CavalierContours/include/cavc/staticspatialindex.hpp
-	lib/CavalierContours/include/cavc/vector.hpp
-	lib/CavalierContours/include/cavc/vector2.hpp
-	lib/CavalierContours/c_api_include/cavaliercontours.h
-	utils.h utils.cpp
+        header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
+	header/GraphicsItem/variantlineitem.h   src/variantlineitem.cpp
+	header/manager.h                        src/manager.cpp
+	header/utils.h                          src/utils.cpp
+
+	src/cavaliercontours.cpp
+	header/CavalierContours/intrcircle2circle2.hpp
+	header/CavalierContours/intrlineseg2circle2.hpp
+	header/CavalierContours/intrlineseg2lineseg2.hpp
+	header/CavalierContours/mathutils.hpp
+	header/CavalierContours/plinesegment.hpp
+	header/CavalierContours/polyline.hpp
+	header/CavalierContours/polylinecombine.hpp
+	header/CavalierContours/polylineintersects.hpp
+	header/CavalierContours/polylineoffset.hpp
+	header/CavalierContours/polylineoffsetislands.hpp
+	header/CavalierContours/staticspatialindex.hpp
+	header/CavalierContours/vector.hpp
+	header/CavalierContours/vector2.hpp
+	header/CavalierContours/cavaliercontours.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -62,6 +63,8 @@ else()
 endif()
 
 target_link_libraries(LaserCAD_Designer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsItem)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

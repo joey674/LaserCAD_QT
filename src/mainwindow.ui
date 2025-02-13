@@ -92,15 +92,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawVariantLineButton">
+       <widget class="QToolButton" name="drawPolylineButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按ctrl切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="toolTipDuration">
-         <number>0</number>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制多段线&lt;/p&gt;&lt;p&gt;长按shift切换绘制直线/圆弧；&lt;/p&gt;&lt;p&gt;按下capslock切换圆弧方向；&lt;/p&gt;&lt;p&gt;长按x/y锁定绘制方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>drawVariantline</string>
+         <string>drawPolyline</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -235,6 +232,25 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="drawVariantLineButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按ctrl切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
+        <property name="text">
+         <string>drawVariantline</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="drawTestLineButton">
         <property name="text">
          <string>drawTestLine</string>
@@ -257,19 +273,6 @@
         </property>
         <property name="text">
          <string>drawLine</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawPolylineButton">
-        <property name="text">
-         <string>drawPolyline</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
