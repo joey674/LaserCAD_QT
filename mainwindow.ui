@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>712</width>
+    <width>752</width>
     <height>294</height>
    </rect>
   </property>
@@ -34,6 +34,9 @@
         <property name="text">
          <string>rotate</string>
         </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
       <item>
@@ -46,6 +49,9 @@
         </property>
         <property name="text">
          <string>center</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

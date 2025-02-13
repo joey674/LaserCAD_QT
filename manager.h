@@ -10,7 +10,16 @@ public:
         return ins;
     }
 
-    先把键盘状态移过来
+    // 先把键盘状态移过来
+    // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
+    bool IsControlHold = false;
+    bool IsShiftHold = false;
+    bool IsCapsLocked = false;
+    bool IsXHold = false;
+    bool IsZHold = false;
+    bool IsYHold = false;
+
+
 private:
     Manager(){};
     ~Manager(){};

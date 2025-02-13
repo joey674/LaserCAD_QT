@@ -3,6 +3,7 @@
 
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
+#include "manager.h"
 
 class VariantLineItem: public QGraphicsItem
 {
@@ -49,6 +50,13 @@ public:
             auto tmpline = dynamic_cast<QGraphicsLineItem*>(this->TmpLine.get());
             tmpline->setPen(QPen(Qt::black, 1));
 
+            if (Manager::getIns().IsXHold)
+                endPoint = QPointF(endPoint.x(), startPoint.y());
+            else if (Manager::getIns().IsYHold)
+                endPoint = QPointF(startPoint.x(), endPoint.y());
+
+            NodeList.back() = endPoint;
+
             QLineF line(startPoint, endPoint);
             tmpline->setLine(line);
             break;
@@ -74,6 +82,21 @@ public:
         }
 
         update();
+    }
+
+    QPointF getCenter()
+    {
+         if (this->NodeList.empty())
+            return QPointF(0,0);
+
+         QPointF centerPoint = this->NodeList[0];
+         for (auto& item: this->NodeList)
+        {
+             centerPoint = QPointF(
+                 (centerPoint.x()+item.x())/2,
+                 (centerPoint.y()+item.y())/2);
+         }
+         return centerPoint;
     }
 
     QRectF boundingRect() const override

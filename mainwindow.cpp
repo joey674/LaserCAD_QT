@@ -10,6 +10,8 @@
 #include <QTime>
 #include <QString>
 #include <QtMath>
+#include "lib/CavalierContours/include/cavc/polyline.hpp"
+#include "lib/CavalierContours/include/cavc/polylineoffset.hpp"
 
 ///
 /// \brief MainWindow::MainWindow
@@ -317,9 +319,9 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
     {
         QLineF newLine;
         QPointF endPoint = pointCoordScene;
-        if (IsXHold)
+        if (Manager::getIns().IsXHold)
             endPoint = QPointF(pointCoordScene.x(), this->TmpLine->line().p1().y());
-        else if (IsYHold)
+        else if (Manager::getIns().IsYHold)
                     endPoint = QPointF(this->TmpLine->line().p1().x(), pointCoordScene.y());
         newLine = QLineF(this->TmpLine->line().p1(), endPoint);
         this->TmpLine->setLine(newLine);
@@ -367,26 +369,39 @@ void MainWindow::drawPolyline(QPointF pointCoordScene, DrawEventType event)
 
     if (!this->TmpPolyline && event == DrawEventType::LeftClick)
     {
-        this->TmpPolyline = std::make_unique<PolylineItem>(QLineF(pointCoordScene, pointCoordScene));
+        this->TmpPolyline = std::make_unique<PolylineItem>();
         this->Scene->addItem(this->TmpPolyline.get());
+
+        this->TmpPolyline->addVertex(pointCoordScene,0);
+        this->TmpPolyline->addVertex(pointCoordScene,0);
     }
     else if  (this->TmpPolyline && event == DrawEventType::MouseMove)
     {
-        QLineF newLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
-        this->TmpPolyline->setLine(newLine,false);
+        int index = this->TmpPolyline->getSize()-1;
+        if (!Manager::getIns().IsControlHold)
+        {
+            QPointF lastPoint = this->TmpPolyline->getPoint(index - 1);
+            if (Manager::getIns().IsXHold)
+                this->TmpPolyline->editVertex(index,QPointF(pointCoordScene.x(),lastPoint.y()),0);
+            else if (Manager::getIns().IsYHold)
+                this->TmpPolyline->editVertex(index,QPointF(lastPoint.x(),pointCoordScene.y()),0);
+            else
+                this->TmpPolyline->editVertex(index,pointCoordScene,0);
+        }
+        else
+        {
+            if (!Manager::getIns().IsCapsLocked)
+                this->TmpPolyline->editVertex(index, pointCoordScene,1);
+            else
+                 this->TmpPolyline->editVertex(index, pointCoordScene,-1);
+        }
     }
     else if (this->TmpPolyline && event == DrawEventType::LeftClick)
     {
-        QLineF confirmLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
-        this->TmpPolyline->setLine(confirmLine,false);
-
-        this->TmpPolyline->setLine(QLineF(pointCoordScene, pointCoordScene),true);
+        this->TmpPolyline->addVertex(pointCoordScene,0);
     }
     else if (this->TmpPolyline && event == DrawEventType::RightClick)
     {
-        QLineF newLine(this->TmpPolyline->tmpline().p1(), pointCoordScene);
-        this->TmpPolyline->setLine(newLine,false);
-
         this->TmpPolyline->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpPolyline));
     }
@@ -441,20 +456,21 @@ void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
     }
     else if  (this->TmpVariantLine && event == DrawEventType::MouseMove)
     {
-        if (!IsControlHold)
+        if (!Manager::getIns().IsControlHold)
             this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Line);
         else
             this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::LeftClick)
     {
-        if (!IsControlHold)
+        if (!Manager::getIns().IsControlHold)
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
         else
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
     }
     else if (this->TmpVariantLine && event == DrawEventType::RightClick)
     {
+        this->TmpVariantLine->setTransformOriginPoint(this->TmpVariantLine->getCenter());
         this->TmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpVariantLine));
     }
@@ -640,34 +656,34 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
     switch(event->key()) {
     case Qt::Key_Shift:
     {
-        this->IsShiftHold = true;
+        Manager::getIns().IsShiftHold = true;
         break;
     }
     case Qt::Key_Control:
     {
-        this->IsControlHold = true;
+        Manager::getIns().IsControlHold = true;
         break;
     }
 
     case Qt::Key_X:
     {
-        this->IsXHold = true;
+        Manager::getIns().IsXHold = true;
         break;
     }
     case Qt::Key_Y:
     {
-        this->IsYHold = true;
+        Manager::getIns().IsYHold = true;
         break;
     }
     case Qt::Key_Z:
     {
-        this->IsZHold = true;
+        Manager::getIns().IsZHold = true;
         break;
     }
 
-    case Qt::Key_C:
+    case Qt::Key_CapsLock:
     {
-        this->IsCPressed = !this->IsCPressed;
+        Manager::getIns().IsCapsLocked = !Manager::getIns().IsCapsLocked;
         VariantLineItem::arcDirectionIsClockwise = !VariantLineItem::arcDirectionIsClockwise;
         break;
     }
@@ -721,27 +737,27 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
     switch(event->key()) {
     case Qt::Key_Shift:
     {
-        this->IsShiftHold = false;
+        Manager::getIns().IsShiftHold = false;
         break;
     }
     case Qt::Key_Control:
     {
-        this->IsControlHold = false;
+        Manager::getIns().IsControlHold = false;
         break;
     }
     case Qt::Key_X:
     {
-        this->IsXHold = false;
+        Manager::getIns().IsXHold = false;
         break;
     }
     case Qt::Key_Y:
     {
-        this->IsYHold = false;
+        Manager::getIns().IsYHold = false;
         break;
     }
     case Qt::Key_Z:
     {
-        this->IsZHold = false;
+        Manager::getIns().IsZHold = false;
         break;
     }
     }
@@ -931,89 +947,6 @@ void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView
 ///
 /// \brief MainWindow::on_drawLineButton_clicked
 ///
-void MainWindow::on_drawTestLineButton_clicked()
-{
-    ///
-    /// polygon  test
-    ///
-    this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
-    this->TmpPolygon->setPen(QPen(Qt::black, 1));
-    this->Scene->addItem(this->TmpPolygon.get());
-
-    QPolygonF newPolygon;
-    newPolygon << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100);
-    this->TmpPolygon->setPolygon(newPolygon);
-
-    this->TmpPolygon->setTransformOriginPoint(QPointF(50,50));
-    this->TmpPolygon->setRotation(180);
-
-    ///
-    /// rect test
-    ///
-    /*this->TmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
-    this->TmpRect->setPen(QPen(Qt::black, 1));
-    this->Scene->addItem(this->TmpRect.get());
-
-     QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),100, 100);
-    this->TmpRect->setRect(newRect);*/
-
-    ///
-    /// variant test
-    ///
-    /*this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
-    this->Scene->addItem(this->TmpVariantLine.get());
-    this->TmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
-    this->TmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
-    this->TmpVariantLine->setLine(QPointF(0,20),true,VariantLineItem::LineType::Arc);
-
-     this->TmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);*/
-
-    ///
-    /// arc test
-    ///
-    /*QPoint startPoint(10,10);
-    QPoint endPoint(100,100);
-
-    this->TmpArc = std::make_unique<QGraphicsPathItem>();
-    this->TmpArc->setData(0,QPointF(startPoint));
-    this->TmpArc->setPen(QPen(Qt::black, 1));
-    Scene->addItem(this->TmpArc.get());
-
-
-    if(startPoint != this->TmpArc->data(0))
-    {
-        displayOperation("error");
-    }
-
-
-    double radius = QLineF(startPoint, endPoint).length()/2;
-    QPointF centerPoint((startPoint.x()+endPoint.x())/2, (startPoint.y()+endPoint.y())/2);
-
-    QRectF newRect(QPointF(centerPoint.x() - radius, centerPoint.y() - radius),
-                   QPointF(centerPoint.x() + radius, centerPoint.y() + radius));
-
-    QLineF diameterLine(startPoint, endPoint);
-    double angle = diameterLine.angle();
-
-    QPainterPath path1;
-    path1.arcMoveTo(newRect, angle);
-    path1.arcTo(newRect, angle, 180);
-    this->TmpArc->setPath(path1);*/
-
-    ///
-    /// polyline test
-    ///
-    /*QLineF line(QPointF(0,0),QPointF(100,100));
-    this->TmpPolyline = std::make_unique<PolylineItem>(line);
-    this->Scene->addItem(this->TmpPolyline.get());
-
-    QLineF line1(QPointF(0,0),QPointF(-100,100));
-    this->TmpPolyline->setLine(line1,false);
-
-    QLineF line2(QPointF(-100,100),QPointF(100,100));
-    this->TmpPolyline->setLine(line2,true);*/
-}
-
 void MainWindow::on_drawLineButton_clicked()
 {
     displayOperation("drawLine button click");
@@ -1184,7 +1117,6 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
     }
 }
 
-
 ///
 /// \brief MainWindow::on_rotateButton_clicked
 ///
@@ -1201,3 +1133,160 @@ void MainWindow::on_centerButton_clicked()
 
 }
 
+///
+/// 测试专用
+///
+void MainWindow::on_drawTestLineButton_clicked()
+{
+    ///
+    /// polyline test
+    ///
+    this->TmpPolyline = std::make_unique<PolylineItem>();
+    this->Scene->addItem(this->TmpPolyline.get());
+
+    this->TmpPolyline->addVertex(QPointF(0,0),0);
+    this->TmpPolyline->addVertex(QPointF(100,100),0);
+    this->TmpPolyline->addVertex(QPointF(200,100),0);
+    this->TmpPolyline->addVertex(QPointF(200,200),1);
+    this->TmpPolyline->addVertex(QPointF(200,300),-1);
+
+    ///
+    /// polygon  test
+    ///
+    /*
+    using namespace cavc;
+
+    cavc::Polyline<double> input;
+    // add vertexes as (x, y, bulge)
+    input.addVertex(0, 25, 1);
+    input.addVertex(0, 0, 0);
+    input.addVertex(2, 0, 1);
+    input.addVertex(10, 0, -0.5);
+    input.addVertex(8, 9, 0.374794619217547);
+    input.addVertex(21, 0, 0);
+    input.addVertex(23, 0, 1);
+    input.addVertex(32, 0, -0.5);
+    input.addVertex(28, 0, 0.5);
+    input.addVertex(39, 21, 0);
+    input.addVertex(28, 12, 0);
+    input.isClosed() = true;
+
+    // compute the resulting offset polylines, offset = 3
+    std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 3.0);
+
+    this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
+    this->TmpPolygon->setPen(QPen(Qt::black, 1));
+    this->Scene->addItem(this->TmpPolygon.get());
+    // closed polyline representing a circle going counter clockwise
+    double radius = 10.0;
+    cavc::Polyline<double> ccwCircle;
+    ccwCircle.addVertex(0, 0, 1);
+    ccwCircle.addVertex(2.0 * radius, 0, 1);
+    ccwCircle.isClosed() = true;
+
+    // closed polyline representing a circle going clockwise
+    cavc::Polyline<double> cwCircle;
+    cwCircle.addVertex(0, 0, -1);
+    cwCircle.addVertex(2.0 * radius, 0, -1);
+    cwCircle.isClosed() = true;
+
+    // path length of polyline
+    double length = getPathLength(ccwCircle);
+    assert(utils::fuzzyEqual(length, 2.0 * utils::pi<double>() * radius));
+
+    // signed area of closed polyline (area is positive if counter clockwise, negative if clockwise)
+    double area = getArea(ccwCircle);
+    assert(utils::fuzzyEqual(area, utils::pi<double>() * radius * radius));
+    assert(utils::fuzzyEqual(getArea(cwCircle), -area));
+
+    // polyline extents
+    AABB<double> extents = getExtents(ccwCircle);
+    assert(utils::fuzzyEqual(extents.xMin, 0.0));
+    assert(utils::fuzzyEqual(extents.yMin, -radius));
+    assert(utils::fuzzyEqual(extents.xMax, 2.0 * radius));
+    assert(utils::fuzzyEqual(extents.yMax, radius));
+
+    // Closest point on polyline to a point given
+    ClosestPoint<double> closestPoint(ccwCircle, Vector2<double>(radius, 10.0 * radius));
+    // index is the starting vertex index of the closest segment (going clockwise so arc starting at
+    // the second vertex is closest)
+    assert(closestPoint.index() == 1);
+    assert(fuzzyEqual(closestPoint.point(), Vector2<double>(radius, radius)));
+    assert(utils::fuzzyEqual(closestPoint.distance(), 9.0 * radius));*/
+
+    ///
+    ///
+    ///
+    /*QPolygonF newPolygon;
+    newPolygon << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100);
+    this->TmpPolygon->setPolygon(newPolygon);
+
+    this->TmpPolygon->setTransformOriginPoint(QPointF(50,50));
+    this->TmpPolygon->setRotation(180);*/
+
+    ///
+    /// rect test
+    ///
+    /*this->TmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
+    this->TmpRect->setPen(QPen(Qt::black, 1));
+    this->Scene->addItem(this->TmpRect.get());
+
+     QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),100, 100);
+    this->TmpRect->setRect(newRect);*/
+
+    ///
+    /// variant test
+    ///
+    /*this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
+    this->Scene->addItem(this->TmpVariantLine.get());
+    this->TmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
+    this->TmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
+    this->TmpVariantLine->setLine(QPointF(0,20),true,VariantLineItem::LineType::Arc);
+
+     this->TmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);*/
+
+    ///
+    /// arc test
+    ///
+    /*QPoint startPoint(10,10);
+    QPoint endPoint(100,100);
+
+    this->TmpArc = std::make_unique<QGraphicsPathItem>();
+    this->TmpArc->setData(0,QPointF(startPoint));
+    this->TmpArc->setPen(QPen(Qt::black, 1));
+    Scene->addItem(this->TmpArc.get());
+
+
+    if(startPoint != this->TmpArc->data(0))
+    {
+        displayOperation("error");
+    }
+
+
+    double radius = QLineF(startPoint, endPoint).length()/2;
+    QPointF centerPoint((startPoint.x()+endPoint.x())/2, (startPoint.y()+endPoint.y())/2);
+
+    QRectF newRect(QPointF(centerPoint.x() - radius, centerPoint.y() - radius),
+                   QPointF(centerPoint.x() + radius, centerPoint.y() + radius));
+
+    QLineF diameterLine(startPoint, endPoint);
+    double angle = diameterLine.angle();
+
+    QPainterPath path1;
+    path1.arcMoveTo(newRect, angle);
+    path1.arcTo(newRect, angle, 180);
+    this->TmpArc->setPath(path1);*/
+
+    ///
+    /// polyline test
+    ///
+    /*QLineF line(QPointF(0,0),QPointF(100,100));
+    this->TmpPolyline = std::make_unique<PolylineItem>(line);
+    this->Scene->addItem(this->TmpPolyline.get());
+
+    QLineF line1(QPointF(0,0),QPointF(-100,100));
+    this->TmpPolyline->setLine(line1,false);
+
+    QLineF line2(QPointF(-100,100),QPointF(100,100));
+    this->TmpPolyline->setLine(line2,true);*/
+}

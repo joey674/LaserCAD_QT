@@ -8,6 +8,7 @@
 #include <vector>
 #include "polylineitem.h"
 #include "variantlineitem.h"
+#include "manager.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -60,7 +61,7 @@ private:
     void displayOperation(QString);
 
     // 编辑组件
-    QGraphicsItem *CurrentEditItem;
+    QGraphicsItem *CurrentEditItem = NULL;
     void editItem(QPointF);
     void editLine(QGraphicsLineItem *);
     void editCircle(QGraphicsEllipseItem *);
@@ -87,17 +88,9 @@ private:
     void drawArc(QPointF,DrawEventType);
     void drawVariantLine(QPointF,DrawEventType);
     void drawRect(QPointF,DrawEventType);
-    void drawSpiral(QPointF,DrawEventType); /*TODO*/
+    void drawSpiral(QPointF,DrawEventType);
     void drawPolygon(QPointF,DrawEventType);
-    void drawEllipse(QPointF,DrawEventType); /*TODO*/
-
-    // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
-    bool IsControlHold = false;
-    bool IsShiftHold = false;
-    bool IsXHold = false;
-    bool IsZHold = false;
-    bool IsYHold = false;
-    bool IsCPressed = false;
+    void drawEllipse(QPointF,DrawEventType);
 
 protected:
     void keyPressEvent(QKeyEvent* ) override;
@@ -110,8 +103,6 @@ private slots:
     void on_graphicsview_mouserightclick_occurred(QPoint);
     void on_graphicsview_mouserelease_occurred(QPoint);
     void on_graphicsview_mousedoubleclick_occurred(QPoint);
-    // void on_graphicsview_keypressed_occurred(int);
-    // void on_graphicsview_keyrelease_occurred(int);
 
     // mainwindow与前端按钮绑定的槽
     void on_drawLineButton_clicked();

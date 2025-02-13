@@ -26,8 +26,22 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 	polylineitem.h polylineitem.cpp
 	variantlineitem.h variantlineitem.cpp
 	manager.h manager.cpp
-
-
+	lib/CavalierContours/src/cavaliercontours.cpp
+	lib/CavalierContours/include/cavc/intrcircle2circle2.hpp
+	lib/CavalierContours/include/cavc/intrlineseg2circle2.hpp
+	lib/CavalierContours/include/cavc/intrlineseg2lineseg2.hpp
+	lib/CavalierContours/include/cavc/mathutils.hpp
+	lib/CavalierContours/include/cavc/plinesegment.hpp
+	lib/CavalierContours/include/cavc/polyline.hpp
+	lib/CavalierContours/include/cavc/polylinecombine.hpp
+	lib/CavalierContours/include/cavc/polylineintersects.hpp
+	lib/CavalierContours/include/cavc/polylineoffset.hpp
+	lib/CavalierContours/include/cavc/polylineoffsetislands.hpp
+	lib/CavalierContours/include/cavc/staticspatialindex.hpp
+	lib/CavalierContours/include/cavc/vector.hpp
+	lib/CavalierContours/include/cavc/vector2.hpp
+	lib/CavalierContours/c_api_include/cavaliercontours.h
+	utils.h utils.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -4,63 +4,112 @@
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
 #include <QPainter>
+#include <QDebug.h>
+#include "utils.h"
 
 class PolylineItem: public QGraphicsItem
 {
 public:
-    PolylineItem(QLineF line)
+    struct Vertex
     {
-        this->TmpLine = std::make_unique<QGraphicsLineItem>(line);
-        this->TmpLine->setPen(this->Pen);
-        this->NodeList.push_back(line.p1());
+        QPointF point;
+        double bulge;
     };
 
-    void setLine(QLineF line, bool isNewLine)
+    PolylineItem()
+    {
+
+    }
+
+    void addVertex(QPointF point, double bulge)
+    {
+        Vertex newVertex = {point,bulge};
+        VertexList.push_back(newVertex);
+
+        animate();
+    }
+
+    void editVertex(int index, QPointF point, double bulge)
+    {
+        VertexList[index] = Vertex{point,bulge};
+
+        animate();
+    }
+
+    void deleteVetex(int index)
+    {
+        VertexList.erase(VertexList.begin() +index);
+
+        animate();
+    }
+
+    void animate()
     {
         prepareGeometryChange();
 
-        if (isNewLine == false)
-        {
-            this->TmpLine->setLine(line);
-        }
-        else
-        {
-            this->NodeList.push_back(line.p1());
-            this->ItemList.push_back(std::move(this->TmpLine));
+        // qDebug() << "animate";
+        if (VertexList.size()<2) return;
 
-            this->TmpLine = std::make_unique<QGraphicsLineItem>(line);
-            this->TmpLine->setPen(this->Pen);
+        ItemList.clear();
+        for (size_t i = 0; i < VertexList.size()-1; ++i)
+        {
+            Vertex& v1 = VertexList[i];
+            Vertex& v2 = VertexList[i+1];
+
+            // qDebug() <<  v1.point << v1.bulge <<  v2.point << v2.bulge ;
+
+            if (std::abs(v2.bulge) < 1e-6)
+            {
+                auto lineItem = std::make_unique<QGraphicsLineItem>(
+                    QLineF(v1.point, v2.point)
+                    );
+                lineItem->setPen(Pen);
+                ItemList.push_back(std::move(lineItem));
+            }
+            else
+            {
+                QPainterPath arcPath = createArcPath(v1.point, v2.point, v2.bulge);
+                auto pathItem = std::make_unique<QGraphicsPathItem>(arcPath);
+                pathItem->setPen(Pen);
+                ItemList.push_back(std::move(pathItem));
+            }
         }
 
         update();
     }
 
-    void setPolylineFlags(GraphicsItemFlags flags)
+    int getSize()
     {
-        if (this->ItemList.empty())
-        {
-             this->TmpLine->setFlags(flags);
-            return;
-        }
-
-        for (auto& item: this->ItemList)
-        {
-            item->setFlags(flags);
-        }
+        return VertexList.size();
     }
 
-    QLineF tmpline()
+    QPointF getPoint(int index)
     {
-        return this->TmpLine->line();
+        if (index >= VertexList.size()) return QPointF(0,0);
+        return VertexList[index].point;
+    }
+
+    QPointF getCenter()
+    {
+        if (this->VertexList.empty())
+            return QPointF(0,0);
+
+        QPointF centerPoint = this->VertexList[0].point;
+        for (auto& item: this->VertexList)
+        {
+            centerPoint = QPointF(
+                (centerPoint.x()+item.point.x())/2,
+                (centerPoint.y()+item.point.y())/2);
+        }
+        return centerPoint;
     }
 
     QRectF boundingRect() const override
     {
-        QRectF newRect = this->TmpLine->boundingRect();
         if (this->ItemList.empty())
-            return newRect;
+            return QRectF();
 
-
+        QRectF newRect = ItemList[0]->boundingRect();
         for (auto& item: this->ItemList)
         {
             qreal minX = std::min(newRect.left(), item->boundingRect().left());
@@ -82,17 +131,13 @@ public:
         {
             item->paint(painter, option, widget);
         }
-        this->TmpLine->paint(painter, option, widget);
     }
 
 private:
-    QGraphicsScene *Scene;
-    std::unique_ptr<QGraphicsLineItem> TmpLine;
     QPen Pen = QPen(Qt::black, 1);
 
-    std::vector<QPointF> NodeList;
+    std::vector<Vertex> VertexList;
     std::vector<std::unique_ptr<QGraphicsItem>> ItemList;
-    std::vector<std::unique_ptr<QGraphicsItem>> FilledItemList;
 };
 
 
