@@ -8,12 +8,12 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton) {
         QPoint point = event->pos();
-        emit mouseleftclick_event(point);
+        emit mouseleftpress_event(point);
     } else if (event->button() == Qt::RightButton) {
         QPoint point = event->pos();
-        emit mouserightclick_event(point);
+        emit mouserightpress_event(point);
     }
-    QGraphicsView::mousePressEvent(event);
+        QGraphicsView::mousePressEvent(event);
 }
 
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
@@ -26,13 +26,12 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 void GraphicsView::mouseReleaseEvent(QMouseEvent * event)
 {
-    QPoint point = event->pos();
-    emit mouserelease_event(point);
-
-    if (event->button() == Qt::LeftButton)
-    {
-    } else if (event->button() == Qt::RightButton)
-    {
+    if (event->button() == Qt::LeftButton) {
+        QPoint point = event->pos();
+        emit mouseleftrelease_event(point);
+    } else if (event->button() == Qt::RightButton) {
+        QPoint point = event->pos();
+        emit mouserightrelease_event(point);
     }
 
     QGraphicsView::mouseReleaseEvent(event);

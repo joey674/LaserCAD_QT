@@ -33,6 +33,7 @@ QPointF calculateArcCenter(QPointF p1, QPointF p2, double bulge, double &radius)
 
 QPainterPath createArcPath(QPointF p1, QPointF p2, double bulge)
 {
+    // qDebug() << "create arc path";
     double radius;
     QPointF center = calculateArcCenter(p1, p2, bulge, radius);
 
@@ -42,7 +43,12 @@ QPainterPath createArcPath(QPointF p1, QPointF p2, double bulge)
 
     // 计算圆弧角度
     double sweepAngle = atan(std::abs(bulge)) * 4 * 180 / M_PI; // 转换为角度
-    if (bulge < 0) sweepAngle = -sweepAngle; // 负 bulge 逆时针，正 bulge 顺时针
+    if (bulge > 0) sweepAngle = -sweepAngle; // 负 bulge 逆时针，正 bulge 顺时针
+
+    // qDebug() << "create arc path: center:" << center;
+    // qDebug() << "create arc path: radius:" << radius;
+    // qDebug() << "create arc path: startAngle:" << startAngle;
+    // qDebug() << "create arc path: sweepAngle:" << sweepAngle;
 
     // 创建圆弧路径
     QPainterPath path;

@@ -56,6 +56,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="createOffsetButton">
+        <property name="text">
+         <string>createOffset</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
@@ -94,7 +101,7 @@
       <item>
        <widget class="QToolButton" name="drawPolylineButton">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制多段线&lt;/p&gt;&lt;p&gt;长按shift切换绘制直线/圆弧；&lt;/p&gt;&lt;p&gt;按下capslock切换圆弧方向；&lt;/p&gt;&lt;p&gt;长按x/y锁定绘制方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制多段线&lt;/p&gt;&lt;p&gt;长按ctrl切换绘制直线/圆弧；&lt;/p&gt;&lt;p&gt;按下capslock切换圆弧方向；&lt;/p&gt;&lt;p&gt;长按x/y锁定绘制方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>drawPolyline</string>

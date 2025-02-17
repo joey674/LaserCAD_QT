@@ -31,8 +31,10 @@ public:
         Polygon
     };
     enum DrawEventType {
-        LeftClick,
-        RightClick,
+        LeftPress,
+        RightPress,
+        LeftRelease,
+        RightRelease,
         MouseMove,
     };
     enum LaserProperty {
@@ -62,12 +64,14 @@ private:
 
     // 编辑组件
     QGraphicsItem *CurrentEditItem = NULL;
-    void editItem(QPointF);
-    void editLine(QGraphicsLineItem *);
-    void editCircle(QGraphicsEllipseItem *);
+    int CurrentEditPolylineVertexIndex = -1;
+    void editItem(QPointF,DrawEventType);
+    void editLine(QGraphicsLineItem *, DrawEventType);
+    void editCircle(QGraphicsEllipseItem *, DrawEventType);
+    void editPolyline(QPointF, PolylineItem *, DrawEventType);
     void editArc(); /*TODO*/
     void editSpiral(); /*TODO*/
-    void editVariantLine(); /*TODO*/
+
 
     // 绘制工具
     DrawToolType CurrentDrawTool = None;
@@ -99,8 +103,10 @@ protected:
 private slots:
     // 接收graphicsview信号的槽
     void on_graphicsview_mousemove_occurred(QPoint);
-    void on_graphicsview_mouseleftclick_occurred(QPoint);
-    void on_graphicsview_mouserightclick_occurred(QPoint);
+    void on_graphicsview_mouseleftpress_occurred(QPoint);
+    void on_graphicsview_mouserightpress_occurred(QPoint);
+    void on_graphicsview_mouseleftrelease_occurred(QPoint);
+    void on_graphicsview_mouserightrelease_occurred(QPoint);
     void on_graphicsview_mouserelease_occurred(QPoint);
     void on_graphicsview_mousedoubleclick_occurred(QPoint);
 
@@ -120,6 +126,7 @@ private slots:
 
     void on_rotateButton_clicked();
     void on_centerButton_clicked();
+    void on_createOffsetButton_clicked();
 };
 #endif // MAINWINDOW_H
 

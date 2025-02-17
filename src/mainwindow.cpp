@@ -11,7 +11,8 @@
 #include <QString>
 #include <QtMath>
 #include "header/CavalierContours/polyline.hpp"
-#include "header/CavalierContours/polylineoffset.hpp"
+// #include "header/CavalierContours/polylineoffset.hpp"
+// #include "utils.h";
 
 ///
 /// \brief MainWindow::MainWindow
@@ -84,12 +85,14 @@ void MainWindow::initGraphicsView()
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
     connect(ui->graphicsView,SIGNAL(mousemove_event(QPoint)),
             this,SLOT(on_graphicsview_mousemove_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseleftclick_event(QPoint)),
-            this,SLOT(on_graphicsview_mouseleftclick_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouserightclick_event(QPoint)),
-            this,SLOT(on_graphicsview_mouserightclick_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouserelease_event(QPoint)),
-            this,SLOT(on_graphicsview_mouserelease_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseleftpress_event(QPoint)),
+            this,SLOT(on_graphicsview_mouseleftpress_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouserightpress_event(QPoint)),
+            this,SLOT(on_graphicsview_mouserightpress_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseleftrelease_event(QPoint)),
+            this,SLOT(on_graphicsview_mouseleftrelease_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouserightrelease_event(QPoint)),
+            this,SLOT(on_graphicsview_mouserightrelease_occurred(QPoint)));
     connect(ui->graphicsView,SIGNAL(mousedoubleclick_event(QPoint)),
             this,SLOT(on_graphicsview_mousedoubleclick_occurred(QPoint)));
 }
@@ -132,159 +135,212 @@ void MainWindow::displayOperation(QString text)
 /// \brief MainWindow::editItem
 /// \param pointCoordScene
 ///
-void MainWindow::editItem(QPointF pointCoordScene)
+void MainWindow::editItem(QPointF pointCoordScene,DrawEventType event)
 {
-    // 初始化一下 如果没有选中对象时, 设置当前对象为空 且属性栏清空
-    this->CurrentEditItem = NULL;
-    ui->propertyTableWidget->clearContents();
-    ui->propertyTableWidget->setRowCount(0);
+    if (this->Scene->selectedItems().empty())
+        return;
 
-    if (! this->Scene->selectedItems().empty())
+    this->CurrentEditItem = this->Scene->selectedItems()[0];
+    switch (this->CurrentEditItem->type()) {
+        case QGraphicsLineItem::Type:{
+            QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
+            this->editLine(lineItem,event);
+            break;
+        }
+        case QGraphicsEllipseItem::Type:
+        {
+            QGraphicsEllipseItem *CircleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
+            this->editCircle(CircleItem,event);
+            break;
+        }
+        case PolylineItem::Type:
+        {
+            PolylineItem *polylineItem = static_cast<PolylineItem*>(this->CurrentEditItem);
+            this->editPolyline(pointCoordScene,polylineItem,event);
+            break;
+        }
+        default:
+        {
+            displayOperation("undefine object");
+        }
+    };
+}
+
+void MainWindow::editLine(QGraphicsLineItem *lineItem,DrawEventType event)
+{
+    if (event == DrawEventType::LeftRelease)
     {
-        this->CurrentEditItem = this->Scene->selectedItems()[0];
-        switch (this->CurrentEditItem->type()) {
-            case QGraphicsLineItem::Type:{
-                QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
-                this->editLine(lineItem);
-                break;
-            }
-            case QGraphicsEllipseItem::Type:
-            {
-                QGraphicsEllipseItem *CircleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
-                this->editCircle(CircleItem);
-                break;
-            }
-            default:
-            {
-                displayOperation("undefine object");
-            }
-        };
+        // 先初始化
+        ui->propertyTableWidget->clearContents();
+        ui->propertyTableWidget->setRowCount(0);
+
+        // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
+        QLineF line = lineItem->line();
+        QPointF offset = lineItem->scenePos();
+        QPointF startPoint = line.p1() + offset;
+        QPointF endPoint = line.p2() + offset;
+        QPointF centerPoint = (startPoint + endPoint)/2;
+
+        // 把对象的属性映射到属性修改面板
+        // 先blocksignal,不然会频繁触发修改属性table的回调
+        ui->propertyTableWidget->blockSignals(true);
+
+        // 映射属性
+        int row = ui->propertyTableWidget->rowCount();
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *startPointXName = new QTableWidgetItem("startPoint.x");
+        QTableWidgetItem *startPointXValue = new QTableWidgetItem(QString::number(startPoint.x()));
+        startPointXName->setFlags(startPointXName->flags() & ~Qt::ItemIsEditable);
+        startPointXValue->setFlags(startPointXValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0, startPointXName);
+        ui->propertyTableWidget->setItem(row, 1, startPointXValue);
+
+        row = ui->propertyTableWidget->rowCount();
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *startPointYName = new QTableWidgetItem("startPoint.y");
+        QTableWidgetItem *startPointYValue = new QTableWidgetItem(QString::number(startPoint.y()));
+        startPointYName->setFlags(startPointYName->flags() & ~Qt::ItemIsEditable);
+        startPointYValue->setFlags(startPointYValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0, startPointYName);
+        ui->propertyTableWidget->setItem(row, 1, startPointYValue);
+
+        row = ui->propertyTableWidget->rowCount();
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *endPointXName = new QTableWidgetItem("endPoint.x");
+        QTableWidgetItem *endPointXValue = new QTableWidgetItem(QString::number(endPoint.x()));
+        endPointXName->setFlags(endPointXName->flags() & ~Qt::ItemIsEditable);
+        endPointXValue->setFlags(endPointXValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0, endPointXName);
+        ui->propertyTableWidget->setItem(row, 1, endPointXValue);
+
+        row = ui->propertyTableWidget->rowCount();
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *endPointYName = new QTableWidgetItem("endPoint.y");
+        QTableWidgetItem *endPointYValue = new QTableWidgetItem(QString::number(endPoint.y()));
+        endPointYName->setFlags(endPointYName->flags() & ~Qt::ItemIsEditable);
+        endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0, endPointYName);
+        ui->propertyTableWidget->setItem(row, 1, endPointYValue);
+
+        ui->propertyTableWidget->blockSignals(false);
     }
 }
 
-void MainWindow::editLine(QGraphicsLineItem *lineItem)
+void MainWindow::editCircle(QGraphicsEllipseItem * circleItem, DrawEventType event)
 {
-    // 先显示对象信息到状态栏
-    // 起始点和结束点是属性 不会随着拖拽改变;只用scenePos会在拖拽时记录与起始点的偏移量;
-    QLineF line = lineItem->line();
-    QPointF offset = lineItem->scenePos();
-    QPointF startPoint = line.p1() + offset;
-    QPointF endPoint = line.p2() + offset;
-    QPointF centerPoint = (startPoint + endPoint)/2;
+    // // 先显示对象信息到状态栏
+    // QPointF offset = circleItem->scenePos();
+    // QPointF centerPoint = QPointF(
+    //     circleItem->rect().center().x() + offset.x(),
+    //     circleItem->rect().center().y() + offset.y()
+    //     );
 
-    QString msg = QString("click on line: "
-                          "centerPoint:(%1, %2), "
-                          "startPoint:(%3, %4), "
-                          "endPoint:(%5, %6)")
-                      .arg(qRound(centerPoint.x()))
-                      .arg(qRound(centerPoint.y()))
-                      .arg(qRound(startPoint.x()))
-                      .arg(qRound(startPoint.y()))
-                      .arg(qRound(endPoint.x()))
-                      .arg(qRound(endPoint.y()));
-    displayOperation(msg);
+    // QString msg = QString("click on circle: "
+    //                       "centerPoint:(%1, %2), "
+    //                       "radius:%3")
+    //                   .arg(qRound(centerPoint.x()))
+    //                   .arg(qRound(centerPoint.y()))
+    //                   .arg(qRound(circleItem->rect().width()));
+    // displayOperation(msg);
 
 
-    // 把对象的属性映射到属性修改面板
-    // 先blocksignal,不然会频繁触发修改属性table的回调
-    ui->propertyTableWidget->blockSignals(true);
+    // // 把对象的属性映射到属性修改面板
+    // // 先blocksignal,不然会频繁触发修改属性table的回调
+    // ui->propertyTableWidget->blockSignals(true);
 
-    // 映射属性
-    int row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *startPointXName = new QTableWidgetItem("startPoint.x");
-    QTableWidgetItem *startPointXValue = new QTableWidgetItem(QString::number(startPoint.x()));
-    startPointXName->setFlags(startPointXName->flags() & ~Qt::ItemIsEditable);
-    startPointXValue->setFlags(startPointXValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, startPointXName);
-    ui->propertyTableWidget->setItem(row, 1, startPointXValue);
+    // // 映射属性
+    // int row = ui->propertyTableWidget->rowCount();
+    // ui->propertyTableWidget->insertRow(row);
+    // QTableWidgetItem *centerPointXName = new QTableWidgetItem("centerPoint.x");
+    // QTableWidgetItem *centerPointXValue = new QTableWidgetItem(QString::number(centerPoint.x()));
+    // centerPointXName->setFlags(centerPointXName->flags() & ~Qt::ItemIsEditable);
+    // centerPointXValue->setFlags(centerPointXValue->flags() | Qt::ItemIsEditable);
+    // ui->propertyTableWidget->setItem(row, 0, centerPointXName);
+    // ui->propertyTableWidget->setItem(row, 1, centerPointXValue);
 
-    row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *startPointYName = new QTableWidgetItem("startPoint.y");
-    QTableWidgetItem *startPointYValue = new QTableWidgetItem(QString::number(startPoint.y()));
-    startPointYName->setFlags(startPointYName->flags() & ~Qt::ItemIsEditable);
-    startPointYValue->setFlags(startPointYValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, startPointYName);
-    ui->propertyTableWidget->setItem(row, 1, startPointYValue);
+    // row = ui->propertyTableWidget->rowCount();
+    // ui->propertyTableWidget->insertRow(row);
+    // QTableWidgetItem *centerPointYName = new QTableWidgetItem("centerPoint.y");
+    // QTableWidgetItem *centerPointYValue = new QTableWidgetItem(QString::number(centerPoint.y()));
+    // centerPointYName->setFlags(centerPointYName->flags() & ~Qt::ItemIsEditable);
+    // centerPointYValue->setFlags(centerPointYValue->flags() | Qt::ItemIsEditable);
+    // ui->propertyTableWidget->setItem(row, 0, centerPointYName);
+    // ui->propertyTableWidget->setItem(row, 1, centerPointYValue);
 
-    row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *endPointXName = new QTableWidgetItem("endPoint.x");
-    QTableWidgetItem *endPointXValue = new QTableWidgetItem(QString::number(endPoint.x()));
-    endPointXName->setFlags(endPointXName->flags() & ~Qt::ItemIsEditable);
-    endPointXValue->setFlags(endPointXValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, endPointXName);
-    ui->propertyTableWidget->setItem(row, 1, endPointXValue);
+    // row = ui->propertyTableWidget->rowCount();
+    // ui->propertyTableWidget->insertRow(row);
+    // QTableWidgetItem *radiusName = new QTableWidgetItem("radius");
+    // QTableWidgetItem *radiusValue = new QTableWidgetItem(QString::number(circleItem->rect().width()));
+    // radiusName->setFlags(radiusName->flags() & ~Qt::ItemIsEditable);
+    // radiusValue->setFlags(radiusValue->flags() | Qt::ItemIsEditable);
+    // ui->propertyTableWidget->setItem(row, 0, radiusName);
+    // ui->propertyTableWidget->setItem(row, 1, radiusValue);
 
-    row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *endPointYName = new QTableWidgetItem("endPoint.y");
-    QTableWidgetItem *endPointYValue = new QTableWidgetItem(QString::number(endPoint.y()));
-    endPointYName->setFlags(endPointYName->flags() & ~Qt::ItemIsEditable);
-    endPointYValue->setFlags(endPointYValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, endPointYName);
-    ui->propertyTableWidget->setItem(row, 1, endPointYValue);
-
-    ui->propertyTableWidget->blockSignals(false);
+    // ui->propertyTableWidget->blockSignals(false);
 }
 
-void MainWindow::editCircle(QGraphicsEllipseItem * circleItem)
+void MainWindow::editPolyline(QPointF pointCoordScene, PolylineItem* polylineItem,DrawEventType event)
 {
-    // 先显示对象信息到状态栏
-    QPointF offset = circleItem->scenePos();
-    QPointF centerPoint = QPointF(
-        circleItem->rect().center().x() + offset.x(),
-        circleItem->rect().center().y() + offset.y()
-        );
+    qDebug() << "edit Polyline" << this->CurrentEditPolylineVertexIndex << event;
+    if (!polylineItem) return;
 
-    QString msg = QString("click on circle: "
-                          "centerPoint:(%1, %2), "
-                          "radius:%3")
-                      .arg(qRound(centerPoint.x()))
-                      .arg(qRound(centerPoint.y()))
-                      .arg(qRound(circleItem->rect().width()));
-    displayOperation(msg);
+    // 图形上直接编辑操作点；
+    if (this->CurrentEditPolylineVertexIndex == -1 && event == DrawEventType::LeftRelease)
+    {
+        double minDistance = 100;
+
+        for (int i = 0; i < polylineItem->getSize(); ++i) {
+            double distance = QLineF(pointCoordScene, polylineItem->getVertexPos(i)).length();
+            qDebug() << "distance ?<10: " << distance ;
+            if (distance <= 10.0 && distance < minDistance) {
+                minDistance = distance;
+                this->CurrentEditPolylineVertexIndex = i;
+                qDebug() << "setindex to" << this->CurrentEditPolylineVertexIndex;
+            }
+        }
+    }
+    else if (this->CurrentEditPolylineVertexIndex != -1 && event == DrawEventType::MouseMove)
+    {
+        qDebug() << "2";
+        double bulge = polylineItem->getVertex(this->CurrentEditPolylineVertexIndex).bulge;
+        polylineItem->editVertex(this->CurrentEditPolylineVertexIndex,pointCoordScene ,bulge);
+        // 注意这里输入的是绝对坐标 所以要减去相对坐标！
+    }
+    else if (this->CurrentEditPolylineVertexIndex != -1 && event == DrawEventType::LeftRelease)
+    {
+            qDebug() << "3";
+        this->CurrentEditPolylineVertexIndex = -1;
+        this->CurrentEditItem =NULL;
+    }
+    else
+    {
+        displayOperation("unknow edit polyline event");
+    }
 
 
-    // 把对象的属性映射到属性修改面板
-    // 先blocksignal,不然会频繁触发修改属性table的回调
-    ui->propertyTableWidget->blockSignals(true);
+    // 在左侧区域操作参数
+    if (event == DrawEventType::LeftRelease)
+    {
+        // 先初始化属性栏
+        ui->propertyTableWidget->clearContents();
+        ui->propertyTableWidget->setRowCount(0);
 
-    // 映射属性
-    int row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *centerPointXName = new QTableWidgetItem("centerPoint.x");
-    QTableWidgetItem *centerPointXValue = new QTableWidgetItem(QString::number(centerPoint.x()));
-    centerPointXName->setFlags(centerPointXName->flags() & ~Qt::ItemIsEditable);
-    centerPointXValue->setFlags(centerPointXValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, centerPointXName);
-    ui->propertyTableWidget->setItem(row, 1, centerPointXValue);
+        // 把对象的属性映射到属性修改面板
+        // 先blocksignal,不然会频繁触发修改属性table的回调
+        ui->propertyTableWidget->blockSignals(true);
 
-    row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *centerPointYName = new QTableWidgetItem("centerPoint.y");
-    QTableWidgetItem *centerPointYValue = new QTableWidgetItem(QString::number(centerPoint.y()));
-    centerPointYName->setFlags(centerPointYName->flags() & ~Qt::ItemIsEditable);
-    centerPointYValue->setFlags(centerPointYValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, centerPointYName);
-    ui->propertyTableWidget->setItem(row, 1, centerPointYValue);
+        // 映射属性
+        int row = ui->propertyTableWidget->rowCount();
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *offsetName = new QTableWidgetItem("offset");
+        QTableWidgetItem *offsetValue = new QTableWidgetItem(polylineItem->getOffset());
+        offsetName->setFlags(offsetName->flags() & ~Qt::ItemIsEditable);
+        offsetValue->setFlags(offsetValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0,offsetName);
+        ui->propertyTableWidget->setItem(row, 1, offsetValue);
 
-    row = ui->propertyTableWidget->rowCount();
-    ui->propertyTableWidget->insertRow(row);
-    QTableWidgetItem *radiusName = new QTableWidgetItem("radius");
-    QTableWidgetItem *radiusValue = new QTableWidgetItem(QString::number(circleItem->rect().width()));
-    radiusName->setFlags(radiusName->flags() & ~Qt::ItemIsEditable);
-    radiusValue->setFlags(radiusValue->flags() | Qt::ItemIsEditable);
-    ui->propertyTableWidget->setItem(row, 0, radiusName);
-    ui->propertyTableWidget->setItem(row, 1, radiusValue);
-
-    ui->propertyTableWidget->blockSignals(false);
-}
-
-void MainWindow::editVariantLine()
-{
-
+        ui->propertyTableWidget->blockSignals(false);
+    }
 }
 
 ///
@@ -309,7 +365,7 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpLine && event == DrawEventType::LeftClick)
+    if (!this->TmpLine && event == DrawEventType::LeftRelease)
     {
         this->TmpLine = std::make_unique<QGraphicsLineItem>(QLineF(pointCoordScene, pointCoordScene));
         this->TmpLine->setPen(QPen(Qt::black, 1));
@@ -327,7 +383,7 @@ void MainWindow::drawLine(QPointF pointCoordScene,DrawEventType event)
         this->TmpLine->setLine(newLine);
         this->TmpLine->setTransformOriginPoint(newLine.center());
     }
-    else if (this->TmpLine && event == DrawEventType::LeftClick) {
+    else if (this->TmpLine && event == DrawEventType::LeftRelease) {
         this->TmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpLine));
     }
@@ -337,7 +393,7 @@ void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpCircle && event == DrawEventType::LeftClick)
+    if (!this->TmpCircle && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordScene.x(), pointCoordScene.y(), 0, 0);
         this->TmpCircle = std::make_unique<QGraphicsEllipseItem>(initialRect);
@@ -356,7 +412,7 @@ void MainWindow::drawCircle(QPointF pointCoordScene,DrawEventType event)
         this->TmpCircle->setRect(newRect);
         this->TmpCircle->setTransformOriginPoint(center);
     }
-    else if (this->TmpCircle && event == DrawEventType::LeftClick)
+    else if (this->TmpCircle && event == DrawEventType::LeftRelease)
     {
         this->TmpCircle->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Container.push_back(std::move(this->TmpCircle));
@@ -367,7 +423,7 @@ void MainWindow::drawPolyline(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpPolyline && event == DrawEventType::LeftClick)
+    if (!this->TmpPolyline && event == DrawEventType::LeftRelease)
     {
         this->TmpPolyline = std::make_unique<PolylineItem>();
         this->Scene->addItem(this->TmpPolyline.get());
@@ -380,7 +436,7 @@ void MainWindow::drawPolyline(QPointF pointCoordScene, DrawEventType event)
         int index = this->TmpPolyline->getSize()-1;
         if (!Manager::getIns().IsControlHold)
         {
-            QPointF lastPoint = this->TmpPolyline->getPoint(index - 1);
+            QPointF lastPoint = this->TmpPolyline->getVertex(index - 1).point;
             if (Manager::getIns().IsXHold)
                 this->TmpPolyline->editVertex(index,QPointF(pointCoordScene.x(),lastPoint.y()),0);
             else if (Manager::getIns().IsYHold)
@@ -396,11 +452,11 @@ void MainWindow::drawPolyline(QPointF pointCoordScene, DrawEventType event)
                  this->TmpPolyline->editVertex(index, pointCoordScene,-1);
         }
     }
-    else if (this->TmpPolyline && event == DrawEventType::LeftClick)
+    else if (this->TmpPolyline && event == DrawEventType::LeftRelease)
     {
         this->TmpPolyline->addVertex(pointCoordScene,0);
     }
-    else if (this->TmpPolyline && event == DrawEventType::RightClick)
+    else if (this->TmpPolyline && event == DrawEventType::RightRelease)
     {
         this->TmpPolyline->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpPolyline));
@@ -411,7 +467,7 @@ void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpArc && event == DrawEventType::LeftClick)
+    if (!this->TmpArc && event == DrawEventType::LeftRelease)
     {
         this->TmpArc = std::make_unique<QGraphicsPathItem>();
         this->TmpArc->setData(0,pointCoordScene);
@@ -437,7 +493,7 @@ void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
         path.arcTo(newRect, angle, 180);
         this->TmpArc->setPath(path);
     }
-    else if (this->TmpArc && event == DrawEventType::LeftClick)
+    else if (this->TmpArc && event == DrawEventType::LeftRelease)
     {
         this->TmpArc->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Container.push_back(std::move(this->TmpArc));
@@ -447,7 +503,7 @@ void MainWindow::drawArc(QPointF pointCoordScene, DrawEventType event)
 void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
-    if (!this->TmpVariantLine && event == DrawEventType::LeftClick)
+    if (!this->TmpVariantLine && event == DrawEventType::LeftRelease)
     {
         this->TmpVariantLine = std::make_unique<VariantLineItem>(QPointF(pointCoordScene));
         this->Scene->addItem(this->TmpVariantLine.get());
@@ -461,14 +517,14 @@ void MainWindow::drawVariantLine(QPointF pointCoordScene, DrawEventType event)
         else
             this->TmpVariantLine->setLine(pointCoordScene,false,VariantLineItem::Arc);
     }
-    else if (this->TmpVariantLine && event == DrawEventType::LeftClick)
+    else if (this->TmpVariantLine && event == DrawEventType::LeftRelease)
     {
         if (!Manager::getIns().IsControlHold)
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Line);
         else
             this->TmpVariantLine->setLine(pointCoordScene,true,VariantLineItem::Arc);
     }
-    else if (this->TmpVariantLine && event == DrawEventType::RightClick)
+    else if (this->TmpVariantLine && event == DrawEventType::RightRelease)
     {
         this->TmpVariantLine->setTransformOriginPoint(this->TmpVariantLine->getCenter());
         this->TmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
@@ -480,7 +536,7 @@ void MainWindow::drawRect(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpRect && event == DrawEventType::LeftClick)
+    if (!this->TmpRect && event == DrawEventType::LeftRelease)
     {
         this->TmpRect = std::make_unique<QGraphicsRectItem>(pointCoordScene.x(), pointCoordScene.y(),0,0);
         this->TmpRect->setPen(QPen(Qt::black, 1));
@@ -493,7 +549,7 @@ void MainWindow::drawRect(QPointF pointCoordScene, DrawEventType event)
         QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),width,height);
         this->TmpRect->setRect(newRect);
     }
-    else if (this->TmpRect && event == DrawEventType::LeftClick) {
+    else if (this->TmpRect && event == DrawEventType::LeftRelease) {
         this->TmpRect->setTransformOriginPoint(this->TmpRect->rect().center());
         this->TmpRect->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpRect));
@@ -508,7 +564,7 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
         spacing：每圈的间距
         turns：螺旋的圈数*/
 
-    if (!this->TmpSpiral && event == DrawEventType::LeftClick)
+    if (!this->TmpSpiral && event == DrawEventType::LeftRelease)
     {
         QPointF centerPoint  = pointCoordScene;
         this->TmpSpiral =  std::make_unique<QGraphicsPathItem>();
@@ -546,7 +602,7 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
 
         this->TmpSpiral->setPath(path);
     }
-    else if (this->TmpSpiral && event == DrawEventType::LeftClick)
+    else if (this->TmpSpiral && event == DrawEventType::LeftRelease)
     {
         this->TmpSpiral->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Container.push_back(std::move(this->TmpSpiral));
@@ -557,7 +613,7 @@ void MainWindow::drawPolygon(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpPolygon && event == DrawEventType::LeftClick)
+    if (!this->TmpPolygon && event == DrawEventType::LeftRelease)
     {
         this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
         this->TmpPolygon->setData(0,pointCoordScene);
@@ -582,7 +638,7 @@ void MainWindow::drawPolygon(QPointF pointCoordScene, DrawEventType event)
         this->TmpPolygon->setPolygon(newPolygon);
         this->TmpPolygon->setTransformOriginPoint(centerPoint);
     }
-    else if (this->TmpPolygon && event == DrawEventType::LeftClick) {
+    else if (this->TmpPolygon && event == DrawEventType::LeftRelease) {
         this->TmpPolygon->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         this->Container.push_back(std::move(this->TmpPolygon));
     }
@@ -592,7 +648,7 @@ void MainWindow::drawEllipse(QPointF pointCoordScene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
-    if (!this->TmpEllipse && event == DrawEventType::LeftClick)
+    if (!this->TmpEllipse && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordScene.x(), pointCoordScene.y(), 0, 0);
         this->TmpEllipse = std::make_unique<QGraphicsEllipseItem>(initialRect);
@@ -636,7 +692,7 @@ void MainWindow::drawEllipse(QPointF pointCoordScene, DrawEventType event)
         }
 
     }
-    else if (this->TmpEllipse && event == DrawEventType::LeftClick)
+    else if (this->TmpEllipse && event == DrawEventType::LeftRelease)
     {
         if (!this->TmpEllipse->data(0).isValid()) {
             this->TmpEllipse->setData(0,pointCoordScene);
@@ -653,7 +709,8 @@ void MainWindow::drawEllipse(QPointF pointCoordScene, DrawEventType event)
 ///
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
-    switch(event->key()) {
+    switch(event->key())
+    {
     case Qt::Key_Shift:
     {
         Manager::getIns().IsShiftHold = true;
@@ -784,7 +841,7 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     switch (this->CurrentDrawTool) {
         case DrawToolType::None:
         {
-            // this->editItem(pointCoordScene);
+            this->editItem(pointCoordScene,DrawEventType::MouseMove);
             break;
         }
         case DrawToolType::Line:
@@ -838,101 +895,116 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     }
 }
 
-void MainWindow::on_graphicsview_mouseleftclick_occurred(QPoint pointCoordView)
+void MainWindow::on_graphicsview_mouseleftpress_occurred(QPoint pointCoordView)
 {
-    displayOperation("mouse left click");
+}
+
+void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
+{
+
+}
+
+void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView)
+{
+    displayOperation("mouse left release");
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
-        case DrawToolType::None:
+    case DrawToolType::None:
     {
-            this->editItem(pointCoordScene);
-            break;
-        }
-        case DrawToolType::Line:
-        {
-            this->drawLine(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Circle:
-        {
-            this->drawCircle(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Polyline:
-        {
-            this->drawPolyline(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Arc:
-        {
-            this->drawArc(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Spiral:
-        {
-            this->drawSpiral(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::VariantLine:
-        {
-            this->drawVariantLine(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Rect:
-        {
-            this->drawRect(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Polygon:
-        {
-            this->drawPolygon(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
-        case DrawToolType::Ellipse:
-        {
-            this->drawEllipse(pointCoordScene,DrawEventType::LeftClick);
-            break;
-        }
+        this->editItem(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Line:
+    {
+        this->drawLine(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Circle:
+    {
+        this->drawCircle(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Polyline:
+    {
+        this->drawPolyline(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Arc:
+    {
+        this->drawArc(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Spiral:
+    {
+        this->drawSpiral(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::VariantLine:
+    {
+        this->drawVariantLine(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Rect:
+    {
+        this->drawRect(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Polygon:
+    {
+        this->drawPolygon(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+    case DrawToolType::Ellipse:
+    {
+        this->drawEllipse(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
 
-        default:
-        {}
+    default:
+    {}
     }
 }
 
-void MainWindow::on_graphicsview_mouserightclick_occurred(QPoint pointCoordView)
+void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordView)
 {
-    displayOperation("mouse right click");
+    displayOperation("mouse right release");
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
-        case DrawToolType::Polyline:
-        {
-            this->drawPolyline(pointCoordScene,DrawEventType::RightClick);
-            break;
-        }
-        case DrawToolType::VariantLine:
-        {
-            this->drawVariantLine(pointCoordScene,DrawEventType::RightClick);
-            break;
-        }
-        case DrawToolType::Ellipse:
-        {
-            this->drawEllipse(pointCoordScene,DrawEventType::RightClick);
-            break;
-        }
-        default:
-        {}
+    case DrawToolType::None:
+    {
+        this->editItem(pointCoordScene,DrawEventType::MouseMove);
+        break;
     }
+    case DrawToolType::Polyline:
+    {
+        this->drawPolyline(pointCoordScene,DrawEventType::RightRelease);
+        break;
+    }
+    case DrawToolType::VariantLine:
+    {
+        this->drawVariantLine(pointCoordScene,DrawEventType::RightRelease);
+        break;
+    }
+    case DrawToolType::Ellipse:
+    {
+        this->drawEllipse(pointCoordScene,DrawEventType::RightRelease);
+        break;
+    }
+    default:
+    {}
+    }
+
 }
 
 void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
 {
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
-        case DrawToolType::None:
-        {
-            this->editItem(pointCoordScene);
-            break;
-        }
+        // case DrawToolType::None:
+        // {
+        //     this->editItem(pointCoordScene,DrawEventType::);
+        //     break;
+        // }
         default:
         {}
     }
@@ -968,6 +1040,7 @@ void MainWindow::on_resetButton_clicked()
     ui->propertyTableWidget->clearContents();
     ui->propertyTableWidget->setRowCount(0);
 
+    this->CurrentEditItem = NULL;
     this->setAllItemsMovable(true);
 }
 
@@ -1109,6 +1182,41 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
             }
             break;
         }
+        case PolylineItem::Type:
+        {
+
+            double offset = 0, offsetNum = 0;
+            int rowCount = ui->propertyTableWidget->rowCount();
+
+            for (int r = 0; r < rowCount; ++r) {
+                QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
+                QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                if (!nameItem || !valueItem)
+                    continue;
+
+                QString propertyName  = nameItem->text();
+                QString propertyValue = valueItem->text();
+
+                bool transformIsOk = false;
+                double value = propertyValue.toDouble(&transformIsOk);
+                if (!transformIsOk)
+                {
+                    displayOperation("error, input right form");
+                    continue;
+                }
+
+                if (propertyName == "offset")
+                    offset = value;
+                else if (propertyName == "offsetNum")
+                    offsetNum = value;
+
+                // update
+                PolylineItem *polyline = static_cast<PolylineItem*>(this->CurrentEditItem);
+                polyline->createParallelOffset(offset,offsetNum);
+            }
+            break;
+        }
+
         default:
         {
             displayOperation("00");
@@ -1133,86 +1241,72 @@ void MainWindow::on_centerButton_clicked()
 
 }
 
+void MainWindow::on_createOffsetButton_clicked()
+{
+    if (!this->CurrentEditItem) return;
+
+    switch (this->CurrentEditItem->type()) {
+    case PolylineItem::Type:
+    {
+        PolylineItem *polylineItem = static_cast<PolylineItem*>(this->CurrentEditItem);
+
+        polylineItem->createParallelOffset(10,3);
+        break;
+    }
+    default:{}
+    }
+}
 ///
-/// 测试专用
+/// test function
 ///
+void printResults(const std::vector<cavc::Polyline<double>>& results) {
+for (size_t i = 0; i < results.size(); ++i) {
+    const cavc::Polyline<double>& polyline = results[i];
+    qDebug() << "Polyline " << i << " (size = " << polyline.size() << "):\n";
+
+    for (size_t j = 0; j < polyline.size(); ++j) {
+        double x = polyline.vertexes()[j].x();
+        double y = polyline.vertexes()[j].y();
+        double bulge = polyline.vertexes()[j].bulge();
+        qDebug() << "  Vertex " << j << ": (" << x << ", " << y << "), bulge: " << bulge << "\n";
+    }
+
+    qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
+}
+}
+
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
     /// polyline test
     ///
+    // // /*
     this->TmpPolyline = std::make_unique<PolylineItem>();
     this->Scene->addItem(this->TmpPolyline.get());
 
-    this->TmpPolyline->addVertex(QPointF(0,0),0);
+    this->TmpPolyline->addVertex(QPointF(50,50),0);
+    this->TmpPolyline->addVertex(QPointF(50,100),0);
     this->TmpPolyline->addVertex(QPointF(100,100),0);
-    this->TmpPolyline->addVertex(QPointF(200,100),0);
-    this->TmpPolyline->addVertex(QPointF(200,200),1);
-    this->TmpPolyline->addVertex(QPointF(200,300),-1);
+    // this->TmpPolyline->addVertex(QPointF(100,50),0);
+    this->TmpPolyline->createParallelOffset(10,3);
+    // */
+
 
     ///
-    /// polygon  test
+    /// CC  test
     ///
-    /*
-    using namespace cavc;
+    // /*
+    // cavc::Polyline<double> input;
+    // // add vertexes as (x, y, bulge)
+    // input.addVertex(0, 0, 0);
+    // input.addVertex(0,100,0);
+    // input.addVertex(100,100,0);
+    // input.addVertex(100,0,0);
+    // input.isClosed() = true;
 
-    cavc::Polyline<double> input;
-    // add vertexes as (x, y, bulge)
-    input.addVertex(0, 25, 1);
-    input.addVertex(0, 0, 0);
-    input.addVertex(2, 0, 1);
-    input.addVertex(10, 0, -0.5);
-    input.addVertex(8, 9, 0.374794619217547);
-    input.addVertex(21, 0, 0);
-    input.addVertex(23, 0, 1);
-    input.addVertex(32, 0, -0.5);
-    input.addVertex(28, 0, 0.5);
-    input.addVertex(39, 21, 0);
-    input.addVertex(28, 12, 0);
-    input.isClosed() = true;
-
-    // compute the resulting offset polylines, offset = 3
-    std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 3.0);
-
-    this->TmpPolygon = std::make_unique<QGraphicsPolygonItem>();
-    this->TmpPolygon->setPen(QPen(Qt::black, 1));
-    this->Scene->addItem(this->TmpPolygon.get());
-    // closed polyline representing a circle going counter clockwise
-    double radius = 10.0;
-    cavc::Polyline<double> ccwCircle;
-    ccwCircle.addVertex(0, 0, 1);
-    ccwCircle.addVertex(2.0 * radius, 0, 1);
-    ccwCircle.isClosed() = true;
-
-    // closed polyline representing a circle going clockwise
-    cavc::Polyline<double> cwCircle;
-    cwCircle.addVertex(0, 0, -1);
-    cwCircle.addVertex(2.0 * radius, 0, -1);
-    cwCircle.isClosed() = true;
-
-    // path length of polyline
-    double length = getPathLength(ccwCircle);
-    assert(utils::fuzzyEqual(length, 2.0 * utils::pi<double>() * radius));
-
-    // signed area of closed polyline (area is positive if counter clockwise, negative if clockwise)
-    double area = getArea(ccwCircle);
-    assert(utils::fuzzyEqual(area, utils::pi<double>() * radius * radius));
-    assert(utils::fuzzyEqual(getArea(cwCircle), -area));
-
-    // polyline extents
-    AABB<double> extents = getExtents(ccwCircle);
-    assert(utils::fuzzyEqual(extents.xMin, 0.0));
-    assert(utils::fuzzyEqual(extents.yMin, -radius));
-    assert(utils::fuzzyEqual(extents.xMax, 2.0 * radius));
-    assert(utils::fuzzyEqual(extents.yMax, radius));
-
-    // Closest point on polyline to a point given
-    ClosestPoint<double> closestPoint(ccwCircle, Vector2<double>(radius, 10.0 * radius));
-    // index is the starting vertex index of the closest segment (going clockwise so arc starting at
-    // the second vertex is closest)
-    assert(closestPoint.index() == 1);
-    assert(fuzzyEqual(closestPoint.point(), Vector2<double>(radius, radius)));
-    assert(utils::fuzzyEqual(closestPoint.distance(), 9.0 * radius));*/
+    // std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 10.0);
+    // printResults(results);
+    // */
 
     ///
     ///
@@ -1227,12 +1321,14 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// rect test
     ///
-    /*this->TmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
+    /*
+    this->TmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
     this->TmpRect->setPen(QPen(Qt::black, 1));
     this->Scene->addItem(this->TmpRect.get());
 
      QRectF newRect(this->TmpRect->rect().topLeft().x(),this->TmpRect->rect().topLeft().y(),100, 100);
-    this->TmpRect->setRect(newRect);*/
+    this->TmpRect->setRect(newRect);
+    */
 
     ///
     /// variant test
@@ -1290,3 +1386,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     QLineF line2(QPointF(-100,100),QPointF(100,100));
     this->TmpPolyline->setLine(line2,true);*/
 }
+
+
+
