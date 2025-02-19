@@ -1375,6 +1375,27 @@ void MainWindow::on_createOffsetButton_clicked()
     default:{}
     }
 }
+
+void MainWindow::on_deleteButton_clicked()
+{
+    QList<QGraphicsItem*> selectedItems = this->Scene->selectedItems();
+
+    if (selectedItems.empty())
+        return;
+
+    for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
+    {
+        this->Scene->removeItem(*item);
+        auto it = std::find_if(this->Container.begin(), this->Container.end(),
+                       [item](const std::unique_ptr<QGraphicsItem>& ptr) {
+                           return ptr.get() == *item;
+                       });
+
+        if (it != this->Container.end()) {
+            this->Container.erase(it);
+        }
+    }
+}
 ///
 /// test function
 ///
@@ -1512,6 +1533,9 @@ void MainWindow::on_drawTestLineButton_clicked()
     QLineF line2(QPointF(-100,100),QPointF(100,100));
     this->TmpPolyline->setLine(line2,true);*/
 }
+
+
+
 
 
 

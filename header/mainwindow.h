@@ -137,6 +137,7 @@ private slots:
     void on_rotateButton_clicked();
     void on_centerButton_clicked();
     void on_createOffsetButton_clicked();
+    void on_deleteButton_clicked();
 };
 #endif // MAINWINDOW_H
 

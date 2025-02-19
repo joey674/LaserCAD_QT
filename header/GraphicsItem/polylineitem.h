@@ -89,6 +89,8 @@ public:
 
             for (const auto& polyline : results) {
                 auto item = std::make_unique<PolylineItem>();
+                item->LineType = LineType::offsetItem;
+
                 for (size_t i = 0; i < polyline.size(); ++i) {
                     auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
                     auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
@@ -152,12 +154,12 @@ public:
         return VertexList.size();
     }
 
-    const double& getOffset()
+    double getOffset()
     {
         return this->offset;
     }
 
-    const double& getOffsetNum()
+    double getOffsetNum()
     {
         return this->offsetNum;
     }
@@ -235,7 +237,7 @@ public:
         painter->setBrush(Qt::red);
         for (const auto &vertex : VertexList)
         {
-            if (this->offset != 0)
+            if (this->LineType ==LineType::OriginItem)
                 painter->drawEllipse(vertex.point, 1.5, 1.5);
         }
 
