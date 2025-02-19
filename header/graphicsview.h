@@ -37,6 +37,7 @@ signals:
     void mouserightrelease_event(QPoint);
     void mousemove_event(QPoint);
     void mousedoubleclick_event(QPoint);
+    void mousewheel_event(QWheelEvent *);
 };
 
 #endif // GRAPHICSVIEW_H

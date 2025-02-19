@@ -78,7 +78,7 @@ void MainWindow::initGraphicsView()
     this->Scene->addItem(yArrowR);
 
     // 锁定当前场景矩形
-    ui->graphicsView->scale(1.5,1.5);
+    this->setSceneScale(1.5,1.5);
     this->Scene->setSceneRect(Scene->sceneRect());
 
     // connect
@@ -95,6 +95,8 @@ void MainWindow::initGraphicsView()
             this,SLOT(on_graphicsview_mouserightrelease_occurred(QPoint)));
     connect(ui->graphicsView,SIGNAL(mousedoubleclick_event(QPoint)),
             this,SLOT(on_graphicsview_mousedoubleclick_occurred(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mousewheel_event(QWheelEvent*)),
+            this,SLOT(on_graphicsview_mousewheel_occurred(QWheelEvent*)));
 }
 
 void MainWindow::initStatusBar()
@@ -129,6 +131,62 @@ void MainWindow::initPropertyTableWidget()
 void MainWindow::displayOperation(QString text)
 {
     this->LabelOperation->setText("operation: "+ text);
+}
+
+void MainWindow::dragScene(QPointF pointCoordScene, DrawEventType event)
+{
+    if (event == DrawEventType::RightPress)
+    {
+        displayOperation("drag scene right press");
+        auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordScene);
+        this->dragScenePoint = pointCoordView;
+    }
+    else if (event == DrawEventType::MouseMove)
+    {
+        displayOperation("drag scene mouse move");
+        auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordScene);
+
+        QPointF delta =  this->dragScenePoint - pointCoordView;
+        delta = QPointF(delta.x()/getSceneScale().first, delta.y()/getSceneScale().second);
+        qDebug() << pointCoordView  << this->dragScenePoint <<delta;
+        this->dragScenePoint = pointCoordView;
+
+        auto newRect = this->Scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
+        this->Scene->setSceneRect(newRect);
+    }
+    else if (event == DrawEventType::RightRelease)
+    {
+        displayOperation("drag scene right release");
+        this->dragScenePoint = QPointF(0,0);
+    }
+}
+
+void MainWindow::copyItem()
+{
+
+}
+
+void MainWindow::deleteItem()
+{
+
+}
+
+void MainWindow::setSceneScale(double x, double y)
+{
+    if (x <=0 || y<=0)
+    {
+        displayOperation("error scene scale");
+        return;
+    }
+
+    ui->graphicsView->scale(x,y);
+    this->SceneScale.first *= x;
+    this->SceneScale.second *= y;
+}
+
+std::pair<double, double> MainWindow::getSceneScale()
+{
+    return this->SceneScale;
 }
 
 ///
@@ -281,8 +339,8 @@ void MainWindow::editCircle(QGraphicsEllipseItem * circleItem, DrawEventType eve
 
 void MainWindow::editPolyline(QPointF pointCoordScene, PolylineItem* polylineItem,DrawEventType event)
 {
-    qDebug() << "edit Polyline" << this->CurrentEditPolylineVertexIndex << event;
     if (!polylineItem) return;
+    qDebug() << "edit Polyline: current edit vertex " << this->CurrentEditPolylineVertexIndex;
 
     // 图形上直接编辑操作点；
     if (this->CurrentEditPolylineVertexIndex == -1 && event == DrawEventType::LeftRelease)
@@ -301,14 +359,12 @@ void MainWindow::editPolyline(QPointF pointCoordScene, PolylineItem* polylineIte
     }
     else if (this->CurrentEditPolylineVertexIndex != -1 && event == DrawEventType::MouseMove)
     {
-        qDebug() << "2";
         double bulge = polylineItem->getVertex(this->CurrentEditPolylineVertexIndex).bulge;
         polylineItem->editVertex(this->CurrentEditPolylineVertexIndex,pointCoordScene ,bulge);
         // 注意这里输入的是绝对坐标 所以要减去相对坐标！
     }
     else if (this->CurrentEditPolylineVertexIndex != -1 && event == DrawEventType::LeftRelease)
     {
-            qDebug() << "3";
         this->CurrentEditPolylineVertexIndex = -1;
         this->CurrentEditItem =NULL;
     }
@@ -338,6 +394,14 @@ void MainWindow::editPolyline(QPointF pointCoordScene, PolylineItem* polylineIte
         offsetValue->setFlags(offsetValue->flags() | Qt::ItemIsEditable);
         ui->propertyTableWidget->setItem(row, 0,offsetName);
         ui->propertyTableWidget->setItem(row, 1, offsetValue);
+
+        ui->propertyTableWidget->insertRow(row);
+        QTableWidgetItem *offsetNumName = new QTableWidgetItem("offsetNum");
+        QTableWidgetItem *offsetNumValue = new QTableWidgetItem(polylineItem->getOffset());
+        offsetNumName->setFlags(offsetNumName->flags() & ~Qt::ItemIsEditable);
+        offsetNumValue->setFlags(offsetNumValue->flags() | Qt::ItemIsEditable);
+        ui->propertyTableWidget->setItem(row, 0,offsetNumName);
+        ui->propertyTableWidget->setItem(row, 1, offsetNumValue);
 
         ui->propertyTableWidget->blockSignals(false);
     }
@@ -837,76 +901,117 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
         )
     );
 
-    // 绘制控制
-    switch (this->CurrentDrawTool) {
+    // 非拖拽行为
+    if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == false)
+    {
+        switch (this->CurrentDrawTool)
+        {
+            case DrawToolType::None:
+            {
+                this->editItem(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Line:
+            {
+                this->drawLine(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Circle:
+            {
+                this->drawCircle(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Polyline:
+            {
+                this->drawPolyline(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Arc:
+            {
+                this->drawArc(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Spiral:
+            {
+                this->drawSpiral(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::VariantLine:
+            {
+                this->drawVariantLine(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Rect:
+            {
+                this->drawRect(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Polygon:
+            {
+                this->drawPolygon(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+            case DrawToolType::Ellipse:
+            {
+                this->drawEllipse(pointCoordScene,DrawEventType::MouseMove);
+                break;
+            }
+
+            default:
+        {}
+        }
+    }
+    // 左键拖拽
+    else if (Manager::getIns().IsMouseLeftButtonHold == true && Manager::getIns().IsMouseRightButtonHold == false)
+    {
+
+    }
+    // 右键拖拽
+    else if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == true)
+    {
+        switch (this->CurrentDrawTool)
+        {
         case DrawToolType::None:
         {
-            this->editItem(pointCoordScene,DrawEventType::MouseMove);
+            this->dragScene(pointCoordScene,DrawEventType::MouseMove);
             break;
         }
-        case DrawToolType::Line:
-        {
-            this->drawLine(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Circle:
-        {
-            this->drawCircle(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Polyline:
-        {
-            this->drawPolyline(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Arc:
-        {
-            this->drawArc(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Spiral:
-        {
-            this->drawSpiral(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::VariantLine:
-        {
-            this->drawVariantLine(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Rect:
-        {
-            this->drawRect(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Polygon:
-        {
-            this->drawPolygon(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-        case DrawToolType::Ellipse:
-        {
-            this->drawEllipse(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
-
         default:
         {}
+        }
     }
+
 }
 
 void MainWindow::on_graphicsview_mouseleftpress_occurred(QPoint pointCoordView)
 {
+    displayOperation("mouse left press");
+    Manager::getIns().IsMouseLeftButtonHold = true;
 }
 
 void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
 {
+    displayOperation("mouse right press");
+    Manager::getIns().IsMouseRightButtonHold = true;
 
+    QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
+    switch (this->CurrentDrawTool)
+    {
+    case DrawToolType::None:
+    {
+        this->dragScene(pointCoordScene, DrawEventType::RightPress);
+        break;
+    }
+    default:
+    {}
+    }
 }
 
 void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView)
 {
     displayOperation("mouse left release");
+    Manager::getIns().IsMouseLeftButtonHold = false;
+
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
     case DrawToolType::None:
@@ -968,11 +1073,14 @@ void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView
 void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordView)
 {
     displayOperation("mouse right release");
+    Manager::getIns().IsMouseRightButtonHold = false;
+
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
     switch (this->CurrentDrawTool) {
     case DrawToolType::None:
     {
-        this->editItem(pointCoordScene,DrawEventType::MouseMove);
+        this->editItem(pointCoordScene,DrawEventType::RightRelease);
+        this->dragScene(pointCoordScene,DrawEventType::RightRelease);
         break;
     }
     case DrawToolType::Polyline:
@@ -993,27 +1101,23 @@ void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordVie
     default:
     {}
     }
-
-}
-
-void MainWindow::on_graphicsview_mouserelease_occurred(QPoint pointCoordView)
-{
-    QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
-    switch (this->CurrentDrawTool) {
-        // case DrawToolType::None:
-        // {
-        //     this->editItem(pointCoordScene,DrawEventType::);
-        //     break;
-        // }
-        default:
-        {}
-    }
 }
 
 void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView)
 {
     ui->resetButton->setChecked(true);
     this->on_resetButton_clicked();
+}
+
+void MainWindow::on_graphicsview_mousewheel_occurred(QWheelEvent * event)
+{
+    displayOperation("mouse wheel occourred");
+    if (event->angleDelta().y() > 0)
+    {
+        this->setSceneScale(1.2, 1.2);
+    } else {
+        this->setSceneScale(0.8, 0.8);
+    }
 }
 
 ///
@@ -1039,15 +1143,18 @@ void MainWindow::on_resetButton_clicked()
     this->resetDrawToolStatus();
     ui->propertyTableWidget->clearContents();
     ui->propertyTableWidget->setRowCount(0);
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    this->setAllItemsMovable(true);
 
     this->CurrentEditItem = NULL;
-    this->setAllItemsMovable(true);
 }
 
 void MainWindow::on_drawPolylineButton_clicked()
 {
     displayOperation("drawPolyline button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Polyline;
 }
 
@@ -1055,6 +1162,8 @@ void MainWindow::on_drawArcButton_clicked()
 {
     displayOperation("drawArc button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Arc;
 }
 
@@ -1062,6 +1171,8 @@ void MainWindow::on_drawSpiralButton_clicked()
 {
     displayOperation("drawSpiral button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Spiral;
 }
 
@@ -1070,12 +1181,15 @@ void MainWindow::on_drawVariantLineButton_clicked()
     displayOperation("drawVariantLine button click");
     this->resetDrawToolStatus();
     this->CurrentDrawTool = DrawToolType::VariantLine;
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 }
 
 void MainWindow::on_drawRectButton_clicked()
 {
     displayOperation("drawRect button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Rect;
 }
 
@@ -1083,6 +1197,8 @@ void MainWindow::on_drawPolygonButton_clicked()
 {
     displayOperation("drawPolygon button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Polygon;
 }
 
@@ -1090,6 +1206,8 @@ void MainWindow::on_drawEllipseButton_clicked()
 {
     displayOperation("drawEllipse button click");
     this->resetDrawToolStatus();
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
     this->CurrentDrawTool = DrawToolType::Ellipse;
 }
 
@@ -1213,6 +1331,7 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
                 // update
                 PolylineItem *polyline = static_cast<PolylineItem*>(this->CurrentEditItem);
                 polyline->createParallelOffset(offset,offsetNum);
+                qDebug() << "finish";
             }
             break;
         }
@@ -1250,7 +1369,7 @@ void MainWindow::on_createOffsetButton_clicked()
     {
         PolylineItem *polylineItem = static_cast<PolylineItem*>(this->CurrentEditItem);
 
-        polylineItem->createParallelOffset(10,3);
+        polylineItem->createParallelOffset(20,6);
         break;
     }
     default:{}
@@ -1278,9 +1397,16 @@ for (size_t i = 0; i < results.size(); ++i) {
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
+    ///
+    ///
+    ui->graphicsView->centerOn(QPointF(100,100));
+    qDebug() << "finish";
+
+
+    ///
     /// polyline test
     ///
-    // // /*
+    /*
     this->TmpPolyline = std::make_unique<PolylineItem>();
     this->Scene->addItem(this->TmpPolyline.get());
 
@@ -1289,7 +1415,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     this->TmpPolyline->addVertex(QPointF(100,100),0);
     // this->TmpPolyline->addVertex(QPointF(100,50),0);
     this->TmpPolyline->createParallelOffset(10,3);
-    // */
+    */
 
 
     ///

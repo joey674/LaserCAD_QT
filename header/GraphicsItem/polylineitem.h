@@ -12,12 +12,16 @@
 class PolylineItem: public QGraphicsItem
 {
 public:
-    enum { Type = 6270 };
-
     struct Vertex
     {
         QPointF point;
         double bulge;
+    };
+
+    enum LineType
+    {
+        OriginItem,
+        offsetItem,
     };
 
     PolylineItem()
@@ -66,36 +70,35 @@ public:
         this->offsetItemList.clear();
         qDebug() << "update offset";
 
-        cavc::Polyline<double> input;
-        for (int i = 0; i < this->getSize(); ++i)
+        for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
         {
-            // 这里好像addvertex的时候加的bulge是下一个点的; 并且我们之间的bulge是相反的;
-            input.addVertex(
-                this->VertexList[i].point.x(),
-                this->VertexList[i].point.y(),
-                (i + 1 < this->getSize()) ?
-                    this->VertexList[i+1].bulge
-                                          : this->VertexList[0].bulge
-                );
-        }
-        input.isClosed() = false;
-        std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset);
-
-        for (const auto& polyline : results) {
-            auto item = std::make_unique<PolylineItem>();
-            // qDebug() << "add Line, clock: " << polyline.isClockwise();
-            for (size_t i = 0; i < polyline.size(); ++i) {
-
-                auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-                auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
-                                        :   polyline.vertexes()[polyline.size()-1].bulge();
-                // newBulge = - newBulge;
-                // newBulge = newBulge/( sqrt(1 + newBulge * newBulge)-1);
-
-                qDebug() << " add vertex " << i << ":" << newPoint << newBulge ;
-                item->addVertex(newPoint,newBulge);
+            cavc::Polyline<double> input;
+            for (int i = 0; i < this->getSize(); ++i)
+            {
+                // 这里好像addvertex的时候加的bulge是下一个点的; 并且我们之间的bulge是相反的;
+                input.addVertex(
+                    this->VertexList[i].point.x(),
+                    this->VertexList[i].point.y(),
+                    (i + 1 < this->getSize()) ?
+                        this->VertexList[i+1].bulge
+                                              : this->VertexList[0].bulge
+                    );
             }
-            this->offsetItemList.push_back(std::move(item));
+            input.isClosed() = false;
+            std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
+
+            for (const auto& polyline : results) {
+                auto item = std::make_unique<PolylineItem>();
+                for (size_t i = 0; i < polyline.size(); ++i) {
+                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+                    auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
+                                            :   polyline.vertexes()[polyline.size()-1].bulge();
+
+                    // qDebug() << " add vertex " << i << ":" << newPoint << newBulge ;
+                    item->addVertex(newPoint,newBulge);
+                }
+                this->offsetItemList.push_back(std::move(item));
+            }
         }
     }
 
@@ -192,6 +195,8 @@ public:
     ///
     /// \brief reload
     ///
+    enum { Type = 6270 };
+
     int type() const override
     {
         return Type;
@@ -229,7 +234,10 @@ public:
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::red);
         for (const auto &vertex : VertexList)
-            painter->drawEllipse(vertex.point, 1.5, 1.5);
+        {
+            if (this->offset != 0)
+                painter->drawEllipse(vertex.point, 1.5, 1.5);
+        }
 
         // 绘制offset
         for (auto& item: this->offsetItemList)
@@ -237,13 +245,14 @@ public:
     }
 
 private:
+    LineType LineType = LineType::OriginItem;
     QPen Pen = QPen(Qt::black, 1);
 
     std::vector<Vertex> VertexList;
     std::vector<std::unique_ptr<QGraphicsItem>> ItemList;
 
     double offset  = 0;
-    double offsetNum = 1;
+    int offsetNum = 1;
     std::vector<std::unique_ptr<PolylineItem>> offsetItemList;
 };
 

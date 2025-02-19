@@ -62,7 +62,18 @@ private:
     void initPropertyTableWidget();
     void displayOperation(QString);
 
-    // 编辑组件
+    // 基础操作
+    QPointF dragScenePoint = QPointF(0,0);
+    void dragScene(QPointF,  DrawEventType);
+    void copyItem();
+    void deleteItem();
+
+    // 记录画布放大倍率
+    std::pair<double,double> SceneScale = {1,1};
+    void setSceneScale(double, double);
+    std::pair<double, double> getSceneScale();
+
+    // 编辑item对象
     QGraphicsItem *CurrentEditItem = NULL;
     int CurrentEditPolylineVertexIndex = -1;
     void editItem(QPointF,DrawEventType);
@@ -72,8 +83,7 @@ private:
     void editArc(); /*TODO*/
     void editSpiral(); /*TODO*/
 
-
-    // 绘制工具
+    // 绘制item工具
     DrawToolType CurrentDrawTool = None;
     int PolygonEdgeNum = 3;
     std::unique_ptr<QGraphicsLineItem> TmpLine;
@@ -107,8 +117,8 @@ private slots:
     void on_graphicsview_mouserightpress_occurred(QPoint);
     void on_graphicsview_mouseleftrelease_occurred(QPoint);
     void on_graphicsview_mouserightrelease_occurred(QPoint);
-    void on_graphicsview_mouserelease_occurred(QPoint);
     void on_graphicsview_mousedoubleclick_occurred(QPoint);
+    void on_graphicsview_mousewheel_occurred(QWheelEvent *);
 
     // mainwindow与前端按钮绑定的槽
     void on_drawLineButton_clicked();

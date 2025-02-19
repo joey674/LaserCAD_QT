@@ -1,6 +1,8 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include <utility>
+
 class Manager
 {
 public:
@@ -19,6 +21,9 @@ public:
     bool IsZHold = false;
     bool IsYHold = false;
 
+    // 鼠标状态
+    bool IsMouseLeftButtonHold = false;
+    bool IsMouseRightButtonHold = false;
 
 private:
     Manager(){};

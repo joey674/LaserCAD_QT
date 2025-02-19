@@ -6,14 +6,18 @@
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton) {
-        QPoint point = event->pos();
+    QPoint point = event->pos();
+    if (event->button() == Qt::LeftButton)
+    {
+        this->setDragMode(QGraphicsView::RubberBandDrag);
         emit mouseleftpress_event(point);
-    } else if (event->button() == Qt::RightButton) {
-        QPoint point = event->pos();
+    } else if (event->button() == Qt::RightButton)
+    {
+        this->setDragMode(QGraphicsView::NoDrag);
         emit mouserightpress_event(point);
     }
-        QGraphicsView::mousePressEvent(event);
+
+    QGraphicsView::mousePressEvent(event);
 }
 
 void GraphicsView::mouseMoveEvent(QMouseEvent *event)
@@ -26,31 +30,27 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
 
 void GraphicsView::mouseReleaseEvent(QMouseEvent * event)
 {
-    if (event->button() == Qt::LeftButton) {
-        QPoint point = event->pos();
+    QPoint point = event->pos();
+    if (event->button() == Qt::LeftButton)
         emit mouseleftrelease_event(point);
-    } else if (event->button() == Qt::RightButton) {
-        QPoint point = event->pos();
+    else if (event->button() == Qt::RightButton)
         emit mouserightrelease_event(point);
-    }
 
     QGraphicsView::mouseReleaseEvent(event);
 }
 
 void GraphicsView::wheelEvent(QWheelEvent * event)
 {
-    if (event->angleDelta().y() > 0) {
-        this->scale(1.2, 1.2);
-    } else {
-        this->scale(0.8, 0.8);
-    }
+    emit mousewheel_event(event);
+
     event->accept();
 }
 
 void GraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
 {
     QPoint point = event->pos();
-    if (event->button() == Qt::RightButton) {
+    if (event->button() == Qt::RightButton)
         emit mousedoubleclick_event(point);
-    }
+
+    QGraphicsView::mouseDoubleClickEvent(event);
 }
