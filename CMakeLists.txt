@@ -43,6 +43,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
 	header/CavalierContours/vector.hpp
 	header/CavalierContours/vector2.hpp
 	header/CavalierContours/cavaliercontours.h
+        resource/dragSceneButton.svg
+        resource/button.qrc
+        header/style.h
+        src/style.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

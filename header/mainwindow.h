@@ -19,6 +19,8 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     enum DrawToolType {
+        DragScene,
+
         None,
         Line,
         Circle,
@@ -52,26 +54,28 @@ private:
     std::vector<std::unique_ptr<QGraphicsItem>>
         Container;
     void setAllItemsMovable(bool);
+    void setAllDrawButtonChecked(bool);
+    void setAllToolButtonChecked(bool);
+    // 记录画布放大倍率
+    std::pair<double,double> SceneScale = {1,1};
+    void setSceneScale(double, double);
+    std::pair<double, double> getSceneScale();
 
     // 初始化组件
     QLabel *LabelMouseCoordinate;
     QLabel *LabelOperation;
     void initGraphicsView();
+    void initButton();
     void initStatusBar();
     void initOperationTreeWidget();
     void initPropertyTableWidget();
     void displayOperation(QString);
 
-    // 基础操作
+    // 编辑工具
     QPointF dragScenePoint = QPointF(0,0);
     void dragScene(QPointF,  DrawEventType);
     void copyItem();
     void deleteItem();
-
-    // 记录画布放大倍率
-    std::pair<double,double> SceneScale = {1,1};
-    void setSceneScale(double, double);
-    std::pair<double, double> getSceneScale();
 
     // 编辑item对象
     QGraphicsItem *CurrentEditItem = NULL;
@@ -80,8 +84,8 @@ private:
     void editLine(QGraphicsLineItem *, DrawEventType);
     void editCircle(QGraphicsEllipseItem *, DrawEventType);
     void editPolyline(QPointF, PolylineItem *, DrawEventType);
-    void editArc(); /*TODO*/
-    void editSpiral(); /*TODO*/
+    void editArc();
+    void editSpiral();
 
     // 绘制item工具
     DrawToolType CurrentDrawTool = None;
@@ -120,13 +124,11 @@ private slots:
     void on_graphicsview_mousedoubleclick_occurred(QPoint);
     void on_graphicsview_mousewheel_occurred(QWheelEvent *);
 
-    // mainwindow与前端按钮绑定的槽
+    // 绘制工具
     void on_drawLineButton_clicked();
     void on_drawCircleButton_clicked();
     void on_propertyTableWidget_cellChanged(int row, int column);
-    void on_resetButton_clicked();
     void on_drawPolylineButton_clicked();
-    void on_drawTestLineButton_clicked();
     void on_drawArcButton_clicked();
     void on_drawSpiralButton_clicked();
     void on_drawVariantLineButton_clicked();
@@ -134,10 +136,15 @@ private slots:
     void on_drawPolygonButton_clicked();
     void on_drawEllipseButton_clicked();
 
+    // 编辑工具
+    void on_resetButton_clicked();
+    void on_drawTestLineButton_clicked();
+
     void on_rotateButton_clicked();
     void on_centerButton_clicked();
     void on_createOffsetButton_clicked();
     void on_deleteButton_clicked();
+    void on_dragSceneButton_clicked();
 };
 #endif // MAINWINDOW_H
 

@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/button">
+        <file>dragSceneButton.svg</file>
+        <file>drawPolylineButton.svg</file>
+        <file>drawCircleButton.svg</file>
+        <file>drawRectButton.svg</file>
+        <file>drawEllipseButton.svg</file>
+        <file>drawArcButton.svg</file>
+        <file>drawPolygonButton.svg</file>
+        <file>drawSpiralButton.svg</file>
+        <file>deleteButton.svg</file>
+        <file>resetButton.svg</file>
+        <file>rotateButton.svg</file>
+        <file>drawTestLineButton.svg</file>
+        <file>createOffsetButton.svg</file>
+        <file>centerButton.svg</file>
+    </qresource>
+</RCC>

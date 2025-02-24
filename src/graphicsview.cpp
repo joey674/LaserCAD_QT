@@ -9,11 +9,9 @@ void GraphicsView::mousePressEvent(QMouseEvent *event)
     QPoint point = event->pos();
     if (event->button() == Qt::LeftButton)
     {
-        this->setDragMode(QGraphicsView::RubberBandDrag);
         emit mouseleftpress_event(point);
     } else if (event->button() == Qt::RightButton)
     {
-        this->setDragMode(QGraphicsView::NoDrag);
         emit mouserightpress_event(point);
     }
 

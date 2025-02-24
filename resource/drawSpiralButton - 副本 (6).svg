@@ -1,0 +1,39 @@
+<!--<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+<path d="
+M512 151
+A366 366 0 1 1         146 517
+366 366 0 0 1 512 151
+
+M512 106
+a411 411 0 1 0          412 411
+A411 411 0 0 0 512 106
+z"
+fill="currentColor"></path>
+
+</svg>-->
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+    <path d="M512 100 A400 400 0 1 1 512 924"
+          stroke="black" stroke-width="45" fill="none" stroke-linecap="round"/>
+    <path d="M512 924 A300 300 0 0 1 512 250"
+          stroke="black" stroke-width="45" fill="none" stroke-linecap="round"/>
+   <path d="M512 250 A200 200 0 1 1 512 724"
+          stroke="black" stroke-width="45" fill="none" stroke-linecap="round"/>
+    <path d="M512 724A100 100 0 1 1 512 400"
+          stroke="black" stroke-width="45" fill="none" stroke-linecap="round"/>
+
+    <path d="M472 60
+    m18.773334 0l80.213333 0
+    q18.773333 0 18.773333 18.773333l0 80.213333
+    q0 18.773333-18.773333 18.773334l-80.213333 0
+    q-18.773333 0-18.773334-18.773334l0-80.213333
+    q0-18.773333 18.773334-18.773333Z" fill="#57B8FF"></path>
+
+    <path d="M472 360
+    m18.773334 0l80.213333 0
+    q18.773333 0 18.773333 18.773333l0 80.213333
+    q0 18.773333-18.773333 18.773334l-80.213333 0
+    q-18.773333 0-18.773334-18.773334l0-80.213333
+    q0-18.773333 18.773334-18.773333Z" fill="#57B8FF"></path>
+</svg>
+

@@ -62,6 +62,10 @@ public:
         this->animate();
     }
 
+    void rotate(double angle)
+    {
+
+    }
     ///
     /// \brief 更新函数 不能主动调用update；都在animate中调用
     ///
@@ -232,7 +236,7 @@ public:
     {
         Q_UNUSED(widget);
 
-        // 设置option删去线段的选框
+        // 设置option删去offset线段的选框
         QStyleOptionGraphicsItem optionx(* option);
         optionx.state &= ~QStyle::State_Selected;
 
@@ -253,6 +257,7 @@ public:
         for (auto& item: this->offsetItemList)
             item->paint(painter, &optionx, widget);
     }
+
 
 private:
     LineType LineType = LineType::OriginItem;

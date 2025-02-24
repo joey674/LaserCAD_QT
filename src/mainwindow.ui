@@ -24,6 +24,41 @@
     <item row="0" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
+       <widget class="QToolButton" name="resetButton">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;指针工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;可以选中对象进行操作；&lt;/p&gt;&lt;p&gt;当使用其他绘制工具时，双击右键可切换&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
+        <property name="text">
+         <string>reset</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="dragSceneButton">
+        <property name="text">
+         <string>dragScene</string>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QToolButton" name="rotateButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -70,6 +105,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="drawTestLineButton">
+        <property name="text">
+         <string>drawTestLine</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
          <enum>Qt::Orientation::Horizontal</enum>
@@ -87,15 +135,25 @@
     <item row="1" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_1">
       <item>
-       <widget class="QToolButton" name="resetButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;指针工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;可以选中对象进行操作；&lt;/p&gt;&lt;p&gt;当使用其他绘制工具时，双击右键可切换&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <widget class="QToolButton" name="drawPolylineButton">
+        <property name="text">
+         <string>drawPolyline</string>
         </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="autoExclusive">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="drawPolygonButton">
         <property name="toolTipDuration">
          <number>0</number>
         </property>
         <property name="text">
-         <string>reset</string>
+         <string>drawPolygon</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -106,12 +164,15 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawPolylineButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制多段线&lt;/p&gt;&lt;p&gt;长按ctrl切换绘制直线/圆弧；&lt;/p&gt;&lt;p&gt;按下capslock切换圆弧方向；&lt;/p&gt;&lt;p&gt;长按x/y锁定绘制方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <widget class="QToolButton" name="drawRectButton">
+        <property name="toolTipDuration">
+         <number>0</number>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
         <property name="text">
-         <string>drawPolyline</string>
+         <string>drawRect</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -142,9 +203,6 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;圆形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制圆&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
         <property name="toolTipDuration">
          <number>0</number>
         </property>
@@ -160,70 +218,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="drawSpiralButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;螺旋线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制螺旋线&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="toolTipDuration">
-         <number>0</number>
-        </property>
-        <property name="text">
-         <string>drawSpiral</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawRectButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;矩形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制矩形&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="toolTipDuration">
-         <number>0</number>
-        </property>
-        <property name="styleSheet">
-         <string notr="true"/>
-        </property>
-        <property name="text">
-         <string>drawRect</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawPolygonButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多边形工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制正多边形&lt;/p&gt;&lt;p&gt;按w添加多边形边数；按s减少多边形变数（最小为3）&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="toolTipDuration">
-         <number>0</number>
-        </property>
-        <property name="text">
-         <string>drawPolygon</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="drawEllipseButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;椭圆工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制椭圆&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
         <property name="toolTipDuration">
          <number>0</number>
         </property>
@@ -239,54 +234,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QToolButton" name="zzz">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawVariantLineButton">
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;多段线工具&lt;/span&gt;&lt;/p&gt;&lt;p&gt;绘制直线、圆弧以及组合多段线&lt;/p&gt;&lt;p&gt;左键点击选取下一个点；右键点击结束绘制&lt;/p&gt;&lt;p&gt;默认绘制直线，长按ctrl切换为圆弧模式；同时按c可切换圆弧的方向&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
+       <widget class="QToolButton" name="drawSpiralButton">
         <property name="toolTipDuration">
          <number>0</number>
         </property>
         <property name="text">
-         <string>drawVariantline</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawTestLineButton">
-        <property name="text">
-         <string>drawTestLine</string>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="autoExclusive">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QToolButton" name="drawLineButton">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>drawLine</string>
+         <string>drawSpiral</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -367,9 +320,6 @@
         </property>
         <property name="renderHints">
          <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::SmoothPixmapTransform|QPainter::RenderHint::TextAntialiasing</set>
-        </property>
-        <property name="dragMode">
-         <enum>QGraphicsView::DragMode::RubberBandDrag</enum>
         </property>
         <property name="viewportUpdateMode">
          <enum>QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate</enum>

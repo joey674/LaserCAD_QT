@@ -24,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     showMaximized();
 
     initGraphicsView();
+    initButton();
     initOperationTreeWidget();
     initPropertyTableWidget();
     initStatusBar();
@@ -40,6 +41,28 @@ void MainWindow::setAllItemsMovable(bool movable )
             item->setFlag(QGraphicsItem::ItemIsMovable, movable);
         }
     }
+}
+
+void MainWindow::setAllDrawButtonChecked(bool isChecked)
+{
+    ui->drawArcButton->setChecked(isChecked);
+    ui->drawCircleButton->setChecked(isChecked);
+    ui->drawEllipseButton->setChecked(isChecked);
+    ui->drawPolylineButton->setChecked(isChecked);
+    ui->drawPolygonButton->setChecked(isChecked);
+    ui->drawRectButton->setChecked(isChecked);
+    ui->drawSpiralButton->setChecked(isChecked);
+}
+
+void MainWindow::setAllToolButtonChecked(bool isChecked)
+{
+    ui->resetButton->setChecked(isChecked);
+    ui->dragSceneButton->setChecked(isChecked);
+    ui->centerButton->setChecked(isChecked);
+    ui->createOffsetButton->setChecked(isChecked);
+    ui->deleteButton->setChecked(isChecked);
+    ui->rotateButton->setChecked(isChecked);
+    ui->drawTestLineButton->setChecked(isChecked);
 }
 
 ///
@@ -81,6 +104,9 @@ void MainWindow::initGraphicsView()
     this->setSceneScale(1.5,1.5);
     this->Scene->setSceneRect(Scene->sceneRect());
 
+    // 设置初始为没有选框
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
     connect(ui->graphicsView,SIGNAL(mousemove_event(QPoint)),
@@ -99,6 +125,197 @@ void MainWindow::initGraphicsView()
             this,SLOT(on_graphicsview_mousewheel_occurred(QWheelEvent*)));
 }
 
+void MainWindow::initButton()
+{
+    QString buttonStyle = R"(
+        QToolButton {
+            border-radius: 15px;
+            background-color: #d0d0d0;
+            color: black;
+            padding: 5px;
+        }
+        QToolButton:hover {
+            background-color: #c0c0c0;
+        }
+        QToolButton:pressed {
+            background-color: #b0b0b0;
+        }
+        QToolButton:checked {
+            background-color: #b0b0b0;
+        }
+    )";
+
+    QToolButton *dragSceneButton = ui->dragSceneButton;
+    dragSceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
+    dragSceneButton->setIconSize(QSize(30, 30));
+    dragSceneButton->setStyleSheet(buttonStyle);
+    dragSceneButton->setCheckable(true);
+    dragSceneButton->setAutoExclusive(false);
+    dragSceneButton->setToolTip("拖动画布；左键拖拽");
+
+    QToolButton *resetButton = ui->resetButton;
+    resetButton->setIcon(QIcon(":/button/resetButton.svg"));
+    resetButton->setIconSize(QSize(30, 30));
+    resetButton->setStyleSheet(buttonStyle);
+    resetButton->setCheckable(true);
+    resetButton->setAutoExclusive(false);
+    resetButton->setToolTip("移动对象");
+
+    QToolButton *rotateButton = ui->rotateButton;
+    rotateButton->setIcon(QIcon(":/button/rotateButton.svg"));
+    rotateButton->setIconSize(QSize(30, 30));
+    rotateButton->setStyleSheet(buttonStyle);
+    rotateButton->setCheckable(true);
+    rotateButton->setAutoExclusive(false);
+    rotateButton->setToolTip("旋转对象");
+
+    QToolButton *deleteButton = ui->deleteButton;
+    deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
+    deleteButton->setIconSize(QSize(30, 30));
+    deleteButton->setStyleSheet(buttonStyle);
+    deleteButton->setCheckable(true);
+    deleteButton->setAutoExclusive(false);
+    deleteButton->setToolTip("删除对象");
+
+    QToolButton *drawTestLineButton = ui->drawTestLineButton;
+    drawTestLineButton->setIcon(QIcon(":/button/drawTestLineButton.svg"));
+    drawTestLineButton->setIconSize(QSize(30, 30));
+    drawTestLineButton->setStyleSheet(buttonStyle);
+    drawTestLineButton->setCheckable(true);
+    drawTestLineButton->setAutoExclusive(false);
+    drawTestLineButton->setToolTip("测试按钮");
+
+    QToolButton *createOffsetButton = ui->createOffsetButton;
+    createOffsetButton->setIcon(QIcon(":/button/createOffsetButton.svg"));
+    createOffsetButton->setIconSize(QSize(30, 30));
+    createOffsetButton->setStyleSheet(buttonStyle);
+    createOffsetButton->setCheckable(true);
+    createOffsetButton->setAutoExclusive(false);
+    createOffsetButton->setToolTip("添加填充/offset");
+
+    QToolButton *centerButton = ui->centerButton;
+    centerButton->setIcon(QIcon(":/button/centerButton.svg"));
+    centerButton->setIconSize(QSize(30, 30));
+    centerButton->setStyleSheet(buttonStyle);
+    centerButton->setCheckable(true);
+    centerButton->setAutoExclusive(false);
+    centerButton->setToolTip("移动对象到中心点");
+
+
+
+    // 绘制工具
+    QToolButton *drawPolylineButton = ui->drawPolylineButton;
+    drawPolylineButton->setIcon(QIcon(":/button/drawPolylineButton.svg"));
+    drawPolylineButton->setIconSize(QSize(30, 30));
+    drawPolylineButton->setStyleSheet(buttonStyle);
+    drawPolylineButton->setCheckable(true);
+    drawPolylineButton->setAutoExclusive(false);
+    drawPolylineButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+         "<p><span style=\" font-weight:700;\">多段线工具</span></p>"
+        "<p>绘制多段线</p>"
+        "<p>长按ctrl切换绘制直线/圆弧；"
+        "</p><p>按下capslock切换圆弧方向；"
+        "</p><p>长按x/y锁定绘制方向</p></body></html>"
+        "</body></html>"
+        );
+
+
+    QToolButton *drawArcButton = ui->drawArcButton;
+    drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
+    drawArcButton->setIconSize(QSize(30, 30));
+    drawArcButton->setStyleSheet(buttonStyle);
+    drawArcButton->setCheckable(true);
+    drawArcButton->setAutoExclusive(false);
+    drawArcButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">弧形工具</span></p>"
+        "<p>绘制半弧</p>"
+        "<p>左键点击设置初始点；左键再次点击设置结束点</p>"
+        "</body></html>"
+        );
+
+
+
+    QToolButton *drawCircleButton = ui->drawCircleButton;
+    drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
+    drawCircleButton->setIconSize(QSize(30, 30));
+    drawCircleButton->setStyleSheet(buttonStyle);
+    drawCircleButton->setCheckable(true);
+    drawCircleButton->setAutoExclusive(false);
+    drawCircleButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">圆形工具</span></p>"
+        "<p>绘制圆</p>"
+        "<p>左键点击设置圆心；左键再次点击设置圆弧大小</p>"
+        "</body></html>"
+        );
+
+    QToolButton *drawEllipseButton = ui->drawEllipseButton;
+    drawEllipseButton->setIcon(QIcon(":/button/drawEllipseButton.svg"));
+    drawEllipseButton->setIconSize(QSize(30, 30));
+    drawEllipseButton->setStyleSheet(buttonStyle);
+    drawEllipseButton->setCheckable(true);
+    drawEllipseButton->setAutoExclusive(false);
+    drawEllipseButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">椭圆工具</span></p>"
+        "<p>绘制椭圆</p>"
+        "<p>左键点击设置圆心；左键再次点击确定一个方向上的椭圆半径；再次拉动鼠标点击确定垂直方向上的另一个椭圆半径</p>"
+        "</body></html>"
+        );
+
+    QToolButton *drawRectButton = ui->drawRectButton;
+    drawRectButton->setIcon(QIcon(":/button/drawRectButton.svg"));
+    drawRectButton->setIconSize(QSize(30, 30));
+    drawRectButton->setStyleSheet(buttonStyle);
+    drawRectButton->setCheckable(true);
+    drawRectButton->setAutoExclusive(false);
+    drawRectButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">矩形工具</span></p>"
+        "<p>绘制矩形</p>"
+        "<p>左键点击设置矩形左上顶点，左键再次点击设置矩形右下顶点</p>"
+        "</body></html>"
+        );
+
+    QToolButton *drawPolygonButton = ui->drawPolygonButton;
+    drawPolygonButton->setIcon(QIcon(":/button/drawPolygonButton.svg"));
+    drawPolygonButton->setIconSize(QSize(30, 30));
+    drawPolygonButton->setStyleSheet(buttonStyle);
+    drawPolygonButton->setCheckable(true);
+    drawPolygonButton->setAutoExclusive(false);
+    drawPolygonButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">正多边形工具</span></p>"
+        "<p>绘制正多边形</p>"
+        "<p>按w添加多边形边数；按s减少多边形变数（最小为3）</p>"
+        "</body></html>"
+        );
+
+    QToolButton *drawSpiralButton = ui->drawSpiralButton;
+    drawSpiralButton->setIcon(QIcon(":/button/drawSpiralButton.svg"));
+    drawSpiralButton->setIconSize(QSize(30, 30));
+    drawSpiralButton->setStyleSheet(buttonStyle);
+    drawSpiralButton->setCheckable(true);
+    drawSpiralButton->setAutoExclusive(false);
+    drawSpiralButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\"font-weight:700;\">螺旋线工具</span></p>"
+        "<p>绘制螺旋线</p>"
+        "<p>左键点击设置多边形中心；左键再次点击设置多边形大小</p>"
+        "<p>按w添加多边形边数；按s减少多边形变数（最小为3）</p>"
+        "</body></html>"
+        );
+}
+
 void MainWindow::initStatusBar()
 {
     this->LabelMouseCoordinate = new QLabel("coordinate: ");
@@ -113,12 +330,12 @@ void MainWindow::initOperationTreeWidget()
 {
     ui->operationTreeWidget->setHeaderLabel("Operation List");
 
-    QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
-    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
-    ui->operationTreeWidget->addTopLevelItem(parentItem1);
-    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
-    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
-    ui->operationTreeWidget->addTopLevelItem(parentItem2);
+    // QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
+    // QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
+    // ui->operationTreeWidget->addTopLevelItem(parentItem1);
+    // QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
+    // QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
+    // ui->operationTreeWidget->addTopLevelItem(parentItem2);
 }
 
 void MainWindow::initPropertyTableWidget()
@@ -135,7 +352,7 @@ void MainWindow::displayOperation(QString text)
 
 void MainWindow::dragScene(QPointF pointCoordScene, DrawEventType event)
 {
-    if (event == DrawEventType::RightPress)
+    if (event == DrawEventType::LeftPress)
     {
         displayOperation("drag scene right press");
         auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordScene);
@@ -154,7 +371,7 @@ void MainWindow::dragScene(QPointF pointCoordScene, DrawEventType event)
         auto newRect = this->Scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
         this->Scene->setSceneRect(newRect);
     }
-    else if (event == DrawEventType::RightRelease)
+    else if (event == DrawEventType::LeftRelease)
     {
         displayOperation("drag scene right release");
         this->dragScenePoint = QPointF(0,0);
@@ -340,7 +557,11 @@ void MainWindow::editCircle(QGraphicsEllipseItem * circleItem, DrawEventType eve
 void MainWindow::editPolyline(QPointF pointCoordScene, PolylineItem* polylineItem,DrawEventType event)
 {
     if (!polylineItem) return;
-    qDebug() << "edit Polyline: current edit vertex " << this->CurrentEditPolylineVertexIndex;
+    displayOperation("edit polyline, center: " +
+                     QString::number(polylineItem->getCenterPos().x())  +
+                     " " +
+                     QString::number(polylineItem->getCenterPos().y()));
+    // qDebug() << "edit Polyline: current edit vertex " << this->CurrentEditPolylineVertexIndex;
 
     // 图形上直接编辑操作点；
     if (this->CurrentEditPolylineVertexIndex == -1 && event == DrawEventType::LeftRelease)
@@ -649,15 +870,18 @@ void MainWindow::drawSpiral(QPointF pointCoordScene, DrawEventType event)
 
         QPainterPath path;
         bool start = true;
-        for (double theta = 0; theta < turns * 2 * M_PI; theta += 0.1) {
+        for (double theta = 0; theta < turns * 2 * M_PI; theta += 0.1)
+        {
             double r = radius + spacing * theta / (2 * M_PI);
             double x = centerPoint.x() + r * cos(theta);
             double y = centerPoint.y() + r * sin(theta);
 
-            if (start == true) {
+            if (start == true)
+            {
                 path.moveTo(centerPoint.x() + r * cos(theta),centerPoint.y()+r* sin(theta));
                 start = false;
-            } else {
+            } else
+            {
                 path.lineTo(x, y);
             }
         }
@@ -834,20 +1058,14 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
 
     case Qt::Key_1:
     {
-        ui->resetButton->setChecked(true);
-        this->on_resetButton_clicked();
         break;
     }
     case Qt::Key_2:
     {
-        ui->drawVariantLineButton->setChecked(true);
-        this->on_drawVariantLineButton_clicked();
         break;
     }
     case Qt::Key_3:
     {
-        ui->drawCircleButton->setChecked(true);
-        this->on_drawCircleButton_clicked();
         break;
     }
     }
@@ -964,18 +1182,22 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
     // 左键拖拽
     else if (Manager::getIns().IsMouseLeftButtonHold == true && Manager::getIns().IsMouseRightButtonHold == false)
     {
-
+        switch (this->CurrentDrawTool)
+        {
+        case DrawToolType::DragScene:
+        {
+            this->dragScene(pointCoordScene,DrawEventType::MouseMove);
+            break;
+        }
+        default:
+        {}
+        }
     }
     // 右键拖拽
     else if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == true)
     {
         switch (this->CurrentDrawTool)
         {
-        case DrawToolType::None:
-        {
-            this->dragScene(pointCoordScene,DrawEventType::MouseMove);
-            break;
-        }
         default:
         {}
         }
@@ -987,6 +1209,18 @@ void MainWindow::on_graphicsview_mouseleftpress_occurred(QPoint pointCoordView)
 {
     displayOperation("mouse left press");
     Manager::getIns().IsMouseLeftButtonHold = true;
+
+    QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
+    switch (this->CurrentDrawTool)
+    {
+    case DrawToolType::DragScene:
+    {
+        this->dragScene(pointCoordScene,DrawEventType::LeftPress);
+        break;
+    }
+    default:
+    {}
+    }
 }
 
 void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
@@ -999,7 +1233,6 @@ void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
     {
     case DrawToolType::None:
     {
-        this->dragScene(pointCoordScene, DrawEventType::RightPress);
         break;
     }
     default:
@@ -1013,7 +1246,14 @@ void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView
     Manager::getIns().IsMouseLeftButtonHold = false;
 
     QPointF pointCoordScene = ui->graphicsView->mapToScene(pointCoordView);
-    switch (this->CurrentDrawTool) {
+    switch (this->CurrentDrawTool)
+    {
+    case DrawToolType::DragScene:
+    {
+        this->dragScene(pointCoordScene,DrawEventType::LeftRelease);
+        break;
+    }
+
     case DrawToolType::None:
     {
         this->editItem(pointCoordScene,DrawEventType::LeftRelease);
@@ -1080,7 +1320,6 @@ void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordVie
     case DrawToolType::None:
     {
         this->editItem(pointCoordScene,DrawEventType::RightRelease);
-        this->dragScene(pointCoordScene,DrawEventType::RightRelease);
         break;
     }
     case DrawToolType::Polyline:
@@ -1125,35 +1364,35 @@ void MainWindow::on_graphicsview_mousewheel_occurred(QWheelEvent * event)
 ///
 void MainWindow::on_drawLineButton_clicked()
 {
-    displayOperation("drawLine button click");
-    this->resetDrawToolStatus();
-    this->CurrentDrawTool = DrawToolType::Line;
+    // displayOperation("drawLine button click");
+    // this->resetDrawToolStatus();
+    // this->CurrentDrawTool = DrawToolType::Line;
 }
 
 void MainWindow::on_drawCircleButton_clicked()
 {
     displayOperation("drawCircle button click");
     this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawCircleButton->setChecked(true);
+
     this->CurrentDrawTool = DrawToolType::Circle;
-}
-
-void MainWindow::on_resetButton_clicked()
-{
-    displayOperation("reset button click");
-    this->resetDrawToolStatus();
-    ui->propertyTableWidget->clearContents();
-    ui->propertyTableWidget->setRowCount(0);
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-    this->setAllItemsMovable(true);
-
-    this->CurrentEditItem = NULL;
 }
 
 void MainWindow::on_drawPolylineButton_clicked()
 {
     displayOperation("drawPolyline button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawPolylineButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Polyline;
 }
@@ -1162,7 +1401,12 @@ void MainWindow::on_drawArcButton_clicked()
 {
     displayOperation("drawArc button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawArcButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Arc;
 }
@@ -1171,24 +1415,34 @@ void MainWindow::on_drawSpiralButton_clicked()
 {
     displayOperation("drawSpiral button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawSpiralButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Spiral;
 }
 
 void MainWindow::on_drawVariantLineButton_clicked()
 {
-    displayOperation("drawVariantLine button click");
-    this->resetDrawToolStatus();
-    this->CurrentDrawTool = DrawToolType::VariantLine;
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    // displayOperation("drawVariantLine button click");
+    // this->resetDrawToolStatus();
+    // this->CurrentDrawTool = DrawToolType::VariantLine;
+    // ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 }
 
 void MainWindow::on_drawRectButton_clicked()
 {
     displayOperation("drawRect button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawRectButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Rect;
 }
@@ -1197,7 +1451,12 @@ void MainWindow::on_drawPolygonButton_clicked()
 {
     displayOperation("drawPolygon button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawPolygonButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Polygon;
 }
@@ -1206,11 +1465,53 @@ void MainWindow::on_drawEllipseButton_clicked()
 {
     displayOperation("drawEllipse button click");
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->drawEllipseButton->setChecked(true);
 
     this->CurrentDrawTool = DrawToolType::Ellipse;
 }
 
+///
+///  编辑工具
+///
+void MainWindow::on_resetButton_clicked()
+{
+    displayOperation("reset button click");
+
+    this->resetDrawToolStatus();
+
+    ui->propertyTableWidget->clearContents();
+    ui->propertyTableWidget->setRowCount(0);
+
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    this->setAllItemsMovable(true);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->resetButton->setChecked(true);
+
+    this->CurrentEditItem = NULL;
+}
+
+void MainWindow::on_dragSceneButton_clicked()
+{
+    displayOperation("dragScene button click");
+
+    this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->dragSceneButton->setChecked(true);
+
+    this->CurrentDrawTool = DrawToolType::DragScene;
+}
 
 ///
 /// \brief MainWindow::on_propertyTableWidget_cellChanged
@@ -1349,6 +1650,17 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 ///
 void MainWindow::on_rotateButton_clicked()
 {
+    displayOperation("rotate button click");
+
+    this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->rotateButton->setChecked(true);
+
+
     if (!this->CurrentEditItem) return;
 
     auto angle = this->CurrentEditItem->rotation();
@@ -1357,14 +1669,39 @@ void MainWindow::on_rotateButton_clicked()
 
 void MainWindow::on_centerButton_clicked()
 {
+    displayOperation("center button click");
 
+    this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->centerButton->setChecked(true);
+
+
+    if (!this->CurrentEditItem) return;
+
+    this->CurrentEditItem->setPos(QPointF(0,0));
 }
 
 void MainWindow::on_createOffsetButton_clicked()
 {
+    displayOperation("createOffset button click");
+
+    this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->createOffsetButton->setChecked(true);
+
+
     if (!this->CurrentEditItem) return;
 
-    switch (this->CurrentEditItem->type()) {
+    switch (this->CurrentEditItem->type())
+    {
     case PolylineItem::Type:
     {
         PolylineItem *polylineItem = static_cast<PolylineItem*>(this->CurrentEditItem);
@@ -1378,6 +1715,17 @@ void MainWindow::on_createOffsetButton_clicked()
 
 void MainWindow::on_deleteButton_clicked()
 {
+    displayOperation("delete button click");
+
+    this->resetDrawToolStatus();
+
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+
+    this->setAllDrawButtonChecked(false);
+    this->setAllToolButtonChecked(false);
+    ui->deleteButton->setChecked(true);
+
+
     QList<QGraphicsItem*> selectedItems = this->Scene->selectedItems();
 
     if (selectedItems.empty())
@@ -1396,6 +1744,7 @@ void MainWindow::on_deleteButton_clicked()
         }
     }
 }
+
 ///
 /// test function
 ///
@@ -1414,14 +1763,12 @@ for (size_t i = 0; i < results.size(); ++i) {
     qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
 }
 }
-
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
     ///
     ///
-    ui->graphicsView->centerOn(QPointF(100,100));
-    qDebug() << "finish";
+
 
 
     ///
@@ -1533,6 +1880,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     QLineF line2(QPointF(-100,100),QPointF(100,100));
     this->TmpPolyline->setLine(line2,true);*/
 }
+
 
 
 
