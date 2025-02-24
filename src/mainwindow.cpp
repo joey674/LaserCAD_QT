@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     ui->setupUi(this);
     showMaximized();
 
+    initMainWindowStyle();
     initGraphicsView();
     initButton();
     initOperationTreeWidget();
@@ -406,6 +407,11 @@ std::pair<double, double> MainWindow::getSceneScale()
     return this->SceneScale;
 }
 
+void MainWindow::initMainWindowStyle()
+{
+}
+
+
 ///
 /// \brief MainWindow::editItem
 /// \param pointCoordScene
@@ -417,11 +423,6 @@ void MainWindow::editItem(QPointF pointCoordScene,DrawEventType event)
 
     this->CurrentEditItem = this->Scene->selectedItems()[0];
     switch (this->CurrentEditItem->type()) {
-        case QGraphicsLineItem::Type:{
-            QGraphicsLineItem *lineItem = static_cast<QGraphicsLineItem*>(this->CurrentEditItem);
-            this->editLine(lineItem,event);
-            break;
-        }
         case QGraphicsEllipseItem::Type:
         {
             QGraphicsEllipseItem *CircleItem = static_cast<QGraphicsEllipseItem*>(this->CurrentEditItem);
@@ -503,20 +504,20 @@ void MainWindow::editLine(QGraphicsLineItem *lineItem,DrawEventType event)
 
 void MainWindow::editCircle(QGraphicsEllipseItem * circleItem, DrawEventType event)
 {
-    // // 先显示对象信息到状态栏
-    // QPointF offset = circleItem->scenePos();
-    // QPointF centerPoint = QPointF(
-    //     circleItem->rect().center().x() + offset.x(),
-    //     circleItem->rect().center().y() + offset.y()
-    //     );
+    // 先显示对象信息到状态栏
+    QPointF offset = circleItem->scenePos();
+    QPointF centerPoint = QPointF(
+        circleItem->rect().center().x() + offset.x(),
+        circleItem->rect().center().y() + offset.y()
+        );
 
-    // QString msg = QString("click on circle: "
-    //                       "centerPoint:(%1, %2), "
-    //                       "radius:%3")
-    //                   .arg(qRound(centerPoint.x()))
-    //                   .arg(qRound(centerPoint.y()))
-    //                   .arg(qRound(circleItem->rect().width()));
-    // displayOperation(msg);
+    QString msg = QString("click on circle: "
+                          "centerPoint:(%1, %2), "
+                          "radius:%3")
+                      .arg(qRound(centerPoint.x()))
+                      .arg(qRound(centerPoint.y()))
+                      .arg(qRound(circleItem->rect().width()));
+    displayOperation(msg);
 
 
     // // 把对象的属性映射到属性修改面板
@@ -1682,7 +1683,7 @@ void MainWindow::on_centerButton_clicked()
 
     if (!this->CurrentEditItem) return;
 
-    this->CurrentEditItem->setPos(QPointF(0,0));
+    this->CurrentEditItem->setPos(QPointF(0,0) - this->CurrentEditItem->scenePos());
 }
 
 void MainWindow::on_createOffsetButton_clicked()

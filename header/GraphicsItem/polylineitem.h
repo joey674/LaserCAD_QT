@@ -187,14 +187,20 @@ public:
         if (this->VertexList.empty())
             return QPointF(0,0);
 
-        QPointF centerPoint = this->VertexList[0].point;
+        qreal minX = std::numeric_limits<int>::max();
+        qreal minY = std::numeric_limits<int>::max();
+        qreal maxX =std::numeric_limits<int>::min();
+        qreal maxY =std::numeric_limits<int>::min();
+
         for (auto& item: this->VertexList)
         {
-            centerPoint = QPointF(
-                (centerPoint.x()+item.point.x())/2,
-                (centerPoint.y()+item.point.y())/2);
+                minX = std::min(minX, item.point.x() + this->scenePos().x());
+                minY = std::min(minY, item.point.y() + this->scenePos().y());
+                maxX = std::max(maxX,  item.point.x() + this->scenePos().x());
+                maxY = std::max(maxY,  item.point.y() + this->scenePos().y());
         }
-        QPointF pos = centerPoint + this->scenePos();
+
+        QPointF pos = QPointF((maxX+minX)/2,(maxY+minY)/2);
 
         return pos;
     }

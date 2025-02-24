@@ -64,6 +64,7 @@ private:
     // 初始化组件
     QLabel *LabelMouseCoordinate;
     QLabel *LabelOperation;
+    void initMainWindowStyle();
     void initGraphicsView();
     void initButton();
     void initStatusBar();
