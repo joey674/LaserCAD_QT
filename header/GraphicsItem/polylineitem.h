@@ -5,6 +5,7 @@
 #include <qgraphicsscene.h>
 #include <QPainter>
 #include <QDebug.h>
+#include <QStyleOptionGraphicsItem>
 #include "utils.h"
 #include "header/CavalierContours/polyline.hpp"
 #include "header/CavalierContours/polylineoffset.hpp"
@@ -219,18 +220,25 @@ public:
 
             newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
         }
-        newRect = newRect.adjusted(-abs(offset)*offsetNum,-abs(offset)*offsetNum,abs(offset)*offsetNum,abs(offset)*offsetNum);
+        newRect = newRect.adjusted(
+                                    -abs(offset)*offsetNum - 1,
+                                    -abs(offset)*offsetNum - 1,
+                                    abs(offset)*offsetNum + 1,
+                                    abs(offset)*offsetNum + 1);
         return newRect;
     }
 
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
     {
-        Q_UNUSED(option);
         Q_UNUSED(widget);
+
+        // 设置option删去线段的选框
+        QStyleOptionGraphicsItem optionx(* option);
+        optionx.state &= ~QStyle::State_Selected;
 
         // 绘制线段
         for (auto& item: this->ItemList)
-            item->paint(painter, option, widget);
+            item->paint(painter, &optionx, widget);
 
         // 绘制拖拽原点
         painter->setPen(Qt::NoPen);
@@ -238,12 +246,12 @@ public:
         for (const auto &vertex : VertexList)
         {
             if (this->LineType ==LineType::OriginItem)
-                painter->drawEllipse(vertex.point, 1.5, 1.5);
+                painter->drawEllipse(vertex.point, 1, 1);
         }
 
         // 绘制offset
         for (auto& item: this->offsetItemList)
-            item->paint(painter, option, widget);
+            item->paint(painter, &optionx, widget);
     }
 
 private:
