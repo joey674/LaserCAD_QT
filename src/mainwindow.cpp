@@ -223,6 +223,22 @@ void MainWindow::initButton()
     centerButton->setAutoExclusive(false);
     centerButton->setToolTip("移动对象到中心点");
 
+    QToolButton *redoButton = ui->redoButton;
+    redoButton->setIcon(QIcon(":/button/redoButton.svg"));
+    redoButton->setIconSize(QSize(30, 30));
+    redoButton->setStyleSheet(buttonStyle);
+    redoButton->setCheckable(true);
+    redoButton->setAutoExclusive(false);
+    redoButton->setToolTip("移动对象到中心点");
+
+    QToolButton *undoButton = ui->undoButton;
+    undoButton->setIcon(QIcon(":/button/undoButton.svg"));
+    undoButton->setIconSize(QSize(30, 30));
+    undoButton->setStyleSheet(buttonStyle);
+    undoButton->setCheckable(true);
+    undoButton->setAutoExclusive(false);
+    undoButton->setToolTip("移动对象到中心点");
+
 
 
     // 绘制工具
@@ -1897,4 +1913,16 @@ void MainWindow::on_drawTestLineButton_clicked()
 
 
 
+
+
+void MainWindow::on_undoButton_clicked()
+{
+
+}
+
+
+void MainWindow::on_redoButton_clicked()
+{
+
+}
 

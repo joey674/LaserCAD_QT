@@ -148,6 +148,8 @@ private slots:
     void on_createOffsetButton_clicked();
     void on_deleteButton_clicked();
     void on_dragSceneButton_clicked();
+    void on_undoButton_clicked();
+    void on_redoButton_clicked();
 };
 #endif // MAINWINDOW_H
 

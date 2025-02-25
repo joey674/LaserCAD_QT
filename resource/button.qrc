@@ -14,5 +14,7 @@
         <file>drawTestLineButton.svg</file>
         <file>createOffsetButton.svg</file>
         <file>centerButton.svg</file>
+        <file>redoButton.svg</file>
+        <file>undoButton.svg</file>
     </qresource>
 </RCC>
