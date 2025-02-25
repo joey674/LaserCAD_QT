@@ -70,8 +70,7 @@ private:
     void initOperationTreeWidget();
     void initPropertyTableWidget();
     void displayOperation(QString);
-private:
-    // 编辑工具
+private:    // 编辑工具
     QPointF dragScenePoint = QPointF(0,0);
     void dragScene(QPointF,  DrawEventType);
     void copyItem();
@@ -85,12 +84,14 @@ private:
     void editPolyline(QPointF, PolylineItem *, DrawEventType);
     void editArc();
     void editSpiral();
-private:
-    // 绘制item工具
-    DrawToolType currentDrawTool = None;
-    int polygonEdgeNum = 3; //绘制polygon使用
+    // 辅助线输入绘制
     QGraphicsLineItem* assisstLine1;
     QGraphicsLineItem* assisstLine2;
+    QGraphicsPathItem* assisstArc1;
+private:    // 绘制item工具
+    DrawToolType currentDrawTool = None;
+    int polygonEdgeNum = 3; //绘制polygon使用
+    QPointF arcSecondPoint = QPointF{}; //绘制弧时使用
     void resetDrawToolStatus();
     //绘制对象暂存
     std::shared_ptr<QGraphicsEllipseItem> tmpCircle;

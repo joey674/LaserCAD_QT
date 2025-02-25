@@ -7,7 +7,6 @@
 #include <QDebug.h>
 #include <QStyleOptionGraphicsItem>
 #include "protocol.h"
-#include "utils.h"
 #include "header/CavalierContours/polyline.hpp"
 #include "header/CavalierContours/polylineoffset.hpp"
 
@@ -117,7 +116,7 @@ public:
             }
             else
             {
-                QPainterPath arcPath = createArcPath(v1.point, v2.point, v2.bulge);
+                QPainterPath arcPath /*= createArcPath()*/;
                 auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
                 pathItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(pathItem));

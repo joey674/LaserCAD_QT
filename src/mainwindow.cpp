@@ -790,16 +790,26 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
         this->tmpArc->editVertex(0,pointCoordscene,0);
         this->tmpArc->editVertex(1,pointCoordscene,0);
-         qDebug() << "1";
     }
-    else if  (this->tmpArc && event == DrawEventType::MouseMove)
+    else if  (this->tmpArc && this->arcSecondPoint == QPointF{} && event == DrawEventType::MouseMove)
     {
         this->tmpArc->editVertex(1,pointCoordscene,1);
+    }
+    else if (this->tmpArc &&  this->arcSecondPoint == QPointF{} && event == DrawEventType::LeftRelease)
+    {
+        this->arcSecondPoint = pointCoordscene;
+    }
+    else if  (this->tmpArc && this->arcSecondPoint != QPointF{} && event == DrawEventType::MouseMove)
+    {
+        double bulge = 0/*ArcPathToBulge(this->tmpArc->getVertex(0).point, this->arcSecondPoint, pointCoordscene)*/;
+        this->tmpArc->editVertex(1, pointCoordscene, bulge);
     }
     else if (this->tmpArc && event == DrawEventType::LeftRelease)
     {
         this->tmpArc->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Manager::getIns().addItem(std::move(this->tmpArc));
+
+        this->arcSecondPoint = QPointF{};
     }
 }
 
@@ -1324,6 +1334,11 @@ void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordVie
         this->drawPolyline(pointCoordscene,DrawEventType::RightRelease);
         break;
     }
+    case DrawToolType::Arc:
+    {
+        this->drawArc(pointCoordscene,DrawEventType::RightRelease);
+        break;
+    }
     case DrawToolType::Ellipse:
     {
         this->drawEllipse(pointCoordscene,DrawEventType::RightRelease);
@@ -1723,6 +1738,15 @@ void MainWindow::on_deleteButton_clicked()
     }
 }
 
+void MainWindow::on_undoButton_clicked()
+{
+
+}
+
+void MainWindow::on_redoButton_clicked()
+{
+
+}
 ///
 /// test function
 ///
@@ -1866,14 +1890,4 @@ void MainWindow::on_drawTestLineButton_clicked()
 
 
 
-void MainWindow::on_undoButton_clicked()
-{
-
-}
-
-
-void MainWindow::on_redoButton_clicked()
-{
-
-}
 

@@ -45,7 +45,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsItem/protocol.h              src/protocol.cpp
         # main widget
         header/manager.h                     src/manager.cpp
-        header/utils.h                              src/utils.cpp
+
         header/titlebar.h                        src/titlebar.cpp
         # header/style.h                            src/style.cpp
         #utils
