@@ -6,6 +6,7 @@
 #include <QPainter>
 #include <QDebug.h>
 #include <QStyleOptionGraphicsItem>
+#include "protocol.h"
 #include "utils.h"
 #include "header/CavalierContours/polyline.hpp"
 #include "header/CavalierContours/polylineoffset.hpp"
@@ -13,18 +14,6 @@
 class PolylineItem: public QGraphicsItem
 {
 public:
-    struct Vertex
-    {
-        QPointF point;
-        double bulge;
-    };
-
-    enum LineType
-    {
-        OriginItem,
-        offsetItem,
-    };
-
     PolylineItem()
     {
     }
@@ -93,7 +82,7 @@ public:
             std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
 
             for (const auto& polyline : results) {
-                auto item = std::make_unique<PolylineItem>();
+                auto item = std::make_shared<PolylineItem>();
                 item->LineType = LineType::offsetItem;
 
                 for (size_t i = 0; i < polyline.size(); ++i) {
@@ -120,17 +109,17 @@ public:
 
             if (std::abs(v2.bulge) < 1e-6)
             {
-                auto lineItem = std::make_unique<QGraphicsLineItem>(
+                auto lineItem = std::make_shared<QGraphicsLineItem>(
                     QLineF(v1.point, v2.point)
                     );
-                lineItem->setPen(Pen);
+                lineItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(lineItem));
             }
             else
             {
                 QPainterPath arcPath = createArcPath(v1.point, v2.point, v2.bulge);
-                auto pathItem = std::make_unique<QGraphicsPathItem>(arcPath);
-                pathItem->setPen(Pen);
+                auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
+                pathItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(pathItem));
             }
         }
@@ -267,14 +256,13 @@ public:
 
 private:
     LineType LineType = LineType::OriginItem;
-    QPen Pen = QPen(Qt::black, 1);
 
     std::vector<Vertex> VertexList;
-    std::vector<std::unique_ptr<QGraphicsItem>> ItemList;
+    std::vector<std::shared_ptr<QGraphicsItem>> ItemList;
 
     double offset  = 0;
     int offsetNum = 1;
-    std::vector<std::unique_ptr<PolylineItem>> offsetItemList;
+    std::vector<std::shared_ptr<PolylineItem>> offsetItemList;
 };
 
 

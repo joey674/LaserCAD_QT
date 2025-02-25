@@ -668,18 +668,16 @@ void MainWindow::resetDrawToolStatus()
 {
     this->currentDrawTool = DrawToolType::None;
     this->polygonEdgeNum = 3;
-    this->tmpLine = NULL;
     this->tmpCircle = NULL;
     this->tmpPolyline = NULL;
     this->tmpArc = NULL;
-    this->tmpVariantLine = NULL;
     this->tmpRect = NULL;
     this->tmpSpiral = NULL;
     this->tmpPolygon = NULL;
     this->tmpEllipse = NULL;
 }
 
-void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
+/*void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
 {
     this->setAllItemsMovable(false);
 
@@ -705,7 +703,7 @@ void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
         this->tmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Manager::getIns().addItem(std::move(this->tmpLine));
     }
-}
+}*/
 
 void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 {
@@ -787,29 +785,16 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
     if (!this->tmpArc && event == DrawEventType::LeftRelease)
     {
-        this->tmpArc = std::make_shared<QGraphicsPathItem>();
-        this->tmpArc->setData(0,pointCoordscene);
-        this->tmpArc->setPen(QPen(Qt::black, 1));
+        this->tmpArc = std::make_shared<ArcItem>();
         scene->addItem(this->tmpArc.get());
+
+        this->tmpArc->editVertex(0,pointCoordscene,0);
+        this->tmpArc->editVertex(1,pointCoordscene,0);
+         qDebug() << "1";
     }
     else if  (this->tmpArc && event == DrawEventType::MouseMove)
     {
-        QPointF startPoint =this->tmpArc->data(0).toPointF();
-        QPointF endPoint = pointCoordscene;
-
-        double radius = QLineF(startPoint, endPoint).length()/2;
-        QPointF centerPoint((startPoint.x()+endPoint.x())/2, (startPoint.y()+endPoint.y())/2);
-
-        QRectF newRect(QPointF(centerPoint.x() - radius, centerPoint.y() - radius),
-                       QPointF(centerPoint.x() + radius, centerPoint.y() + radius));
-
-        QLineF diameterLine(startPoint, endPoint);
-        double angle = diameterLine.angle();
-
-        QPainterPath path;
-        path.arcMoveTo(newRect, angle);
-        path.arcTo(newRect, angle, 180);
-        this->tmpArc->setPath(path);
+        this->tmpArc->editVertex(1,pointCoordscene,1);
     }
     else if (this->tmpArc && event == DrawEventType::LeftRelease)
     {
@@ -818,7 +803,7 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
     }
 }
 
-void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
+/*void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
 {
     this->setAllItemsMovable(false);
     if (!this->tmpVariantLine && event == DrawEventType::LeftRelease)
@@ -848,7 +833,7 @@ void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
         this->tmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
          Manager::getIns().addItem(std::move(this->tmpVariantLine));
     }
-}
+}*/
 
 void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 {
@@ -1062,7 +1047,6 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
     case Qt::Key_CapsLock:
     {
         Manager::getIns().IsCapsLocked = !Manager::getIns().IsCapsLocked;
-        VariantLineItem::arcDirectionIsClockwise = !VariantLineItem::arcDirectionIsClockwise;
         break;
     }
 
@@ -1162,11 +1146,6 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
                 this->editItem(pointCoordscene,DrawEventType::MouseMove);
                 break;
             }
-            case DrawToolType::Line:
-            {
-                this->drawLine(pointCoordscene,DrawEventType::MouseMove);
-                break;
-            }
             case DrawToolType::Circle:
             {
                 this->drawCircle(pointCoordscene,DrawEventType::MouseMove);
@@ -1185,11 +1164,6 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
             case DrawToolType::Spiral:
             {
                 this->drawSpiral(pointCoordscene,DrawEventType::MouseMove);
-                break;
-            }
-            case DrawToolType::VariantLine:
-            {
-                this->drawVariantLine(pointCoordscene,DrawEventType::MouseMove);
                 break;
             }
             case DrawToolType::Rect:
@@ -1292,11 +1266,6 @@ void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView
         this->editItem(pointCoordscene,DrawEventType::LeftRelease);
         break;
     }
-    case DrawToolType::Line:
-    {
-        this->drawLine(pointCoordscene,DrawEventType::LeftRelease);
-        break;
-    }
     case DrawToolType::Circle:
     {
         this->drawCircle(pointCoordscene,DrawEventType::LeftRelease);
@@ -1315,11 +1284,6 @@ void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView
     case DrawToolType::Spiral:
     {
         this->drawSpiral(pointCoordscene,DrawEventType::LeftRelease);
-        break;
-    }
-    case DrawToolType::VariantLine:
-    {
-        this->drawVariantLine(pointCoordscene,DrawEventType::LeftRelease);
         break;
     }
     case DrawToolType::Rect:
@@ -1360,11 +1324,6 @@ void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordVie
         this->drawPolyline(pointCoordscene,DrawEventType::RightRelease);
         break;
     }
-    case DrawToolType::VariantLine:
-    {
-        this->drawVariantLine(pointCoordscene,DrawEventType::RightRelease);
-        break;
-    }
     case DrawToolType::Ellipse:
     {
         this->drawEllipse(pointCoordscene,DrawEventType::RightRelease);
@@ -1395,13 +1354,6 @@ void MainWindow::on_graphicsview_mousewheel_occurred(QWheelEvent * event)
 ///
 /// \brief MainWindow::on_drawLineButton_clicked
 ///
-void MainWindow::on_drawLineButton_clicked()
-{
-    // displayOperation("drawLine button click");
-    // this->resetDrawToolStatus();
-    // this->currentDrawTool = DrawToolType::Line;
-}
-
 void MainWindow::on_drawCircleButton_clicked()
 {
     displayOperation("drawCircle button click");
@@ -1456,14 +1408,6 @@ void MainWindow::on_drawSpiralButton_clicked()
     ui->drawSpiralButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Spiral;
-}
-
-void MainWindow::on_drawVariantLineButton_clicked()
-{
-    // displayOperation("drawVariantLine button click");
-    // this->resetDrawToolStatus();
-    // this->currentDrawTool = DrawToolType::VariantLine;
-    // ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 }
 
 void MainWindow::on_drawRectButton_clicked()
@@ -1740,6 +1684,13 @@ void MainWindow::on_createOffsetButton_clicked()
         PolylineItem *polylineItem = static_cast<PolylineItem*>(this->currentEditItem);
 
         polylineItem->createParallelOffset(20,6);
+        break;
+    }
+    case ArcItem::Type:
+    {
+        ArcItem *arcItem = static_cast<ArcItem*>(this->currentEditItem);
+
+        arcItem->createParallelOffset(20,6);
         break;
     }
     default:{}

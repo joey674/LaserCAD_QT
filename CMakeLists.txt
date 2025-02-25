@@ -23,13 +23,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD_Designer
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
-        header/GraphicsItem/variantlineitem.h   src/variantlineitem.cpp
-        header/manager.h                     src/manager.cpp
-        header/utils.h                              src/utils.cpp
-        header/titlebar.h                        src/titlebar.cpp
-        # header/style.h                            src/style.cpp
-
+        # cavaliercontours
         src/cavaliercontours.cpp
         header/CavalierContours/intrcircle2circle2.hpp
         header/CavalierContours/intrlineseg2circle2.hpp
@@ -45,8 +39,18 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector.hpp
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
-        resource/dragSceneButton.svg
+        # GraphicsItem
+        header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
+        header/GraphicsItem/arcitem.h               src/arcitem.cpp
+        header/GraphicsItem/protocol.h              src/protocol.cpp
+        # main widget
+        header/manager.h                     src/manager.cpp
+        header/utils.h                              src/utils.cpp
+        header/titlebar.h                        src/titlebar.cpp
+        # header/style.h                            src/style.cpp
+        #utils
         resource/button.qrc
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
