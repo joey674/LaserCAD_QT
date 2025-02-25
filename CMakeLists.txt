@@ -24,29 +24,29 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
-	header/GraphicsItem/variantlineitem.h   src/variantlineitem.cpp
-	header/manager.h                        src/manager.cpp
-	header/utils.h                          src/utils.cpp
+        header/GraphicsItem/variantlineitem.h   src/variantlineitem.cpp
+        header/manager.h                     src/manager.cpp
+        header/utils.h                              src/utils.cpp
+        header/titlebar.h                        src/titlebar.cpp
+        # header/style.h                            src/style.cpp
 
-	src/cavaliercontours.cpp
-	header/CavalierContours/intrcircle2circle2.hpp
-	header/CavalierContours/intrlineseg2circle2.hpp
-	header/CavalierContours/intrlineseg2lineseg2.hpp
-	header/CavalierContours/mathutils.hpp
-	header/CavalierContours/plinesegment.hpp
-	header/CavalierContours/polyline.hpp
-	header/CavalierContours/polylinecombine.hpp
-	header/CavalierContours/polylineintersects.hpp
-	header/CavalierContours/polylineoffset.hpp
-	header/CavalierContours/polylineoffsetislands.hpp
-	header/CavalierContours/staticspatialindex.hpp
-	header/CavalierContours/vector.hpp
-	header/CavalierContours/vector2.hpp
-	header/CavalierContours/cavaliercontours.h
+        src/cavaliercontours.cpp
+        header/CavalierContours/intrcircle2circle2.hpp
+        header/CavalierContours/intrlineseg2circle2.hpp
+        header/CavalierContours/intrlineseg2lineseg2.hpp
+        header/CavalierContours/mathutils.hpp
+        header/CavalierContours/plinesegment.hpp
+        header/CavalierContours/polyline.hpp
+        header/CavalierContours/polylinecombine.hpp
+        header/CavalierContours/polylineintersects.hpp
+        header/CavalierContours/polylineoffset.hpp
+        header/CavalierContours/polylineoffsetislands.hpp
+        header/CavalierContours/staticspatialindex.hpp
+        header/CavalierContours/vector.hpp
+        header/CavalierContours/vector2.hpp
+        header/CavalierContours/cavaliercontours.h
         resource/dragSceneButton.svg
         resource/button.qrc
-        header/style.h
-        src/style.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -9,6 +9,7 @@
 #include "polylineitem.h"
 #include "variantlineitem.h"
 #include "manager.h"
+#include "titlebar.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,22 +50,23 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QGraphicsScene *Scene;
+    // QGraphicsScene *scene;
+    // std::vector<std::unique_ptr<QGraphicsItem>>
+    //     container;
 
-    std::vector<std::unique_ptr<QGraphicsItem>>
-        Container;
     void setAllItemsMovable(bool);
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
     // 记录画布放大倍率
-    std::pair<double,double> SceneScale = {1,1};
+    std::pair<double,double> sceneScale = {1,1};
     void setSceneScale(double, double);
     std::pair<double, double> getSceneScale();
 
     // 初始化组件
-    QLabel *LabelMouseCoordinate;
-    QLabel *LabelOperation;
-    void initMainWindowStyle();
+    TitleBar*titleBar;
+    QLabel *labelMouseCoordinate;
+    QLabel *labelOperation;
+    void initTitleBar();
     void initGraphicsView();
     void initButton();
     void initStatusBar();
@@ -79,8 +81,8 @@ private:
     void deleteItem();
 
     // 编辑item对象
-    QGraphicsItem *CurrentEditItem = NULL;
-    int CurrentEditPolylineVertexIndex = -1;
+    QGraphicsItem *currentEditItem = NULL;
+    int currentEditPolylineVertexIndex = -1;
     void editItem(QPointF,DrawEventType);
     void editLine(QGraphicsLineItem *, DrawEventType);
     void editCircle(QGraphicsEllipseItem *, DrawEventType);
@@ -89,17 +91,17 @@ private:
     void editSpiral();
 
     // 绘制item工具
-    DrawToolType CurrentDrawTool = None;
-    int PolygonEdgeNum = 3;
-    std::unique_ptr<QGraphicsLineItem> TmpLine;
-    std::unique_ptr<QGraphicsEllipseItem> TmpCircle;
-    std::unique_ptr<PolylineItem> TmpPolyline;
-    std::unique_ptr<QGraphicsPathItem> TmpArc;
-    std::unique_ptr<VariantLineItem> TmpVariantLine;
-    std::unique_ptr<QGraphicsRectItem> TmpRect;
-    std::unique_ptr<QGraphicsPathItem> TmpSpiral;
-    std::unique_ptr<QGraphicsPolygonItem> TmpPolygon;
-    std::unique_ptr<QGraphicsEllipseItem> TmpEllipse;
+    DrawToolType currentDrawTool = None;
+    int polygonEdgeNum = 3;
+    std::unique_ptr<QGraphicsLineItem> tmpLine;
+    std::unique_ptr<QGraphicsEllipseItem> tmpCircle;
+    std::unique_ptr<PolylineItem> tmpPolyline;
+    std::unique_ptr<QGraphicsPathItem> tmpArc;
+    std::unique_ptr<VariantLineItem> tmpVariantLine;
+    std::unique_ptr<QGraphicsRectItem> tmpRect;
+    std::unique_ptr<QGraphicsPathItem> tmpSpiral;
+    std::unique_ptr<QGraphicsPolygonItem> tmpPolygon;
+    std::unique_ptr<QGraphicsEllipseItem> tmpEllipse;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
