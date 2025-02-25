@@ -38,7 +38,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::setAllItemsMovable(bool movable )
 {
-    for (auto &item : this->container) {
+    for (auto &item : Manager::getIns().getContainer()) {
         if (item) {
             item->setFlag(QGraphicsItem::ItemIsMovable, movable);
         }
@@ -669,7 +669,7 @@ void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
 
     if (!this->tmpLine && event == DrawEventType::LeftRelease)
     {
-        this->tmpLine = std::make_unique<QGraphicsLineItem>(QLineF(pointCoordscene, pointCoordscene));
+        this->tmpLine = std::make_shared<QGraphicsLineItem>(QLineF(pointCoordscene, pointCoordscene));
         this->tmpLine->setPen(QPen(Qt::black, 1));
         this->scene->addItem(this->tmpLine.get());
     }
@@ -687,7 +687,7 @@ void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
     }
     else if (this->tmpLine && event == DrawEventType::LeftRelease) {
         this->tmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        this->container.push_back(std::move(this->tmpLine));
+        Manager::getIns().addItem(std::move(this->tmpLine));
     }
 }
 
@@ -698,7 +698,7 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
     if (!this->tmpCircle && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
-        this->tmpCircle = std::make_unique<QGraphicsEllipseItem>(initialRect);
+        this->tmpCircle = std::make_shared<QGraphicsEllipseItem>(initialRect);
         this->tmpCircle->setPen(QPen(Qt::black, 1));
         scene->addItem(this->tmpCircle.get());
     }
@@ -717,7 +717,7 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
     else if (this->tmpCircle && event == DrawEventType::LeftRelease)
     {
         this->tmpCircle->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        container.push_back(std::move(this->tmpCircle));
+         Manager::getIns().addItem(std::move(this->tmpCircle));
     }
 }
 
@@ -727,7 +727,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
 
     if (!this->tmpPolyline && event == DrawEventType::LeftRelease)
     {
-        this->tmpPolyline = std::make_unique<PolylineItem>();
+        this->tmpPolyline = std::make_shared<PolylineItem>();
         this->scene->addItem(this->tmpPolyline.get());
 
         this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -761,7 +761,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpPolyline && event == DrawEventType::RightRelease)
     {
         this->tmpPolyline->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        this->container.push_back(std::move(this->tmpPolyline));
+        Manager::getIns().addItem(std::move(this->tmpPolyline));
     }
 }
 
@@ -771,7 +771,7 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
     if (!this->tmpArc && event == DrawEventType::LeftRelease)
     {
-        this->tmpArc = std::make_unique<QGraphicsPathItem>();
+        this->tmpArc = std::make_shared<QGraphicsPathItem>();
         this->tmpArc->setData(0,pointCoordscene);
         this->tmpArc->setPen(QPen(Qt::black, 1));
         scene->addItem(this->tmpArc.get());
@@ -798,7 +798,7 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpArc && event == DrawEventType::LeftRelease)
     {
         this->tmpArc->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        container.push_back(std::move(this->tmpArc));
+        Manager::getIns().addItem(std::move(this->tmpArc));
     }
 }
 
@@ -807,7 +807,7 @@ void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
     this->setAllItemsMovable(false);
     if (!this->tmpVariantLine && event == DrawEventType::LeftRelease)
     {
-        this->tmpVariantLine = std::make_unique<VariantLineItem>(QPointF(pointCoordscene));
+        this->tmpVariantLine = std::make_shared<VariantLineItem>(QPointF(pointCoordscene));
         this->scene->addItem(this->tmpVariantLine.get());
 
         this->tmpVariantLine->setLine(pointCoordscene,true,VariantLineItem::Line);
@@ -830,7 +830,7 @@ void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
     {
         this->tmpVariantLine->setTransformOriginPoint(this->tmpVariantLine->getCenter());
         this->tmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        this->container.push_back(std::move(this->tmpVariantLine));
+         Manager::getIns().addItem(std::move(this->tmpVariantLine));
     }
 }
 
@@ -840,7 +840,7 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 
     if (!this->tmpRect && event == DrawEventType::LeftRelease)
     {
-        this->tmpRect = std::make_unique<QGraphicsRectItem>(pointCoordscene.x(), pointCoordscene.y(),0,0);
+        this->tmpRect = std::make_shared<QGraphicsRectItem>(pointCoordscene.x(), pointCoordscene.y(),0,0);
         this->tmpRect->setPen(QPen(Qt::black, 1));
         this->scene->addItem(this->tmpRect.get());
     }
@@ -854,7 +854,7 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpRect && event == DrawEventType::LeftRelease) {
         this->tmpRect->setTransformOriginPoint(this->tmpRect->rect().center());
         this->tmpRect->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        this->container.push_back(std::move(this->tmpRect));
+         Manager::getIns().addItem(std::move(this->tmpRect));
     }
 }
 
@@ -869,7 +869,7 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
     if (!this->tmpSpiral && event == DrawEventType::LeftRelease)
     {
         QPointF centerPoint  = pointCoordscene;
-        this->tmpSpiral =  std::make_unique<QGraphicsPathItem>();
+        this->tmpSpiral =  std::make_shared<QGraphicsPathItem>();
         this->tmpSpiral->setData(0,pointCoordscene);
         this->tmpSpiral->setPen(QPen(Qt::black, 1));
         scene->addItem(this->tmpSpiral.get());
@@ -910,7 +910,7 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpSpiral && event == DrawEventType::LeftRelease)
     {
         this->tmpSpiral->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        container.push_back(std::move(this->tmpSpiral));
+         Manager::getIns().addItem(std::move(this->tmpSpiral));
     }
 }
 
@@ -920,7 +920,7 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 
     if (!this->tmpPolygon && event == DrawEventType::LeftRelease)
     {
-        this->tmpPolygon = std::make_unique<QGraphicsPolygonItem>();
+        this->tmpPolygon = std::make_shared<QGraphicsPolygonItem>();
         this->tmpPolygon->setData(0,pointCoordscene);
         this->tmpPolygon->setPen(QPen(Qt::black, 1));
         this->scene->addItem(this->tmpPolygon.get());
@@ -945,7 +945,7 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
     }
     else if (this->tmpPolygon && event == DrawEventType::LeftRelease) {
         this->tmpPolygon->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        this->container.push_back(std::move(this->tmpPolygon));
+        Manager::getIns().addItem(std::move(this->tmpPolygon));
     }
 }
 
@@ -956,7 +956,7 @@ void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
     if (!this->tmpEllipse && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
-        this->tmpEllipse = std::make_unique<QGraphicsEllipseItem>(initialRect);
+        this->tmpEllipse = std::make_shared<QGraphicsEllipseItem>(initialRect);
         this->tmpEllipse->setPen(QPen(Qt::black, 1));
         scene->addItem(this->tmpEllipse.get());
     }
@@ -1003,7 +1003,7 @@ void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
             this->tmpEllipse->setData(0,pointCoordscene);
         } else {
             this->tmpEllipse->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-            container.push_back(std::move(this->tmpEllipse));
+         Manager::getIns().addItem(std::move(this->tmpEllipse));
         }
     }
 }
@@ -1668,20 +1668,20 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 void MainWindow::on_rotateButton_clicked()
 {
     displayOperation("rotate button click");
-
     this->resetDrawToolStatus();
-
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
     ui->rotateButton->setChecked(true);
 
-
-    if (!this->currentEditItem) return;
-
-    auto angle = this->currentEditItem->rotation();
-    this->currentEditItem->setRotation(angle + 90);
+    QList<QGraphicsItem*> selectedItems = this->scene->selectedItems();
+    if (selectedItems.empty())
+        return;
+    for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
+    {
+        auto angle =(*item)->rotation();
+        (*item)->setRotation(angle + 90);
+    }
 }
 
 void MainWindow::on_centerButton_clicked()
@@ -1690,7 +1690,7 @@ void MainWindow::on_centerButton_clicked()
 
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
@@ -1733,24 +1733,26 @@ void MainWindow::on_createOffsetButton_clicked()
 void MainWindow::on_deleteButton_clicked()
 {
     displayOperation("delete button click");
-
     this->resetDrawToolStatus();
-
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
     ui->deleteButton->setChecked(true);
 
-
     QList<QGraphicsItem*> selectedItems = this->scene->selectedItems();
-
     if (selectedItems.empty())
         return;
-
     for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
     {
-        Manager::getIns().deleteItem(item);
+       this->scene ->removeItem(*item);
+        auto it = std::find_if(Manager::getIns().getContainer().begin(), Manager::getIns().getContainer().end(),
+                       [item](const std::shared_ptr<QGraphicsItem>& ptr) {
+                           return ptr.get() == *item;
+                       });
+
+        if (it != Manager::getIns().getContainer().end()) {
+            Manager::getIns().getContainer().erase(it);
+        }
     }
 }
 
@@ -1784,7 +1786,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// polyline test
     ///
     /*
-    this->tmpPolyline = std::make_unique<PolylineItem>();
+    this->tmpPolyline = std::make_shared<PolylineItem>();
     this->scene->addItem(this->tmpPolyline.get());
 
     this->tmpPolyline->addVertex(QPointF(50,50),0);
@@ -1825,7 +1827,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// rect test
     ///
     /*
-    this->tmpRect = std::make_unique<QGraphicsRectItem>(100, 100,50,50);
+    this->tmpRect = std::make_shared<QGraphicsRectItem>(100, 100,50,50);
     this->tmpRect->setPen(QPen(Qt::black, 1));
     this->scene->addItem(this->tmpRect.get());
 
@@ -1836,7 +1838,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// variant test
     ///
-    /*this->tmpVariantLine = std::make_unique<VariantLineItem>(QPointF(1,1));
+    /*this->tmpVariantLine = std::make_shared<VariantLineItem>(QPointF(1,1));
     this->scene->addItem(this->tmpVariantLine.get());
     this->tmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
     this->tmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
@@ -1850,7 +1852,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     /*QPoint startPoint(10,10);
     QPoint endPoint(100,100);
 
-    this->tmpArc = std::make_unique<QGraphicsPathItem>();
+    this->tmpArc = std::make_shared<QGraphicsPathItem>();
     this->tmpArc->setData(0,QPointF(startPoint));
     this->tmpArc->setPen(QPen(Qt::black, 1));
     scene->addItem(this->tmpArc.get());
@@ -1880,7 +1882,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// polyline test
     ///
     /*QLineF line(QPointF(0,0),QPointF(100,100));
-    this->tmpPolyline = std::make_unique<PolylineItem>(line);
+    this->tmpPolyline = std::make_shared<PolylineItem>(line);
     this->scene->addItem(this->tmpPolyline.get());
 
     QLineF line1(QPointF(0,0),QPointF(-100,100));

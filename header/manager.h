@@ -32,8 +32,9 @@ public:
     {
         return ins;
     }
-    void addItem(QGraphicsItem *);
+    void addItem(std::shared_ptr<QGraphicsItem>);
     void deleteItem(QGraphicsItem *);
+    std::vector<std::shared_ptr<QGraphicsItem>>& getContainer();
 public:
     // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
     bool IsControlHold = false;

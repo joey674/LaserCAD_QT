@@ -50,8 +50,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    // QGraphicsScene *scene;
-    // std::vector<std::unique_ptr<QGraphicsItem>>
+    QGraphicsScene *scene;
+    // std::vector<std::shared_ptr<QGraphicsItem>>
     //     container;
 
     void setAllItemsMovable(bool);
@@ -93,15 +93,15 @@ private:
     // 绘制item工具
     DrawToolType currentDrawTool = None;
     int polygonEdgeNum = 3;
-    std::unique_ptr<QGraphicsLineItem> tmpLine;
-    std::unique_ptr<QGraphicsEllipseItem> tmpCircle;
-    std::unique_ptr<PolylineItem> tmpPolyline;
-    std::unique_ptr<QGraphicsPathItem> tmpArc;
-    std::unique_ptr<VariantLineItem> tmpVariantLine;
-    std::unique_ptr<QGraphicsRectItem> tmpRect;
-    std::unique_ptr<QGraphicsPathItem> tmpSpiral;
-    std::unique_ptr<QGraphicsPolygonItem> tmpPolygon;
-    std::unique_ptr<QGraphicsEllipseItem> tmpEllipse;
+    std::shared_ptr<QGraphicsLineItem> tmpLine;
+    std::shared_ptr<QGraphicsEllipseItem> tmpCircle;
+    std::shared_ptr<PolylineItem> tmpPolyline;
+    std::shared_ptr<QGraphicsPathItem> tmpArc;
+    std::shared_ptr<VariantLineItem> tmpVariantLine;
+    std::shared_ptr<QGraphicsRectItem> tmpRect;
+    std::shared_ptr<QGraphicsPathItem> tmpSpiral;
+    std::shared_ptr<QGraphicsPolygonItem> tmpPolygon;
+    std::shared_ptr<QGraphicsEllipseItem> tmpEllipse;
     void resetDrawToolStatus();
     void drawLine(QPointF,DrawEventType);
     void drawCircle(QPointF,DrawEventType);
