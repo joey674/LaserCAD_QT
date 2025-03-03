@@ -19,7 +19,7 @@ public:
     ArcItem();
 
     // \brief control 这里面所有函数结束都要调用animate
-    void editVertex(int index, QPointF point, float bulge)
+    void editVertex(int index, QPointF point, double bulge)
     {
         if (index >1) return;
 
@@ -86,7 +86,7 @@ public:
 
         auto v1 = VertexPair[0].point;
         auto v2 = VertexPair[1].point;
-        float bulge = VertexPair[1].bulge;
+        double bulge = VertexPair[1].bulge;
 
         QPainterPath arcPath = createArcPath(v1,v2,bulge);
         this->PaintItem = std::make_unique<QGraphicsPathItem>(arcPath);

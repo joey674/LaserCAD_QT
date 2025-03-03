@@ -16,47 +16,38 @@ public:
     PolylineItem()
     {
     }
-
-    ///
     /// \brief control 这里面所有函数结束都要调用animate
-    ///
-    void addVertex(QPointF point, float bulge)
+    void addVertex(QPointF point, double bulge)
     {
         Vertex newVertex = {point,bulge};
         VertexList.push_back(newVertex);
 
         animate();
     }
-
-    void editVertex(int index, QPointF point, float bulge)
+    void editVertex(int index, QPointF point, double bulge)
     {
         QPointF pos = point - this->scenePos();
         this->VertexList[index] = Vertex{pos,bulge};
 
         animate();
     }
-
     void deleteVetex(int index)
     {
         VertexList.erase(VertexList.begin() +index);
 
         animate();
     }
-
     void createParallelOffset(double offset, double offsetNum)
     {
         this->offset = offset;
         this->offsetNum = offsetNum;
         this->animate();
     }
-
     void rotate(double angle)
     {
 
     }
-    ///
     /// \brief 更新函数 不能主动调用update；都在animate中调用
-    ///
     void updateParallelOffset()
     {
         if (this->offset == 0) return;
@@ -68,23 +59,25 @@ public:
             cavc::Polyline<double> input;
             for (int i = 0; i < this->getSize(); ++i)
             {
-                // 这里好像addvertex的时候加的bulge是下一个点的; 并且我们之间的bulge是相反的;
+                // 这里addvertex的时候加的bulge是下一个点的;而且符号相反
                 input.addVertex(
                     this->VertexList[i].point.x(),
                     this->VertexList[i].point.y(),
                     (i + 1 < this->getSize()) ?
                         this->VertexList[i+1].bulge
-                                              : this->VertexList[0].bulge
+                                              : 0
                     );
             }
             input.isClosed() = false;
             std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
 
+
             for (const auto& polyline : results) {
                 auto item = std::make_shared<PolylineItem>();
                 item->LineType = LineType::offsetItem;
 
-                for (size_t i = 0; i < polyline.size(); ++i) {
+                for (size_t i = 0; i < polyline.size(); ++i)
+                {
                     auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
                     auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
                                             :   polyline.vertexes()[polyline.size()-1].bulge();
@@ -96,34 +89,33 @@ public:
             }
         }
     }
-
     void updateItemList()
     {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         ItemList.clear();
         for (size_t i = 0; i < VertexList.size()-1; ++i)
         {
-            Vertex& v1 = VertexList[i];
-            Vertex& v2 = VertexList[i+1];
+            QPointF v1 = VertexList[i].point;
+            QPointF v2 = VertexList[i+1].point;
+            double bulge = VertexList[i+1].bulge;
 
-            if (std::abs(v2.bulge) < 1e-6)
+            if (std::abs(bulge) < 1e-20)
             {
                 auto lineItem = std::make_shared<QGraphicsLineItem>(
-                    QLineF(v1.point, v2.point)
+                    QLineF(v1, v2)
                     );
                 lineItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(lineItem));
             }
             else
             {
-                QPainterPath arcPath /*= createArcPath()*/;
+                QPainterPath arcPath = createArcPath(v1,v2,bulge);
                 auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
                 pathItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(pathItem));
             }
         }
     }
-
     void animate()
     {
         prepareGeometryChange();
@@ -138,30 +130,23 @@ public:
 
         update();
     }
-
-    ///
     /// \brief get info
-    ///
     int getSize()
     {
         return VertexList.size();
     }
-
     double getOffset()
     {
         return this->offset;
     }
-
     double getOffsetNum()
     {
         return this->offsetNum;
     }
-
     Vertex getVertex(int index)
     {
         return VertexList[index];
     }
-
     QPointF getVertexPos(int index)
     {
         QPointF point = VertexList[index].point;
@@ -169,7 +154,6 @@ public:
 
         return pos;
     }
-
     QPointF getCenterPos()
     {
         if (this->VertexList.empty())
@@ -192,17 +176,12 @@ public:
 
         return pos;
     }
-
-    ///
     /// \brief reload
-    ///
     enum { Type = 6270 };
-
     int type() const override
     {
         return Type;
     }
-
     QRectF boundingRect() const override
     {
         if (this->ItemList.empty())
@@ -225,7 +204,6 @@ public:
                                     abs(offset)*offsetNum + 1);
         return newRect;
     }
-
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
     {
         Q_UNUSED(widget);
@@ -251,7 +229,6 @@ public:
         for (auto& item: this->offsetItemList)
             item->paint(painter, &optionx, widget);
     }
-
 
 private:
     LineType LineType = LineType::OriginItem;

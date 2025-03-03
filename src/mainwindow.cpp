@@ -722,7 +722,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
     else if  (this->tmpPolyline && event == DrawEventType::MouseMove)
     {
         int index = this->tmpPolyline->getSize()-1;
-        if (!Manager::getIns().IsControlHold)
+        if (!Manager::getIns().IsControlHold) // 绘制line
         {
             QPointF lastPoint = this->tmpPolyline->getVertex(index - 1).point;
             if (Manager::getIns().IsXHold)
@@ -732,7 +732,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
             else
                 this->tmpPolyline->editVertex(index,pointCoordscene,0);
         }
-        else
+        else //绘制arc
         {
             if (!Manager::getIns().IsCapsLocked)
                 this->tmpPolyline->editVertex(index, pointCoordscene,1);
@@ -776,8 +776,8 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
     else if  (this->tmpArc && this->tmpArc->operateIndex == 2 && event == DrawEventType::MouseMove)
     {
         auto center = QPointF{};
-        float  radius = 0;
-        float  bulge = 0;
+        double  radius = 0;
+        double  bulge = 0;
         auto p1 =this->tmpArc->getVertex(0).point;
         auto p2 =this->tmpArc->assistPoint;
         auto p3 =this->tmpArc->getVertex(1).point;
@@ -1717,21 +1717,73 @@ for (size_t i = 0; i < results.size(); ++i) {
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
+    /// polyline test
+    ///
+    // /*
+    this->tmpPolyline = std::make_shared<PolylineItem>();
+    this->scene->addItem(this->tmpPolyline.get());
+
+    this->tmpPolyline->addVertex(QPointF(50,50),0);
+    this->tmpPolyline->addVertex(QPointF(50,100),0);
+    this->tmpPolyline->addVertex(QPointF(100,100),0);
+    // this->tmpPolyline->addVertex(QPointF(100,50),0);
+    this->tmpPolyline->createParallelOffset(10,3);
+    // */
+
+
+    ///
+    ///
+    ///
+//     cavc::Polyline<double> input;
+//     for (int i = 0; i < this->getSize(); ++i)
+//     {
+//         // 这里addvertex的时候加的bulge是下一个点的;而且符号相反
+//         input.addVertex(
+//             this->VertexList[i].point.x(),
+//             this->VertexList[i].point.y(),
+//             (i + 1 < this->getSize()) ?
+//                 this->VertexList[i+1].bulge
+//                                       : 0
+//             );
+//     }
+//     input.isClosed() = false;
+//     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
+
+
+//     for (const auto& polyline : results) {
+//         auto item = std::make_shared<PolylineItem>();
+//         item->LineType = LineType::offsetItem;
+
+//         for (size_t i = 0; i < polyline.size(); ++i)
+//         {
+//             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+//             auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
+//                                     :   polyline.vertexes()[polyline.size()-1].bulge();
+
+//             // qDebug() << " add vertex " << i << ":" << newPoint << newBulge ;
+//             item->addVertex(newPoint,newBulge);
+//         }
+//         this->offsetItemList.push_back(std::move(item));
+//     }
+// }
+
+
+    ///
     /// arc
     ///
-    QPointF p1 = QPointF{0,100};
-    QPointF p2 = QPointF{200,100};
-    QPointF p3 = QPointF{100,200};
-    float  radius = 0;
-    auto center = QPointF{};
-    float  bulge = 0;
-    getCircleFromThreePoints(p1,p2,p3,center,radius);
-    getBulgeFromThreePoints(p1,p2,p3,center,radius,bulge);
+    // QPointF p1 = QPointF{0,100};
+    // QPointF p2 = QPointF{200,100};
+    // QPointF p3 = QPointF{100,200};
+    // double  radius = 0;
+    // auto center = QPointF{};
+    // double  bulge = 0;
+    // getCircleFromThreePoints(p1,p2,p3,center,radius);
+    // getBulgeFromThreePoints(p1,p2,p3,center,radius,bulge);
 
-    this->tmpArc = std::make_shared<ArcItem>();
-    scene->addItem(this->tmpArc.get());
-    this->tmpArc->editVertex(0,p1,0);
-    this->tmpArc->editVertex(1,p3,bulge);
+    // this->tmpArc = std::make_shared<ArcItem>();
+    // scene->addItem(this->tmpArc.get());
+    // this->tmpArc->editVertex(0,p1,0);
+    // this->tmpArc->editVertex(1,p3,bulge);
 
     // qDebug() << "p2" << p2;
     // qDebug() << "center" << center;
@@ -1752,21 +1804,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     // scene->addItem( this->tmpArc.get());
     //  this->tmpArc->editVertex(0,QPointF{0,0},0);
     //  this->tmpArc->editVertex(1,QPointF{0,-100},0.5);
-
-    ///
-    /// polyline test
-    ///
-    /*
-    this->tmpPolyline = std::make_shared<PolylineItem>();
-    this->scene->addItem(this->tmpPolyline.get());
-
-    this->tmpPolyline->addVertex(QPointF(50,50),0);
-    this->tmpPolyline->addVertex(QPointF(50,100),0);
-    this->tmpPolyline->addVertex(QPointF(100,100),0);
-    // this->tmpPolyline->addVertex(QPointF(100,50),0);
-    this->tmpPolyline->createParallelOffset(10,3);
-    */
-
 
     ///
     /// CC  test

@@ -2,12 +2,12 @@
 
 QPen defaultLinePen = QPen(Qt::black, 1);
 
-QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const float & bulge)
+QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const double & bulge)
 {
     QPointF center = QPointF{};
-    float  radius = 0;
+    double  radius = 0;
     getCircleFromBulge(p1,p2,bulge,center,radius);
-    qDebug() << "createArcPath" << p1<< p2 << bulge << center << radius;
+    // qDebug() << "createArcPath" << p1<< p2 << bulge << center << radius;
 
     QLineF line0(center , QPointF{center.x()+1,center.y()});
     QLineF line1(center, p1);
@@ -23,7 +23,7 @@ QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const float & bu
     return path;
 }
 
-void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const float & bulge, QPointF& center,float & radius)
+void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const double & bulge, QPointF& center,double & radius)
 {
     // 1. 计算 θ（弧度）
     double theta = atan(std::abs(bulge)) * 4;
@@ -35,8 +35,8 @@ void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const float & bulg
     radius = (AB / 2) / sin(theta / 2);
 
     // 4. 计算 a 和 c
-    double a = acos(std::min(1.0, (AB / 2) / radius));  // 防止浮点误差
-    double c = atan2(p2.y() - p1.y(), p2.x() - p1.x()); // 计算 p1 到 p2 的角度
+    double a = acos(std::min(1.0, (AB / 2) / radius));
+    double c = atan2(p2.y() - p1.y(), p2.x() - p1.x());
 
     // 5. 计算两个可能的圆心坐标
     double CX1 = p1.x() + cos(c + a) * radius;
@@ -44,8 +44,8 @@ void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const float & bulg
     double CX2 = p1.x() + cos(c - a) * radius;
     double CY2 = p1.y() + sin(c - a) * radius;
 
-    qDebug() << CX1 << CY1;
-    qDebug() << CX2 << CY2;
+    // qDebug() << CX1 << CY1;
+    // qDebug() << CX2 << CY2;
 
     // 6. 选择正确的圆心
     if (bulge < -1 || (bulge > 0 && bulge < 1)) {
@@ -54,9 +54,9 @@ void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const float & bulg
         center =  QPointF(CX1, CY1);
     }
 
-    qDebug() << "getCircleFromBulge" << center << radius;
+    // qDebug() << "getCircleFromBulge" << center << radius;
 }
-void getCircleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3, QPointF& center, float & radius)
+void getCircleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3, QPointF& center, double & radius)
 {
     double A = p1.x()*(p2.y() - p3.y()) - p1.y()*(p2.x() - p3.x()) + p2.x()*p3.y() - p3.x()*p2.y();
     double B = (p1.x()*p1.x() + p1.y()*p1.y())*(p3.y() - p2.y()) + (p2.x()*p2.x() + p2.y()*p2.y())*(p1.y() - p3.y()) + (p3.x()*p3.x() + p3.y()*p3.y())*(p2.y() - p1.y());
@@ -69,7 +69,7 @@ void getCircleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPoint
 
     // qDebug() << "center"<<center <<" radius" <<radius;
 }
-void getBulgeFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3,const QPointF& center,const float & radius, float  &bulge)
+void getBulgeFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3,const QPointF& center,const double & radius, double  &bulge)
 {
     QLineF line1(center,p1);
     QLineF line2(center,p2);
@@ -77,7 +77,7 @@ void getBulgeFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF
 
     double angle12 = line1.angleTo(line2);
     double angle13 = line1.angleTo(line3);
-    qDebug() <<  "getBulgeFromThreePoints" << angle12 << angle13;
+    // qDebug() <<  "getBulgeFromThreePoints" << angle12 << angle13;
 
     if (angle13 >= angle12)
     {
