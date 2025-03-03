@@ -10,7 +10,7 @@
 struct Vertex
 {
     QPointF point;
-    double bulge;
+    float bulge;
 };
 
 enum LineType
@@ -27,4 +27,8 @@ enum ItemTypeId /* 只用于对照 不参与实际使用 */
 
 extern  QPen defaultLinePen;
 
+void getCircleFromBulge(const QPointF& p1, const QPointF& p2, const float & bulge, QPointF& center,float & radius);
+void getCircleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3, QPointF& center, float & radius);
+void getBulgeFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3,const QPointF& center,const float & radius, float  &bulge);
+QPainterPath createArcPath(const QPointF& p1, const QPointF& p3, const float & bulge);
 #endif // PROTOCOL_H

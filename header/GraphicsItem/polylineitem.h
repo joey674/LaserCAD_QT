@@ -20,7 +20,7 @@ public:
     ///
     /// \brief control 这里面所有函数结束都要调用animate
     ///
-    void addVertex(QPointF point, double bulge)
+    void addVertex(QPointF point, float bulge)
     {
         Vertex newVertex = {point,bulge};
         VertexList.push_back(newVertex);
@@ -28,7 +28,7 @@ public:
         animate();
     }
 
-    void editVertex(int index, QPointF point, double bulge)
+    void editVertex(int index, QPointF point, float bulge)
     {
         QPointF pos = point - this->scenePos();
         this->VertexList[index] = Vertex{pos,bulge};

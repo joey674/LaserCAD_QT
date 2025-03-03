@@ -677,34 +677,6 @@ void MainWindow::resetDrawToolStatus()
     this->tmpEllipse = NULL;
 }
 
-/*void MainWindow::drawLine(QPointF pointCoordscene,DrawEventType event)
-{
-    this->setAllItemsMovable(false);
-
-    if (!this->tmpLine && event == DrawEventType::LeftRelease)
-    {
-        this->tmpLine = std::make_shared<QGraphicsLineItem>(QLineF(pointCoordscene, pointCoordscene));
-        this->tmpLine->setPen(QPen(Qt::black, 1));
-        this->scene->addItem(this->tmpLine.get());
-    }
-    else if  (this->tmpLine && event == DrawEventType::MouseMove)
-    {
-        QLineF newLine;
-        QPointF endPoint = pointCoordscene;
-        if (Manager::getIns().IsXHold)
-            endPoint = QPointF(pointCoordscene.x(), this->tmpLine->line().p1().y());
-        else if (Manager::getIns().IsYHold)
-                    endPoint = QPointF(this->tmpLine->line().p1().x(), pointCoordscene.y());
-        newLine = QLineF(this->tmpLine->line().p1(), endPoint);
-        this->tmpLine->setLine(newLine);
-        this->tmpLine->setTransformOriginPoint(newLine.center());
-    }
-    else if (this->tmpLine && event == DrawEventType::LeftRelease) {
-        this->tmpLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        Manager::getIns().addItem(std::move(this->tmpLine));
-    }
-}*/
-
 void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 {
     this->setAllItemsMovable(false);
@@ -787,63 +759,39 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
     {
         this->tmpArc = std::make_shared<ArcItem>();
         scene->addItem(this->tmpArc.get());
+        this->tmpArc->operateIndex += 1;
 
         this->tmpArc->editVertex(0,pointCoordscene,0);
         this->tmpArc->editVertex(1,pointCoordscene,0);
     }
-    else if  (this->tmpArc && this->arcSecondPoint == QPointF{} && event == DrawEventType::MouseMove)
+    else if  (this->tmpArc  &&  this->tmpArc->operateIndex == 1 && event == DrawEventType::MouseMove)
     {
         this->tmpArc->editVertex(1,pointCoordscene,1);
     }
-    else if (this->tmpArc &&  this->arcSecondPoint == QPointF{} && event == DrawEventType::LeftRelease)
+    else if (this->tmpArc && this->tmpArc->operateIndex == 1 && event == DrawEventType::LeftRelease)
     {
-        this->arcSecondPoint = pointCoordscene;
+        this->tmpArc->operateIndex += 1;
+        this->tmpArc->assistPoint = pointCoordscene;
     }
-    else if  (this->tmpArc && this->arcSecondPoint != QPointF{} && event == DrawEventType::MouseMove)
+    else if  (this->tmpArc && this->tmpArc->operateIndex == 2 && event == DrawEventType::MouseMove)
     {
-        double bulge = 0/*ArcPathToBulge(this->tmpArc->getVertex(0).point, this->arcSecondPoint, pointCoordscene)*/;
+        auto center = QPointF{};
+        float  radius = 0;
+        float  bulge = 0;
+        auto p1 =this->tmpArc->getVertex(0).point;
+        auto p2 =this->tmpArc->assistPoint;
+        auto p3 =this->tmpArc->getVertex(1).point;
+        getCircleFromThreePoints(p1,p2,p3,center,radius);
+        getBulgeFromThreePoints(p1,p2,p3,center,radius,bulge);
+
         this->tmpArc->editVertex(1, pointCoordscene, bulge);
     }
-    else if (this->tmpArc && event == DrawEventType::LeftRelease)
+    else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == DrawEventType::LeftRelease)
     {
         this->tmpArc->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
         Manager::getIns().addItem(std::move(this->tmpArc));
-
-        this->arcSecondPoint = QPointF{};
     }
 }
-
-/*void MainWindow::drawVariantLine(QPointF pointCoordscene, DrawEventType event)
-{
-    this->setAllItemsMovable(false);
-    if (!this->tmpVariantLine && event == DrawEventType::LeftRelease)
-    {
-        this->tmpVariantLine = std::make_shared<VariantLineItem>(QPointF(pointCoordscene));
-        this->scene->addItem(this->tmpVariantLine.get());
-
-        this->tmpVariantLine->setLine(pointCoordscene,true,VariantLineItem::Line);
-    }
-    else if  (this->tmpVariantLine && event == DrawEventType::MouseMove)
-    {
-        if (!Manager::getIns().IsControlHold)
-            this->tmpVariantLine->setLine(pointCoordscene,false,VariantLineItem::Line);
-        else
-            this->tmpVariantLine->setLine(pointCoordscene,false,VariantLineItem::Arc);
-    }
-    else if (this->tmpVariantLine && event == DrawEventType::LeftRelease)
-    {
-        if (!Manager::getIns().IsControlHold)
-            this->tmpVariantLine->setLine(pointCoordscene,true,VariantLineItem::Line);
-        else
-            this->tmpVariantLine->setLine(pointCoordscene,true,VariantLineItem::Arc);
-    }
-    else if (this->tmpVariantLine && event == DrawEventType::RightRelease)
-    {
-        this->tmpVariantLine->setTransformOriginPoint(this->tmpVariantLine->getCenter());
-        this->tmpVariantLine->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-         Manager::getIns().addItem(std::move(this->tmpVariantLine));
-    }
-}*/
 
 void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 {
@@ -1765,13 +1713,45 @@ for (size_t i = 0; i < results.size(); ++i) {
     qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
 }
 }
+
 void MainWindow::on_drawTestLineButton_clicked()
 {
     ///
+    /// arc
     ///
-    ///
+    QPointF p1 = QPointF{0,100};
+    QPointF p2 = QPointF{200,100};
+    QPointF p3 = QPointF{100,200};
+    float  radius = 0;
+    auto center = QPointF{};
+    float  bulge = 0;
+    getCircleFromThreePoints(p1,p2,p3,center,radius);
+    getBulgeFromThreePoints(p1,p2,p3,center,radius,bulge);
 
+    this->tmpArc = std::make_shared<ArcItem>();
+    scene->addItem(this->tmpArc.get());
+    this->tmpArc->editVertex(0,p1,0);
+    this->tmpArc->editVertex(1,p3,bulge);
 
+    // qDebug() << "p2" << p2;
+    // qDebug() << "center" << center;
+    // qDebug()  << "radius" << radius;
+    // qDebug() << "bulge" <<bulge;
+
+    // this->tmpArc = std::make_shared<ArcItem>();
+    // scene->addItem( this->tmpArc.get());
+    // this->tmpArc->editVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->editVertex(1,QPointF{-100,0},0.5);
+
+    //  this->tmpArc = std::make_shared<ArcItem>();
+    // scene->addItem( this->tmpArc.get());
+    // this->tmpArc->editVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->editVertex(1,QPointF{0,100},1.5);
+
+    //  this->tmpArc = std::make_shared<ArcItem>();
+    // scene->addItem( this->tmpArc.get());
+    //  this->tmpArc->editVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->editVertex(1,QPointF{0,-100},0.5);
 
     ///
     /// polyline test

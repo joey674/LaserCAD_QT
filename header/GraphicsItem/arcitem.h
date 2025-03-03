@@ -13,42 +13,32 @@
 class ArcItem: public QGraphicsItem
 {
 public:
+    int operateIndex = 0;
+    QPointF assistPoint =QPointF{};
+public:
     ArcItem();
 
-    ///
-    /// \brief control 这里面所有函数结束都要调用animate
-    ///
-    void editVertex(int index, QPointF point, double bulge)
+    // \brief control 这里面所有函数结束都要调用animate
+    void editVertex(int index, QPointF point, float bulge)
     {
         if (index >1) return;
 
         QPointF pos = point - this->scenePos();
         this->VertexPair[index] = Vertex{pos,bulge};
 
-        this->center = calculateArcCenter(this->VertexPair[0].point,this->VertexPair[1].point,this->VertexPair[1].bulge, this->radius);
-        qDebug() <<  "arc v1: "<< this->VertexPair[0].point;
-        qDebug() <<  "arc v2: "<< this->VertexPair[1].point;
-        qDebug() <<  "arc center: "<< this->center;
-        qDebug() <<  "arc radius: "<< this->radius;
-
         animate();
     }
-
     void createParallelOffset(double offset, double offsetNum)
     {
         this->offset = offset;
         this->offsetNum = offsetNum;
         this->animate();
     }
-
     void rotate(double angle)
     {
 
     }
-
-    ///
-    /// \brief 更新函数 不能主动调用update；都在animate中调用
-    ///
+    //\brief 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset()
     {
         if (this->offset == 0) return;
@@ -89,20 +79,19 @@ public:
             }
         }
     }
-
     void updatePaintItem()
     {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->PaintItem = nullptr;
 
-        Vertex& v1 = VertexPair[0];
-        Vertex& v2 = VertexPair[1];
+        auto v1 = VertexPair[0].point;
+        auto v2 = VertexPair[1].point;
+        float bulge = VertexPair[1].bulge;
 
-        QPainterPath arcPath = createArcPath();
+        QPainterPath arcPath = createArcPath(v1,v2,bulge);
         this->PaintItem = std::make_unique<QGraphicsPathItem>(arcPath);
         this->PaintItem->setPen(defaultLinePen);
     }
-
     void animate()
     {
         prepareGeometryChange();
@@ -115,26 +104,20 @@ public:
 
         update();
     }
-
-    ///
     /// \brief get info
-    ///
     double getOffset()
     {
         return this->offset;
     }
-
     double getOffsetNum()
     {
         return this->offsetNum;
     }
-
     Vertex getVertex(int index)
     {
         if (index > 1) assert("false index:only 0,1");
         return VertexPair[index];
     }
-
     QPointF getVertexPos(int index)
     {
         if (index > 1) assert("false index:only 0,1");
@@ -143,84 +126,16 @@ public:
 
         return pos;
     }
-
     QPointF getCenterPos()
     {
-        QPointF point = VertexPair[0].point + VertexPair[1].point;
-        QPointF pos = point + this->scenePos();
-
-        return pos;
+        // 返回弧的圆心 不是中心
     }
-
-    ///
-    /// 计算
-    ///
-    QPainterPath createArcPath()
-    {
-        auto p1 = this->VertexPair[0].point;
-        auto p2 = this->VertexPair[1].point;
-        auto bulge = this->VertexPair[1].bulge;
-        auto radius = this->radius;
-        auto center = this->center;
-
-        // 计算起始角度
-        QLineF startVector(center, p1);
-        double startAngle = startVector.angle();
-
-        // 计算圆弧角度
-        double sweepAngle = atan(std::abs(bulge)) * 4 * 180 / M_PI;
-        if (bulge > 0) sweepAngle = -sweepAngle;
-
-        qDebug() << "create arc path: startAngle:" << startAngle;
-        qDebug() << "create arc path: sweepAngle:" << sweepAngle;
-
-        // 创建圆弧路径
-        QPainterPath path;
-        path.moveTo(p1);
-        path.arcTo(QRectF(center.x() - radius, center.y() - radius, 2 * radius, 2 * radius),
-                   startAngle, sweepAngle);
-        return path;
-    }
-
-    QPointF calculateArcCenter(QPointF p1, QPointF p2, double bulge, double &radius)
-    {
-        // 1. 计算 θ（弧度）
-        double theta = atan(std::abs(bulge)) * 4;
-
-        // 2. 计算弦长 AB
-        double AB = sqrt(pow(p1.x() - p2.x(), 2) + pow(p1.y() - p2.y(), 2));
-
-        // 3. 计算半径 R
-        radius = (AB / 2) / sin(theta / 2);
-
-        // 4. 计算 a 和 c
-        double a = acos(std::min(1.0, (AB / 2) / radius));  // 防止浮点误差
-        double c = atan2(p2.y() - p1.y(), p2.x() - p1.x()); // 计算 p1 到 p2 的角度
-
-        // 5. 计算两个可能的圆心坐标
-        double CX1 = p1.x() + cos(c + a) * radius;
-        double CY1 = p1.y() + sin(c + a) * radius;
-        double CX2 = p1.x() + cos(c - a) * radius;
-        double CY2 = p1.y() + sin(c - a) * radius;
-
-        // 6. 选择正确的圆心
-        if (bulge < -1 || (bulge > 0 && bulge < 1)) {
-            return QPointF(CX1, CY1);
-        } else {
-            return QPointF(CX2, CY2);
-        }
-    }
-
-    ///
-    /// \brief reload
-    ///
+    //  reload
     enum { Type = 6271 };
-
     int type() const override
     {
         return Type;
     }
-
     QRectF boundingRect() const override
     {
         if (!this->PaintItem)
@@ -235,7 +150,6 @@ public:
             abs(offset)*offsetNum + 1);
         return newRect;
     }
-
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override
     {
         Q_UNUSED(widget);
@@ -248,25 +162,20 @@ public:
         this->PaintItem->paint(painter, &optionx, widget);
 
         // 绘制拖拽原点
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::red);
-        for (const auto &vertex : VertexPair)
-        {
-            if (this->LineType ==LineType::OriginItem)
-                painter->drawEllipse(vertex.point, 1, 1);
-        }
+        // painter->setPen(Qt::NoPen);
+        // painter->setBrush(Qt::red);
+        // for (const auto &vertex : VertexPair)
+        // {
+        //     if (this->LineType ==LineType::OriginItem)
+        //         painter->drawEllipse(vertex.point, 1, 1);
+        // }
 
         // 绘制offset
         for (auto& item: this->offsetItemList)
             item->paint(painter, &optionx, widget);
     }
-
-
 private:
     LineType LineType = LineType::OriginItem;
-
-    double radius = 0;
-    QPointF center = QPointF{};
 
     std::array<Vertex,2> VertexPair = {Vertex{QPointF{0,0}, 0},Vertex{QPointF{0,0}, 0}};
     std::shared_ptr<QGraphicsPathItem> PaintItem;
