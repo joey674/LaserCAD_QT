@@ -7,6 +7,7 @@
 #include <QDebug.h>
 #include <QStyleOptionGraphicsItem>
 #include "protocol.h"
+#include "logger.h"
 #include "header/CavalierContours/polyline.hpp"
 #include "header/CavalierContours/polylineoffset.hpp"
 
@@ -50,44 +51,77 @@ public:
     /// \brief 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset()
     {
-        // if (this->offset == 0) return;
-        // this->offsetItemList.clear();
-        // qDebug() << "update offset";
+        if (this->offset == 0) return;
+        this->offsetItemList.clear();
+        DEBUG_MSG("");
+        DEBUG_MSG("update parallel offset");
 
-        // for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
-        // {
-        //     cavc::Polyline<double> input;
-        //     for (int i = 0; i < this->getSize(); ++i)
-        //     {
-        //         // 这里addvertex的时候加的angle是下一个点的;而且符号相反
-        //         input.addVertex(
-        //             this->VertexList[i].point.x(),
-        //             this->VertexList[i].point.y(),
-        //             (i + 1 < this->getSize()) ?
-        //                 this->VertexList[i+1].angle
-        //                                       : 0
-        //             );
-        //     }
-        //     input.isClosed() = false;
-        //     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
+        double inputOuputSign = -1;
+
+        for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
+        {
+            // 输入cavc库
+            cavc::Polyline<double> input;
+            for (int i = 0; i < this->getSize(); ++i)
+            {
+                auto p1 = this->VertexList[i].point;
+                auto p2 = this->VertexList[i+1].point;
+                auto angle = (i+1 <= this->getSize())?
+                                            this->VertexList[i+1].angle:0;
+
+                if (angle>180.01 || angle < -180.01)
+                {
+                    auto sign = angle>0? 1:-1;
+                    input.addVertex(p1.x(),p1.y(), sign*inputOuputSign);/*先走180度*/
+
+                    QPointF intersectPoint = QPointF{};
+                    double newAngle = 0;
+                    double newBulge = 0;
+                    getIntersectPoint(p1,p2,angle,180,intersectPoint);
+                    newAngle = angle - sign*180;
+                    getBulgeFromAngle(newAngle,newBulge);
+                    input.addVertex(intersectPoint.x(),intersectPoint.y(), newBulge *inputOuputSign);
+
+                    DEBUG_VAR(intersectPoint.x());
+                    DEBUG_VAR(intersectPoint.y());
+                    DEBUG_VAR(newAngle);
+                }else
+                {
+                    double bulge = 0;
+                    getBulgeFromAngle(angle,bulge);
+                    input.addVertex(p1.x(),p1.y(), bulge *inputOuputSign);
+
+                    // DEBUG_VAR(p1.x());
+                    // DEBUG_VAR(p1.y());
+                    // DEBUG_VAR(bulge);
+                }
+            }
+            input.isClosed() = false;
+            std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
 
 
-        //     for (const auto& polyline : results) {
-        //         auto item = std::make_shared<PolylineItem>();
-        //         item->LineType = LineType::offsetItem;
+            // 获取结果
+            for (const auto& polyline : results) {
+                auto item = std::make_shared<PolylineItem>();
+                item->LineType = LineType::offsetItem;
 
-        //         for (size_t i = 0; i < polyline.size(); ++i)
-        //         {
-        //             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-        //             auto newangle = (i > 0) ?  polyline.vertexes()[i-1].angle()
-        //                                     :   polyline.vertexes()[polyline.size()-1].angle();
+                for (size_t i = 0; i < polyline.size(); ++i)
+                {
+                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+                    auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
+                                            :   polyline.vertexes()[polyline.size()-1].bulge();
 
-        //             // qDebug() << " add vertex " << i << ":" << newPoint << newangle ;
-        //             item->addVertex(newPoint,newangle);
-        //         }
-        //         this->offsetItemList.push_back(std::move(item));
-        //     }
-        // }
+                    double newAngle = 0;
+                    getAngleFromBulge(newBulge *inputOuputSign,newAngle);
+                    item->addVertex(newPoint,newAngle);
+
+                    // DEBUG_VAR(newPoint.x());
+                    // DEBUG_VAR(newPoint.y());
+                    // DEBUG_VAR(newBulge);
+                }
+                this->offsetItemList.push_back(std::move(item));
+            }
+        }
     }
     void updateItemList()
     {

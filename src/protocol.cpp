@@ -7,7 +7,7 @@ QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const double & a
 {
     QPointF center = QPointF{};
     double  radius = 0;
-    getCircleFromAngle(p1,p2,angle,center,radius);
+    getCircleFromTwoPointsAndAngle(p1,p2,angle,center,radius);
 
     QLineF line0(center , QPointF{center.x()+1,center.y()});
     QLineF line1(center, p1);
@@ -19,7 +19,24 @@ QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const double & a
                startAngle, angle);
     return path;
 }
-void getCircleFromAngle(const QPointF& p1, const QPointF& p2, const double & angle, QPointF& center,double & radius)
+void getIntersectPoint(const QPointF& p1, const QPointF& p3, const double& p1p3Angle,const double & sweepAngle, QPointF& intersectPoint)
+{
+    if (sweepAngle <0)
+        FATAL_MSG("intersect angle must be positive");
+
+    QPointF center=QPointF{};
+    double radius=0;
+    getCircleFromTwoPointsAndAngle(p1,p3,p1p3Angle,center,radius);
+
+    double p1p2Angle= sweepAngle;
+    if (p1p3Angle<=0)
+        p1p2Angle = - p1p2Angle;
+
+    QLineF line(center,p1);
+    line.setAngle(line.angle() + p1p2Angle);
+    intersectPoint = line.p2();
+}
+void getCircleFromTwoPointsAndAngle(const QPointF& p1, const QPointF& p2, const double& angle, QPointF& center,double & radius)
 {
     double theta = qDegreesToRadians(abs(angle));
 
@@ -56,18 +73,19 @@ void getCircleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPoint
     center.setX(  -(B / (2 * A)) );
     center.setY( -(C / (2 * A)) );
     radius = sqrt((B*B + C*C - 4 * A * D) / (4 * A * A));
-
-    // qDebug() << "center"<<center <<" radius" <<radius;
 }
-void getAngleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3,const QPointF& center,const double & radius, double  &angle)
+void getAngleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF& p3, double  &angle)
 {
+    QPointF center=QPointF{};
+    double radius=0;
+
+    getCircleFromThreePoints(p1,p2,p3,center,radius);
     QLineF line1(center,p1);
     QLineF line2(center,p2);
     QLineF line3(center,p3);
 
     double angle12 = line1.angleTo(line2);
     double angle13 = line1.angleTo(line3);
-    // qDebug() <<  "getAngleFromThreePoints" << angle12 << angle13;
 
     if (angle13 >= angle12)
     {
@@ -77,4 +95,21 @@ void getAngleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF
     {
         angle = angle13 - 360;
     }
+}
+void getBulgeFromAngle(const double &angle,double &bulge)
+{
+    double theta = qDegreesToRadians(abs(angle));
+    if (angle >=0)
+        bulge = tan(theta/4);
+    else
+        bulge = -tan(theta/4);
+}
+void getAngleFromBulge(const double &bulge, double &angle)
+{
+    double theta = atan(std::abs(bulge)) * 4;
+
+    if (bulge >=0)
+        angle = qRadiansToDegrees(theta);
+    else
+        angle = -qRadiansToDegrees(theta);
 }

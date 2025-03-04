@@ -32,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     initPropertyTableWidget();
     initStatusBar();
 }
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -595,7 +596,6 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
                      QString::number(polylineItem->getCenterPos().x())  +
                      " " +
                      QString::number(polylineItem->getCenterPos().y()));
-    // qDebug() << "edit Polyline: current edit vertex " << this->CurrentEditPolylineVertexIndex;
 
     // 图形上直接编辑操作点；
     if (this->currentEditPolylineVertexIndex == -1 && event == DrawEventType::LeftRelease)
@@ -604,7 +604,6 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
 
         for (int i = 0; i < polylineItem->getSize(); ++i) {
             double distance = QLineF(pointCoordscene, polylineItem->getVertexPos(i)).length();
-            qDebug() << "distance ?<10: " << distance ;
             if (distance <= 10.0 && distance < minDistance) {
                 minDistance = distance;
                 this->currentEditPolylineVertexIndex = i;
@@ -614,8 +613,8 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
     }
     else if (this->currentEditPolylineVertexIndex != -1 && event == DrawEventType::MouseMove)
     {
-        // double bulge = polylineItem->getVertex(this->currentEditPolylineVertexIndex).bulge;
-        // polylineItem->editVertex(this->currentEditPolylineVertexIndex,pointCoordscene ,bulge);
+        double angle = polylineItem->getVertex(this->currentEditPolylineVertexIndex).angle;
+        polylineItem->editVertex(this->currentEditPolylineVertexIndex, pointCoordscene, angle);
         // 注意这里输入的是绝对坐标 所以要减去相对坐标！
     }
     else if (this->currentEditPolylineVertexIndex != -1 && event == DrawEventType::LeftRelease)
@@ -736,9 +735,9 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
         else //绘制arc
         {
             if (!Manager::getIns().IsCapsLocked)
-                this->tmpPolyline->editVertex(index, pointCoordscene,1);
+                this->tmpPolyline->editVertex(index, pointCoordscene,180);
             else
-                 this->tmpPolyline->editVertex(index, pointCoordscene,-1);
+                 this->tmpPolyline->editVertex(index, pointCoordscene,-180);
         }
     }
     else if (this->tmpPolyline && event == DrawEventType::LeftRelease)
@@ -782,8 +781,7 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
         auto p1 =this->tmpArc->getVertex(0).point;
         auto p2 =this->tmpArc->assistPoint;
         auto p3 =this->tmpArc->getVertex(1).point;
-        getCircleFromThreePoints(p1,p2,p3,center,radius);
-        getAngleFromThreePoints(p1,p2,p3,center,radius,angle);
+        getAngleFromThreePoints(p1,p2,p3,angle);
 
         this->tmpArc->editVertex(1, pointCoordscene, angle);
     }
@@ -1455,12 +1453,13 @@ void MainWindow::on_dragSceneButton_clicked()
 }
 
 ///
-/// \brief MainWindow::on_propertyTableWidget_cellChanged
+/// \brief
 ///
 void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 {
     if (this->currentEditItem != NULL) {
-        switch (this->currentEditItem->type()) {
+        switch (this->currentEditItem->type())
+        {
         case QGraphicsLineItem::Type:
         {
 
@@ -1548,7 +1547,8 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
             double offset = 0, offsetNum = 0;
             int rowCount = ui->propertyTableWidget->rowCount();
 
-            for (int r = 0; r < rowCount; ++r) {
+            for (int r = 0; r < rowCount; ++r)
+            {
                 QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
                 QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
                 if (!nameItem || !valueItem)
@@ -1573,7 +1573,6 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
                 // update
                 PolylineItem *polyline = static_cast<PolylineItem*>(this->currentEditItem);
                 polyline->createParallelOffset(offset,offsetNum);
-                qDebug() << "finish";
             }
             break;
         }
@@ -1720,6 +1719,67 @@ void MainWindow::on_drawTestLineButton_clicked()
     qDebug() << "";
     qDebug() << "------test------";
     ///
+    /// test template
+    ///
+    // /*
+    // */
+
+    ///
+    /// cavc2
+    ///
+    /*
+    // QPointF p1 = QPointF{100,0};
+    // QPointF p2 = QPointF{};
+    // QPointF p3 = QPointF{0,100};
+    // double p1p3Angle = -90;
+    // double sweepAngle = 45;
+    // getIntersectPoint(p1,p3,p1p3Angle,sweepAngle,p2);
+    // DEBUG_VAR(p2);
+
+    QPointF p1 = QPointF{100,0};
+    QPointF p2 = QPointF{};
+    QPointF p3 = QPointF{0,-100};
+    double p1p3Angle = 90;
+    double sweepAngle = 45;
+    getIntersectPoint(p1,p3,p1p3Angle,sweepAngle,p2);
+    DEBUG_VAR(p2);
+     */
+
+    ///
+    /// cavc
+    ///
+    /*
+
+    double angle0 = 90;
+    double angle1 = 270;
+    double angle2 = -90;
+    double angle3 = -270;
+
+    double bulge = 0;
+    double angle = 0;
+    getBulgeFromAngle(angle0,bulge);
+    DEBUG_VAR(bulge);
+    getAngleFromBulge(bulge,angle);
+    DEBUG_VAR(angle);
+
+    getBulgeFromAngle(angle1,bulge);
+    DEBUG_VAR(bulge);
+    getAngleFromBulge(bulge,angle);
+    DEBUG_VAR(angle);
+
+    getBulgeFromAngle(angle2,bulge);
+    DEBUG_VAR(bulge);
+    getAngleFromBulge(bulge,angle);
+    DEBUG_VAR(angle);
+
+    getBulgeFromAngle(angle3,bulge);
+    DEBUG_VAR(bulge);
+    getAngleFromBulge(bulge,angle);
+    DEBUG_VAR(angle);
+
+    */
+
+    ///
     /// polyline test
     ///
     /*
@@ -1736,7 +1796,8 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// arc
     ///
-    QPointF p1 = QPointF{-100,0};
+    /*
+     QPointF p1 = QPointF{-100,0};
     QPointF p2 = QPointF{100,0};
     QPointF p3 = QPointF{200,-173.20508};
     double  radius = 0;
@@ -1771,26 +1832,28 @@ void MainWindow::on_drawTestLineButton_clicked()
     //  this->tmpArc->editVertex(0,QPointF{0,0},0);
     //  this->tmpArc->editVertex(1,QPointF{0,-100},0.5);
 
+*/
     ///
     /// CC  test
     ///
-    // /*
-    // cavc::Polyline<double> input;
-    // // add vertexes as (x, y, bulge)
-    // input.addVertex(0, 0, 0);
-    // input.addVertex(0,100,0);
-    // input.addVertex(100,100,0);
-    // input.addVertex(100,0,0);
-    // input.isClosed() = true;
+    /*
+    cavc::Polyline<double> input;
+    // add vertexes as (x, y, bulge)
+    input.addVertex(0, 0, 0);
+    input.addVertex(0,100,0);
+    input.addVertex(100,100,0);
+    input.addVertex(100,0,0);
+    input.isClosed() = true;
 
-    // std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 10.0);
-    // printResults(results);
-    // */
+    std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 10.0);
+    printResults(results);
+    */
 
     ///
     ///
     ///
-    /*QPolygonF newPolygon;
+    /*
+     QPolygonF newPolygon;
     newPolygon << QPointF(0,0) << QPointF(100,0) << QPointF(100,100) << QPointF(0,100);
     this->tmpPolygon->setPolygon(newPolygon);
 
@@ -1812,7 +1875,8 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// variant test
     ///
-    /*this->tmpVariantLine = std::make_shared<VariantLineItem>(QPointF(1,1));
+    /*
+     this->tmpVariantLine = std::make_shared<VariantLineItem>(QPointF(1,1));
     this->scene->addItem(this->tmpVariantLine.get());
     this->tmpVariantLine->setLine(QPointF(10,10),true,VariantLineItem::LineType::Line);
     this->tmpVariantLine->setLine(QPointF(20,10),false,VariantLineItem::LineType::Line);
@@ -1823,7 +1887,8 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// arc test
     ///
-    /*QPoint startPoint(10,10);
+    /*
+     QPoint startPoint(10,10);
     QPoint endPoint(100,100);
 
     this->tmpArc = std::make_shared<QGraphicsPathItem>();
@@ -1855,7 +1920,8 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     /// polyline test
     ///
-    /*QLineF line(QPointF(0,0),QPointF(100,100));
+    /*
+     QLineF line(QPointF(0,0),QPointF(100,100));
     this->tmpPolyline = std::make_shared<PolylineItem>(line);
     this->scene->addItem(this->tmpPolyline.get());
 
