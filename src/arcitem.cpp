@@ -1,5 +1,5 @@
 #include "arcitem.h"
 
-ArcItem::ArcItem() {
-    qDebug() << "";
+ArcItem::ArcItem()
+{
 }

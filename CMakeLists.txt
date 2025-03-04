@@ -45,12 +45,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsItem/protocol.h              src/protocol.cpp
         # main widget
         header/manager.h                     src/manager.cpp
-
+        header/logger.h                          src/logger.cpp
         header/titlebar.h                        src/titlebar.cpp
-        # header/style.h                            src/style.cpp
+        # header/style.h                         src/style.cpp
         #utils
         resource/button.qrc
-
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -19,12 +19,12 @@ public:
     ArcItem();
 
     // \brief control 这里面所有函数结束都要调用animate
-    void editVertex(int index, QPointF point, double bulge)
+    void editVertex(int index, QPointF point, double angle)
     {
         if (index >1) return;
 
         QPointF pos = point - this->scenePos();
-        this->VertexPair[index] = Vertex{pos,bulge};
+        this->VertexPair[index] = Vertex{pos,angle};
 
         animate();
     }
@@ -39,45 +39,45 @@ public:
 
     }
     //\brief 更新函数 不能主动调用update；都在animate中调用
-    void updateParallelOffset()
+    void updateParallelOffset()//TODO
     {
-        if (this->offset == 0) return;
-        this->offsetItemList.clear();
-        qDebug() << "update offset";
+        // if (this->offset == 0) return;
+        // this->offsetItemList.clear();
+        // qDebug() << "update offset";
 
-        for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
-        {
-            cavc::Polyline<double> input;
+        // for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
+        // {
+        //     cavc::Polyline<double> input;
 
-            input.addVertex(
-                this->VertexPair[0].point.x(),
-                this->VertexPair[0].point.y(),
-                    this->VertexPair[1].bulge
-                );
-            input.addVertex(
-                this->VertexPair[1].point.x(),
-                this->VertexPair[1].point.y(),
-                this->VertexPair[0].bulge
-                );
+        //     input.addVertex(
+        //         this->VertexPair[0].point.x(),
+        //         this->VertexPair[0].point.y(),
+        //             this->VertexPair[1].angle
+        //         );
+        //     input.addVertex(
+        //         this->VertexPair[1].point.x(),
+        //         this->VertexPair[1].point.y(),
+        //         this->VertexPair[0].angle
+        //         );
 
-            input.isClosed() = false;
-            std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
+        //     input.isClosed() = false;
+        //     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
 
-            for (const auto& polyline : results) {
-                auto item = std::make_shared<ArcItem>();
-                item->LineType = LineType::offsetItem;
+        //     for (const auto& polyline : results) {
+        //         auto item = std::make_shared<ArcItem>();
+        //         item->LineType = LineType::offsetItem;
 
-                for (size_t i = 0; i < 2; ++i) {
-                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-                    auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
-                                            :   polyline.vertexes()[polyline.size()-1].bulge();
+        //         for (size_t i = 0; i < 2; ++i) {
+        //             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+        //             auto newangle = (i > 0) ?  polyline.vertexes()[i-1].angle()
+        //                                     :   polyline.vertexes()[polyline.size()-1].angle();
 
-                    // qDebug() << " add vertex " << i << ":" << newPoint << newBulge ;
-                    item->editVertex(i,newPoint,newBulge);
-                }
-                this->offsetItemList.push_back(std::move(item));
-            }
-        }
+        //             // qDebug() << " add vertex " << i << ":" << newPoint << newangle ;
+        //             item->editVertex(i,newPoint,newangle);
+        //         }
+        //         this->offsetItemList.push_back(std::move(item));
+        //     }
+        // }
     }
     void updatePaintItem()
     {
@@ -86,9 +86,9 @@ public:
 
         auto v1 = VertexPair[0].point;
         auto v2 = VertexPair[1].point;
-        double bulge = VertexPair[1].bulge;
+        double angle = VertexPair[1].angle;
 
-        QPainterPath arcPath = createArcPath(v1,v2,bulge);
+        QPainterPath arcPath = createArcPath(v1,v2,angle);
         this->PaintItem = std::make_unique<QGraphicsPathItem>(arcPath);
         this->PaintItem->setPen(defaultLinePen);
     }
@@ -126,7 +126,7 @@ public:
 
         return pos;
     }
-    QPointF getCenterPos()
+    QPointF getCenterPos() //TODO
     {
         // 返回弧的圆心 不是中心
     }

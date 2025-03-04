@@ -17,17 +17,17 @@ public:
     {
     }
     /// \brief control 这里面所有函数结束都要调用animate
-    void addVertex(QPointF point, double bulge)
+    void addVertex(QPointF point, double angle)
     {
-        Vertex newVertex = {point,bulge};
+        Vertex newVertex = {point,angle};
         VertexList.push_back(newVertex);
 
         animate();
     }
-    void editVertex(int index, QPointF point, double bulge)
+    void editVertex(int index, QPointF point, double angle)
     {
         QPointF pos = point - this->scenePos();
-        this->VertexList[index] = Vertex{pos,bulge};
+        this->VertexList[index] = Vertex{pos,angle};
 
         animate();
     }
@@ -50,44 +50,44 @@ public:
     /// \brief 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset()
     {
-        if (this->offset == 0) return;
-        this->offsetItemList.clear();
-        qDebug() << "update offset";
+        // if (this->offset == 0) return;
+        // this->offsetItemList.clear();
+        // qDebug() << "update offset";
 
-        for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
-        {
-            cavc::Polyline<double> input;
-            for (int i = 0; i < this->getSize(); ++i)
-            {
-                // 这里addvertex的时候加的bulge是下一个点的;而且符号相反
-                input.addVertex(
-                    this->VertexList[i].point.x(),
-                    this->VertexList[i].point.y(),
-                    (i + 1 < this->getSize()) ?
-                        this->VertexList[i+1].bulge
-                                              : 0
-                    );
-            }
-            input.isClosed() = false;
-            std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
+        // for (int offsetIndex = 1;offsetIndex <= this->offsetNum; offsetIndex++)
+        // {
+        //     cavc::Polyline<double> input;
+        //     for (int i = 0; i < this->getSize(); ++i)
+        //     {
+        //         // 这里addvertex的时候加的angle是下一个点的;而且符号相反
+        //         input.addVertex(
+        //             this->VertexList[i].point.x(),
+        //             this->VertexList[i].point.y(),
+        //             (i + 1 < this->getSize()) ?
+        //                 this->VertexList[i+1].angle
+        //                                       : 0
+        //             );
+        //     }
+        //     input.isClosed() = false;
+        //     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->offset * offsetIndex);
 
 
-            for (const auto& polyline : results) {
-                auto item = std::make_shared<PolylineItem>();
-                item->LineType = LineType::offsetItem;
+        //     for (const auto& polyline : results) {
+        //         auto item = std::make_shared<PolylineItem>();
+        //         item->LineType = LineType::offsetItem;
 
-                for (size_t i = 0; i < polyline.size(); ++i)
-                {
-                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-                    auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
-                                            :   polyline.vertexes()[polyline.size()-1].bulge();
+        //         for (size_t i = 0; i < polyline.size(); ++i)
+        //         {
+        //             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+        //             auto newangle = (i > 0) ?  polyline.vertexes()[i-1].angle()
+        //                                     :   polyline.vertexes()[polyline.size()-1].angle();
 
-                    // qDebug() << " add vertex " << i << ":" << newPoint << newBulge ;
-                    item->addVertex(newPoint,newBulge);
-                }
-                this->offsetItemList.push_back(std::move(item));
-            }
-        }
+        //             // qDebug() << " add vertex " << i << ":" << newPoint << newangle ;
+        //             item->addVertex(newPoint,newangle);
+        //         }
+        //         this->offsetItemList.push_back(std::move(item));
+        //     }
+        // }
     }
     void updateItemList()
     {
@@ -97,9 +97,9 @@ public:
         {
             QPointF v1 = VertexList[i].point;
             QPointF v2 = VertexList[i+1].point;
-            double bulge = VertexList[i+1].bulge;
+            double angle = VertexList[i+1].angle;
 
-            if (std::abs(bulge) < 1e-20)
+            if (std::abs(angle) < 1e-20)
             {
                 auto lineItem = std::make_shared<QGraphicsLineItem>(
                     QLineF(v1, v2)
@@ -109,7 +109,7 @@ public:
             }
             else
             {
-                QPainterPath arcPath = createArcPath(v1,v2,bulge);
+                QPainterPath arcPath = createArcPath(v1,v2,angle);
                 auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
                 pathItem->setPen(defaultLinePen);
                 ItemList.push_back(std::move(pathItem));
