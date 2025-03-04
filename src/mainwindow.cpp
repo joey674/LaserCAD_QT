@@ -643,7 +643,7 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
         int row = ui->propertyTableWidget->rowCount();
         ui->propertyTableWidget->insertRow(row);
         QTableWidgetItem *offsetName = new QTableWidgetItem("offset");
-        QTableWidgetItem *offsetValue = new QTableWidgetItem(polylineItem->getOffset());
+        QTableWidgetItem *offsetValue = new QTableWidgetItem(polylineItem->getParallelOffset());
         offsetName->setFlags(offsetName->flags() & ~Qt::ItemIsEditable);
         offsetValue->setFlags(offsetValue->flags() | Qt::ItemIsEditable);
         ui->propertyTableWidget->setItem(row, 0,offsetName);
@@ -651,7 +651,7 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
 
         ui->propertyTableWidget->insertRow(row);
         QTableWidgetItem *offsetNumName = new QTableWidgetItem("offsetNum");
-        QTableWidgetItem *offsetNumValue = new QTableWidgetItem(polylineItem->getOffset());
+        QTableWidgetItem *offsetNumValue = new QTableWidgetItem(polylineItem->getParallelOffset());
         offsetNumName->setFlags(offsetNumName->flags() & ~Qt::ItemIsEditable);
         offsetNumValue->setFlags(offsetNumValue->flags() | Qt::ItemIsEditable);
         ui->propertyTableWidget->setItem(row, 0,offsetNumName);

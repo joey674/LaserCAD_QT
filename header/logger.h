@@ -3,14 +3,16 @@
 #include <QDebug>
 
 ///
-
-
-///
 ///
 ///
 #define DEBUG_VAR(var) \
 do { \
         qDebug() << #var " =" << (var); \
+} while (0)
+
+#define WARN_VAR(var) \
+do { \
+        qWarning() << #var " =" << (var); \
 } while (0)
 
 #define FATAL_VAR(var) \
@@ -22,6 +24,7 @@ do { \
 do { \
         qInfo() << #var " =" << (var); \
 } while (0)
+
 
 #define FATAL_MSG(var) \
     do { \
@@ -38,6 +41,10 @@ do { \
         qDebug()  << (var); \
 } while (0)
 
+#define WARN_MSG(var) \
+do { \
+        qWarning()  << (var); \
+} while (0)
 
 void initLogger();
 void MessageHandler(QtMsgType type,const QMessageLogContext &context,const QString &msg);
