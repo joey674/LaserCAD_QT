@@ -117,7 +117,12 @@ Vertex ArcItem::getVertex(const int &index)
 
 QPointF ArcItem::getCenterPos()
 {
-    // 返回弧的圆心 不是中心
+    auto center = QPointF{};
+    double radius =0;
+    getCircleFromTwoPointsAndAngle(this->VertexPair[0].point,this->VertexPair[1].point,this->VertexPair[1].angle,center,radius);
+
+    auto posOffset = this->pos();
+    return center+posOffset;
 }
 
 void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
@@ -134,18 +139,17 @@ void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     // 绘制编辑原点
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::red);
-    painter->drawEllipse(assistPoint, 1, 1);
     for (const auto &vertex : VertexPair)
     {
         if (this->offsetNum>0)
         {
             painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, 1, 1);
+            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
         }
         else
         {
             painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, 1, 1);
+            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
         }
     }
 

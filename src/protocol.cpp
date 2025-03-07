@@ -1,8 +1,6 @@
 #include "protocol.h"
 #include "logger.h"
 
-QPen defaultLinePen = QPen(Qt::black, 1);
-
 QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const double & angle)
 {
     QPointF center = QPointF{};

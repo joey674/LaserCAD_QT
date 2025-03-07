@@ -11,6 +11,9 @@
 class LaserItem: public QGraphicsItem
 {
 public:
+    QPen defaultLinePen = QPen(Qt::black, 1);
+    std::pair<double,double> editPointSize = std::pair<double,double>{1,1};
+public:
     LaserItem();
     /// \brief control
     /// 直接修改 控制对象
@@ -47,7 +50,6 @@ private:
 private:
     double Frequency;
     double Power;
-
 };
 
 #endif // LASERITEM_H

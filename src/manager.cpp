@@ -15,10 +15,10 @@
 
  void Manager::addItem(std::shared_ptr<LaserItem> ptr)
  {
-    this->container.insert(ptr);
+    this->container.push_back(ptr);
 
     auto layer = ptr->getLayer();
-    this->layerMap[layer].insert(ptr);
+    this->layerMap[layer].push_back(ptr);
 
     ///TODO
     /// GroupAdd
@@ -40,17 +40,17 @@
      /// LayerDelete
  }
 
- const std::unordered_set<std::shared_ptr<LaserItem>>& Manager::getItems()
+ const std::list<std::shared_ptr<LaserItem>>& Manager::getItems()
  {
      return this->container;
  }
 
- const std::unordered_set<std::shared_ptr<LaserItem> > &Manager::getItemsByGroup(int)
+ const std::list<std::shared_ptr<LaserItem> > &Manager::getItemsByGroup(int)
  {
 
  }
 
- const std::unordered_set<std::shared_ptr<LaserItem>>& Manager::getItemsByLayer(int index)
+ const std::list<std::shared_ptr<LaserItem>>& Manager::getItemsByLayer(int index)
  {
      return this->layerMap[index];
  }

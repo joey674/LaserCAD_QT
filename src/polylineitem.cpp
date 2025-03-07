@@ -262,12 +262,12 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
         if (this->offsetNum>0)
         {
             painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, 1, 1);
+            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
         }
         else
         {
             painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, 1, 1);
+            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
         }
     }
 

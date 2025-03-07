@@ -5,10 +5,9 @@
 
 int main(int argc, char *argv[])
 {
+    initLogger();
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-
-    initLogger();
     return a.exec();
 }

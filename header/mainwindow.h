@@ -21,6 +21,7 @@ public:
     enum DrawToolType {
         // 编辑工具
         DragScene,
+        EditProperty,
         // 绘制工具
         None,
         Line,
@@ -47,7 +48,7 @@ private:
     QGraphicsScene *scene;
     // 编辑对象、ui
     void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
-    void setItemsStatus(bool visible,bool selectable, bool movable,const std::unordered_set<std::shared_ptr<LaserItem>>&);
+    void setItemsStatus(bool visible,bool selectable, bool movable,const std::list<std::shared_ptr<LaserItem>>&);
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
     void setAllLayerButtonChecked(bool);
@@ -79,11 +80,10 @@ private:    // 编辑工具
     QGraphicsItem *currentEditItem = NULL;
     int currentEditPolylineVertexIndex = -1;
     void editItem(QPointF,DrawEventType);
-    void editLine(QGraphicsLineItem *, DrawEventType);
-    void editCircle(QGraphicsEllipseItem *, DrawEventType);
-    void editPolyline(QPointF, PolylineItem *, DrawEventType);
-    void editArc();
-    void editSpiral();
+    void editPolyline(QPointF, PolylineItem *, DrawEventType);/*TODO*/
+    void editArc(QPointF, ArcItem *, DrawEventType);/*TODO*/
+    void editCircle(QGraphicsEllipseItem *, DrawEventType);/*TODO*/
+    void editSpiral();/*TODO*/
     // 辅助线输入绘制
     QGraphicsLineItem* assisstLine1;
     QGraphicsLineItem* assisstLine2;
@@ -101,9 +101,9 @@ private:    // 绘制item工具
     std::shared_ptr<QGraphicsPolygonItem> tmpPolygon;
     std::shared_ptr<QGraphicsEllipseItem> tmpEllipse;
     // 绘制逻辑
-    void drawCircle(QPointF,DrawEventType);
     void drawPolyline(QPointF,DrawEventType);
     void drawArc(QPointF,DrawEventType);
+    void drawCircle(QPointF,DrawEventType);
     void drawRect(QPointF,DrawEventType);
     void drawSpiral(QPointF,DrawEventType);
     void drawPolygon(QPointF,DrawEventType);
@@ -130,7 +130,7 @@ private slots:
     void on_drawPolygonButton_clicked();
     void on_drawEllipseButton_clicked();
     // 编辑工具
-    void on_resetButton_clicked();
+    void on_editButton_clicked();
     void on_drawTestLineButton_clicked();
     void on_rotateButton_clicked();
     void on_centerButton_clicked();

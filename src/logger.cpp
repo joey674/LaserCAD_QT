@@ -4,16 +4,6 @@ void initLogger()
 {
     qDebug() <<"init logger";
     qInstallMessageHandler(MessageHandler);
-    // qSetMessagePattern( "[%{time MMdd h:mm:ss }] "
-    //                    "[%{if-debug}DEBUG%{endif}"
-    //                    "%{if-info}INFO%{endif}"
-    //                    "%{if-warning}WARN%{endif}"
-    //                    "%{if-critical}CRITICAL%{endif}"
-    //                    "%{if-fatal}FATAL%{endif}] "
-    //                    "[%{file}:%{line}] "
-    //                    " [%{function}] "
-    //                    "%{message}" );
-
 }
 
 #include <QFileInfo>
@@ -21,23 +11,34 @@ void initLogger()
 #include <QDateTime>
 
 void MessageHandler(QtMsgType type,
-                      const QMessageLogContext &context,
-                      const QString &msg)
+                    const QMessageLogContext &context,
+                    const QString &msg)
 {
-    // modify msg
     QFileInfo fi(context.file ? context.file : "");
     QString fileName = fi.fileName();
 
     QString level;
+    const char *colorCode = "";
+    const char *resetCode = "\033[0m";
+
     switch (type) {
-    case QtDebugMsg:    level = "DEBUG";    break;
-    case QtInfoMsg:     level = "INFO";     break;
-    case QtWarningMsg:  level = "WARN";     break;
-    case QtCriticalMsg: level = "CRITICAL"; break;
-    case QtFatalMsg:    level = "FATAL";    break;
+    case QtDebugMsg:
+        level = "\033[36mDEBUG\033[0m";
+        break;
+    case QtInfoMsg:
+        level = "\033[32mINFO\033[0m";
+        break;
+    case QtWarningMsg:
+        level = "\033[33mWARN\033[0m";
+        break;
+    case QtCriticalMsg:
+        level = "\033[31mCRITICAL\033[0m";
+        break;
+    case QtFatalMsg:
+        level = "\033[41m\033[97mFATAL\033[0m";
+        break;
     }
 
-    // msg
     QString finalMsg = QString("[%1] [%2] [%3:%4] [%5]  %6")
                            .arg(QDateTime::currentDateTime().toString("MMdd h:mm:ss"))
                            .arg(level)
