@@ -31,13 +31,13 @@ protected:
     void wheelEvent(QWheelEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent*) override;
 signals:
-    void mouseleftpress_event(QPoint);
-    void mouserightpress_event(QPoint);
-    void mouseleftrelease_event(QPoint);
-    void mouserightrelease_event(QPoint);
-    void mousemove_event(QPoint);
-    void mousedoubleclick_event(QPoint);
-    void mousewheel_event(QWheelEvent *);
+    void mouseLeftPressed(QPoint);
+    void mouseRightPressed(QPoint);
+    void mouseLeftReleased(QPoint);
+    void mouseRightReleased(QPoint);
+    void mouseMoved(QPoint);
+    void mouseDoubleClicked(QPoint);
+    void mouseWheelTriggered(QWheelEvent *);
 };
 
 #endif // GRAPHICSVIEW_H

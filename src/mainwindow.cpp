@@ -10,6 +10,9 @@
 #include <QTime>
 #include <QString>
 #include <QtMath>
+#include <QButtonGroup>
+#include "css.h"
+#include "utils.h"
 #include "logger.h"
 #include "titlebar.h"
 #include "header/CavalierContours/polyline.hpp"
@@ -27,7 +30,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     initTitleBar();
     initGraphicsView();
-    initButton();
+    initToolButton();
+    initLayerButton();
     initOperationTreeWidget();
     initPropertyTableWidget();
     initStatusBar();
@@ -40,9 +44,33 @@ MainWindow::~MainWindow()
 
 void MainWindow::setAllItemsMovable(bool movable )
 {
-    for (auto &item : Manager::getIns().getContainer()) {
-        if (item) {
+    for (auto &item : Manager::getIns().getContainer())
+    {
+        if (item)
+        {
             item->setFlag(QGraphicsItem::ItemIsMovable, movable);
+        }
+    }
+}
+
+void MainWindow::setAllItemSelectable(bool selectable)
+{
+    for (auto &item : Manager::getIns().getContainer())
+    {
+        if (item)
+        {
+            item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
+        }
+    }
+}
+
+void MainWindow::setAllItemVisible(bool visible)
+{
+    for (auto &item : Manager::getIns().getContainer())
+    {
+        if (item)
+        {
+            item->setVisible(visible);
         }
     }
 }
@@ -133,41 +161,25 @@ void MainWindow::initGraphicsView()
 
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
-    connect(ui->graphicsView,SIGNAL(mousemove_event(QPoint)),
-            this,SLOT(on_graphicsview_mousemove_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseleftpress_event(QPoint)),
-            this,SLOT(on_graphicsview_mouseleftpress_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouserightpress_event(QPoint)),
-            this,SLOT(on_graphicsview_mouserightpress_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseleftrelease_event(QPoint)),
-            this,SLOT(on_graphicsview_mouseleftrelease_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouserightrelease_event(QPoint)),
-            this,SLOT(on_graphicsview_mouserightrelease_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mousedoubleclick_event(QPoint)),
-            this,SLOT(on_graphicsview_mousedoubleclick_occurred(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mousewheel_event(QWheelEvent*)),
-            this,SLOT(on_graphicsview_mousewheel_occurred(QWheelEvent*)));
+    connect(ui->graphicsView,SIGNAL(mouseMoved(QPoint)),
+            this,SLOT(onGraphicsviewMouseMoved(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseLeftPressed(QPoint)),
+            this,SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseRightPressed(QPoint)),
+            this,SLOT(onGraphicsviewMouseRightPressed(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseLeftReleased(QPoint)),
+            this,SLOT(onGraphicsviewMouseLeftReleased(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseRightReleased(QPoint)),
+            this,SLOT(onGraphicsviewMouseRightReleased(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseDoubleClicked(QPoint)),
+            this,SLOT(onGraphicsviewMouseDoubleClicked(QPoint)));
+    connect(ui->graphicsView,SIGNAL(mouseWheelTriggered(QWheelEvent*)),
+            this,SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
 
-void MainWindow::initButton()
+void MainWindow::initToolButton()
 {
-    QString buttonStyle = R"(
-        QToolButton {
-            border-radius: 15px;
-            background-color: #d0d0d0;
-            color: black;
-            padding: 5px;
-        }
-        QToolButton:hover {
-            background-color: #c0c0c0;
-        }
-        QToolButton:pressed {
-            background-color: #b0b0b0;
-        }
-        QToolButton:checked {
-            background-color: #b0b0b0;
-        }
-    )";
+    QString buttonStyle = buttonStyle1;
 
     QToolButton *dragsceneButton = ui->dragSceneButton;
     dragsceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
@@ -354,6 +366,35 @@ void MainWindow::initButton()
         "<p>按w添加多边形边数；按s减少多边形变数（最小为3）</p>"
         "</body></html>"
         );
+}
+
+void MainWindow::initLayerButton()
+{
+    QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
+    if (!layerButtonLayout)
+        FATAL_MSG("layerButtonLayout can not be init");
+
+    // layout style
+    layerButtonLayout->setAlignment(Qt::AlignLeft);
+    layerButtonLayout->setSpacing(0);
+
+    //button style
+    auto buttonStyle = buttonStyle1;
+
+    //button
+    QPushButton *layer1Button = new QPushButton("layer 1");
+    layer1Button->setStyleSheet(buttonStyle);
+    layer1Button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    QPushButton *addLayerButton = new QPushButton("add Layer");
+    addLayerButton->setStyleSheet(buttonStyle);
+    addLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    //
+    layerButtonLayout->addWidget(layer1Button);
+    layerButtonLayout->addWidget(addLayerButton);
+    connect(layer1Button, &QPushButton::clicked, this, [=]() {MainWindow::onLayerButtonClicked(1);} );
+    connect(addLayerButton, &QPushButton::clicked, this, &MainWindow::onAddLayerButtonClicked);
 }
 
 void MainWindow::initStatusBar()
@@ -703,7 +744,7 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
     else if (this->tmpCircle && event == DrawEventType::LeftRelease)
     {
         this->tmpCircle->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-         Manager::getIns().addItem(std::move(this->tmpCircle));
+         // Manager::getIns().addItem(std::move(this->tmpCircle));
     }
 }
 
@@ -812,7 +853,7 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpRect && event == DrawEventType::LeftRelease) {
         this->tmpRect->setTransformOriginPoint(this->tmpRect->rect().center());
         this->tmpRect->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-         Manager::getIns().addItem(std::move(this->tmpRect));
+         // Manager::getIns().addItem(std::move(this->tmpRect));
     }
 }
 
@@ -868,7 +909,7 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
     else if (this->tmpSpiral && event == DrawEventType::LeftRelease)
     {
         this->tmpSpiral->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-         Manager::getIns().addItem(std::move(this->tmpSpiral));
+         // Manager::getIns().addItem(std::move(this->tmpSpiral));
     }
 }
 
@@ -901,9 +942,10 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
         this->tmpPolygon->setPolygon(newPolygon);
         this->tmpPolygon->setTransformOriginPoint(centerPoint);
     }
-    else if (this->tmpPolygon && event == DrawEventType::LeftRelease) {
+    else if (this->tmpPolygon && event == DrawEventType::LeftRelease)
+    {
         this->tmpPolygon->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-        Manager::getIns().addItem(std::move(this->tmpPolygon));
+        // Manager::getIns().addItem(std::move(this->tmpPolygon));
     }
 }
 
@@ -957,11 +999,13 @@ void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
     }
     else if (this->tmpEllipse && event == DrawEventType::LeftRelease)
     {
-        if (!this->tmpEllipse->data(0).isValid()) {
+        if (!this->tmpEllipse->data(0).isValid())
+        {
             this->tmpEllipse->setData(0,pointCoordscene);
-        } else {
+        } else
+        {
             this->tmpEllipse->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsMovable);
-         Manager::getIns().addItem(std::move(this->tmpEllipse));
+         // Manager::getIns().addItem(std::move(this->tmpEllipse));
         }
     }
 }
@@ -1080,7 +1124,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
 ///
 /// \brief MainWindow::on_graphicsview_mouse_move_triggered
 ///
-void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
 {
     QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
 
@@ -1169,7 +1213,7 @@ void MainWindow::on_graphicsview_mousemove_occurred(QPoint pointCoordView)
 
 }
 
-void MainWindow::on_graphicsview_mouseleftpress_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
 {
     displayOperation("mouse left press");
     Manager::getIns().IsMouseLeftButtonHold = true;
@@ -1187,7 +1231,7 @@ void MainWindow::on_graphicsview_mouseleftpress_occurred(QPoint pointCoordView)
     }
 }
 
-void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
 {
     displayOperation("mouse right press");
     Manager::getIns().IsMouseRightButtonHold = true;
@@ -1204,7 +1248,7 @@ void MainWindow::on_graphicsview_mouserightpress_occurred(QPoint pointCoordView)
     }
 }
 
-void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
 {
     displayOperation("mouse left release");
     Manager::getIns().IsMouseLeftButtonHold = false;
@@ -1264,7 +1308,7 @@ void MainWindow::on_graphicsview_mouseleftrelease_occurred(QPoint pointCoordView
     }
 }
 
-void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
 {
     displayOperation("mouse right release");
     Manager::getIns().IsMouseRightButtonHold = false;
@@ -1296,13 +1340,13 @@ void MainWindow::on_graphicsview_mouserightrelease_occurred(QPoint pointCoordVie
     }
 }
 
-void MainWindow::on_graphicsview_mousedoubleclick_occurred(QPoint pointCoordView)
+void MainWindow::onGraphicsviewMouseDoubleClicked(QPoint pointCoordView)
 {
     ui->resetButton->setChecked(true);
     this->on_resetButton_clicked();
 }
 
-void MainWindow::on_graphicsview_mousewheel_occurred(QWheelEvent * event)
+void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
 {
     displayOperation("mouse wheel occourred");
     if (event->angleDelta().y() > 0)
@@ -1586,7 +1630,7 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 }
 
 ///
-/// \brief MainWindow::on_rotateButton_clicked
+/// \brief edit toolButton
 ///
 void MainWindow::on_rotateButton_clicked()
 {
@@ -1681,7 +1725,7 @@ void MainWindow::on_deleteButton_clicked()
                        });
 
         if (it != Manager::getIns().getContainer().end()) {
-            Manager::getIns().getContainer().erase(it);
+            Manager::getIns().deleteItem(it->get());
         }
     }
 }
@@ -1694,6 +1738,49 @@ void MainWindow::on_undoButton_clicked()
 void MainWindow::on_redoButton_clicked()
 {
 
+}
+
+///
+/// \brief onLayerButton
+///
+void MainWindow::onLayerButtonClicked(int)
+{
+
+}
+
+void MainWindow::onAddLayerButtonClicked()
+{
+    QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
+    if (!layerButtonLayout) {
+        FATAL_MSG("layerButtonLayout can not be found");
+        return;
+    }
+
+    layerCount++;
+    QString buttonName = QString("Layer %1").arg(layerCount);
+
+    QPushButton *newLayerButton = new QPushButton(buttonName);
+    newLayerButton->setStyleSheet(buttonStyle1);
+    newLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
+    QPushButton *addLayerButton = qobject_cast<QPushButton*>(layerButtonLayout->itemAt(layerButtonLayout->count() - 1)->widget());
+    if (!addLayerButton) {
+        FATAL_MSG("addLayerButton not found");
+        return;
+    }
+    layerButtonLayout->removeWidget(addLayerButton);
+
+    layerButtonLayout->addWidget(newLayerButton);
+    layerButtons.append(newLayerButton);
+
+    layerButtonLayout->addWidget(addLayerButton);
+
+    connect(newLayerButton, &QPushButton::clicked, this, [=]() {
+        onLayerButtonClicked(layerCount);
+    });
+
+    INFO_MSG("newLayerButton added");
 }
 ///
 /// test function
@@ -1714,6 +1801,7 @@ for (size_t i = 0; i < results.size(); ++i) {
 }
 }
 
+static bool flag = false;
 void MainWindow::on_drawTestLineButton_clicked()
 {
     qDebug() << "";
@@ -1723,6 +1811,25 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     // /*
     // */
+
+    ///
+    /// test template
+    ///
+    // /*
+
+    flag = !flag;
+    // this->setAllItemSelectable(flag);
+    this->setAllItemVisible(flag);
+    this->setAllItemsMovable(flag);
+    // */
+
+    ///
+    /// uuid
+    ///
+    /*
+    auto uid = GenerateUUID();
+    DEBUG_VAR(uid);
+    */
 
     ///
     /// cavc2

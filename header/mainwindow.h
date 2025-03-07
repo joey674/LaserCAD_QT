@@ -19,15 +19,15 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 public:
     enum DrawToolType {
+        // 编辑工具
         DragScene,
-
+        // 绘制工具
         None,
         Line,
         Circle,
         Polyline,
         Spiral,
         Arc,
-        VariantLine,
         Rect,
         Ellipse,
         Polygon
@@ -39,20 +39,16 @@ public:
         RightRelease,
         MouseMove,
     };
-    enum LaserProperty {
-        GroupId = 0,
-        Power = 1,
-        Frequency = 2,
-    };
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     // 编辑对象、ui
     void setAllItemsMovable(bool);
+    void setAllItemSelectable(bool);
+    void setAllItemVisible(bool);
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
     // 记录画布放大倍率
@@ -63,9 +59,12 @@ private:
     TitleBar*titleBar;
     QLabel *labelMouseCoordinate;
     QLabel *labelOperation;
+    QVector<QPushButton*> layerButtons;
+    int layerCount = 1;
     void initTitleBar();
     void initGraphicsView();
-    void initButton();
+    void initToolButton();
+    void initLayerButton();
     void initStatusBar();
     void initOperationTreeWidget();
     void initPropertyTableWidget();
@@ -113,13 +112,13 @@ protected:
     void keyReleaseEvent(QKeyEvent* ) override;
 private slots:
     // 接收graphicsview信号的槽
-    void on_graphicsview_mousemove_occurred(QPoint);
-    void on_graphicsview_mouseleftpress_occurred(QPoint);
-    void on_graphicsview_mouserightpress_occurred(QPoint);
-    void on_graphicsview_mouseleftrelease_occurred(QPoint);
-    void on_graphicsview_mouserightrelease_occurred(QPoint);
-    void on_graphicsview_mousedoubleclick_occurred(QPoint);
-    void on_graphicsview_mousewheel_occurred(QWheelEvent *);
+    void onGraphicsviewMouseMoved(QPoint);
+    void onGraphicsviewMouseLeftPressed(QPoint);
+    void onGraphicsviewMouseRightPressed(QPoint);
+    void onGraphicsviewMouseLeftReleased(QPoint);
+    void onGraphicsviewMouseRightReleased(QPoint);
+    void onGraphicsviewMouseDoubleClicked(QPoint);
+    void onGraphicsviewMouseWheelTriggered(QWheelEvent *);
     // 绘制工具
     void on_drawCircleButton_clicked();
     void on_propertyTableWidget_cellChanged(int row, int column);
@@ -139,6 +138,9 @@ private slots:
     void on_dragSceneButton_clicked();
     void on_undoButton_clicked();
     void on_redoButton_clicked();
+    // 图层按钮
+    void onLayerButtonClicked(int);
+    void onAddLayerButtonClicked();
 };
 #endif // MAINWINDOW_H
 

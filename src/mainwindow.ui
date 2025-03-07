@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>524</width>
-    <height>435</height>
+    <width>556</width>
+    <height>388</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QFormLayout" name="formLayout">
     <item row="0" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="editToolLayout">
       <item>
        <widget class="QToolButton" name="resetButton">
         <property name="toolTip">
@@ -160,7 +160,7 @@
      </layout>
     </item>
     <item row="1" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout_1">
+     <layout class="QHBoxLayout" name="drawToolLayout">
       <item>
        <widget class="QToolButton" name="drawPolylineButton">
         <property name="text">
@@ -294,10 +294,10 @@
       </item>
      </layout>
     </item>
-    <item row="3" column="1">
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <item row="2" column="1">
+     <layout class="QHBoxLayout" name="mainLayout">
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
+       <layout class="QVBoxLayout" name="controlLayout">
         <item>
          <widget class="QTreeWidget" name="operationTreeWidget">
           <property name="sizePolicy">
@@ -332,26 +332,33 @@
        </layout>
       </item>
       <item>
-       <widget class="GraphicsView" name="graphicsView">
-        <property name="cursor" stdset="0">
-         <cursorShape>CrossCursor</cursorShape>
-        </property>
-        <property name="mouseTracking">
-         <bool>true</bool>
-        </property>
-        <property name="verticalScrollBarPolicy">
-         <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="horizontalScrollBarPolicy">
-         <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-        </property>
-        <property name="renderHints">
-         <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::SmoothPixmapTransform|QPainter::RenderHint::TextAntialiasing</set>
-        </property>
-        <property name="viewportUpdateMode">
-         <enum>QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate</enum>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="graphicsViewLayout">
+        <item>
+         <widget class="GraphicsView" name="graphicsView">
+          <property name="cursor" stdset="0">
+           <cursorShape>CrossCursor</cursorShape>
+          </property>
+          <property name="mouseTracking">
+           <bool>true</bool>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="renderHints">
+           <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::SmoothPixmapTransform|QPainter::RenderHint::TextAntialiasing</set>
+          </property>
+          <property name="viewportUpdateMode">
+           <enum>QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="layerButtonLayout"/>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>

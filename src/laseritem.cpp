@@ -1,10 +1,11 @@
 #include "laseritem.h"
 #include "logger.h"
-
+#include "utils.h"
 
 
 LaserItem::LaserItem()
 {
+    this->uuid = GenerateUUID();
 }
 
 void LaserItem::addVertex(const QPointF &point, const double &angle)
@@ -73,3 +74,17 @@ QPointF LaserItem::getCenterPos()
     WARN_MSG("need to be realized");
 }
 
+const UUID& LaserItem::getUUID()
+{
+    return this->uuid;
+}
+
+const int &LaserItem::getLayer()
+{
+    return this->Layer;
+}
+
+const int &LaserItem::getGroup()
+{
+    return this->Group;
+}

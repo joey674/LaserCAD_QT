@@ -40,9 +40,10 @@ public:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 private:
+    ///
     std::array<Vertex,2> VertexPair = {Vertex{QPointF{0,0}, 0},Vertex{QPointF{0,0}, 0}};
     std::shared_ptr<QGraphicsPathItem> PaintItem;
-
+    ///
     double offset  = 0;
     int offsetNum = 1;
     std::vector<std::shared_ptr<ArcItem>> offsetItemList;

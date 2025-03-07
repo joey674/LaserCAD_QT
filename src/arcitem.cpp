@@ -6,6 +6,7 @@
 ArcItem::ArcItem()
 {
     INFO_MSG("create ArcItem");
+    DEBUG_VAR(this->getUUID());
 }
 
 void ArcItem::editVertex(const int &index, const QPointF &point, const double &angle)
@@ -30,7 +31,7 @@ void ArcItem::rotate(double angle)
 
 }
 
-void ArcItem::updateParallelOffset()//TODO
+void ArcItem::updateParallelOffset()
 {
     // if (this->offset == 0) return;
     // this->offsetItemList.clear();
@@ -114,7 +115,7 @@ Vertex ArcItem::getVertex(const int &index)
     return VertexPair[index];
 }
 
-QPointF ArcItem::getCenterPos()//TODO
+QPointF ArcItem::getCenterPos()
 {
     // 返回弧的圆心 不是中心
 }

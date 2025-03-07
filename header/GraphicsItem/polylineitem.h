@@ -39,11 +39,11 @@ public:
     int type() const override;
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-
 private:
+    ///
     std::vector<Vertex> VertexList;
     std::vector<std::shared_ptr<QGraphicsItem>> PaintItemList;
-
+    ///
     double offset  = 0;
     uint offsetNum = 0;
     std::vector<std::shared_ptr<PolylineItem>> offsetItemList;

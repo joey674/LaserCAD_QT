@@ -32,6 +32,18 @@ public:
     virtual Vertex getVertex(const int& index);
     virtual QPointF getVertexPos(const int& index);
     virtual QPointF getCenterPos();
+    const UUID& getUUID();
+    const int& getLayer();
+    const int& getGroup();
+private:
+    UUID uuid;
+private:
+    int Layer = 1;
+    int Group = 0;
+private:
+    double Frequency;
+    double Power;
+
 };
 
 #endif // LASERITEM_H
