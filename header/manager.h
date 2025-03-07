@@ -15,8 +15,8 @@ class Manager
 {
 private:
     std::unordered_set<std::shared_ptr<LaserItem>> container;
-    std::unordered_map<int,std::vector<std::weak_ptr<LaserItem>>> layerMap;
-    std::unordered_map<int,std::vector<std::weak_ptr<LaserItem>>> groupMap;
+    std::unordered_map<int,std::unordered_set<std::shared_ptr<LaserItem>>> layerMap;
+    std::unordered_map<int,std::unordered_set<std::shared_ptr<LaserItem>>> groupMap;
 
 private:
     QGraphicsScene *scene;
@@ -34,9 +34,9 @@ public:
     void addItem(std::shared_ptr<LaserItem>);
     void deleteItem(QGraphicsItem *);
     ///
-    const std::unordered_set<std::shared_ptr<LaserItem>>& getContainer();
-    const std::vector<std::weak_ptr<LaserItem>>& getItemsByLayer(int);
-    const std::vector<std::weak_ptr<LaserItem>>& getItemsByGroup(int);
+    const std::unordered_set<std::shared_ptr<LaserItem>>& getItems();
+    const std::unordered_set<std::shared_ptr<LaserItem>>& getItemsByLayer(int);
+    const std::unordered_set<std::shared_ptr<LaserItem>>& getItemsByGroup(int);
 public:
     // 键盘控制变量; hold代表长按 pressed代表按下切换一次状态true到false/false到true
     bool IsControlHold = false;

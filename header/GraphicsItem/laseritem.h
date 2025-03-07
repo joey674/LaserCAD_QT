@@ -35,6 +35,10 @@ public:
     const UUID& getUUID();
     const int& getLayer();
     const int& getGroup();
+    ///
+    /// \brief 设置参数
+    void setLayer(int index);
+    void setGroup(int index);
 private:
     UUID uuid;
 private:

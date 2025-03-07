@@ -88,3 +88,13 @@ const int &LaserItem::getGroup()
 {
     return this->Group;
 }
+
+void LaserItem::setLayer(int index)
+{
+    this->Layer = index;
+}
+
+void LaserItem::setGroup(int index)
+{
+    this->Group = index;
+}

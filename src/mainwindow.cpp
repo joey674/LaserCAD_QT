@@ -12,9 +12,9 @@
 #include <QtMath>
 #include <QButtonGroup>
 #include "css.h"
-#include "utils.h"
+// #include "utils.h"
 #include "logger.h"
-#include "titlebar.h"
+// #include "titlebar.h"
 #include "header/CavalierContours/polyline.hpp"
 // #include "header/CavalierContours/polylineoffset.hpp"
 // #include "utils.h";
@@ -42,35 +42,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::setAllItemsMovable(bool movable )
+void MainWindow::setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* item)
 {
-    for (auto &item : Manager::getIns().getContainer())
-    {
-        if (item)
-        {
-            item->setFlag(QGraphicsItem::ItemIsMovable, movable);
-        }
-    }
+    item->setVisible(visible);
+    item->setFlag(QGraphicsItem::ItemIsMovable, movable);
+    item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
 }
 
-void MainWindow::setAllItemSelectable(bool selectable)
+void MainWindow::setItemsStatus(bool visible, bool selectable, bool movable, const std::unordered_set<std::shared_ptr<LaserItem>>& items)
 {
-    for (auto &item : Manager::getIns().getContainer())
-    {
-        if (item)
-        {
-            item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
-        }
-    }
-}
-
-void MainWindow::setAllItemVisible(bool visible)
-{
-    for (auto &item : Manager::getIns().getContainer())
+    for (const auto& item : items)
     {
         if (item)
         {
             item->setVisible(visible);
+            item->setFlag(QGraphicsItem::ItemIsMovable, movable);
+            item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
         }
     }
 }
@@ -95,6 +82,13 @@ void MainWindow::setAllToolButtonChecked(bool isChecked)
     ui->deleteButton->setChecked(isChecked);
     ui->rotateButton->setChecked(isChecked);
     ui->drawTestLineButton->setChecked(isChecked);
+}
+
+void MainWindow::setAllLayerButtonChecked(bool isChecked)
+{
+    for (QPushButton *btn : this->layerButtons) {
+        btn->setChecked(isChecked);
+    }
 }
 
 ///
@@ -395,6 +389,13 @@ void MainWindow::initLayerButton()
     layerButtonLayout->addWidget(addLayerButton);
     connect(layer1Button, &QPushButton::clicked, this, [=]() {MainWindow::onLayerButtonClicked(1);} );
     connect(addLayerButton, &QPushButton::clicked, this, &MainWindow::onAddLayerButtonClicked);
+
+    // 初始化layer1选中 并存在layerbuttons里
+    layer1Button->setCheckable(true);
+    layer1Button->setChecked(true);
+    DEBUG_VAR(layer1Button->isCheckable());
+    DEBUG_VAR(layer1Button->isChecked());
+    this->layerButtons.append(layer1Button);
 }
 
 void MainWindow::initStatusBar()
@@ -433,9 +434,13 @@ void MainWindow::displayOperation(QString text)
 
 void MainWindow::dragScene(QPointF pointCoordscene, DrawEventType event)
 {
+
     if (event == DrawEventType::LeftPress)
     {
-        displayOperation("drag scene right press");
+        displayOperation("drag scene left press");
+        // this->setItemsStatus(false,false,false,Manager::getIns().getItems());
+        // this->setItemsStatus(true,false,false,Manager::getIns().getItemsByLayer(this->currentLayer));
+
         auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordscene);
         this->dragScenePoint = pointCoordView;
     }
@@ -454,7 +459,10 @@ void MainWindow::dragScene(QPointF pointCoordscene, DrawEventType event)
     }
     else if (event == DrawEventType::LeftRelease)
     {
-        displayOperation("drag scene right release");
+        displayOperation("drag scene left release");
+        // this->setItemsStatus(false,false,false,Manager::getIns().getItems());
+        // this->setItemsStatus(true,true,true,Manager::getIns().getItemsByLayer(this->currentLayer));
+
         this->dragScenePoint = QPointF(0,0);
     }
 }
@@ -707,7 +715,6 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* polylineIte
 ///
 void MainWindow::resetDrawToolStatus()
 {
-    this->currentDrawTool = DrawToolType::None;
     this->polygonEdgeNum = 3;
     this->tmpCircle = NULL;
     this->tmpPolyline = NULL;
@@ -720,13 +727,16 @@ void MainWindow::resetDrawToolStatus()
 
 void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,true,true,allItems);
 
     if (!this->tmpCircle && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
         this->tmpCircle = std::make_shared<QGraphicsEllipseItem>(initialRect);
         this->tmpCircle->setPen(QPen(Qt::black, 1));
+       /// TODO
+       /// setLayer
         scene->addItem(this->tmpCircle.get());
     }
     else if  (this->tmpCircle && event == DrawEventType::MouseMove)
@@ -750,11 +760,13 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 
 void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,false,false,allItems);
 
     if (!this->tmpPolyline && event == DrawEventType::LeftRelease)
     {
         this->tmpPolyline = std::make_shared<PolylineItem>();
+        this->tmpPolyline->setLayer(this->currentLayer);
         this->scene->addItem(this->tmpPolyline.get());
 
         this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -794,11 +806,13 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,true,true,allItems);
 
     if (!this->tmpArc && event == DrawEventType::LeftRelease)
     {
         this->tmpArc = std::make_shared<ArcItem>();
+        this->tmpArc->setLayer(this->currentLayer);
         scene->addItem(this->tmpArc.get());
         this->tmpArc->operateIndex += 1;
 
@@ -835,8 +849,11 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,false,false,allItems);
 
+     /// TODO
+    /// setLayer
     if (!this->tmpRect && event == DrawEventType::LeftRelease)
     {
         this->tmpRect = std::make_shared<QGraphicsRectItem>(pointCoordscene.x(), pointCoordscene.y(),0,0);
@@ -859,12 +876,15 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,true,true,allItems);
+
     /* center：螺旋的中心点
         radius：螺旋的初始半径
         spacing：每圈的间距
         turns：螺旋的圈数*/
-
+    /// TODO
+    /// setLayer
     if (!this->tmpSpiral && event == DrawEventType::LeftRelease)
     {
         QPointF centerPoint  = pointCoordscene;
@@ -915,8 +935,11 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,true,true,allItems);
 
+        /// TODO
+        /// setLayer
     if (!this->tmpPolygon && event == DrawEventType::LeftRelease)
     {
         this->tmpPolygon = std::make_shared<QGraphicsPolygonItem>();
@@ -951,8 +974,11 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
 {
-    this->setAllItemsMovable(false);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,true,true,allItems);
 
+        /// TODO
+        /// setLayer
     if (!this->tmpEllipse && event == DrawEventType::LeftRelease)
     {
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
@@ -1363,6 +1389,7 @@ void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
 void MainWindow::on_drawCircleButton_clicked()
 {
     displayOperation("drawCircle button click");
+    this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
@@ -1377,6 +1404,7 @@ void MainWindow::on_drawCircleButton_clicked()
 void MainWindow::on_drawPolylineButton_clicked()
 {
     displayOperation("drawPolyline button click");
+    this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
@@ -1391,7 +1419,7 @@ void MainWindow::on_drawPolylineButton_clicked()
 void MainWindow::on_drawArcButton_clicked()
 {
     displayOperation("drawArc button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1405,7 +1433,7 @@ void MainWindow::on_drawArcButton_clicked()
 void MainWindow::on_drawSpiralButton_clicked()
 {
     displayOperation("drawSpiral button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1419,7 +1447,7 @@ void MainWindow::on_drawSpiralButton_clicked()
 void MainWindow::on_drawRectButton_clicked()
 {
     displayOperation("drawRect button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1433,7 +1461,7 @@ void MainWindow::on_drawRectButton_clicked()
 void MainWindow::on_drawPolygonButton_clicked()
 {
     displayOperation("drawPolygon button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1447,7 +1475,7 @@ void MainWindow::on_drawPolygonButton_clicked()
 void MainWindow::on_drawEllipseButton_clicked()
 {
     displayOperation("drawEllipse button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1465,14 +1493,17 @@ void MainWindow::on_resetButton_clicked()
 {
     displayOperation("reset button click");
 
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->propertyTableWidget->clearContents();
     ui->propertyTableWidget->setRowCount(0);
 
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
-    this->setAllItemsMovable(true);
+    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,false,false,allItems);
+    this->setItemsStatus(true,true,true,inLayerItems);
 
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
@@ -1485,7 +1516,7 @@ void MainWindow::on_dragSceneButton_clicked()
 {
     displayOperation("dragscene button click");
 
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1635,7 +1666,7 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 void MainWindow::on_rotateButton_clicked()
 {
     displayOperation("rotate button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
@@ -1655,7 +1686,7 @@ void MainWindow::on_centerButton_clicked()
 {
     displayOperation("center button click");
 
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
@@ -1673,7 +1704,7 @@ void MainWindow::on_createOffsetButton_clicked()
 {
     displayOperation("createOffset button click");
 
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
 
     ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
@@ -1707,7 +1738,7 @@ void MainWindow::on_createOffsetButton_clicked()
 void MainWindow::on_deleteButton_clicked()
 {
     displayOperation("delete button click");
-    this->resetDrawToolStatus();
+     this->currentDrawTool = DrawToolType::None;   this->resetDrawToolStatus();
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     this->setAllDrawButtonChecked(false);
     this->setAllToolButtonChecked(false);
@@ -1719,12 +1750,15 @@ void MainWindow::on_deleteButton_clicked()
     for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
     {
        this->scene ->removeItem(*item);
-        auto it = std::find_if(Manager::getIns().getContainer().begin(), Manager::getIns().getContainer().end(),
-                       [item](const std::shared_ptr<QGraphicsItem>& ptr) {
-                           return ptr.get() == *item;
-                       });
+        auto it = std::find_if(Manager::getIns().getItems().begin(), Manager::getIns().getItems().end(),
+                       [item](const std::shared_ptr<QGraphicsItem>& ptr)
+                              {
+                                    return ptr.get() == *item;
+                                }
+                              );
 
-        if (it != Manager::getIns().getContainer().end()) {
+        if (it != Manager::getIns().getItems().end())
+        {
             Manager::getIns().deleteItem(it->get());
         }
     }
@@ -1743,9 +1777,22 @@ void MainWindow::on_redoButton_clicked()
 ///
 /// \brief onLayerButton
 ///
-void MainWindow::onLayerButtonClicked(int)
+void MainWindow::onLayerButtonClicked(int index)
 {
+    this->resetDrawToolStatus();
 
+    this->currentLayer = index;
+    DEBUG_VAR(this->currentLayer);
+
+    //设置按钮选中
+    this->setAllLayerButtonChecked(false);
+    layerButtons[this->currentLayer-1]->setChecked(true);
+
+    //显示对应layer的元素
+    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+    auto allItems = Manager::getIns().getItems();
+    this->setItemsStatus(false,false,false,allItems);
+    this->setItemsStatus(true,true,true,inLayerItems);
 }
 
 void MainWindow::onAddLayerButtonClicked()
@@ -1763,9 +1810,11 @@ void MainWindow::onAddLayerButtonClicked()
     QPushButton *newLayerButton = new QPushButton(buttonName);
     newLayerButton->setStyleSheet(buttonStyle1);
     newLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    newLayerButton->setCheckable(true);
 
     QPushButton *addLayerButton = qobject_cast<QPushButton*>(layerButtonLayout->itemAt(layerButtonLayout->count() - 1)->widget());
-    if (!addLayerButton) {
+    if (!addLayerButton)
+    {
         FATAL_MSG("addLayerButton not found");
         return;
     }
@@ -1776,12 +1825,12 @@ void MainWindow::onAddLayerButtonClicked()
 
     layerButtonLayout->addWidget(addLayerButton);
 
-    connect(newLayerButton, &QPushButton::clicked, this, [=]() {
-        onLayerButtonClicked(layerCount);
-    });
+    auto tmpLayerCount = layerCount;
+    connect(newLayerButton, &QPushButton::clicked, this, [=](){ onLayerButtonClicked(tmpLayerCount); });
 
     INFO_MSG("newLayerButton added");
 }
+
 ///
 /// test function
 ///
@@ -1819,8 +1868,8 @@ void MainWindow::on_drawTestLineButton_clicked()
 
     flag = !flag;
     // this->setAllItemSelectable(flag);
-    this->setAllItemVisible(flag);
-    this->setAllItemsMovable(flag);
+    // this->setAllItemVisible(flag);
+    // this->setAllItemsMovable(flag);
     // */
 
     ///

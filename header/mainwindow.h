@@ -46,11 +46,11 @@ private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
     // 编辑对象、ui
-    void setAllItemsMovable(bool);
-    void setAllItemSelectable(bool);
-    void setAllItemVisible(bool);
+    void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
+    void setItemsStatus(bool visible,bool selectable, bool movable,const std::unordered_set<std::shared_ptr<LaserItem>>&);
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
+    void setAllLayerButtonChecked(bool);
     // 记录画布放大倍率
     std::pair<double,double> sceneScale = {1,1};
     void setSceneScale(double, double);
@@ -61,6 +61,7 @@ private:
     QLabel *labelOperation;
     QVector<QPushButton*> layerButtons;
     int layerCount = 1;
+    int currentLayer = 1;
     void initTitleBar();
     void initGraphicsView();
     void initToolButton();

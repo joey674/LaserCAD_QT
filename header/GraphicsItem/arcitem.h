@@ -12,8 +12,8 @@
 class ArcItem: public LaserItem
 {
 public: // 只用于暂存一些计算变量，不属于状态，不参与实际更新
-    int operateIndex = 0;
-    QPointF assistPoint =QPointF{};
+    int operateIndex = 0;// 绘制时记录当前第几次点击
+    QPointF assistPoint =QPointF{};//绘制时记录中间的暂存点
 public:
     ArcItem();
     /// \brief control

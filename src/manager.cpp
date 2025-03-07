@@ -15,11 +15,13 @@
 
  void Manager::addItem(std::shared_ptr<LaserItem> ptr)
  {
-     this->container.insert(ptr);
+    this->container.insert(ptr);
 
-     auto layer = ptr->getLayer();
-     auto weak_ptr = std::weak_ptr<LaserItem>(ptr);
-     this->layerMap[layer].push_back(weak_ptr);
+    auto layer = ptr->getLayer();
+    this->layerMap[layer].insert(ptr);
+
+    ///TODO
+    /// GroupAdd
  }
 
  void Manager::deleteItem(QGraphicsItem *item)
@@ -33,19 +35,22 @@
      if (it != this->container.end()) {
          this->container.erase(it);
      }
+     ///TODO
+     /// GroupDelete
+     /// LayerDelete
  }
 
- const std::unordered_set<std::shared_ptr<LaserItem>>& Manager::getContainer()
+ const std::unordered_set<std::shared_ptr<LaserItem>>& Manager::getItems()
  {
      return this->container;
  }
 
- const std::vector<std::weak_ptr<LaserItem> > &Manager::getItemsByGroup(int)
+ const std::unordered_set<std::shared_ptr<LaserItem> > &Manager::getItemsByGroup(int)
  {
 
  }
 
- const std::vector<std::weak_ptr<LaserItem>>& Manager::getItemsByLayer(int index)
+ const std::unordered_set<std::shared_ptr<LaserItem>>& Manager::getItemsByLayer(int index)
  {
      return this->layerMap[index];
  }
