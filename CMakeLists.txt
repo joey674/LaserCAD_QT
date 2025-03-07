@@ -15,7 +15,6 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 set(PROJECT_SOURCES
         src/main.cpp            src/mainwindow.ui
         src/mainwindow.cpp      header/mainwindow.h
-        src/graphicsview.cpp    header/graphicsview.h 
 )
 include_directories(${PROJECT_SOURCE_DIR})
 
@@ -40,21 +39,21 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
         # GraphicsItem
+        header/GraphicsItem/laseritem.h            src/laseritem.cpp
         header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
         header/GraphicsItem/arcitem.h               src/arcitem.cpp
         header/GraphicsItem/protocol.h              src/protocol.cpp
-        # main widget
+        # widget
+        header/graphicsview.h            src/graphicsview.cpp
+        header/titlebar.h                        src/titlebar.cpp
+        header/itemtreewidget.h         src/itemtreewidget.cpp
+        # struct
         header/manager.h                     src/manager.cpp
         header/logger.h                          src/logger.cpp
-        header/titlebar.h                        src/titlebar.cpp
-        # header/style.h                         src/style.cpp
+        header/utils.h                              src/utils.cpp
+        header/css.h                               #[[src/css.cpp]]
         #utils
         resource/button.qrc
-        header/GraphicsItem/laseritem.h
-        src/laseritem.cpp
-        header/utils.h
-        src/utils.cpp
-        header/css.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

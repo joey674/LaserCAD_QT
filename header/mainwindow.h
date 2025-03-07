@@ -57,9 +57,11 @@ private:
     void setSceneScale(double, double);
     std::pair<double, double> getSceneScale();
     // 初始化组件
-    TitleBar*titleBar;
-    QLabel *labelMouseCoordinate;
-    QLabel *labelOperation;
+    TitleBar* titleBar;
+    QLabel* labelMouseCoordinate;
+    QLabel* labelCurrentLayer;
+    QLabel* labelCurrentGroup;
+    QLabel* labelOperation;
     QVector<QPushButton*> layerButtons;
     int layerCount = 1;
     int currentLayer = 1;
@@ -68,7 +70,7 @@ private:
     void initToolButton();
     void initLayerButton();
     void initStatusBar();
-    void initOperationTreeWidget();
+    void initItemTreeWidget();
     void initPropertyTableWidget();
     void displayOperation(QString);
 private:    // 编辑工具
@@ -88,7 +90,7 @@ private:    // 编辑工具
     QGraphicsLineItem* assisstLine1;
     QGraphicsLineItem* assisstLine2;
     QGraphicsPathItem* assisstArc1;
-private:    // 绘制item工具
+private:  // 绘制item工具
     DrawToolType currentDrawTool = None;
     int polygonEdgeNum = 3; //绘制polygon使用
     void resetDrawToolStatus();
@@ -108,7 +110,9 @@ private:    // 绘制item工具
     void drawSpiral(QPointF,DrawEventType);
     void drawPolygon(QPointF,DrawEventType);
     void drawEllipse(QPointF,DrawEventType);
-protected:
+private: // treeWidget事件
+
+protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;
     void keyReleaseEvent(QKeyEvent* ) override;
 private slots:

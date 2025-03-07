@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     initGraphicsView();
     initToolButton();
     initLayerButton();
-    initOperationTreeWidget();
+    initItemTreeWidget();
     initPropertyTableWidget();
     initStatusBar();
 }
@@ -403,21 +403,35 @@ void MainWindow::initStatusBar()
     this->labelMouseCoordinate = new QLabel("coordinate: ");
     this->labelMouseCoordinate->setMinimumWidth(150);
     ui->statusBar->addWidget(this->labelMouseCoordinate);
+
+    this->labelCurrentLayer = new QLabel("layer: ");
+    this->labelCurrentLayer->setMinimumWidth(150);
+    ui->statusBar->addWidget(this->labelCurrentLayer);
+
+    this->labelCurrentGroup = new QLabel("layer: ");
+    this->labelCurrentGroup->setMinimumWidth(150);
+    ui->statusBar->addWidget(this->labelCurrentGroup);
+
     this->labelOperation = new QLabel("operation: ");
     this->labelOperation->setMinimumWidth(300);
     ui->statusBar->addWidget(this->labelOperation);
 }
 
-void MainWindow::initOperationTreeWidget()
+void MainWindow::initItemTreeWidget()
 {
-    ui->operationTreeWidget->setHeaderLabel("Operation List");
+    ui->itemTreeWidget->setHeaderLabel("Item List");
 
-    // QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
-    // QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
-    // ui->operationTreeWidget->addTopLevelItem(parentItem1);
-    // QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->operationTreeWidget, QStringList("Parent1"));
-    // QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
-    // ui->operationTreeWidget->addTopLevelItem(parentItem2);
+    QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer1"));
+    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
+    ui->itemTreeWidget->addTopLevelItem(parentItem1);
+
+    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Parent1"));
+    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
+    ui->itemTreeWidget->addTopLevelItem(parentItem2);
+
+    QTreeWidgetItem *parentItem3 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer2"));
+    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem1, QStringList("Child3"));
+    ui->itemTreeWidget->addTopLevelItem(parentItem1);
 }
 
 void MainWindow::initPropertyTableWidget()
@@ -740,7 +754,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
 {
     if (!this->tmpPolyline && event == DrawEventType::LeftRelease)
     {
-        // 设置当前图层不可动不可选中
+        // 设置当前图层其他元素不可动不可选中
         auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
         this->setItemsStatus(true,false,false,inLayerItems);
 
@@ -1168,6 +1182,12 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
             pointCoordscene.y()
         )
     );
+    this->labelCurrentLayer->setText(
+        QString::asprintf(
+            "layer: %i",
+            this->currentLayer
+            )
+        );
 
     // 非拖拽行为
     if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == false)
