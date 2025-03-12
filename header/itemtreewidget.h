@@ -15,7 +15,7 @@ public:
     bool isLayerNode(QTreeWidgetItem *item);
 protected:
     void dragMoveEvent(QDragMoveEvent *event) override;
-    void dropEvent(QDropEvent *event);
+    void dropEvent(QDropEvent *event) override;
 
 };
 

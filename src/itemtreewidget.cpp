@@ -4,49 +4,93 @@
 bool ItemTreeWidget::ItemTreeWidget::isLayerNode(QTreeWidgetItem *item)
 {
     if (!item) return false;
-    // DEBUG_VAR(item->text(0));
     return item->text(0).startsWith("Layer");
 }
 
-void ItemTreeWidget::ItemTreeWidget::dropEvent(QDropEvent *event)
+void ItemTreeWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    QTreeWidgetItem *targetItem = itemAt(event->pos());
     QTreeWidgetItem *draggingItem = currentItem();
+    QTreeWidgetItem *targetPositionItem = itemAt(event->position().toPoint());
 
-    if (!targetItem || !draggingItem) {
+    if (!targetPositionItem || !draggingItem) {
         event->ignore();
         return;
     }
 
-    // Layer 只能在顶层，不能成为子节点
-    if (isLayerNode(draggingItem) && targetItem->parent()) {
-        event->ignore();  // 取消拖拽
-        return;
-    }
+    DEBUG_VAR(draggingItem->text(0));
+    DEBUG_VAR(targetPositionItem->text(0));
 
-    // 执行默认的拖放行为
-    QTreeWidget::dropEvent(event);
-}
+    QRect targetRect = visualItemRect(targetPositionItem);
+    int yPos = event->position().toPoint().y();
+    int topThreshold = targetRect.top() + targetRect.height() / 4;
+    int bottomThreshold = targetRect.bottom() - targetRect.height() / 4;
 
-void ItemTreeWidget::ItemTreeWidget::dragMoveEvent(QDragMoveEvent *event)
-{
-    QTreeWidgetItem *targetItem = itemAt(event->pos());  // 目标位置的节点
-    QTreeWidgetItem *draggingItem = currentItem();       // 当前拖拽的节点
-
-    DEBUG_VAR(&targetItem);
-    DEBUG_VAR(&draggingItem);
-    if (!targetItem || !draggingItem) {
-        event->ignore();
-        return;
-    }
-
-    if (isLayerNode(draggingItem)) {
-        if (targetItem->parent()) {  // 目标不是顶层节点（即在其他子节点中）
-            event->ignore();  // 禁止拖动
+    if (isLayerNode(draggingItem)) // layer节点不允许并入
+    {
+        if (yPos < topThreshold)
+        {
+            event->accept();
+            return;
+        }
+        else if (yPos > bottomThreshold)
+        {
+            event->accept();
+            return;
+        }
+        else
+        {
+            event->ignore();
             return;
         }
     }
+    else // 其他类型节点
+    {
+        if (!isLayerNode(targetPositionItem) && targetPositionItem->parent() ==nullptr) //
+        {
+            if (yPos < topThreshold)
+            {
+                event->accept();
+                return;
+            }
+            else if (yPos > bottomThreshold)
+            {
+                event->accept();
+                return;
+            }
+            else
+            {
+                event->ignore();
+                return;
+            }
+        }
+        else
+        {
+            event->accept();
+            return;
+        }
+    }
+}
 
-    // 普通节点的默认拖动逻辑
-    event->accept();
+void ItemTreeWidget::dropEvent(QDropEvent *event)
+{
+    QTreeWidgetItem *draggingItem = currentItem();  // 被拖拽的节点
+    QTreeWidgetItem *targetPositionItem = itemAt(event->position().toPoint());  // 目标位置
+
+    // if (!draggingItem || !targetPositionItem) {
+    //     event->ignore();
+    //     return;
+    // }
+
+    // if (isLayerNode(draggingItem)) {
+    //     event->ignore();
+    //     return;
+    // }
+
+    // // 2. 如果目标节点是 layer，拒绝放入
+    // if (isLayerNode(targetPositionItem)) {
+    //     event->ignore();
+    //     return;
+    // }
+
+    QTreeWidget::dropEvent(event);
 }

@@ -26,6 +26,7 @@
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
     // showMaximized();
 
     initTitleBar();
@@ -364,38 +365,38 @@ void MainWindow::initToolButton()
 
 void MainWindow::initLayerButton()
 {
-    QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
-    QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
-    if (!layerButtonLayout)
-        FATAL_MSG("layerButtonLayout can not be init");
+    // QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
+    // if (!layerButtonLayout)
+    //     FATAL_MSG("layerButtonLayout can not be init");
 
-    // layout style
-    layerButtonLayout->setAlignment(Qt::AlignLeft);
-    layerButtonLayout->setSpacing(0);
+    // // layout style
+    // layerButtonLayout->setAlignment(Qt::AlignLeft);
+    // layerButtonLayout->setSpacing(0);
 
-    //button style
-    auto buttonStyle = buttonStyle1;
+    // //button style
+    // auto buttonStyle = buttonStyle1;
 
-    //button
-    QPushButton *layer1Button = new QPushButton("layer 1");
-    layer1Button->setStyleSheet(buttonStyle);
-    layer1Button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    QPushButton *addLayerButton = new QPushButton("add Layer");
-    addLayerButton->setStyleSheet(buttonStyle);
-    addLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    // //button
+    // QPushButton *layer1Button = new QPushButton("layer 1");
+    // layer1Button->setStyleSheet(buttonStyle);
+    // layer1Button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    // QPushButton *addLayerButton = new QPushButton("add Layer");
+    // addLayerButton->setStyleSheet(buttonStyle);
+    // addLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    //
-    layerButtonLayout->addWidget(layer1Button);
-    layerButtonLayout->addWidget(addLayerButton);
-    connect(layer1Button, &QPushButton::clicked, this, [=]() {MainWindow::onLayerButtonClicked(1);} );
-    connect(addLayerButton, &QPushButton::clicked, this, &MainWindow::onAddLayerButtonClicked);
+    // //
+    // layerButtonLayout->addWidget(layer1Button);
+    // layerButtonLayout->addWidget(addLayerButton);
+    // connect(layer1Button, &QPushButton::clicked, this, [=]() {MainWindow::onLayerButtonClicked(1);} );
+    // connect(addLayerButton, &QPushButton::clicked, this, &MainWindow::onAddLayerButtonClicked);
 
-    // 初始化layer1选中 并存在layerbuttons里
-    layer1Button->setCheckable(true);
-    layer1Button->setChecked(true);
-    // DEBUG_VAR(layer1Button->isCheckable());
-    // DEBUG_VAR(layer1Button->isChecked());
-    this->layerButtons.append(layer1Button);
+    // // 初始化layer1选中 并存在layerbuttons里
+    // layer1Button->setCheckable(true);
+    // layer1Button->setChecked(true);
+    // // DEBUG_VAR(layer1Button->isCheckable());
+    // // DEBUG_VAR(layer1Button->isChecked());
+    // this->layerButtons.append(layer1Button);
 }
 
 void MainWindow::initStatusBar()
@@ -419,19 +420,22 @@ void MainWindow::initStatusBar()
 
 void MainWindow::initItemTreeWidget()
 {
-    ui->itemTreeWidget->setHeaderLabel("Item List");
+    ui->itemTreeWidget->setHeaderLabel("Item TreeWidget");
 
     QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer1"));
+    // Qt::ItemFlags flags = parentItem1->flags();
+    // flags &= ~Qt::ItemIsDropEnabled;
+    // parentItem1->setFlags(flags);
+    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer2"));
+    // parentItem2->setFlags(flags);
+    QTreeWidgetItem *parentItem3 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer3"));
+    // parentItem3->setFlags(flags);
+
     QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
-    ui->itemTreeWidget->addTopLevelItem(parentItem1);
-
-    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Parent1"));
     QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
-    ui->itemTreeWidget->addTopLevelItem(parentItem2);
+    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem3, QStringList("Child3"));
 
-    QTreeWidgetItem *parentItem3 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer2"));
-    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem1, QStringList("Child3"));
-    ui->itemTreeWidget->addTopLevelItem(parentItem1);
+    DEBUG
 }
 
 void MainWindow::initPropertyTableWidget()
@@ -446,36 +450,38 @@ void MainWindow::displayOperation(QString text)
     this->labelOperation->setText("operation: "+ text);
 }
 
-void MainWindow::dragScene(QPointF pointCoordscene, DrawEventType event)
+void MainWindow::dragScene(QPointF pointCoordView, DrawEventType event)
 {
 
     if (event == DrawEventType::LeftPress)
     {
-        displayOperation("drag scene left press");
-
-        auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordscene);
+        DEBUG_MSG("dragScene: LeftPress");
+        // DEBUG_VAR(pointCoordView);
 
         this->dragScenePoint = pointCoordView;
     }
     else if (event == DrawEventType::MouseMove)
     {
-        displayOperation("drag scene mouse move");
-        auto pointCoordView = ui->graphicsView->mapFromScene(pointCoordscene);
+        DEBUG_MSG("dragScene: MouseMove");
+        // DEBUG_VAR(pointCoordView);
 
-        QPointF delta =  this->dragScenePoint - pointCoordView;
-        delta = QPointF(delta.x()/getSceneScale().first, delta.y()/getSceneScale().second);
-        this->dragScenePoint = pointCoordView;
+        double dx = static_cast<double>(this->dragScenePoint.x()) - static_cast<double>(pointCoordView.x());
+        double dy = static_cast<double>(this->dragScenePoint.y()) - static_cast<double>(pointCoordView.y());
+        QPointF delta(dx, dy);
+
+        double newX = std::fma(delta.x(), 1.0 / getSceneScale().first, 0.0);
+        double newY = std::fma(delta.y(), 1.0 / getSceneScale().second, 0.0);
+        delta = QPointF(newX, newY);
+        // DEBUG_VAR(delta);
 
         auto newRect = this->scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
-
         this->scene->setSceneRect(newRect);
+
+        this->dragScenePoint = pointCoordView;
     }
     else if (event == DrawEventType::LeftRelease)
     {
-        displayOperation("drag scene left release");
-        // this->setItemsStatus(false,false,false,Manager::getIns().getItems());
-        // this->setItemsStatus(true,true,true,Manager::getIns().getItemsByLayer(this->currentLayer));
-
+        DEBUG_MSG("dragScene: LeftRelease");
         this->dragScenePoint = QPointF(0,0);
     }
 }
@@ -1246,7 +1252,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
         {
         case DrawToolType::DragScene:
         {
-            this->dragScene(pointCoordscene,DrawEventType::MouseMove);
+            this->dragScene(pointCoordView,DrawEventType::MouseMove);
             break;
         }
         default:
@@ -1275,7 +1281,7 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
     {
     case DrawToolType::DragScene:
     {
-        this->dragScene(pointCoordscene,DrawEventType::LeftPress);
+        this->dragScene(pointCoordView,DrawEventType::LeftPress);
         break;
     }
     default:
@@ -1310,7 +1316,7 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
     {
     case DrawToolType::DragScene:
     {
-        this->dragScene(pointCoordscene,DrawEventType::LeftRelease);
+        this->dragScene(pointCoordView,DrawEventType::LeftRelease);
         break;
     }
     case DrawToolType:: EditProperty:
@@ -1807,56 +1813,56 @@ void MainWindow::on_redoButton_clicked()
 ///
 void MainWindow::onLayerButtonClicked(int index)
 {
-    this->resetDrawToolStatus();
+    // this->resetDrawToolStatus();
 
-    this->currentLayer = index;
-    DEBUG_VAR(this->currentLayer);
+    // this->currentLayer = index;
+    // DEBUG_VAR(this->currentLayer);
 
-    //设置按钮选中
-    this->setAllLayerButtonChecked(false);
-    layerButtons[this->currentLayer-1]->setChecked(true);
+    // //设置按钮选中
+    // this->setAllLayerButtonChecked(false);
+    // layerButtons[this->currentLayer-1]->setChecked(true);
 
-    //显示对应layer的元素
-    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,false,false,allItems);
-    this->setItemsStatus(true,true,true,inLayerItems);
+    // //显示对应layer的元素
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,false,false,allItems);
+    // this->setItemsStatus(true,true,true,inLayerItems);
 }
 
 void MainWindow::onAddLayerButtonClicked()
 {
-    QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
-    QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
-    if (!layerButtonLayout) {
-        FATAL_MSG("layerButtonLayout can not be found");
-        return;
-    }
+    // QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
+    // if (!layerButtonLayout) {
+    //     FATAL_MSG("layerButtonLayout can not be found");
+    //     return;
+    // }
 
-    layerCount++;
-    QString buttonName = QString("Layer %1").arg(layerCount);
+    // layerCount++;
+    // QString buttonName = QString("Layer %1").arg(layerCount);
 
-    QPushButton *newLayerButton = new QPushButton(buttonName);
-    newLayerButton->setStyleSheet(buttonStyle1);
-    newLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    newLayerButton->setCheckable(true);
+    // QPushButton *newLayerButton = new QPushButton(buttonName);
+    // newLayerButton->setStyleSheet(buttonStyle1);
+    // newLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    // newLayerButton->setCheckable(true);
 
-    QPushButton *addLayerButton = qobject_cast<QPushButton*>(layerButtonLayout->itemAt(layerButtonLayout->count() - 1)->widget());
-    if (!addLayerButton)
-    {
-        FATAL_MSG("addLayerButton not found");
-        return;
-    }
-    layerButtonLayout->removeWidget(addLayerButton);
+    // QPushButton *addLayerButton = qobject_cast<QPushButton*>(layerButtonLayout->itemAt(layerButtonLayout->count() - 1)->widget());
+    // if (!addLayerButton)
+    // {
+    //     FATAL_MSG("addLayerButton not found");
+    //     return;
+    // }
+    // layerButtonLayout->removeWidget(addLayerButton);
 
-    layerButtonLayout->addWidget(newLayerButton);
-    layerButtons.append(newLayerButton);
+    // layerButtonLayout->addWidget(newLayerButton);
+    // layerButtons.append(newLayerButton);
 
-    layerButtonLayout->addWidget(addLayerButton);
+    // layerButtonLayout->addWidget(addLayerButton);
 
-    auto tmpLayerCount = layerCount;
-    connect(newLayerButton, &QPushButton::clicked, this, [=](){ onLayerButtonClicked(tmpLayerCount); });
+    // auto tmpLayerCount = layerCount;
+    // connect(newLayerButton, &QPushButton::clicked, this, [=](){ onLayerButtonClicked(tmpLayerCount); });
 
-    INFO_MSG("newLayerButton added");
+    // INFO_MSG("newLayerButton added");
 }
 
 ///
