@@ -1,5 +1,3 @@
-#include "header/CavalierContours/polyline.hpp"
-#include "header/CavalierContours/polylineoffset.hpp"
 #include "arcitem.h"
 #include "logger.h"
 

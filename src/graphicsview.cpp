@@ -1,4 +1,4 @@
-#include "header/graphicsview.h"
+#include "graphicsview.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>

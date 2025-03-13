@@ -1,6 +1,6 @@
-#include "header/CavalierContours/cavaliercontours.h"
-#include "header/CavalierContours/polylinecombine.hpp"
-#include "header/CavalierContours/polylineoffset.hpp"
+#include "CavalierContours/cavaliercontours.h"
+#include "CavalierContours/polylinecombine.hpp"
+#include "CavalierContours/polylineoffset.hpp"
 #include <iostream>
 #include <memory>
 #include <stdexcept>

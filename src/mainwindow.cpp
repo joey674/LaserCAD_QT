@@ -15,9 +15,7 @@
 // #include "utils.h"
 #include "logger.h"
 // #include "titlebar.h"
-#include "header/CavalierContours/polyline.hpp"
-// #include "header/CavalierContours/polylineoffset.hpp"
-// #include "utils.h";
+#include "CavalierContours/polyline.hpp"
 
 ///
 /// \brief MainWindow::MainWindow
@@ -426,7 +424,7 @@ void MainWindow::initItemTreeWidget()
     ui->itemTreeWidget->setHeaderHidden(true);
     ui->itemTreeWidget->setStyleSheet(treeWidgetStyle1);
 
-    ui->itemTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);//正常为单选，但按下ctrl后可以是多选
+    ui->itemTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);// 按下ctrl是单点多选;按下shift是一列多选
 
     ui->itemTreeWidget->setDragEnabled(true);//设置可拖动
     ui->itemTreeWidget->setAcceptDrops(true);//设置接收拖放
@@ -1921,12 +1919,8 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// test template
     ///
     // /*
-
-    flag = !flag;
-    // this->setAllItemSelectable(flag);
-    // this->setAllItemVisible(flag);
-    // this->setAllItemsMovable(flag);
     // */
+
 
     ///
     /// uuid

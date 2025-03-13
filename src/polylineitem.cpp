@@ -1,7 +1,7 @@
 #include "polylineitem.h"
 #include "logger.h"
-#include "header/CavalierContours/polyline.hpp"
-#include "header/CavalierContours/polylineoffset.hpp"
+#include "CavalierContours/polyline.hpp"
+#include "CavalierContours/polylineoffset.hpp"
 
 PolylineItem::PolylineItem()
 {

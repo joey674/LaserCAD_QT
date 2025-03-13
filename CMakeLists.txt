@@ -38,22 +38,27 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector.hpp
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
-        # GraphicsItem
-        header/GraphicsItem/laseritem.h            src/laseritem.cpp
-        header/GraphicsItem/polylineitem.h      src/polylineitem.cpp
-        header/GraphicsItem/arcitem.h               src/arcitem.cpp
-        header/GraphicsItem/protocol.h              src/protocol.cpp
+        # GraphicsView
+        header//GraphicsView/graphicsview.h                    src/graphicsview.cpp
+        header/GraphicsView/laseritem.h                             src/laseritem.cpp
+        header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
+        header/GraphicsView/arcitem.h                                 src/arcitem.cpp
+        header/GraphicsView/protocol.h                               src/protocol.cpp
+        # ItemTreeWidget
+        header/ItemTreeWidget/itemtreewidget.h             src/itemtreewidget.cpp
+        # Manager
+        header/Manager/manager.h                                         src/manager.cpp
+        header/Manager/treenode.h                                        src/treenode.cpp
         # widget
-        header/graphicsview.h            src/graphicsview.cpp
-        header/titlebar.h                        src/titlebar.cpp
-        header/itemtreewidget.h         src/itemtreewidget.cpp
-        # struct
-        header/manager.h                     src/manager.cpp
+        header/titlebar.h                                                                src/titlebar.cpp
+        #utils
         header/logger.h                          src/logger.cpp
         header/utils.h                              src/utils.cpp
         header/css.h                               #[[src/css.cpp]]
-        #utils
         resource/button.qrc
+        header/Manager/treemodel.h
+        src/treemodel.cpp
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -75,7 +80,10 @@ endif()
 
 target_link_libraries(LaserCAD_Designer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsItem)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/Manager)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/ItemTreeWidget)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

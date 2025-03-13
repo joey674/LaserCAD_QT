@@ -38,7 +38,6 @@ protected:
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void paintEvent(QPaintEvent *event) override;
-    void dragLeaveEvent(QDragLeaveEvent *event) override;
 };
 
 
