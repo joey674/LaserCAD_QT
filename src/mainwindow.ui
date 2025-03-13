@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>705</width>
+    <width>754</width>
     <height>623</height>
    </rect>
   </property>
@@ -307,6 +307,9 @@
          </property>
          <property name="dragEnabled">
           <bool>true</bool>
+         </property>
+         <property name="dragDropOverwriteMode">
+          <bool>false</bool>
          </property>
          <property name="dragDropMode">
           <enum>QAbstractItemView::DragDropMode::InternalMove</enum>

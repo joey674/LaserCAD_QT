@@ -6,7 +6,8 @@ https://bo7zwj4hof.larksuite.com/docx/S4YudowaZowtVMxJ7Goua4irsJg?from=from_copy
 ## Qt style
 
 - color scheme: style/.xml
-- font: consolas
+- font: Arial Rounded MT
+- off (visualize indent)
 
 ## 命名
 

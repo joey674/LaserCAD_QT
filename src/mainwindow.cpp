@@ -420,8 +420,22 @@ void MainWindow::initStatusBar()
 
 void MainWindow::initItemTreeWidget()
 {
-    ui->itemTreeWidget->setHeaderLabel("Item TreeWidget");
+    ///
+    /// setting
+    ///
+    ui->itemTreeWidget->setHeaderHidden(true);
+    ui->itemTreeWidget->setStyleSheet(treeWidgetStyle1);
 
+    ui->itemTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);//正常为单选，但按下ctrl后可以是多选
+
+    ui->itemTreeWidget->setDragEnabled(true);//设置可拖动
+    ui->itemTreeWidget->setAcceptDrops(true);//设置接收拖放
+    ui->itemTreeWidget->showDropIndicator (); // 显示拖拽目标
+
+
+    ///
+    /// item
+    ///
     QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer1"));
     // Qt::ItemFlags flags = parentItem1->flags();
     // flags &= ~Qt::ItemIsDropEnabled;
@@ -431,18 +445,26 @@ void MainWindow::initItemTreeWidget()
     QTreeWidgetItem *parentItem3 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer3"));
     // parentItem3->setFlags(flags);
 
-    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Child1"));
-    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Child2"));
-    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem3, QStringList("Child3"));
+    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Item1"));
+    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Item2"));
+    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem3, QStringList("Item3"));
 
-    DEBUG
+    QTreeWidgetItem *groupItem1 = new QTreeWidgetItem(parentItem3, QStringList("Group1"));
+    for (int i=1;i<100000;i++){
+            QTreeWidgetItem *childItem = new QTreeWidgetItem(groupItem1, QStringList("item"+QString::number(i)));
+    }
+
+    ///
+    /// test
+    ///
+    parentItem3->removeChild(groupItem1);
+    parentItem1->addChild(groupItem1);
 }
 
 void MainWindow::initPropertyTableWidget()
 {
     ui->propertyTableWidget->setColumnCount(2);
-    ui->propertyTableWidget->setHorizontalHeaderLabels(
-        QStringList() << "property" << "value" );
+    ui->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
 }
 
 void MainWindow::displayOperation(QString text)

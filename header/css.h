@@ -43,5 +43,19 @@ QString buttonStyle2 = R"(
         }
     )";
 
+QString treeWidgetStyle1 = (R"(
+    QTreeWidget {
+        font-size: 15px;   /* 设置字体大小 */
+    }
+    QTreeWidget::item {
+        min-height: 30px;  /* 设置每一行的最小高度 */
+        margin: 5px;  /* 增加 margin，让拖拽插入线更清晰 */
+    }
+    QTreeWidget::item:selected {
+        background: #3399FF;  /* 选中时的背景颜色 */
+        color: white;
+    }
+)");
+
 
 #endif // CSS_H

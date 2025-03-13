@@ -1,11 +1,14 @@
 # 构建目录
 build/
+
 # Qt Creator 用户配置文件
 *.user
+
 # Qt 自动生成文件
 ui_*.h
 moc_*.cpp
 qrc_*.cpp
+
 # 编译生成文件
 *.o
 *.obj
@@ -13,10 +16,13 @@ qrc_*.cpp
 *.dll
 *.exe
 *.dylib
+
 # 临时文件
 *.log
 *.tmp
 *.bak
+
 # IDE 配置文件
 .idea/
 .vscode/
+.DS_Store
