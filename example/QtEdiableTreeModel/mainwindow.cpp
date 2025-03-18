@@ -14,19 +14,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
-    const QStringList header({tr("ItemList")});
+    const QStringList headersGroup({tr("ItemList"),tr("UUID")});
 
     QFile file(":/default.txt"_L1);
     const bool res = file.open(QIODevice::ReadOnly | QIODevice::Text);
     Q_ASSERT_X(res, Q_FUNC_INFO, "Failed to open ':/default.txt'");
     if (!res)
         return;
-    auto *model = new TreeModel(header, QString::fromUtf8(file.readAll()), this);
+    auto *model = new TreeModel(headersGroup, QString::fromUtf8(file.readAll()), this);
     file.close();
 
+    //
     view->setModel(model);
-    for (int column = 0; column < model->columnCount(); ++column)
-        view->resizeColumnToContents(column);
+
+    // for (int column = 0; column < model->columnCount(); ++column)
+    //     view->resizeColumnToContents(column);
     view->expandAll();
 
     view->setSelectionMode(QAbstractItemView::ExtendedSelection);

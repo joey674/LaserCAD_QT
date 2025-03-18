@@ -7,10 +7,11 @@
 using namespace Qt::StringLiterals;
 
 //! [0]
-TreeModel::TreeModel(const QStringList &header, const QString &data, QObject *parent)
+TreeModel::TreeModel(const QStringList &headersGroup, const QString &data, QObject *parent)
     : QAbstractItemModel(parent)
 {
     QVariantList rootData;
+    for (const QString &header : headersGroup)
         rootData << header;
 
     rootItem = std::make_unique<TreeItem>(rootData);
@@ -150,6 +151,93 @@ bool TreeModel::removeRows(int position, int rows, const QModelIndex &parent)
     endRemoveRows();
 
     return success;
+}
+
+Qt::DropActions TreeModel::supportedDropActions() const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+QStringList TreeModel::mimeTypes() const
+{
+    QStringList types;
+    types << "application/vnd.text.list";
+    return types;
+}
+
+QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    for (const QModelIndex &index : indexes) {
+        if (index.isValid()) {
+            QString text = data(index, Qt::DisplayRole).toString();
+            stream << text;
+        }
+    }
+
+    mimeData->setData("application/vnd.text.list", encodedData);
+    return mimeData;
+}
+
+bool TreeModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
+{
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(parent);
+
+    qDebug() << "drop column" << column;
+
+    if (!data->hasFormat("application/vnd.text.list"))
+        return false;
+
+    if (column > 0) //只允许放在第一列(这里不知道为什么 反正会返回-1/0)
+        return false;
+
+    return true;
+}
+
+bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex)
+{
+    if (!canDropMimeData(data, action, row, column, parentNodeIndex))
+        return false;
+
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    int beginRow;
+    if (row != -1) // 如果是parent节点当前没有子节点, row会设置成-1
+        beginRow = row;
+    else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
+        beginRow = rowCount(parentNodeIndex);
+
+    qDebug() << "row" << row;
+    qDebug() <<   "beginRow" << beginRow;
+    qDebug() << parentNodeIndex.data() << this->getItem(parentNodeIndex)->uuid;
+
+
+    QByteArray encodedData = data->data("application/vnd.text.list");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QStringList newItems;
+    int rows = 0;
+    while (!stream.atEnd()) {
+        QString text;
+        stream >> text;
+        newItems << text;
+        ++rows;
+    }
+
+    insertRows(beginRow, rows, parentNodeIndex);
+    for (const QString &text : std::as_const(newItems)) {
+        QModelIndex idx = this->index(beginRow, 0, parentNodeIndex);
+        setData(idx, text);
+        beginRow++;
+    }
+
+    return true;
 }
 
 

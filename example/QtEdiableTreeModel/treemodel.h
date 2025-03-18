@@ -20,7 +20,7 @@ class TreeModel : public QAbstractItemModel
 public:
     Q_DISABLE_COPY_MOVE(TreeModel)
 
-    TreeModel(const QStringList &header, const QString &data,
+    TreeModel(const QStringList &headersGroup, const QString &data,
               QObject *parent = nullptr);
     ~TreeModel() override;
 //! [0] //! [1]
@@ -55,86 +55,11 @@ public:
 
 
 //! [3]
-    Qt::DropActions supportedDropActions() const override
-    {
-        return Qt::CopyAction | Qt::MoveAction;
-    }
-    QStringList mimeTypes() const override
-    {
-        QStringList types;
-        types << "application/vnd.text.list";
-        return types;
-    }
-    QMimeData *mimeData(const QModelIndexList &indexes) const override
-    {
-        QMimeData *mimeData = new QMimeData;
-        QByteArray encodedData;
-
-        QDataStream stream(&encodedData, QIODevice::WriteOnly);
-
-        for (const QModelIndex &index : indexes) {
-            if (index.isValid()) {
-                QString text = data(index, Qt::DisplayRole).toString();
-                stream << text;
-            }
-        }
-
-        mimeData->setData("application/vnd.text.list", encodedData);
-        return mimeData;
-    }
-    bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parent) const override
-    {
-        Q_UNUSED(action);
-        Q_UNUSED(row);
-        Q_UNUSED(parent);
-
-        if (!data->hasFormat("application/vnd.text.list"))
-            return false;
-
-        if (column > 0) //只允许放在第一列
-            return false;
-
-        return true;
-    }
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override
-    {
-        if (!canDropMimeData(data, action, row, column, parentNodeIndex))
-            return false;
-
-        if (action == Qt::IgnoreAction)
-            return true;
-
-        int beginRow;
-        if (row != -1) // 如果是成为子节点， 那么row会被设置成-1
-            beginRow = row;
-        else
-            beginRow = rowCount(parentNodeIndex);
-
-        qDebug() << "row" << row;
-        qDebug() <<   "beginRow" << beginRow;
-        qDebug() << parentNodeIndex.data() << this->getItem(parentNodeIndex)->uuid;
-
-
-        QByteArray encodedData = data->data("application/vnd.text.list");
-        QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        QStringList newItems;
-        int rows = 0;
-        while (!stream.atEnd()) {
-            QString text;
-            stream >> text;
-            newItems << text;
-            ++rows;
-        }
-
-        insertRows(beginRow, rows, parentNodeIndex);
-        for (const QString &text : std::as_const(newItems)) {
-            QModelIndex idx = this->index(beginRow, 0, parentNodeIndex);
-            setData(idx, text);
-            beginRow++;
-        }
-
-        return true;
-    }
+    Qt::DropActions supportedDropActions() const override;
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
 
 private:
     void setupModelData(const QList<QStringView> &lines);
