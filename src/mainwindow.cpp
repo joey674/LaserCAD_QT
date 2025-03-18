@@ -482,7 +482,7 @@ void MainWindow::dragScene(QPointF pointCoordView, DrawEventType event)
     }
     else if (event == DrawEventType::MouseMove)
     {
-        DEBUG_MSG("dragScene: MouseMove");
+        // DEBUG_MSG("dragScene: MouseMove");
         // DEBUG_VAR(pointCoordView);
 
         double dx = static_cast<double>(this->dragScenePoint.x()) - static_cast<double>(pointCoordView.x());

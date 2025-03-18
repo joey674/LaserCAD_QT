@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>default1.txt</file>
+        <file>default.txt</file>
+    </qresource>
+</RCC>

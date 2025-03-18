@@ -5,4 +5,5 @@
 
 std::string GenerateUUID();
 
+void test();
 #endif // UTILS_H

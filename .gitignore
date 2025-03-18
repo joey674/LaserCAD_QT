@@ -1,5 +1,6 @@
 # 构建目录
 build/
+**/build/
 
 # Qt Creator 用户配置文件
 *.user

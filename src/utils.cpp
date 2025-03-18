@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "logger.h"
 // #include <objbase.h>
 
 std::string GenerateUUID()
@@ -16,4 +17,9 @@ std::string GenerateUUID()
     //     strUUID = buffer;
     // }
     return strUUID;
+}
+
+void test()
+{
+    DEBUG_MSG("aa");
 }
