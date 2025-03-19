@@ -14,15 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUi(this);
 
-    const QStringList headersGroup({tr("ItemList"),tr("UUID")});
-
-    QFile file(":/default.txt"_L1);
-    const bool res = file.open(QIODevice::ReadOnly | QIODevice::Text);
-    Q_ASSERT_X(res, Q_FUNC_INFO, "Failed to open ':/default.txt'");
-    if (!res)
-        return;
-    auto *model = new TreeModel(headersGroup, QString::fromUtf8(file.readAll()), this);
-    file.close();
+    auto *model = new TreeModel("testTreeModel", this);
 
     //
     view->setModel(model);
@@ -141,10 +133,20 @@ void MainWindow::updateActions()
         view->closePersistentEditor(view->selectionModel()->currentIndex());
 
         const int row = view->selectionModel()->currentIndex().row();
-        const int column = view->selectionModel()->currentIndex().column();
-        if (view->selectionModel()->currentIndex().parent().isValid())
-            statusBar()->showMessage(tr("Position: (%1,%2)").arg(row).arg(column));
-        else
-            statusBar()->showMessage(tr("Position: (%1,%2) in top level").arg(row).arg(column));
+        const int column =view->selectionModel()->currentIndex().column();
+
+        TreeModel *treeModel = qobject_cast<TreeModel *>(view->model());
+        const QModelIndex index = view->selectionModel()->currentIndex();
+        const auto name = treeModel->getItem(index)->property(NodePropertyIndex::Name).toString();
+        const auto type = treeModel->getItem(index)->property(NodePropertyIndex::Type).toString();
+        const auto uuid = treeModel->getItem(index)->property(NodePropertyIndex::UUID).toString();
+
+        statusBar()->showMessage(tr("Position: (%1,%2),%3,%4,%5")
+                                     .arg(row)
+                                     .arg(column)
+                                     .arg(name)
+                                    .arg(type)
+                                    .arg(uuid)
+                                 );
     }
 }

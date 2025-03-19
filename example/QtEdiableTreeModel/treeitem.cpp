@@ -1,42 +1,27 @@
-// Copyright (C) 2016 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
-
 /*
     treeitem.cpp
 
     A container for items of data supplied by the simple tree model.
 */
-
 #include "treeitem.h"
 
-static int generatedUuid = 10;
 
-//! [0]
-TreeItem::TreeItem(QVariantList data, TreeItem *parent)
-    : itemData(std::move(data)), m_parentItem(parent)
+TreeItem::TreeItem(QVariantList property, TreeItem *parent)
+    : m_propertyList(std::move(property)), m_parentItem(parent)
+{}
+
+TreeItem *TreeItem::child(int index)
 {
-    this->uuid = generatedUuid;
-    generatedUuid ++;
+    return (index >= 0 && index < childCount())
+        ? m_childItems.at(index).get() : nullptr;
 }
-//! [0]
 
-//! [1]
-TreeItem *TreeItem::child(int number)
-{
-    return (number >= 0 && number < childCount())
-        ? m_childItems.at(number).get() : nullptr;
-}
-//! [1]
-
-//! [2]
 int TreeItem::childCount() const
 {
     return int(m_childItems.size());
 }
-//! [2]
 
-//! [3]
-int TreeItem::row() const
+int TreeItem::indexInParent() const
 {
     if (!m_parentItem)
         return 0;
@@ -50,63 +35,36 @@ int TreeItem::row() const
     Q_ASSERT(false); // should not happen
     return -1;
 }
-//! [3]
 
-//! [4]
-int TreeItem::columnCount() const
+int TreeItem::propertyCount() const
 {
-    return int(itemData.count());
+    return int(m_propertyList.count());
 }
-//! [4]
 
-//! [5]
-QVariant TreeItem::data(int column) const
+QVariant TreeItem::property(NodePropertyIndex index) const
 {
-    return itemData.value(column);
+    return m_propertyList.value(index);
 }
-//! [5]
 
-//! [6]
-bool TreeItem::insertChildren(int position, int count, int columns)
+bool TreeItem::insertChilds(int position, int count)
 {
     if (position < 0 || position > qsizetype(m_childItems.size()))
         return false;
 
     for (int row = 0; row < count; ++row) {
-        QVariantList data(columns);
         m_childItems.insert(m_childItems.cbegin() + position,
-                std::make_unique<TreeItem>(data, this));
+                std::make_unique<TreeItem>(QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"}, this));
     }
 
     return true;
 }
-//! [6]
 
-//! [7]
-bool TreeItem::insertColumns(int position, int columns)
-{
-    // if (position < 0 || position > itemData.size())
-    //     return false;
-
-    // for (int column = 0; column < columns; ++column)
-    //     itemData.insert(position, QVariant());
-
-    // for (auto &child : std::as_const(m_childItems))
-    //     child->insertColumns(position, columns);
-
-    return true;
-}
-//! [7]
-
-//! [8]
 TreeItem *TreeItem::parent()
 {
     return m_parentItem;
 }
-//! [8]
 
-//! [9]
-bool TreeItem::removeChildren(int position, int count)
+bool TreeItem::removeChilds(int position, int count)
 {
     if (position < 0 || position + count > qsizetype(m_childItems.size()))
         return false;
@@ -116,29 +74,15 @@ bool TreeItem::removeChildren(int position, int count)
 
     return true;
 }
-//! [9]
 
-bool TreeItem::removeColumns(int position, int columns)
+bool TreeItem::setProperty(NodePropertyIndex dataIndex, const QVariant &value)
 {
-    if (position < 0 || position + columns > itemData.size())
+    qDebug() << "treeItem setProperty" << dataIndex;
+    qDebug() << "treeItem setProperty" << m_propertyList.size();
+    if (dataIndex < 0 || dataIndex >= m_propertyList.size())
         return false;
 
-    for (int column = 0; column < columns; ++column)
-        itemData.remove(position);
-
-    for (auto &child : std::as_const(m_childItems))
-        child->removeColumns(position, columns);
-
+    m_propertyList[dataIndex] = value;
+    qDebug() << "treeItem setProperty" << m_propertyList[dataIndex];
     return true;
 }
-
-//! [10]
-bool TreeItem::setData(int column, const QVariant &value)
-{
-    if (column < 0 || column >= itemData.size())
-        return false;
-
-    itemData[column] = value;
-    return true;
-}
-//! [10]

@@ -7,31 +7,45 @@
 #include <QVariant>
 #include <QList>
 
-//! [0]
+enum NodePropertyIndex: int
+{
+    Name = 0,
+    Type = 1,
+    UUID = 2
+};
+
 class TreeItem
 {
 public:
-    int uuid = 0;
-public:
-    explicit TreeItem(QVariantList data, TreeItem *parent = nullptr);
+    explicit TreeItem(QVariantList property = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"}, TreeItem *parent = nullptr);
 
-    TreeItem *child(int number);
-    int childCount() const;
-    int columnCount() const;
-    QVariant data(int column) const;
-    bool insertChildren(int position, int count, int columns);
-    bool insertColumns(int position, int columns);
+    TreeItem *child(int index);
     TreeItem *parent();
-    bool removeChildren(int position, int count);
-    bool removeColumns(int position, int columns);
-    int row() const;
-    bool setData(int column, const QVariant &value);
+
+    int childCount() const;
+    bool insertChilds(int position, int count);// 只添加新默认节点
+    bool removeChilds(int position, int count);
+    int indexInParent() const;
+
+    int propertyCount() const;
+    QVariant property(NodePropertyIndex index) const;
+    bool setProperty(NodePropertyIndex index, const QVariant &value);
+    QVariantList propertyList() const{
+        return m_propertyList;
+    }
+    bool setPropertyList(const QVariantList &value){
+        m_propertyList = value;
+
+        return true;
+    }
+
 
 private:
     std::vector<std::unique_ptr<TreeItem>> m_childItems;
-    QVariantList itemData;
+    QVariantList m_propertyList;
     TreeItem *m_parentItem;
 };
-//! [0]
+
+
 
 #endif // TREEITEM_H
