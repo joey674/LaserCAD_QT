@@ -86,3 +86,15 @@ bool TreeItem::setProperty(int dataIndex, const QVariant &value)
     // qDebug() << "treeItem setProperty" << m_propertyList[dataIndex];
     return true;
 }
+
+QVariantList TreeItem::propertyList() const
+{
+    return m_propertyList;
+}
+
+bool TreeItem::setPropertyList(const QVariantList &value)
+{
+    m_propertyList = value;
+
+    return true;
+}

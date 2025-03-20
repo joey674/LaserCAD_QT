@@ -135,6 +135,14 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
     if (!index.isValid())
         return Qt::NoItemFlags;
 
+    // 如果是Layer节点, 不允许拖拽移动,但是可以接受drop和edit
+    auto node = getItem(index);
+    if(node->property(NodePropertyIndex::Type) == QVariant("Layer"))
+        return Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
+    if(node->property(NodePropertyIndex::Type) == QVariant("Item"))
+        return Qt::ItemIsDragEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
@@ -180,6 +188,15 @@ void TreeModel::setupExemplarModelData()
         QString name = "Group" + QString::number(i);
         group->setProperty(NodePropertyIndex::Name,name);
         group->setProperty(NodePropertyIndex::Type,"Group");
+
+        for (int i=0;i<10;i++)
+        {
+            group->insertChilds(group->childCount(),1);
+            auto item = group->child(group->childCount() - 1);
+            QString name = "Item" + QString::number(i);
+            item->setProperty(NodePropertyIndex::Name,name);
+            item->setProperty(NodePropertyIndex::Type,"Item");
+        }
     }
 }
 
@@ -239,90 +256,11 @@ QStringList TreeModel::mimeTypes() const
     return types;
 }
 
-QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
-{
-    QMimeData *mimeData = new QMimeData;
-    QByteArray encodedData;
 
-    QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-    for (const QModelIndex &index : indexes) { // 处理多选items
-        if (index.isValid()) {
-            auto item =  this->getItem(index);
-            QString line;
-            for (int i=0;i< item->propertyCount();i++){
-                    QString text =item->property(i).toString();
-                    // qDebug() << text;
-                    line += text;
-                    line += "|";
-                }
-            line+= "\n";
-            qDebug() << line;
-            stream << line;
-        }
-    }
 
-    mimeData->setData("application/vnd.text.list", encodedData);
-    return mimeData;
-}
 
-bool TreeModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
-{
-    Q_UNUSED(action);
-    Q_UNUSED(row);
-    Q_UNUSED(parent);
 
-    if (!data->hasFormat("application/vnd.text.list"))
-        return false;
-
-    if (column > 0) //只允许放在第一列(这里不知道为什么 反正会返回-1/0)
-        return false;
-
-    return true;
-}
-
-bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex)
-{
-    if (!canDropMimeData(data, action, row, column, parentNodeIndex))
-        return false;
-
-    if (action == Qt::IgnoreAction)
-        return true;
-
-    int beginRow;
-    if (row != -1) // 如果是parent节点当前没有子节点, row会设置成-1
-        beginRow = row;
-    else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
-        beginRow = rowCount(parentNodeIndex);
-
-    QByteArray encodedData = data->data("application/vnd.text.list");
-    QDataStream stream(&encodedData, QIODevice::ReadOnly);
-    QStringList newItems;
-    int rows = 0;
-    while (!stream.atEnd()) {
-        QString line;
-        stream >> line;
-        newItems << line;
-        ++rows;
-    }
-
-    insertRows(beginRow, rows, parentNodeIndex);
-    for (const QString &line : std::as_const(newItems)) {
-        QModelIndex idx = this->index(beginRow, 0, parentNodeIndex);
-
-        auto item = this->getItem(idx);
-        QStringList propertyList = line.split('|', Qt::SkipEmptyParts);
-        qDebug() << propertyList;
-
-        for (int i=0;i< item->propertyCount();i++){
-            item->setProperty(i,propertyList[i]);
-        }
-
-        beginRow++;
-    }
-
-    return true;
-}
 
 
 

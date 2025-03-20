@@ -30,15 +30,8 @@ public:
     int propertyCount() const;
     QVariant property(int index) const;
     bool setProperty(int index, const QVariant &value);
-    QVariantList propertyList() const{
-        return m_propertyList;
-    }
-    bool setPropertyList(const QVariantList &value){
-        m_propertyList = value;
-
-        return true;
-    }
-
+    QVariantList propertyList() const;
+    bool setPropertyList(const QVariantList &value);
 
 private:
     std::vector<std::unique_ptr<TreeItem>> m_childItems;
