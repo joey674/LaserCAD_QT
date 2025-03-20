@@ -246,10 +246,19 @@ QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
 
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-    for (const QModelIndex &index : indexes) {
+    for (const QModelIndex &index : indexes) { // 处理多选items
         if (index.isValid()) {
-            QString text = data(index, Qt::DisplayRole).toString();
-            stream << text;
+            auto item =  this->getItem(index);
+            QString line;
+            for (int i=0;i< item->propertyCount();i++){
+                    QString text =item->property(i).toString();
+                    // qDebug() << text;
+                    line += text;
+                    line += "|";
+                }
+            line+= "\n";
+            qDebug() << line;
+            stream << line;
         }
     }
 
@@ -286,25 +295,29 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
     else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
         beginRow = rowCount(parentNodeIndex);
 
-    // qDebug() << "row" << row;
-    // qDebug() <<   "beginRow" << beginRow;
-
-
     QByteArray encodedData = data->data("application/vnd.text.list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     QStringList newItems;
     int rows = 0;
     while (!stream.atEnd()) {
-        QString text;
-        stream >> text;
-        newItems << text;
+        QString line;
+        stream >> line;
+        newItems << line;
         ++rows;
     }
 
     insertRows(beginRow, rows, parentNodeIndex);
-    for (const QString &text : std::as_const(newItems)) {
+    for (const QString &line : std::as_const(newItems)) {
         QModelIndex idx = this->index(beginRow, 0, parentNodeIndex);
-        setData(idx, text);
+
+        auto item = this->getItem(idx);
+        QStringList propertyList = line.split('|', Qt::SkipEmptyParts);
+        qDebug() << propertyList;
+
+        for (int i=0;i< item->propertyCount();i++){
+            item->setProperty(i,propertyList[i]);
+        }
+
         beginRow++;
     }
 

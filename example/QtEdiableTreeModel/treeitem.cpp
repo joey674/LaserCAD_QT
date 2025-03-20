@@ -41,7 +41,7 @@ int TreeItem::propertyCount() const
     return int(m_propertyList.count());
 }
 
-QVariant TreeItem::property(NodePropertyIndex index) const
+QVariant TreeItem::property(int index) const
 {
     return m_propertyList.value(index);
 }
@@ -75,14 +75,14 @@ bool TreeItem::removeChilds(int position, int count)
     return true;
 }
 
-bool TreeItem::setProperty(NodePropertyIndex dataIndex, const QVariant &value)
+bool TreeItem::setProperty(int dataIndex, const QVariant &value)
 {
-    qDebug() << "treeItem setProperty" << dataIndex;
-    qDebug() << "treeItem setProperty" << m_propertyList.size();
+    // qDebug() << "treeItem setProperty" << dataIndex;
+    // qDebug() << "treeItem setProperty" << m_propertyList.size();
     if (dataIndex < 0 || dataIndex >= m_propertyList.size())
         return false;
 
     m_propertyList[dataIndex] = value;
-    qDebug() << "treeItem setProperty" << m_propertyList[dataIndex];
+    // qDebug() << "treeItem setProperty" << m_propertyList[dataIndex];
     return true;
 }

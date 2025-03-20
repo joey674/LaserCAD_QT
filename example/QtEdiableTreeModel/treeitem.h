@@ -28,8 +28,8 @@ public:
     int indexInParent() const;
 
     int propertyCount() const;
-    QVariant property(NodePropertyIndex index) const;
-    bool setProperty(NodePropertyIndex index, const QVariant &value);
+    QVariant property(int index) const;
+    bool setProperty(int index, const QVariant &value);
     QVariantList propertyList() const{
         return m_propertyList;
     }
