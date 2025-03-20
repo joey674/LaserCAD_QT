@@ -244,6 +244,25 @@ void TreeModel::setupModelData(const QList<QStringView> &lines)
     // }
 }
 
+void TreeModel::serializeNodeToStream(TreeItem *item, QDataStream &stream, int currentLevel) const
+{
+    QString line;
+    line += QString::number(currentLevel);
+    line += "|";
+    for (int i = 0; i < item->propertyCount(); i++) {
+        line += item->property(i).toString();
+        line += "|";
+    }
+
+    qDebug() <<"send"<< line;
+    stream << line;
+
+    for (int i = 0; i < item->childCount(); i++) {
+        int nextLevel = currentLevel+1;
+        serializeNodeToStream(item->child(i), stream,nextLevel);
+    }
+}
+
 Qt::DropActions TreeModel::supportedDropActions() const
 {
     return Qt::CopyAction | Qt::MoveAction;
@@ -254,6 +273,102 @@ QStringList TreeModel::mimeTypes() const
     QStringList types;
     types << "application/vnd.text.list";
     return types;
+}
+
+QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    for (const QModelIndex &index : indexes) { // 处理多选items
+        if (index.isValid()) {
+            auto item =  this->getItem(index);
+            serializeNodeToStream(item,stream,0);
+        }
+    }
+
+    mimeData->setData("application/vnd.text.list", encodedData);
+    return mimeData;
+}
+
+bool TreeModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const
+{
+    Q_UNUSED(action);
+
+    if (!data->hasFormat("application/vnd.text.list"))
+        return false;
+
+    if (column > 0) //只允许放在第一列(这里不知道为什么 反正会返回-1/0)
+        return false;
+
+    return true;
+}
+
+bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex)
+{
+    if (!canDropMimeData(data, action, row, column, parentNodeIndex))
+        return false;
+
+    if (action == Qt::IgnoreAction)
+        return true;
+
+    int beginRowInTopLevel;
+    if (row != -1) // 如果是parent节点当前没有子节点, row会设置成-1
+        beginRowInTopLevel = row;
+    else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
+        beginRowInTopLevel = rowCount(parentNodeIndex);
+
+    QByteArray encodedData = data->data("application/vnd.text.list");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QStringList newItems;
+    int rows = 0;
+    while (!stream.atEnd()) {
+        QString line;
+        stream >> line;
+        newItems << line;
+        ++rows;
+    }
+
+    QVector<QPair<TreeItem*, QModelIndex>> parentStack;
+    parentStack.push_back(qMakePair(getItem(parentNodeIndex), parentNodeIndex));
+
+    for (const QString &line : std::as_const(newItems)) {
+        // 解析层级和节点属性
+        QStringList itemList = line.split('|', Qt::SkipEmptyParts);
+        int level = itemList[0].toInt();
+        itemList.pop_front();
+
+        // qDebug() << "Level:" << level << "ItemList:" << itemList;
+
+        while (parentStack.size() > level + 1) {
+            parentStack.pop_back();
+        }
+
+        TreeItem *parentItem = parentStack.last().first;
+        QModelIndex parentIndex = parentStack.last().second;
+
+        int childIndex = parentItem->childCount();
+        if (level == 0) // 如果level是0,那么就用我们指示的插入位置;如果是大于0 也就是子节点, 就按照最后位置去插入位置
+            childIndex = beginRowInTopLevel;
+
+        insertRows(childIndex, 1, parentIndex);
+        QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
+        TreeItem *item = this->getItem(newIdx);
+
+        for (int i = 0; i < item->propertyCount(); i++) {
+            if (i < itemList.size()) {
+                item->setProperty(i, itemList[i]);
+            }
+        }
+
+        parentStack.push_back(qMakePair(item, newIdx));
+
+        beginRowInTopLevel++;
+    }
+
+    return true;
 }
 
 
