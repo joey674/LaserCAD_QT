@@ -1,32 +1,27 @@
-/*
-    treeitem.cpp
-
-    A container for items of data supplied by the simple tree model.
-*/
-#include "treeitem.h"
+#include "treenode.h"
 
 
-TreeItem::TreeItem(QVariantList property, TreeItem *parent)
+TreeNode::TreeNode(QVariantList property, TreeNode *parent)
     : m_propertyList(std::move(property)), m_parentItem(parent)
 {}
 
-TreeItem *TreeItem::child(int index)
+TreeNode *TreeNode::child(int index)
 {
     return (index >= 0 && index < childCount())
         ? m_childItems.at(index).get() : nullptr;
 }
 
-int TreeItem::childCount() const
+int TreeNode::childCount() const
 {
     return int(m_childItems.size());
 }
 
-int TreeItem::indexInParent() const
+int TreeNode::indexInParent() const
 {
     if (!m_parentItem)
         return 0;
     const auto it = std::find_if(m_parentItem->m_childItems.cbegin(), m_parentItem->m_childItems.cend(),
-                                 [this](const std::unique_ptr<TreeItem> &treeItem) {
+                                 [this](const std::unique_ptr<TreeNode> &treeItem) {
         return treeItem.get() == this;
     });
 
@@ -36,35 +31,34 @@ int TreeItem::indexInParent() const
     return -1;
 }
 
-int TreeItem::propertyCount() const
+int TreeNode::propertyCount() const
 {
     return int(m_propertyList.count());
 }
 
-QVariant TreeItem::property(int index) const
+QVariant TreeNode::property(int index) const
 {
     return m_propertyList.value(index);
 }
 
-bool TreeItem::insertChilds(int position, int count)
+bool TreeNode::insertChilds(int position, int count)
 {
     if (position < 0 || position > qsizetype(m_childItems.size()))
         return false;
 
     for (int row = 0; row < count; ++row) {
         m_childItems.insert(m_childItems.cbegin() + position,
-                std::make_unique<TreeItem>(QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"}, this));
+                std::make_unique<TreeNode>(DefaultNodeProperty, this));
     }
-
     return true;
 }
 
-TreeItem *TreeItem::parent()
+TreeNode *TreeNode::parent()
 {
     return m_parentItem;
 }
 
-bool TreeItem::removeChilds(int position, int count)
+bool TreeNode::removeChilds(int position, int count)
 {
     if (position < 0 || position + count > qsizetype(m_childItems.size()))
         return false;
@@ -75,24 +69,21 @@ bool TreeItem::removeChilds(int position, int count)
     return true;
 }
 
-bool TreeItem::setProperty(int dataIndex, const QVariant &value)
+bool TreeNode::setProperty(int dataIndex, const QVariant &value)
 {
-    // qDebug() << "treeItem setProperty" << dataIndex;
-    // qDebug() << "treeItem setProperty" << m_propertyList.size();
     if (dataIndex < 0 || dataIndex >= m_propertyList.size())
         return false;
 
     m_propertyList[dataIndex] = value;
-    // qDebug() << "treeItem setProperty" << m_propertyList[dataIndex];
     return true;
 }
 
-QVariantList TreeItem::propertyList() const
+QVariantList TreeNode::propertyList() const
 {
     return m_propertyList;
 }
 
-bool TreeItem::setPropertyList(const QVariantList &value)
+bool TreeNode::setPropertyList(const QVariantList &value)
 {
     m_propertyList = value;
 

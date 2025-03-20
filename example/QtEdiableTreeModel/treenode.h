@@ -11,16 +11,19 @@ enum NodePropertyIndex: int
 {
     Name = 0,
     Type = 1,
-    UUID = 2
+    UUID = 2,// 可能不用
+    GraphicsViewItem = 3
 };
 
-class TreeItem
+static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID","UndefinedGraphicsViewItem"};
+
+class TreeNode
 {
 public:
-    explicit TreeItem(QVariantList property = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"}, TreeItem *parent = nullptr);
+    explicit TreeNode(QVariantList property = DefaultNodeProperty, TreeNode *parent = nullptr);
 
-    TreeItem *child(int index);
-    TreeItem *parent();
+    TreeNode *child(int index);
+    TreeNode *parent();
 
     int childCount() const;
     bool insertChilds(int position, int count);// 只添加新默认节点
@@ -30,13 +33,14 @@ public:
     int propertyCount() const;
     QVariant property(int index) const;
     bool setProperty(int index, const QVariant &value);
+
     QVariantList propertyList() const;
     bool setPropertyList(const QVariantList &value);
 
 private:
-    std::vector<std::unique_ptr<TreeItem>> m_childItems;
+    std::vector<std::unique_ptr<TreeNode>> m_childItems;
     QVariantList m_propertyList;
-    TreeItem *m_parentItem;
+    TreeNode *m_parentItem;
 };
 
 

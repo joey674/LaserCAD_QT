@@ -11,7 +11,7 @@ qt_standard_project_setup()
 qt_add_executable(editabletreemodel
     main.cpp
     mainwindow.cpp mainwindow.h mainwindow.ui
-    treeitem.cpp treeitem.h
+    treenode.cpp treenode.h
     treemodel.cpp treemodel.h
 )
 
@@ -58,7 +58,7 @@ include(CTest)
 
 qt_add_executable(editabletreemodel_tester
     test.cpp
-    treeitem.cpp treeitem.h
+    treenode.cpp treenode.h
     treemodel.cpp treemodel.h)
 
 target_link_libraries(editabletreemodel_tester PRIVATE

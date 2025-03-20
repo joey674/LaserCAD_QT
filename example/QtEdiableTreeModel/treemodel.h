@@ -11,7 +11,7 @@
 #include <QVariant>
 #include <QMimeData>
 #include <QIODevice>
-#include "treeitem.h"
+#include "treenode.h"
 
 
 class TreeModel : public QAbstractItemModel
@@ -54,14 +54,14 @@ public:
     bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
 public:
-        TreeItem *getItem(const QModelIndex &index) const;
+        TreeNode *getItem(const QModelIndex &index) const;
 
 private:
     void setupExemplarModelData();
     void setupModelData(const QList<QStringView> &lines);
-    void serializeNodeToStream(TreeItem *item, QDataStream &stream,int currentLevel) const;
+    void serializeNodeToStream(TreeNode *item, QDataStream &stream,int currentLevel) const;
 
-    std::unique_ptr<TreeItem> m_rootItem;// 整个model的信息都存在rootItem里; 现在暂时存了model名字
+    std::unique_ptr<TreeNode> m_rootItem;// 整个model的信息都存在rootItem里; 现在暂时存了model名字
 };
 
 #endif // TREEMODEL_H

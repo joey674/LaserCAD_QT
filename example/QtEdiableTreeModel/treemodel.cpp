@@ -1,5 +1,5 @@
 #include "treemodel.h"
-#include "treeitem.h"
+#include "treenode.h"
 
 using namespace Qt::StringLiterals;
 
@@ -9,7 +9,7 @@ TreeModel::TreeModel(const QString &modelName, QObject *parent)
     QVariantList rootProperty(1);
     rootProperty.push_back(modelName);
 
-    m_rootItem = std::make_unique<TreeItem>(rootProperty);
+    m_rootItem = std::make_unique<TreeNode>(rootProperty);
     setupExemplarModelData();
 }
 
@@ -23,7 +23,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return {};
 
-    TreeItem *item = getItem(nodeIndex);
+    TreeNode *item = getItem(nodeIndex);
     // qDebug() <<  item->property(NodePropertyIndex::Name);
 
     return item->property(NodePropertyIndex::Name);
@@ -34,7 +34,7 @@ bool TreeModel::setData(const QModelIndex &nodeIndex, const QVariant &name, int 
     if (role != Qt::EditRole)
         return false;
 
-    TreeItem *item = getItem(nodeIndex);
+    TreeNode *item = getItem(nodeIndex);
     bool result = item->setProperty(NodePropertyIndex::Name, name);
 
     if (result)
@@ -67,7 +67,7 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parentIndex
     if (parentIndex.isValid() && parentIndex.column() != 0)
         return {};
 
-    TreeItem *parentItem = getItem(parentIndex);
+    TreeNode *parentItem = getItem(parentIndex);
     if (!parentItem)
         return {};
 
@@ -81,8 +81,8 @@ QModelIndex TreeModel::parent(const QModelIndex &nodeIndex) const
     if (!nodeIndex.isValid())
         return {};
 
-    TreeItem *childItem = getItem(nodeIndex);
-    TreeItem *parentItem = childItem ? childItem->parent() : nullptr;
+    TreeNode *childItem = getItem(nodeIndex);
+    TreeNode *parentItem = childItem ? childItem->parent() : nullptr;
 
     return (parentItem != m_rootItem.get() && parentItem != nullptr)
                ? createIndex(parentItem->indexInParent(), 0, parentItem) : QModelIndex{};
@@ -93,7 +93,7 @@ int TreeModel::rowCount(const QModelIndex &nodeIndex) const
     if (nodeIndex.isValid() && nodeIndex.column() > 0)
         return 0;
 
-    const TreeItem *nodeItem = getItem(nodeIndex);
+    const TreeNode *nodeItem = getItem(nodeIndex);
 
     return nodeItem ? nodeItem->childCount() : 0;
 }
@@ -106,7 +106,7 @@ int TreeModel::columnCount(const QModelIndex &nodeIndex) const
 
 bool TreeModel::insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex)
 {
-    TreeItem *nodeItem = getItem(nodeIndex);
+    TreeNode *nodeItem = getItem(nodeIndex);
     if (!nodeItem)
         return false;
 
@@ -119,7 +119,7 @@ bool TreeModel::insertRows(int insertPosition, int nodeCount, const QModelIndex 
 
 bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex &nodeIndex)
 {
-    TreeItem *nodeItem = getItem(nodeIndex);
+    TreeNode *nodeItem = getItem(nodeIndex);
     if (!nodeItem)
         return false;
 
@@ -146,10 +146,10 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
-TreeItem *TreeModel::getItem(const QModelIndex &index) const
+TreeNode *TreeModel::getItem(const QModelIndex &index) const
 {
     if (index.isValid()) {
-        if (auto *item = static_cast<TreeItem*>(index.internalPointer()))
+        if (auto *item = static_cast<TreeNode*>(index.internalPointer()))
             return item;
     }
     return m_rootItem.get();
@@ -204,7 +204,7 @@ void TreeModel::setupModelData(const QList<QStringView> &lines)
 {
     // struct ParentIndentation
     // {
-    //     TreeItem *parent;
+    //     TreeNode *parent;
     //     qsizetype indentation;
     // };
 
@@ -244,7 +244,7 @@ void TreeModel::setupModelData(const QList<QStringView> &lines)
     // }
 }
 
-void TreeModel::serializeNodeToStream(TreeItem *item, QDataStream &stream, int currentLevel) const
+void TreeModel::serializeNodeToStream(TreeNode *item, QDataStream &stream, int currentLevel) const
 {
     QString line;
     line += QString::number(currentLevel);
@@ -331,7 +331,7 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
         ++rows;
     }
 
-    QVector<QPair<TreeItem*, QModelIndex>> parentStack;
+    QVector<QPair<TreeNode*, QModelIndex>> parentStack;
     parentStack.push_back(qMakePair(getItem(parentNodeIndex), parentNodeIndex));
 
     for (const QString &line : std::as_const(newItems)) {
@@ -346,7 +346,7 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
             parentStack.pop_back();
         }
 
-        TreeItem *parentItem = parentStack.last().first;
+        TreeNode *parentItem = parentStack.last().first;
         QModelIndex parentIndex = parentStack.last().second;
 
         int childIndex = parentItem->childCount();
@@ -355,7 +355,7 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
 
         insertRows(childIndex, 1, parentIndex);
         QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
-        TreeItem *item = this->getItem(newIdx);
+        TreeNode *item = this->getItem(newIdx);
 
         for (int i = 0; i < item->propertyCount(); i++) {
             if (i < itemList.size()) {
