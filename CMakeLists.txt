@@ -39,16 +39,15 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
         # GraphicsView
-        header//GraphicsView/graphicsview.h                    src/graphicsview.cpp
+        header/GraphicsView/graphicsview.h                    src/graphicsview.cpp
         header/GraphicsView/laseritem.h                             src/laseritem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
         header/GraphicsView/protocol.h                               src/protocol.cpp
-        # ItemTreeWidget
-        header/ItemTreeWidget/itemtreewidget.h             src/itemtreewidget.cpp
-        # Manager
-        header/Manager/manager.h                                         src/manager.cpp
-        header/Manager/treenode.h                                        src/treenode.cpp
+        # TreeViewModel
+        header/TreeViewModel/manager.h                            src/manager.cpp
+        header/TreeViewModel/treenode.h                           src/treenode.cpp
+        header/TreeViewModel/treeviewmodel.h               src/treeviewmodel.cpp
         # widget
         header/titlebar.h                                                                src/titlebar.cpp
         #utils
@@ -56,9 +55,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/utils.h                              src/utils.cpp
         header/css.h                               #[[src/css.cpp]]
         resource/button.qrc
-        header/Manager/treemodel.h
-        src/treemodel.cpp
-
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -80,9 +76,8 @@ endif()
 
 target_link_libraries(LaserCAD_Designer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/Manager)
+target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/ItemTreeWidget)
 target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

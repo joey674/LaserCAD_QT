@@ -2,9 +2,9 @@
 #include "logger.h"
 // #include <objbase.h>
 
-std::string GenerateUUID()
+QString GenerateUUID()
 {
-    std::string strUUID = "123";
+    QString strUUID = "123";
     // GUID guid;
     // if (!CoCreateGuid(&guid)) {
     //     char buffer[64] = { 0 };

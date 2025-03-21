@@ -13,8 +13,6 @@ struct Vertex
     double angle;
 };
 
-typedef std::string UUID;
-
 enum LineType
 {
     OriginItem,

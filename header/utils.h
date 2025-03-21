@@ -1,9 +1,9 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <string>
+#include <QString>
 
-std::string GenerateUUID();
+QString GenerateUUID();
 
 void test();
 #endif // UTILS_H

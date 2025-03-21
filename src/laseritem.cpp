@@ -74,7 +74,12 @@ QPointF LaserItem::getCenterPos()
     WARN_MSG("need to be realized");
 }
 
-const UUID& LaserItem::getUUID()
+QString LaserItem::getName()
+{
+    return "LaserItem";
+}
+
+const QString& LaserItem::getUUID()
 {
     return this->uuid;
 }
@@ -84,17 +89,9 @@ const int &LaserItem::getLayer()
     return this->Layer;
 }
 
-const int &LaserItem::getGroup()
-{
-    return this->Group;
-}
-
 void LaserItem::setLayer(int index)
 {
     this->Layer = index;
 }
 
-void LaserItem::setGroup(int index)
-{
-    this->Group = index;
-}
+

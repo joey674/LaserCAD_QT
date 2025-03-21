@@ -7,8 +7,8 @@
 #include <qgraphicsitem.h>
 #include "polylineitem.h"
 #include "arcitem.h"
-#include "manager.h"
 #include "titlebar.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -48,7 +48,18 @@ private:
     QGraphicsScene *scene;
     // 编辑对象、ui
     void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
-    void setItemsStatus(bool visible,bool selectable, bool movable,const std::list<std::shared_ptr<LaserItem>>&);
+    void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<LaserItem*>& items)
+    {
+        for (const auto& item : items)
+        {
+            if (item)
+            {
+                item->setVisible(visible);
+                item->setFlag(QGraphicsItem::ItemIsMovable, movable);
+                item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
+            }
+        }
+    }
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
     void setAllLayerButtonChecked(bool);
@@ -70,8 +81,8 @@ private:
     void initToolButton();
     void initLayerButton();
     void initStatusBar();
-    void initItemTreeWidget();
     void initPropertyTableWidget();
+    void initTreeViewModel();
     void displayOperation(QString);
 private:    // 编辑工具
     QPointF dragScenePoint = QPointF(0,0);

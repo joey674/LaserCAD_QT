@@ -123,6 +123,11 @@ QPointF ArcItem::getCenterPos()
     return center+posOffset;
 }
 
+QString ArcItem::getName()
+{
+    return "ArcItem";
+}
+
 void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
     Q_UNUSED(widget);

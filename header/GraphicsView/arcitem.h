@@ -34,6 +34,7 @@ public:
     Vertex getVertex(const int& index)override;
     QPointF getVertexPos(const int& index)override;
     QPointF getCenterPos() override;
+    QString getName() override;
     /// \brief reload
     enum { Type = 6271 };
     int type() const override;

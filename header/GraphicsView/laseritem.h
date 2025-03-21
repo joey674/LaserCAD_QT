@@ -35,18 +35,16 @@ public:
     virtual Vertex getVertex(const int& index);
     virtual QPointF getVertexPos(const int& index);
     virtual QPointF getCenterPos();
-    const UUID& getUUID();
+    virtual QString getName();
+    const QString& getUUID();
     const int& getLayer();
     const int& getGroup();
-    ///
     /// \brief 设置参数
     void setLayer(int index);
-    void setGroup(int index);
 private:
-    UUID uuid;
+    QString uuid;
 private:
     int Layer = 1;
-    int Group = 0;
 private:
     double Frequency;
     double Power;

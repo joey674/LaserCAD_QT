@@ -215,6 +215,11 @@ QPointF PolylineItem::getCenterPos()
     return pos;
 }
 
+QString PolylineItem::getName()
+{
+    return "PolylineItem";
+}
+
 int PolylineItem::type() const
 {
     return Type;

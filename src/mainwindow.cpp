@@ -16,6 +16,7 @@
 #include "logger.h"
 // #include "titlebar.h"
 #include "CavalierContours/polyline.hpp"
+#include "manager.h"
 
 ///
 /// \brief MainWindow::MainWindow
@@ -25,13 +26,16 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 {
     ui->setupUi(this);
 
+    // 初始化manager
+    Manager::init(this->scene,ui->treeView);
+
     // showMaximized();
 
     initTitleBar();
     initGraphicsView();
     initToolButton();
     initLayerButton();
-    initItemTreeWidget();
+    initTreeViewModel();
     initPropertyTableWidget();
     initStatusBar();
 }
@@ -48,18 +52,7 @@ void MainWindow::setItemStatus(bool visible, bool selectable, bool movable, QGra
     item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
 }
 
-void MainWindow::setItemsStatus(bool visible, bool selectable, bool movable, const std::list<std::shared_ptr<LaserItem>>& items)
-{
-    for (const auto& item : items)
-    {
-        if (item)
-        {
-            item->setVisible(visible);
-            item->setFlag(QGraphicsItem::ItemIsMovable, movable);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
-        }
-    }
-}
+
 
 void MainWindow::setAllDrawButtonChecked(bool isChecked)
 {
@@ -114,9 +107,6 @@ void MainWindow::initGraphicsView()
 {
     this->scene=new QGraphicsScene();
     ui->graphicsView->setScene(this->scene);
-
-    // 初始化manager
-    Manager::init(this->scene);
 
     // add axis
     QPen pen(Qt::red);
@@ -416,53 +406,43 @@ void MainWindow::initStatusBar()
     ui->statusBar->addWidget(this->labelOperation);
 }
 
-void MainWindow::initItemTreeWidget()
-{
-    ///
-    /// setting
-    ///
-    ui->itemTreeWidget->setHeaderHidden(true);
-    ui->itemTreeWidget->setStyleSheet(treeWidgetStyle1);
 
-    ui->itemTreeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);// 按下ctrl是单点多选;按下shift是一列多选
-
-    ui->itemTreeWidget->setDragEnabled(true);//设置可拖动
-    ui->itemTreeWidget->setAcceptDrops(true);//设置接收拖放
-    ui->itemTreeWidget->showDropIndicator (); // 显示拖拽目标
-
-
-    ///
-    /// item
-    ///
-    QTreeWidgetItem *parentItem1 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer1"));
-    // Qt::ItemFlags flags = parentItem1->flags();
-    // flags &= ~Qt::ItemIsDropEnabled;
-    // parentItem1->setFlags(flags);
-    QTreeWidgetItem *parentItem2 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer2"));
-    // parentItem2->setFlags(flags);
-    QTreeWidgetItem *parentItem3 = new QTreeWidgetItem(ui->itemTreeWidget, QStringList("Layer3"));
-    // parentItem3->setFlags(flags);
-
-    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(parentItem1, QStringList("Item1"));
-    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(parentItem2, QStringList("Item2"));
-    QTreeWidgetItem *childItem3 = new QTreeWidgetItem(parentItem3, QStringList("Item3"));
-
-    QTreeWidgetItem *groupItem1 = new QTreeWidgetItem(parentItem3, QStringList("Group1"));
-    for (int i=1;i<100000;i++){
-            QTreeWidgetItem *childItem = new QTreeWidgetItem(groupItem1, QStringList("item"+QString::number(i)));
-    }
-
-    ///
-    /// test
-    ///
-    parentItem3->removeChild(groupItem1);
-    parentItem1->addChild(groupItem1);
-}
 
 void MainWindow::initPropertyTableWidget()
 {
     ui->propertyTableWidget->setColumnCount(2);
     ui->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
+}
+
+void MainWindow::initTreeViewModel()
+{
+    auto *model = new TreeViewModel("testTreeViewModel", this);
+
+    ui->treeView->setModel(model);
+
+    // for (int column = 0; column < model->columnCount(); ++column)
+    //     view->resizeColumnToContents(column);
+    ui->treeView->expandAll();
+
+    ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    ui->treeView->setDragEnabled(true);
+    ui->treeView->setAcceptDrops(true);
+    ui->treeView->setDropIndicatorShown(true);
+    ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+
+    // connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    // connect(view->selectionModel(), &QItemSelectionModel::selectionChanged,
+    //         this, &MainWindow::updateActions);
+
+    // connect(actionsMenu, &QMenu::aboutToShow, this, &MainWindow::updateActions);
+    // connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRow);
+    // connect(insertColumnAction, &QAction::triggered, this, &MainWindow::insertColumn);
+    // connect(removeRowAction, &QAction::triggered, this, &MainWindow::removeRow);
+    // connect(removeColumnAction, &QAction::triggered, this, &MainWindow::removeColumn);
+    // connect(insertChildAction, &QAction::triggered, this, &MainWindow::insertChild);
+
+    // updateActions();
 }
 
 void MainWindow::displayOperation(QString text)
@@ -781,8 +761,8 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
     if (!this->tmpPolyline && event == DrawEventType::LeftRelease)
     {
         // 设置当前图层其他元素不可动不可选中
-        auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-        this->setItemsStatus(true,false,false,inLayerItems);
+        // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+        // this->setItemsStatus(true,false,false,inLayerItems);
 
         this->tmpPolyline = std::make_shared<PolylineItem>();
         this->tmpPolyline->setLayer(this->currentLayer);
@@ -827,8 +807,8 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
     if (!this->tmpArc && event == DrawEventType::LeftRelease)
     {
         // 设置当前图层不可动不可选中
-        auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-        this->setItemsStatus(true,false,false,inLayerItems);
+        // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+        // this->setItemsStatus(true,false,false,inLayerItems);
 
         this->tmpArc = std::make_shared<ArcItem>();
         this->tmpArc->setLayer(this->currentLayer);
@@ -867,8 +847,8 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 {
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,true,true,allItems);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,true,true,allItems);
 
     if (!this->tmpCircle && event == DrawEventType::LeftRelease)
     {
@@ -899,8 +879,8 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 
 void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 {
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,false,false,allItems);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,false,false,allItems);
 
      /// TODO
     /// setLayer
@@ -925,8 +905,8 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 {
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,true,true,allItems);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,true,true,allItems);
 
     /* center：螺旋的中心点
         radius：螺旋的初始半径
@@ -983,8 +963,8 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 {
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,true,true,allItems);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,true,true,allItems);
 
         /// TODO
         /// setLayer
@@ -1021,8 +1001,8 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
 {
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,true,true,allItems);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,true,true,allItems);
 
         /// TODO
         /// setLayer
@@ -1563,10 +1543,10 @@ void MainWindow::on_editButton_clicked()
     // drag mode
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     // 设置当前图层内物体可动
-    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-    auto allItems = Manager::getIns().getItems();
-    this->setItemsStatus(false,false,false,allItems);
-    this->setItemsStatus(true,true,true,inLayerItems);
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+    // auto allItems = Manager::getIns().getItems();
+    // this->setItemsStatus(false,false,false,allItems);
+    // this->setItemsStatus(true,true,true,inLayerItems);
 
     // button check
     this->setAllDrawButtonChecked(false);
@@ -1804,17 +1784,17 @@ void MainWindow::on_deleteButton_clicked()
     for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
     {
        this->scene ->removeItem(*item);
-        auto it = std::find_if(Manager::getIns().getItems().begin(), Manager::getIns().getItems().end(),
-                       [item](const std::shared_ptr<QGraphicsItem>& ptr)
-                              {
-                                    return ptr.get() == *item;
-                                }
-                              );
+        // auto it = std::find_if(Manager::getIns().getItems().begin(), Manager::getIns().getItems().end(),
+        //                [item](const std::shared_ptr<QGraphicsItem>& ptr)
+        //                       {
+        //                             return ptr.get() == *item;
+        //                         }
+        //                       );
 
-        if (it != Manager::getIns().getItems().end())
-        {
-            Manager::getIns().deleteItem(it->get());
-        }
+        // if (it != Manager::getIns().getItems().end())
+        // {
+        //     Manager::getIns().deleteItem(it->get());
+        // }
     }
 }
 
