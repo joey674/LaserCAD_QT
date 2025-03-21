@@ -26,8 +26,8 @@ public:
         QString name = ptr->getName();
 
         TreeViewModel *model = qobject_cast<TreeViewModel *>(treeview->model());
-        auto rootNode = model->getItem(QModelIndex());
-        auto layerNodeIndex = model->getIndex(layer-1,0,rootNode);
+        auto rootNode = model->getNode(QModelIndex());
+        auto layerNodeIndex = model->getIndex(layer-1,rootNode);
 
         // 确保columnCount = 1
         // if (model->columnCount(layerNodeIndex) == 0) {
@@ -39,50 +39,53 @@ public:
             FATAL_MSG("insert  child fail");
 
         const QModelIndex childNodeIndex = model->index(0, 0, layerNodeIndex);
-        model->setProperty(childNodeIndex,NodePropertyIndex::Name,name);
-        model->setProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
-        model->setProperty(childNodeIndex,NodePropertyIndex::UUID,"123");
-        model->setProperty(childNodeIndex,NodePropertyIndex::GraphicsViewItem,pointerToString(ptr.get()));
+        model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
+        model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
+        model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,"123");
+        model->setNodeProperty(childNodeIndex,NodePropertyIndex::GraphicsViewItem,pointerToString(ptr.get()));
 
         treeview->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
                                                 QItemSelectionModel::ClearAndSelect);
     }
-    void deleteItem(QGraphicsItem *item)
+    void deleteItem(LaserItem *item)
     {
-        // if (!item) return;
+        if (!item) return;
 
-        // auto it = std::find_if(this->container.begin(), this->container.end(),
-        //                        [item](const std::shared_ptr<QGraphicsItem>& ptr) {
-        //                            return ptr.get() == item;
-        //                        });
-        // if (it != this->container.end()) {
-        //     this->container.erase(it);
-        // }
-        ///TODO
-        /// GroupDelete
-        /// LayerDelete
-    }
-
-    /*std::vector<LaserItem*> getItems(int layer){
-    };*/
-    /*std::vector<LaserItem*> getItemsByLayer(int layer){
         TreeViewModel *model = qobject_cast<TreeViewModel *>(treeview->model());
-        auto rootNode = model->getItem(QModelIndex());
-        auto layerNodeIndex = model->getIndex(layer-1,0,rootNode);
 
-        auto itemGroup = std::vector<LaserItem*>();
-        for (int i=0;i<rootNode->childCount();++i)
-        {
-            auto childNodeIndex = model->index(i,0,layerNodeIndex);
-            auto ptr = stringToPointer(model->getProperty(childNodeIndex,NodePropertyIndex::GraphicsViewItem).toString());
-            itemGroup.push_back(ptr);
+        QModelIndex nodeIndex = QModelIndex();
+        auto nodesGroup = model->getAllChildNodes(nodeIndex);
+        for (const auto& node : nodesGroup) {
+            auto itemInString = pointerToString(item);
+            auto item = stringToPointer(node->property(NodePropertyIndex::GraphicsViewItem).toString());
         }
 
-        return itemGroup;
+    }
+    /// 获得这个图层下的所有节点
+    /// layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+    std::vector<LaserItem*> getItems(int layer)
+    {
+        TreeViewModel *model = qobject_cast<TreeViewModel *>(treeview->model());
 
-        / TODO
-            / 循环遍历整个节点
-    };*/
+        QModelIndex nodeIndex;
+        if (layer==0){
+                nodeIndex = QModelIndex();
+        }else {
+            if (layer > model->rowCount())
+                FATAL_MSG("input layer exceed the existing layer count");
+            nodeIndex = model->index(layer-1,0,QModelIndex());
+        }
+        auto nodesGroup = model->getAllChildNodes(nodeIndex);
+        auto itemsGroup = std::vector<LaserItem*>();
+        for (const auto& node : nodesGroup) {
+            if(node->property(NodePropertyIndex::Type).toString() != "Item")
+                continue;
+            auto item = stringToPointer(node->property(NodePropertyIndex::GraphicsViewItem).toString());
+            itemsGroup.push_back(item);
+        }
+
+        return itemsGroup;
+    };
 
     QString pointerToString(const LaserItem* ptr)
     {
@@ -93,7 +96,9 @@ public:
         bool ok;
         quintptr address = str.toULongLong(&ok, 16);
         if (!ok) {
-            FATAL_MSG( "Invalid pointer string");// 可能会有group节点的未知转换
+            WARN_MSG( "Invalid pointer string");// 可能会有group节点的未知转换
+            WARN_VAR(str);
+            FATAL_MSG("");
         }
 
         LaserItem* rawPtr = reinterpret_cast<LaserItem*>(address);

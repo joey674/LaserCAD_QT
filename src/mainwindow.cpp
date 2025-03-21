@@ -847,8 +847,8 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 {
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,true,true,allItems);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,true,true,allItems);
 
     if (!this->tmpCircle && event == DrawEventType::LeftRelease)
     {
@@ -879,8 +879,8 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
 
 void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 {
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,false,false,allItems);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,false,false,allItems);
 
      /// TODO
     /// setLayer
@@ -905,8 +905,8 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 {
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,true,true,allItems);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,true,true,allItems);
 
     /* center：螺旋的中心点
         radius：螺旋的初始半径
@@ -963,11 +963,11 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 {
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,true,true,allItems);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,true,true,allItems);
 
-        /// TODO
-        /// setLayer
+    /// TODO
+    /// setLayer
     if (!this->tmpPolygon && event == DrawEventType::LeftRelease)
     {
         this->tmpPolygon = std::make_shared<QGraphicsPolygonItem>();
@@ -1001,8 +1001,8 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
 
 void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
 {
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,true,true,allItems);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,true,true,allItems);
 
         /// TODO
         /// setLayer
@@ -1543,10 +1543,10 @@ void MainWindow::on_editButton_clicked()
     // drag mode
     ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     // 设置当前图层内物体可动
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,false,false,allItems);
-    // this->setItemsStatus(true,true,true,inLayerItems);
+    auto inLayerItems = Manager::getIns().getItems(this->currentLayer);
+    auto allItems = Manager::getIns().getItems(0);
+    this->setItemsStatus(false,false,false,allItems);
+    this->setItemsStatus(true,true,true,inLayerItems);
 
     // button check
     this->setAllDrawButtonChecked(false);
@@ -1781,20 +1781,15 @@ void MainWindow::on_deleteButton_clicked()
     QList<QGraphicsItem*> selectedItems = this->scene->selectedItems();
     if (selectedItems.empty())
         return;
-    for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
+    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
     {
-       this->scene ->removeItem(*item);
-        // auto it = std::find_if(Manager::getIns().getItems().begin(), Manager::getIns().getItems().end(),
-        //                [item](const std::shared_ptr<QGraphicsItem>& ptr)
-        //                       {
-        //                             return ptr.get() == *item;
-        //                         }
-        //                       );
+        QGraphicsItem* graphicsItem = *it;
+        this->scene ->removeItem(graphicsItem);
 
-        // if (it != Manager::getIns().getItems().end())
-        // {
-        //     Manager::getIns().deleteItem(it->get());
-        // }
+        LaserItem* laserItem = dynamic_cast<LaserItem*>(graphicsItem);
+        if(!laserItem)
+            FATAL_MSG("fail pointer convertion");
+        Manager::getIns().deleteItem(laserItem);
     }
 }
 

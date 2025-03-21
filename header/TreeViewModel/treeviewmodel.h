@@ -56,27 +56,42 @@ public:
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
 public:
     /// 获取某个对象; 如果输入空index,就返回root
-    TreeNode *getItem(const QModelIndex &index) const;
-    /// 获取某个节点的QtModelIndex;这里row输入的是自己在父节点处的row; column输入0
-    QModelIndex getIndex(int row, int column, const TreeNode* node) const
+    TreeNode *getNode(const QModelIndex &index) const
     {
-        return createIndex(row, column, node);
+        if (index.isValid()) {
+            if (auto *item = static_cast<TreeNode*>(index.internalPointer()))
+                return item;
+        }
+        return m_rootItem.get();
     }
+    /// 获取某个节点的QtModelIndex;这里row输入的是自己在父节点处的row; column输入0
+    QModelIndex getIndex(int positionInParentNode,const TreeNode* node) const;
+    std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const
+    {
+        std::vector<TreeNode*> children;
+        int childCount = rowCount(nodeIndex);
 
-    void setProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value){
-        auto node = getItem(nodeIndex);
+        for (int row = 0; row < childCount; ++row) {
+            QModelIndex childIndex = this->index(row, 0, nodeIndex);
+            TreeNode* childNode = getNode(childIndex);
+
+            children.push_back(childNode);
+            auto subChildren = getAllChildNodes(childIndex);
+            children.insert(children.end(), subChildren.begin(), subChildren.end());
+        }
+
+        return children;
+    };
+
+    void setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value)
+    {
+        auto node = getNode(nodeIndex);
         if (!node)
             FATAL_MSG("nodeindex not found");
 
         node->setProperty(propertyIndex,value);
-    };
-    QVariant getProperty(const QModelIndex &nodeIndex, const int propertyIndex){
-        auto node = getItem(nodeIndex);
-        if (!node)
-            FATAL_MSG("nodeindex not found");
-
-        return node->property(propertyIndex);
-    };
+    }
+    QVariant nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex);
 
 private:
     void setupExemplarModelData();

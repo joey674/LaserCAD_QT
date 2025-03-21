@@ -24,7 +24,7 @@ QVariant TreeViewModel::data(const QModelIndex &nodeIndex, int role) const
     if (role != Qt::DisplayRole && role != Qt::EditRole)
         return {};
 
-    TreeNode *item = getItem(nodeIndex);
+    TreeNode *item = getNode(nodeIndex);
     // qDebug() <<  item->property(NodePropertyIndex::Name);
 
     return item->property(NodePropertyIndex::Name);
@@ -35,7 +35,7 @@ bool TreeViewModel::setData(const QModelIndex &nodeIndex, const QVariant &name, 
     if (role != Qt::EditRole)
         return false;
 
-    TreeNode *item = getItem(nodeIndex);
+    TreeNode *item = getNode(nodeIndex);
     bool result = item->setProperty(NodePropertyIndex::Name, name);
 
     if (result)
@@ -68,7 +68,7 @@ QModelIndex TreeViewModel::index(int row, int column, const QModelIndex &parentI
     if (parentIndex.isValid() && parentIndex.column() != 0)
         return {};
 
-    TreeNode *parentItem = getItem(parentIndex);
+    TreeNode *parentItem = getNode(parentIndex);
     if (!parentItem)
         return {};
 
@@ -82,7 +82,7 @@ QModelIndex TreeViewModel::parent(const QModelIndex &nodeIndex) const
     if (!nodeIndex.isValid())
         return {};
 
-    TreeNode *childItem = getItem(nodeIndex);
+    TreeNode *childItem = getNode(nodeIndex);
     TreeNode *parentItem = childItem ? childItem->parent() : nullptr;
 
     return (parentItem != m_rootItem.get() && parentItem != nullptr)
@@ -94,7 +94,7 @@ int TreeViewModel::rowCount(const QModelIndex &nodeIndex) const
     if (nodeIndex.isValid() && nodeIndex.column() > 0)
         return 0;
 
-    const TreeNode *nodeItem = getItem(nodeIndex);
+    const TreeNode *nodeItem = getNode(nodeIndex);
 
     return nodeItem ? nodeItem->childCount() : 0;
 }
@@ -107,7 +107,7 @@ int TreeViewModel::columnCount(const QModelIndex &nodeIndex) const
 
 bool TreeViewModel::insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex)
 {
-    TreeNode *nodeItem = getItem(nodeIndex);
+    TreeNode *nodeItem = getNode(nodeIndex);
     if (!nodeItem)
         return false;
 
@@ -120,7 +120,7 @@ bool TreeViewModel::insertRows(int insertPosition, int nodeCount, const QModelIn
 
 bool TreeViewModel::removeRows(int removePosition, int nodeCount, const QModelIndex &nodeIndex)
 {
-    TreeNode *nodeItem = getItem(nodeIndex);
+    TreeNode *nodeItem = getNode(nodeIndex);
     if (!nodeItem)
         return false;
 
@@ -137,7 +137,7 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex &index) const
         return Qt::NoItemFlags;
 
     // 如果是Layer节点, 不允许拖拽移动,但是可以接受drop和edit
-    auto node = getItem(index);
+    auto node = getNode(index);
     if(node->property(NodePropertyIndex::Type) == QVariant("Layer"))
         return Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
     // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
@@ -147,14 +147,24 @@ Qt::ItemFlags TreeViewModel::flags(const QModelIndex &index) const
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
-TreeNode *TreeViewModel::getItem(const QModelIndex &index) const
+
+
+
+
+
+
+QVariant TreeViewModel::nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex)
 {
-    if (index.isValid()) {
-        if (auto *item = static_cast<TreeNode*>(index.internalPointer()))
-            return item;
-    }
-    return m_rootItem.get();
+    auto node = getNode(nodeIndex);
+    if (!node)
+        FATAL_MSG("nodeindex not found");
+
+    return node->property(propertyIndex);
 }
+
+
+
+
 
 
 
@@ -295,7 +305,7 @@ QMimeData *TreeViewModel::mimeData(const QModelIndexList &indexes) const
 
     for (const QModelIndex &index : indexes) { // 处理多选items
         if (index.isValid()) {
-            auto item =  this->getItem(index);
+            auto item =  this->getNode(index);
             serializeNodeToStream(item,stream,0);
         }
     }
@@ -343,7 +353,7 @@ bool TreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
     }
 
     QVector<QPair<TreeNode*, QModelIndex>> parentStack;
-    parentStack.push_back(qMakePair(getItem(parentNodeIndex), parentNodeIndex));
+    parentStack.push_back(qMakePair(getNode(parentNodeIndex), parentNodeIndex));
 
     for (const QString &line : std::as_const(newItems)) {
         // 解析层级和节点属性
@@ -366,7 +376,7 @@ bool TreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
         insertRows(childIndex, 1, parentIndex);
         QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
-        TreeNode *item = this->getItem(newIdx);
+        TreeNode *item = this->getNode(newIdx);
 
         for (int i = 0; i < item->propertyCount(); i++) {
             if (i < itemList.size()) {
@@ -380,6 +390,15 @@ bool TreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
     }
 
     return true;
+}
+
+
+
+
+
+QModelIndex TreeViewModel::getIndex(int positionInParentNode, const TreeNode *node) const
+{
+    return createIndex(positionInParentNode, 0, node);
 }
 
 
