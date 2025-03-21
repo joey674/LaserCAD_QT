@@ -812,7 +812,7 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
 
         this->tmpArc = std::make_shared<ArcItem>();
         this->tmpArc->setLayer(this->currentLayer);
-        scene->addItem(this->tmpArc.get());
+        this->scene->addItem(this->tmpArc.get());
         this->tmpArc->operateIndex += 1;
 
         this->tmpArc->editVertex(0,pointCoordscene,0);
@@ -857,7 +857,7 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
         this->tmpCircle->setPen(QPen(Qt::black, 1));
         /// TODO
         /// setLayer
-        scene->addItem(this->tmpCircle.get());
+        this->scene->addItem(this->tmpCircle.get());
     }
     else if  (this->tmpCircle && event == DrawEventType::MouseMove)
     {
@@ -920,7 +920,7 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
         this->tmpSpiral =  std::make_shared<QGraphicsPathItem>();
         this->tmpSpiral->setData(0,pointCoordscene);
         this->tmpSpiral->setPen(QPen(Qt::black, 1));
-        scene->addItem(this->tmpSpiral.get());
+        this->scene->addItem(this->tmpSpiral.get());
     }
     else if  (this->tmpSpiral && event == DrawEventType::MouseMove)
     {
@@ -1011,7 +1011,7 @@ void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
         this->tmpEllipse = std::make_shared<QGraphicsEllipseItem>(initialRect);
         this->tmpEllipse->setPen(QPen(Qt::black, 1));
-        scene->addItem(this->tmpEllipse.get());
+        this->scene->addItem(this->tmpEllipse.get());
     }
     else if  (this->tmpEllipse && event == DrawEventType::MouseMove)
     {
@@ -1547,6 +1547,9 @@ void MainWindow::on_editButton_clicked()
     auto allItems = Manager::getIns().getItems(0);
     this->setItemsStatus(false,false,false,allItems);
     this->setItemsStatus(true,true,true,inLayerItems);
+    // DEBUG_VAR(this->currentLayer);
+    DEBUG_VAR(inLayerItems.size());
+    DEBUG_VAR(allItems.size());
 
     // button check
     this->setAllDrawButtonChecked(false);

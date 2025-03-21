@@ -396,10 +396,7 @@ bool TreeViewModel::dropMimeData(const QMimeData *data, Qt::DropAction action, i
 
 
 
-QModelIndex TreeViewModel::getIndex(int positionInParentNode, const TreeNode *node) const
-{
-    return createIndex(positionInParentNode, 0, node);
-}
+
 
 
 

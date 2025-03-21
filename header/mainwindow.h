@@ -48,7 +48,7 @@ private:
     QGraphicsScene *scene;
     // 编辑对象、ui
     void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
-    void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<LaserItem*>& items)
+    void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<std::shared_ptr<LaserItem>>& items)
     {
         for (const auto& item : items)
         {

@@ -64,8 +64,16 @@ public:
         }
         return m_rootItem.get();
     }
-    /// 获取某个节点的QtModelIndex;这里row输入的是自己在父节点处的row; column输入0
-    QModelIndex getIndex(int positionInParentNode,const TreeNode* node) const;
+    ///
+    /// \brief getIndex:获取某个节点的QtModelIndex; column输入0
+    /// \param node 要获取的节点的指针
+    /// \return
+    ///
+    QModelIndex getIndex(const TreeNode* node) const
+    {
+        auto index = node->indexInParent();
+        return createIndex(index, 0, node);
+    }
     std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const
     {
         std::vector<TreeNode*> children;
