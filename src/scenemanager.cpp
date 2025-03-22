@@ -1,34 +1,34 @@
-#include "scenestates.h"
+#include "scenemanager.h"
 #include "logger.h"
 #include "uimanager.h"
 
-SceneStates SceneStates::ins;
+SceneManager SceneManager::ins;
 
-SceneStates &SceneStates::getIns()
+SceneManager &SceneManager::getIns()
 {
     return ins;
 }
 
 ///
-/// \brief SceneStates::getSceneScale  获取当前画布缩放倍率
+/// \brief SceneManager::getSceneScale  获取当前画布缩放倍率
 /// \return
 ///
-std::pair<double, double> SceneStates::getSceneScale()
+std::pair<double, double> SceneManager::getSceneScale()
 {
     return this->sceneScale;
 }
 
-void SceneStates::dragScene(QPointF pointCoordView, DrawEventType event)
+void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event)
 {
 
-    if (event == DrawEventType::LeftPress)
+    if (event == MouseEvent::LeftPress)
     {
         DEBUG_MSG("dragScene: LeftPress");
         // DEBUG_VAR(pointCoordView);
 
         this->dragScenePoint = pointCoordView;
     }
-    else if (event == DrawEventType::MouseMove)
+    else if (event == MouseEvent::MouseMove)
     {
         // DEBUG_MSG("dragScene: MouseMove");
         // DEBUG_VAR(pointCoordView);
@@ -37,17 +37,17 @@ void SceneStates::dragScene(QPointF pointCoordView, DrawEventType event)
         double dy = static_cast<double>(this->dragScenePoint.y()) - static_cast<double>(pointCoordView.y());
         QPointF delta(dx, dy);
 
-        double newX = std::fma(delta.x(), 1.0 / SceneStates::getIns().getSceneScale().first, 0.0);
-        double newY = std::fma(delta.y(), 1.0 / SceneStates::getIns().getSceneScale().second, 0.0);
+        double newX = std::fma(delta.x(), 1.0 / SceneManager::getIns().getSceneScale().first, 0.0);
+        double newY = std::fma(delta.y(), 1.0 / SceneManager::getIns().getSceneScale().second, 0.0);
         delta = QPointF(newX, newY);
         // DEBUG_VAR(delta);
 
-        auto newRect = SceneStates::getIns().scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
-        SceneStates::getIns().scene->setSceneRect(newRect);
+        auto newRect = SceneManager::getIns().scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
+        SceneManager::getIns().scene->setSceneRect(newRect);
 
         this->dragScenePoint = pointCoordView;
     }
-    else if (event == DrawEventType::LeftRelease)
+    else if (event == MouseEvent::LeftRelease)
     {
         DEBUG_MSG("dragScene: LeftRelease");
         this->dragScenePoint = QPointF(0,0);
@@ -55,7 +55,7 @@ void SceneStates::dragScene(QPointF pointCoordView, DrawEventType event)
 }
 
 ///
-/// \brief SceneStates::setItemStatus  设置物体状态
+/// \brief SceneManager::setItemStatus  设置物体状态
 /// \param visible
 /// \param selectable
 /// \param movable
@@ -66,11 +66,11 @@ void SceneStates::dragScene(QPointF pointCoordView, DrawEventType event)
 
 
 ///
-/// \brief SceneStates::setSceneScale  放大缩小画布
+/// \brief SceneManager::setSceneScale  放大缩小画布
 /// \param x 缩放倍率(基于当前状态再缩放)
 /// \param y
 ///
-void SceneStates::setSceneScale(double x, double y)
+void SceneManager::setSceneScale(double x, double y)
 {
     if (x <=0 || y<=0)
     {

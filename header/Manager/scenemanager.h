@@ -1,35 +1,38 @@
-#ifndef VIEWMANAGER_H
-#define VIEWMANAGER_H
+#ifndef SCENEMANAGER_H
+#define SCENEMANAGER_H
 
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <utility>
 #include "protocol1.h"
 
-class SceneStates
+class SceneManager
 {
 public:
     /// scene
     QGraphicsScene *scene;
+    OperationEvent currentOperationEvent = None;
 public:
+    /// scene scale
     std::pair<double,double> sceneScale = {1,1};
     void setSceneScale(double x, double y);
     std::pair<double, double> getSceneScale();
 public:
-    /// 记录图层情况
+    /// layer
     int layerCount = 1;
     int currentLayer = 1;
 public:
     QPointF dragScenePoint = QPointF(0,0);
     void dragScene(QPointF pointCoordView,  MouseEvent event);
 
+
 private:
-    static SceneStates ins;
-    SceneStates(){};
-    SceneStates(const SceneStates&);
-    ~SceneStates(){};
-    SceneStates& operator = (const SceneStates&);
+    static SceneManager ins;
+    SceneManager(){};
+    SceneManager(const SceneManager&);
+    ~SceneManager(){};
+    SceneManager& operator = (const SceneManager&);
 public:
-    static SceneStates& getIns();
+    static SceneManager& getIns();
 };
-#endif // VIEWMANAGER_H
+#endif // SCENEMANAGER_H
