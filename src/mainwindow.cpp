@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
+// #include "ui_mainwindow.h"
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QGraphicsItemGroup>
@@ -18,18 +18,21 @@
 // #include "titlebar.h"
 #include "CavalierContours/polyline.hpp"
 #include "manager.h"
+#include "treeviewmodel.h"
+#include "keyboardmanager.h"
+#include "uimanager.h"
+#include "scenemanager.h"
+
 
 ///
 /// \brief MainWindow::MainWindow
 /// \param parent
 ///
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
+    auto ui = std::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
-
-    // 初始化manager
-    Manager::init(this->scene,ui->treeView);
-
+    UiManager::getIns().setUI(std::move(ui));
     // showMaximized();
 
     initTitleBar();
@@ -43,7 +46,8 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    // 不用delete,由unique ptr管理内存
+    // delete UiManager::getIns().UI();
 }
 
 void MainWindow::setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* item)
@@ -54,40 +58,9 @@ void MainWindow::setItemStatus(bool visible, bool selectable, bool movable, QGra
 }
 
 
-
-void MainWindow::setAllDrawButtonChecked(bool isChecked)
-{
-    ui->drawArcButton->setChecked(isChecked);
-    ui->drawCircleButton->setChecked(isChecked);
-    ui->drawEllipseButton->setChecked(isChecked);
-    ui->drawPolylineButton->setChecked(isChecked);
-    ui->drawPolygonButton->setChecked(isChecked);
-    ui->drawRectButton->setChecked(isChecked);
-    ui->drawSpiralButton->setChecked(isChecked);
-}
-
-void MainWindow::setAllToolButtonChecked(bool isChecked)
-{
-    ui->editButton->setChecked(isChecked);
-    ui->dragSceneButton->setChecked(isChecked);
-    ui->centerButton->setChecked(isChecked);
-    ui->createOffsetButton->setChecked(isChecked);
-    ui->deleteButton->setChecked(isChecked);
-    ui->rotateButton->setChecked(isChecked);
-    ui->drawTestLineButton->setChecked(isChecked);
-}
-
-void MainWindow::setAllLayerButtonChecked(bool isChecked)
-{
-    for (QPushButton *btn : this->layerButtons) {
-        btn->setChecked(isChecked);
-    }
-}
-
 ///
 /// \brief MainWindow::initGraphicsView
 ///
-
 void MainWindow::initTitleBar()
 {
     // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
@@ -106,8 +79,8 @@ void MainWindow::initTitleBar()
 
 void MainWindow::initGraphicsView()
 {
-    this->scene=new QGraphicsScene();
-    ui->graphicsView->setScene(this->scene);
+    SceneManager::getIns().scene=new QGraphicsScene();
+    UiManager::getIns().UiManager::getIns().UI()->graphicsView->setScene(SceneManager::getIns().scene);
 
     // add axis
     QPen pen(Qt::red);
@@ -119,45 +92,45 @@ void MainWindow::initGraphicsView()
     xAxis->setPos(0,0);
     yAxis->setPen(pen);
     yAxis->setPos(0,0);
-    this->scene->addItem(xAxis);
-    this->scene->addItem(yAxis);
+    SceneManager::getIns().scene->addItem(xAxis);
+    SceneManager::getIns().scene->addItem(yAxis);
 
     QGraphicsLineItem *xArrowL=new QGraphicsLineItem(90,10,100,0);
     QGraphicsLineItem *xArrowR=new QGraphicsLineItem(90,-10,100,0);
     xArrowL->setPen(pen);
     xArrowR->setPen(pen);
-    this->scene->addItem(xArrowL);
-    this->scene->addItem(xArrowR);
+    SceneManager::getIns().scene->addItem(xArrowL);
+    SceneManager::getIns().scene->addItem(xArrowR);
 
     QGraphicsLineItem *yArrowL=new QGraphicsLineItem(10,90,0,100);
     QGraphicsLineItem *yArrowR=new QGraphicsLineItem(-10,90,0,100);
     yArrowL->setPen(pen);
     yArrowR->setPen(pen);
-    this->scene->addItem(yArrowL);
-    this->scene->addItem(yArrowR);
+    SceneManager::getIns().scene->addItem(yArrowL);
+    SceneManager::getIns().scene->addItem(yArrowR);
 
     // 锁定当前场景矩形
-    this->setSceneScale(1,1);
-    this->scene->setSceneRect(scene->sceneRect());
+    SceneManager::getIns().setSceneScale(1,1);
+    SceneManager::getIns().scene->setSceneRect(SceneManager::getIns().scene->sceneRect());
 
     // 设置初始为没有选框
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
-    connect(ui->graphicsView,SIGNAL(mouseMoved(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseMoved(QPoint)),
             this,SLOT(onGraphicsviewMouseMoved(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseLeftPressed(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseLeftPressed(QPoint)),
             this,SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseRightPressed(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseRightPressed(QPoint)),
             this,SLOT(onGraphicsviewMouseRightPressed(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseLeftReleased(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseLeftReleased(QPoint)),
             this,SLOT(onGraphicsviewMouseLeftReleased(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseRightReleased(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseRightReleased(QPoint)),
             this,SLOT(onGraphicsviewMouseRightReleased(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseDoubleClicked(QPoint)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseDoubleClicked(QPoint)),
             this,SLOT(onGraphicsviewMouseDoubleClicked(QPoint)));
-    connect(ui->graphicsView,SIGNAL(mouseWheelTriggered(QWheelEvent*)),
+    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseWheelTriggered(QWheelEvent*)),
             this,SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
 
@@ -165,7 +138,7 @@ void MainWindow::initToolButton()
 {
     QString buttonStyle = buttonStyle1;
 
-    QToolButton *dragsceneButton = ui->dragSceneButton;
+    QToolButton *dragsceneButton = UiManager::getIns().UI()->dragSceneButton;
     dragsceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
     dragsceneButton->setIconSize(QSize(30, 30));
     dragsceneButton->setStyleSheet(buttonStyle);
@@ -173,7 +146,7 @@ void MainWindow::initToolButton()
     dragsceneButton->setAutoExclusive(false);
     dragsceneButton->setToolTip("拖动画布；左键拖拽");
 
-    QToolButton *resetButton = ui->editButton;
+    QToolButton *resetButton = UiManager::getIns().UI()->editButton;
     resetButton->setIcon(QIcon(":/button/resetButton.svg"));
     resetButton->setIconSize(QSize(30, 30));
     resetButton->setStyleSheet(buttonStyle);
@@ -181,7 +154,7 @@ void MainWindow::initToolButton()
     resetButton->setAutoExclusive(false);
     resetButton->setToolTip("移动对象");
 
-    QToolButton *rotateButton = ui->rotateButton;
+    QToolButton *rotateButton = UiManager::getIns().UI()->rotateButton;
     rotateButton->setIcon(QIcon(":/button/rotateButton.svg"));
     rotateButton->setIconSize(QSize(30, 30));
     rotateButton->setStyleSheet(buttonStyle);
@@ -189,7 +162,7 @@ void MainWindow::initToolButton()
     rotateButton->setAutoExclusive(false);
     rotateButton->setToolTip("旋转对象");
 
-    QToolButton *deleteButton = ui->deleteButton;
+    QToolButton *deleteButton = UiManager::getIns().UI()->deleteButton;
     deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
     deleteButton->setIconSize(QSize(30, 30));
     deleteButton->setStyleSheet(buttonStyle);
@@ -197,7 +170,7 @@ void MainWindow::initToolButton()
     deleteButton->setAutoExclusive(false);
     deleteButton->setToolTip("删除对象");
 
-    QToolButton *drawTestLineButton = ui->drawTestLineButton;
+    QToolButton *drawTestLineButton = UiManager::getIns().UI()->drawTestLineButton;
     drawTestLineButton->setIcon(QIcon(":/button/drawTestLineButton.svg"));
     drawTestLineButton->setIconSize(QSize(30, 30));
     drawTestLineButton->setStyleSheet(buttonStyle);
@@ -205,7 +178,7 @@ void MainWindow::initToolButton()
     drawTestLineButton->setAutoExclusive(false);
     drawTestLineButton->setToolTip("测试按钮");
 
-    QToolButton *createOffsetButton = ui->createOffsetButton;
+    QToolButton *createOffsetButton = UiManager::getIns().UI()->createOffsetButton;
     createOffsetButton->setIcon(QIcon(":/button/createOffsetButton.svg"));
     createOffsetButton->setIconSize(QSize(30, 30));
     createOffsetButton->setStyleSheet(buttonStyle);
@@ -213,7 +186,7 @@ void MainWindow::initToolButton()
     createOffsetButton->setAutoExclusive(false);
     createOffsetButton->setToolTip("添加填充/offset");
 
-    QToolButton *centerButton = ui->centerButton;
+    QToolButton *centerButton = UiManager::getIns().UI()->centerButton;
     centerButton->setIcon(QIcon(":/button/centerButton.svg"));
     centerButton->setIconSize(QSize(30, 30));
     centerButton->setStyleSheet(buttonStyle);
@@ -221,7 +194,7 @@ void MainWindow::initToolButton()
     centerButton->setAutoExclusive(false);
     centerButton->setToolTip("移动对象到中心点");
 
-    QToolButton *redoButton = ui->redoButton;
+    QToolButton *redoButton = UiManager::getIns().UI()->redoButton;
     redoButton->setIcon(QIcon(":/button/redoButton.svg"));
     redoButton->setIconSize(QSize(30, 30));
     redoButton->setStyleSheet(buttonStyle);
@@ -229,7 +202,7 @@ void MainWindow::initToolButton()
     redoButton->setAutoExclusive(false);
     redoButton->setToolTip("移动对象到中心点");
 
-    QToolButton *undoButton = ui->undoButton;
+    QToolButton *undoButton = UiManager::getIns().UI()->undoButton;
     undoButton->setIcon(QIcon(":/button/undoButton.svg"));
     undoButton->setIconSize(QSize(30, 30));
     undoButton->setStyleSheet(buttonStyle);
@@ -240,7 +213,7 @@ void MainWindow::initToolButton()
 
 
     // 绘制工具
-    QToolButton *drawPolylineButton = ui->drawPolylineButton;
+    QToolButton *drawPolylineButton = UiManager::getIns().UI()->drawPolylineButton;
     drawPolylineButton->setIcon(QIcon(":/button/drawPolylineButton.svg"));
     drawPolylineButton->setIconSize(QSize(30, 30));
     drawPolylineButton->setStyleSheet(buttonStyle);
@@ -258,7 +231,7 @@ void MainWindow::initToolButton()
         );
 
 
-    QToolButton *drawArcButton = ui->drawArcButton;
+    QToolButton *drawArcButton = UiManager::getIns().UI()->drawArcButton;
     drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
     drawArcButton->setIconSize(QSize(30, 30));
     drawArcButton->setStyleSheet(buttonStyle);
@@ -275,7 +248,7 @@ void MainWindow::initToolButton()
 
 
 
-    QToolButton *drawCircleButton = ui->drawCircleButton;
+    QToolButton *drawCircleButton = UiManager::getIns().UI()->drawCircleButton;
     drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
     drawCircleButton->setIconSize(QSize(30, 30));
     drawCircleButton->setStyleSheet(buttonStyle);
@@ -290,7 +263,7 @@ void MainWindow::initToolButton()
         "</body></html>"
         );
 
-    QToolButton *drawEllipseButton = ui->drawEllipseButton;
+    QToolButton *drawEllipseButton = UiManager::getIns().UI()->drawEllipseButton;
     drawEllipseButton->setIcon(QIcon(":/button/drawEllipseButton.svg"));
     drawEllipseButton->setIconSize(QSize(30, 30));
     drawEllipseButton->setStyleSheet(buttonStyle);
@@ -305,7 +278,7 @@ void MainWindow::initToolButton()
         "</body></html>"
         );
 
-    QToolButton *drawRectButton = ui->drawRectButton;
+    QToolButton *drawRectButton = UiManager::getIns().UI()->drawRectButton;
     drawRectButton->setIcon(QIcon(":/button/drawRectButton.svg"));
     drawRectButton->setIconSize(QSize(30, 30));
     drawRectButton->setStyleSheet(buttonStyle);
@@ -320,7 +293,7 @@ void MainWindow::initToolButton()
         "</body></html>"
         );
 
-    QToolButton *drawPolygonButton = ui->drawPolygonButton;
+    QToolButton *drawPolygonButton = UiManager::getIns().UI()->drawPolygonButton;
     drawPolygonButton->setIcon(QIcon(":/button/drawPolygonButton.svg"));
     drawPolygonButton->setIconSize(QSize(30, 30));
     drawPolygonButton->setStyleSheet(buttonStyle);
@@ -335,7 +308,7 @@ void MainWindow::initToolButton()
         "</body></html>"
         );
 
-    QToolButton *drawSpiralButton = ui->drawSpiralButton;
+    QToolButton *drawSpiralButton = UiManager::getIns().UI()->drawSpiralButton;
     drawSpiralButton->setIcon(QIcon(":/button/drawSpiralButton.svg"));
     drawSpiralButton->setIconSize(QSize(30, 30));
     drawSpiralButton->setStyleSheet(buttonStyle);
@@ -352,9 +325,12 @@ void MainWindow::initToolButton()
         );
 }
 
+///
+/// \brief MainWindow::initLayerButton
+///
 void MainWindow::initLayerButton()
 {
-    // QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    // QLayout *graphicsViewLayout = UiManager::getIns().UI()->mainLayout->findChild<QLayout*>("graphicsViewLayout");
     // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
     // if (!layerButtonLayout)
     //     FATAL_MSG("layerButtonLayout can not be init");
@@ -392,44 +368,44 @@ void MainWindow::initStatusBar()
 {
     this->labelMouseCoordinate = new QLabel("coordinate: ");
     this->labelMouseCoordinate->setMinimumWidth(150);
-    ui->statusBar->addWidget(this->labelMouseCoordinate);
+    UiManager::getIns().UI()->statusBar->addWidget(this->labelMouseCoordinate);
 
     this->labelCurrentLayer = new QLabel("layer: ");
     this->labelCurrentLayer->setMinimumWidth(150);
-    ui->statusBar->addWidget(this->labelCurrentLayer);
+    UiManager::getIns().UI()->statusBar->addWidget(this->labelCurrentLayer);
 
     this->labelCurrentGroup = new QLabel("layer: ");
     this->labelCurrentGroup->setMinimumWidth(150);
-    ui->statusBar->addWidget(this->labelCurrentGroup);
+    UiManager::getIns().UI()->statusBar->addWidget(this->labelCurrentGroup);
 
     this->labelOperation = new QLabel("operation: ");
     this->labelOperation->setMinimumWidth(300);
-    ui->statusBar->addWidget(this->labelOperation);
+    UiManager::getIns().UI()->statusBar->addWidget(this->labelOperation);
 }
 
 void MainWindow::initPropertyTableWidget()
 {
-    ui->propertyTableWidget->setColumnCount(2);
-    ui->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
+    UiManager::getIns().UI()->propertyTableWidget->setColumnCount(2);
+    UiManager::getIns().UI()->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
 }
 
 void MainWindow::initTreeViewModel()
 {
     auto *model = new TreeViewModel("testTreeViewModel", this);
 
-    ui->treeView->setStyleSheet(treeViewModelStyle1);
-    ui->treeView->setModel(model);
-    ui->treeView->expandAll();
+    UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
+    UiManager::getIns().UI()->treeView->setModel(model);
+    UiManager::getIns().UI()->treeView->expandAll();
 
-    ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    ui->treeView->setDragEnabled(true);
-    ui->treeView->setAcceptDrops(true);
-    ui->treeView->setDropIndicatorShown(true);
-    ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+    UiManager::getIns().UI()->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    UiManager::getIns().UI()->treeView->setDragEnabled(true);
+    UiManager::getIns().UI()->treeView->setAcceptDrops(true);
+    UiManager::getIns().UI()->treeView->setDropIndicatorShown(true);
+    UiManager::getIns().UI()->treeView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
-    // connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::onItemClicked);
+    UiManager::getIns().UI()->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(UiManager::getIns().UI()->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
+    // connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onItemClicked);
 }
 
 void MainWindow::displayOperation(QString text)
@@ -456,13 +432,13 @@ void MainWindow::dragScene(QPointF pointCoordView, DrawEventType event)
         double dy = static_cast<double>(this->dragScenePoint.y()) - static_cast<double>(pointCoordView.y());
         QPointF delta(dx, dy);
 
-        double newX = std::fma(delta.x(), 1.0 / getSceneScale().first, 0.0);
-        double newY = std::fma(delta.y(), 1.0 / getSceneScale().second, 0.0);
+        double newX = std::fma(delta.x(), 1.0 / SceneManager::getIns().getSceneScale().first, 0.0);
+        double newY = std::fma(delta.y(), 1.0 / SceneManager::getIns().getSceneScale().second, 0.0);
         delta = QPointF(newX, newY);
         // DEBUG_VAR(delta);
 
-        auto newRect = this->scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
-        this->scene->setSceneRect(newRect);
+        auto newRect = SceneManager::getIns().scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
+        SceneManager::getIns().scene->setSceneRect(newRect);
 
         this->dragScenePoint = pointCoordView;
     }
@@ -483,23 +459,6 @@ void MainWindow::deleteItem()
 
 }
 
-void MainWindow::setSceneScale(double x, double y)
-{
-    if (x <=0 || y<=0)
-    {
-        displayOperation("error scene scale");
-        return;
-    }
-
-    ui->graphicsView->scale(x,y);
-    this->sceneScale.first *= x;
-    this->sceneScale.second *= y;
-}
-
-std::pair<double, double> MainWindow::getSceneScale()
-{
-    return this->sceneScale;
-}
 
 ///
 /// \brief MainWindow::editItem
@@ -507,10 +466,10 @@ std::pair<double, double> MainWindow::getSceneScale()
 ///
 void MainWindow::editItem(QPointF pointCoordscene,DrawEventType event)
 {
-    if (this->scene->selectedItems().empty())
+    if (SceneManager::getIns().scene->selectedItems().empty())
         return;
 
-    this->currentEditItem = this->scene->selectedItems()[0];
+    this->currentEditItem = SceneManager::getIns().scene->selectedItems()[0];
     switch (this->currentEditItem->type())
     {
         case PolylineItem::Type:
@@ -576,32 +535,32 @@ void MainWindow::editPolyline(QPointF pointCoordscene, PolylineItem* item,DrawEv
     if (event == DrawEventType::LeftRelease)
     {
         // 先初始化属性栏
-        ui->propertyTableWidget->clearContents();
-        ui->propertyTableWidget->setRowCount(0);
+        UiManager::getIns().UI()->propertyTableWidget->clearContents();
+        UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
 
         // 把对象的属性映射到属性修改面板
         // 先blocksignal,不然会频繁触发修改属性table的回调
-        ui->propertyTableWidget->blockSignals(true);
+        UiManager::getIns().UI()->propertyTableWidget->blockSignals(true);
 
         // 映射属性
-        int row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        int row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         QTableWidgetItem *offsetName = new QTableWidgetItem("offset");
         QTableWidgetItem *offsetValue = new QTableWidgetItem(item->getParallelOffset());
         offsetName->setFlags(offsetName->flags() & ~Qt::ItemIsEditable);
         offsetValue->setFlags(offsetValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0,offsetName);
-        ui->propertyTableWidget->setItem(row, 1, offsetValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0,offsetName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, offsetValue);
 
-        ui->propertyTableWidget->insertRow(row);
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         QTableWidgetItem *offsetNumName = new QTableWidgetItem("offsetNum");
         QTableWidgetItem *offsetNumValue = new QTableWidgetItem(item->getParallelOffset());
         offsetNumName->setFlags(offsetNumName->flags() & ~Qt::ItemIsEditable);
         offsetNumValue->setFlags(offsetNumValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0,offsetNumName);
-        ui->propertyTableWidget->setItem(row, 1, offsetNumValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0,offsetNumName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, offsetNumValue);
 
-        ui->propertyTableWidget->blockSignals(false);
+        UiManager::getIns().UI()->propertyTableWidget->blockSignals(false);
     }
 }
 
@@ -614,64 +573,64 @@ void MainWindow::editArc(QPointF pointCoordscene, ArcItem* item,DrawEventType ev
         DEBUG_VAR(item->pos());
         // 把对象的属性映射到属性修改面板
         // 清除table
-        ui->propertyTableWidget->clearContents();
-        ui->propertyTableWidget->setRowCount(0);
+        UiManager::getIns().UI()->propertyTableWidget->clearContents();
+        UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
         // 先blocksignal,不然会频繁触发修改属性table的回调
-        ui->propertyTableWidget->blockSignals(true);
+        UiManager::getIns().UI()->propertyTableWidget->blockSignals(true);
 
         // 映射属性
-        int row = ui->propertyTableWidget->rowCount();
+        int row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
         QTableWidgetItem *propertyName =nullptr;
         QTableWidgetItem *propertyValue = nullptr;
         auto posOffset = item->pos();
 
-        row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         propertyName = new QTableWidgetItem("startPoint.x");
         propertyValue = new QTableWidgetItem(QString::number(item->getVertex(0).point.x()+posOffset.x()));
         propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
         propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0, propertyName);
-        ui->propertyTableWidget->setItem(row, 1, propertyValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
 
-        row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         propertyName = new QTableWidgetItem("startPoint.y");
         propertyValue = new QTableWidgetItem(QString::number(item->getVertex(0).point.y()+posOffset.y()));
         propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
         propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0, propertyName);
-        ui->propertyTableWidget->setItem(row, 1, propertyValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
 
-        row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         propertyName = new QTableWidgetItem("endPoint.x");
         propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).point.x()+posOffset.x()));
         propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
         propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0, propertyName);
-        ui->propertyTableWidget->setItem(row, 1, propertyValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
 
-        row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         propertyName = new QTableWidgetItem("endPoint.y");
         propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).point.y()+posOffset.y()));
         propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
         propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0, propertyName);
-        ui->propertyTableWidget->setItem(row, 1, propertyValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
 
-        row = ui->propertyTableWidget->rowCount();
-        ui->propertyTableWidget->insertRow(row);
+        row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+        UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
         propertyName = new QTableWidgetItem("angle");
         propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).angle));
         propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
         propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-        ui->propertyTableWidget->setItem(row, 0, propertyName);
-        ui->propertyTableWidget->setItem(row, 1, propertyValue);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
+        UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
 
 
-        ui->propertyTableWidget->blockSignals(false);
+        UiManager::getIns().UI()->propertyTableWidget->blockSignals(false);
      }
 }
 
@@ -695,37 +654,37 @@ void MainWindow::editCircle(QGraphicsEllipseItem * item, DrawEventType event)
 
     // // 把对象的属性映射到属性修改面板
     // // 先blocksignal,不然会频繁触发修改属性table的回调
-    // ui->propertyTableWidget->blockSignals(true);
+    // UiManager::getIns().UI()->propertyTableWidget->blockSignals(true);
 
     // // 映射属性
-    // int row = ui->propertyTableWidget->rowCount();
-    // ui->propertyTableWidget->insertRow(row);
+    // int row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+    // UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
     // QTableWidgetItem *centerPointXName = new QTableWidgetItem("centerPoint.x");
     // QTableWidgetItem *centerPointXValue = new QTableWidgetItem(QString::number(centerPoint.x()));
     // centerPointXName->setFlags(centerPointXName->flags() & ~Qt::ItemIsEditable);
     // centerPointXValue->setFlags(centerPointXValue->flags() | Qt::ItemIsEditable);
-    // ui->propertyTableWidget->setItem(row, 0, centerPointXName);
-    // ui->propertyTableWidget->setItem(row, 1, centerPointXValue);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, centerPointXName);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, centerPointXValue);
 
-    // row = ui->propertyTableWidget->rowCount();
-    // ui->propertyTableWidget->insertRow(row);
+    // row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+    // UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
     // QTableWidgetItem *centerPointYName = new QTableWidgetItem("centerPoint.y");
     // QTableWidgetItem *centerPointYValue = new QTableWidgetItem(QString::number(centerPoint.y()));
     // centerPointYName->setFlags(centerPointYName->flags() & ~Qt::ItemIsEditable);
     // centerPointYValue->setFlags(centerPointYValue->flags() | Qt::ItemIsEditable);
-    // ui->propertyTableWidget->setItem(row, 0, centerPointYName);
-    // ui->propertyTableWidget->setItem(row, 1, centerPointYValue);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, centerPointYName);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, centerPointYValue);
 
-    // row = ui->propertyTableWidget->rowCount();
-    // ui->propertyTableWidget->insertRow(row);
+    // row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
+    // UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
     // QTableWidgetItem *radiusName = new QTableWidgetItem("radius");
     // QTableWidgetItem *radiusValue = new QTableWidgetItem(QString::number(circleItem->rect().width()));
     // radiusName->setFlags(radiusName->flags() & ~Qt::ItemIsEditable);
     // radiusValue->setFlags(radiusValue->flags() | Qt::ItemIsEditable);
-    // ui->propertyTableWidget->setItem(row, 0, radiusName);
-    // ui->propertyTableWidget->setItem(row, 1, radiusValue);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, radiusName);
+    // UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, radiusValue);
 
-    // ui->propertyTableWidget->blockSignals(false);
+    // UiManager::getIns().UI()->propertyTableWidget->blockSignals(false);
 }
 
 ///
@@ -752,8 +711,8 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
         // this->setItemsStatus(true,false,false,inLayerItems);
 
         this->tmpPolyline = std::make_shared<PolylineItem>();
-        this->tmpPolyline->setLayer(this->currentLayer);
-        this->scene->addItem(this->tmpPolyline.get());
+        this->tmpPolyline->setLayer(SceneManager::getIns().currentLayer);
+        SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
         DEBUG_VAR(this->tmpPolyline.get());
 
         this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -762,19 +721,19 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
     else if  (this->tmpPolyline && event == DrawEventType::MouseMove)
     {
         int index = this->tmpPolyline->getSize()-1;
-        if (!Manager::getIns().IsControlHold) // 绘制line
+        if (!KeyboardManager::getIns().IsControlHold) // 绘制line
         {
             QPointF lastPoint = this->tmpPolyline->getVertex(index - 1).point;
-            if (Manager::getIns().IsXHold)
+            if (KeyboardManager::getIns().IsXHold)
                 this->tmpPolyline->editVertex(index,QPointF(pointCoordscene.x(),lastPoint.y()),0);
-            else if (Manager::getIns().IsYHold)
+            else if (KeyboardManager::getIns().IsYHold)
                 this->tmpPolyline->editVertex(index,QPointF(lastPoint.x(),pointCoordscene.y()),0);
             else
                 this->tmpPolyline->editVertex(index,pointCoordscene,0);
         }
         else //绘制arc
         {
-            if (!Manager::getIns().IsCapsLocked)
+            if (!KeyboardManager::getIns().IsCapsLocked)
                 this->tmpPolyline->editVertex(index, pointCoordscene,180);
             else
                  this->tmpPolyline->editVertex(index, pointCoordscene,-180);
@@ -799,8 +758,8 @@ void MainWindow::drawArc(QPointF pointCoordscene, DrawEventType event)
         // this->setItemsStatus(true,false,false,inLayerItems);
 
         this->tmpArc = std::make_shared<ArcItem>();
-        this->tmpArc->setLayer(this->currentLayer);
-        this->scene->addItem(this->tmpArc.get());
+        this->tmpArc->setLayer(SceneManager::getIns().currentLayer);
+        SceneManager::getIns().scene->addItem(this->tmpArc.get());
         this->tmpArc->operateIndex += 1;
 
         this->tmpArc->editVertex(0,pointCoordscene,0);
@@ -845,7 +804,7 @@ void MainWindow::drawCircle(QPointF pointCoordscene,DrawEventType event)
         this->tmpCircle->setPen(QPen(Qt::black, 1));
         /// TODO
         /// setLayer
-        this->scene->addItem(this->tmpCircle.get());
+        SceneManager::getIns().scene->addItem(this->tmpCircle.get());
     }
     else if  (this->tmpCircle && event == DrawEventType::MouseMove)
     {
@@ -876,7 +835,7 @@ void MainWindow::drawRect(QPointF pointCoordscene, DrawEventType event)
     {
         this->tmpRect = std::make_shared<QGraphicsRectItem>(pointCoordscene.x(), pointCoordscene.y(),0,0);
         this->tmpRect->setPen(QPen(Qt::black, 1));
-        this->scene->addItem(this->tmpRect.get());
+        SceneManager::getIns().scene->addItem(this->tmpRect.get());
     }
     else if  (this->tmpRect && event == DrawEventType::MouseMove)
     {
@@ -908,7 +867,7 @@ void MainWindow::drawSpiral(QPointF pointCoordscene, DrawEventType event)
         this->tmpSpiral =  std::make_shared<QGraphicsPathItem>();
         this->tmpSpiral->setData(0,pointCoordscene);
         this->tmpSpiral->setPen(QPen(Qt::black, 1));
-        this->scene->addItem(this->tmpSpiral.get());
+        SceneManager::getIns().scene->addItem(this->tmpSpiral.get());
     }
     else if  (this->tmpSpiral && event == DrawEventType::MouseMove)
     {
@@ -961,7 +920,7 @@ void MainWindow::drawPolygon(QPointF pointCoordscene, DrawEventType event)
         this->tmpPolygon = std::make_shared<QGraphicsPolygonItem>();
         this->tmpPolygon->setData(0,pointCoordscene);
         this->tmpPolygon->setPen(QPen(Qt::black, 1));
-        this->scene->addItem(this->tmpPolygon.get());
+        SceneManager::getIns().scene->addItem(this->tmpPolygon.get());
     }
     else if  (this->tmpPolygon && event == DrawEventType::MouseMove)
     {
@@ -999,7 +958,7 @@ void MainWindow::drawEllipse(QPointF pointCoordscene, DrawEventType event)
         QRectF initialRect(pointCoordscene.x(), pointCoordscene.y(), 0, 0);
         this->tmpEllipse = std::make_shared<QGraphicsEllipseItem>(initialRect);
         this->tmpEllipse->setPen(QPen(Qt::black, 1));
-        this->scene->addItem(this->tmpEllipse.get());
+        SceneManager::getIns().scene->addItem(this->tmpEllipse.get());
     }
     else if  (this->tmpEllipse && event == DrawEventType::MouseMove)
     {
@@ -1060,34 +1019,34 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
     {
     case Qt::Key_Shift:
     {
-        Manager::getIns().IsShiftHold = true;
+        KeyboardManager::getIns().IsShiftHold = true;
         break;
     }
     case Qt::Key_Control:
     {
-        Manager::getIns().IsControlHold = true;
+        KeyboardManager::getIns().IsControlHold = true;
         break;
     }
 
     case Qt::Key_X:
     {
-        Manager::getIns().IsXHold = true;
+        KeyboardManager::getIns().IsXHold = true;
         break;
     }
     case Qt::Key_Y:
     {
-        Manager::getIns().IsYHold = true;
+        KeyboardManager::getIns().IsYHold = true;
         break;
     }
     case Qt::Key_Z:
     {
-        Manager::getIns().IsZHold = true;
+        KeyboardManager::getIns().IsZHold = true;
         break;
     }
 
     case Qt::Key_CapsLock:
     {
-        Manager::getIns().IsCapsLocked = !Manager::getIns().IsCapsLocked;
+        KeyboardManager::getIns().IsCapsLocked = !KeyboardManager::getIns().IsCapsLocked;
         break;
     }
 
@@ -1134,27 +1093,27 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
     switch(event->key()) {
     case Qt::Key_Shift:
     {
-        Manager::getIns().IsShiftHold = false;
+        KeyboardManager::getIns().IsShiftHold = false;
         break;
     }
     case Qt::Key_Control:
     {
-        Manager::getIns().IsControlHold = false;
+        KeyboardManager::getIns().IsControlHold = false;
         break;
     }
     case Qt::Key_X:
     {
-        Manager::getIns().IsXHold = false;
+        KeyboardManager::getIns().IsXHold = false;
         break;
     }
     case Qt::Key_Y:
     {
-        Manager::getIns().IsYHold = false;
+        KeyboardManager::getIns().IsYHold = false;
         break;
     }
     case Qt::Key_Z:
     {
-        Manager::getIns().IsZHold = false;
+        KeyboardManager::getIns().IsZHold = false;
         break;
     }
     }
@@ -1166,7 +1125,7 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
 ///
 void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
 {
-    QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
 
     // 显示坐标在statusbar里
     this->labelMouseCoordinate->setText(
@@ -1179,12 +1138,12 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
     this->labelCurrentLayer->setText(
         QString::asprintf(
             "layer: %i",
-            this->currentLayer
+            SceneManager::getIns().currentLayer
             )
         );
 
     // 非拖拽行为
-    if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == false)
+    if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false)
     {
         switch (this->currentDrawTool)
         {
@@ -1234,7 +1193,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
         }
     }
     // 左键拖拽
-    else if (Manager::getIns().IsMouseLeftButtonHold == true && Manager::getIns().IsMouseRightButtonHold == false)
+    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == false)
     {
         switch (this->currentDrawTool)
         {
@@ -1248,7 +1207,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
         }
     }
     // 右键拖拽
-    else if (Manager::getIns().IsMouseLeftButtonHold == false && Manager::getIns().IsMouseRightButtonHold == true)
+    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == true)
     {
         switch (this->currentDrawTool)
         {
@@ -1262,9 +1221,9 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
 void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
 {
     displayOperation("mouse left press");
-    Manager::getIns().IsMouseLeftButtonHold = true;
+    KeyboardManager::getIns().IsMouseLeftButtonHold = true;
 
-    QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (this->currentDrawTool)
     {
     case DrawToolType::DragScene:
@@ -1280,9 +1239,9 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
 void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
 {
     displayOperation("mouse right press");
-    Manager::getIns().IsMouseRightButtonHold = true;
+    KeyboardManager::getIns().IsMouseRightButtonHold = true;
 
-    QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (this->currentDrawTool)
     {
     case DrawToolType::None:
@@ -1297,9 +1256,9 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
 void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
 {
     displayOperation("mouse left release");
-    Manager::getIns().IsMouseLeftButtonHold = false;
+    KeyboardManager::getIns().IsMouseLeftButtonHold = false;
 
-    QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (this->currentDrawTool)
     {
     case DrawToolType::DragScene:
@@ -1356,9 +1315,9 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
 void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
 {
     displayOperation("mouse right release");
-    Manager::getIns().IsMouseRightButtonHold = false;
+    KeyboardManager::getIns().IsMouseRightButtonHold = false;
 
-    QPointF pointCoordscene = ui->graphicsView->mapToScene(pointCoordView);
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (this->currentDrawTool) {
     case DrawToolType:: EditProperty:
     {
@@ -1387,7 +1346,7 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseDoubleClicked(QPoint pointCoordView)
 {
-    ui->editButton->setChecked(true);
+    UiManager::getIns().UI()->editButton->setChecked(true);
     this->on_editButton_clicked();
 }
 
@@ -1396,11 +1355,11 @@ void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
     displayOperation("mouse wheel occourred");
     if (event->angleDelta().y() > 0)
     {
-        this->setSceneScale(1.2, 1.2);
+        SceneManager::getIns().setSceneScale(1.2, 1.2);
     }
     else
     {
-        this->setSceneScale(0.8, 0.8);
+        SceneManager::getIns().setSceneScale(0.8, 0.8);
     }
 }
 
@@ -1413,11 +1372,11 @@ void MainWindow::on_drawCircleButton_clicked()
     this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawCircleButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawCircleButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Circle;
 }
@@ -1428,11 +1387,11 @@ void MainWindow::on_drawPolylineButton_clicked()
     this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawPolylineButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawPolylineButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Polyline;
 }
@@ -1443,11 +1402,11 @@ void MainWindow::on_drawArcButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawArcButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawArcButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Arc;
 }
@@ -1458,11 +1417,11 @@ void MainWindow::on_drawSpiralButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawSpiralButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawSpiralButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Spiral;
 }
@@ -1473,11 +1432,11 @@ void MainWindow::on_drawRectButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawRectButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawRectButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Rect;
 }
@@ -1488,11 +1447,11 @@ void MainWindow::on_drawPolygonButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawPolygonButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawPolygonButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Polygon;
 }
@@ -1503,11 +1462,11 @@ void MainWindow::on_drawEllipseButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->drawEllipseButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawEllipseButton->setChecked(true);
 
     this->currentDrawTool = DrawToolType::Ellipse;
 }
@@ -1525,13 +1484,13 @@ void MainWindow::on_editButton_clicked()
     this->currentEditItem = NULL;
 
     // clean table
-    ui->propertyTableWidget->clearContents();
-    ui->propertyTableWidget->setRowCount(0);
+    UiManager::getIns().UI()->propertyTableWidget->clearContents();
+    UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
 
     // drag mode
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     // 设置当前图层内物体可动
-    auto inLayerItems = Manager::getIns().getItems(this->currentLayer);
+    auto inLayerItems = Manager::getIns().getItems(SceneManager::getIns().currentLayer);
     auto allItems = Manager::getIns().getItems(0);
     this->setItemsStatus(false,false,false,allItems);
     this->setItemsStatus(true,true,true,inLayerItems);
@@ -1540,9 +1499,9 @@ void MainWindow::on_editButton_clicked()
     DEBUG_VAR(allItems.size());
 
     // button check
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->editButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->editButton->setChecked(true);
 }
 
 void MainWindow::on_dragSceneButton_clicked()
@@ -1554,12 +1513,12 @@ void MainWindow::on_dragSceneButton_clicked()
     this->resetDrawToolStatus();
 
     // drag mode
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
     //button check
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->dragSceneButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->dragSceneButton->setChecked(true);
 }
 
 ///
@@ -1583,12 +1542,12 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
             double angle = item->getVertex(1).angle;
             ///
 
-            int rowCount = ui->propertyTableWidget->rowCount();
+            int rowCount = UiManager::getIns().UI()->propertyTableWidget->rowCount();
 
             for (int r = 0; r < rowCount; ++r)
             {
-                QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
-                QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                QTableWidgetItem *nameItem  = UiManager::getIns().UI()->propertyTableWidget->item(r, 0);
+                QTableWidgetItem *valueItem = UiManager::getIns().UI()->propertyTableWidget->item(r, 1);
                 if (!nameItem || !valueItem)
                     continue;
 
@@ -1641,12 +1600,12 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
         {
 
             double offset = 0, offsetNum = 0;
-            int rowCount = ui->propertyTableWidget->rowCount();
+            int rowCount = UiManager::getIns().UI()->propertyTableWidget->rowCount();
 
             for (int r = 0; r < rowCount; ++r)
             {
-                QTableWidgetItem *nameItem  = ui->propertyTableWidget->item(r, 0);
-                QTableWidgetItem *valueItem = ui->propertyTableWidget->item(r, 1);
+                QTableWidgetItem *nameItem  = UiManager::getIns().UI()->propertyTableWidget->item(r, 0);
+                QTableWidgetItem *valueItem = UiManager::getIns().UI()->propertyTableWidget->item(r, 1);
                 if (!nameItem || !valueItem)
                     continue;
 
@@ -1687,14 +1646,14 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 void MainWindow::on_rotateButton_clicked()
 {
     displayOperation("rotate button click");
-     this->currentDrawTool = DrawToolType::None;
+    this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->rotateButton->setChecked(true);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->rotateButton->setChecked(true);
 
-    QList<QGraphicsItem*> selectedItems = this->scene->selectedItems();
+    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
     if (selectedItems.empty())
         return;
     for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
@@ -1711,11 +1670,11 @@ void MainWindow::on_centerButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->centerButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->centerButton->setChecked(true);
 
 
     if (!this->currentEditItem) return;
@@ -1730,11 +1689,11 @@ void MainWindow::on_createOffsetButton_clicked()
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
 
-    ui->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->createOffsetButton->setChecked(true);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->createOffsetButton->setChecked(true);
 
 
     if (!this->currentEditItem) return;
@@ -1764,12 +1723,12 @@ void MainWindow::on_deleteButton_clicked()
     displayOperation("delete button click");
      this->currentDrawTool = DrawToolType::None;
     this->resetDrawToolStatus();
-    ui->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-    this->setAllDrawButtonChecked(false);
-    this->setAllToolButtonChecked(false);
-    ui->deleteButton->setChecked(true);
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->deleteButton->setChecked(true);
 
-    QList<QGraphicsItem*> selectedItems = this->scene->selectedItems();
+    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
     if (selectedItems.empty())
         return;
     for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
@@ -1778,7 +1737,7 @@ void MainWindow::on_deleteButton_clicked()
         LaserItem* laserItem = dynamic_cast<LaserItem*>(graphicsItem);
 
 
-        this->scene ->removeItem(graphicsItem);
+        SceneManager::getIns().scene ->removeItem(graphicsItem);
         if(!laserItem)
             FATAL_MSG("fail pointer convertion");
         Manager::getIns().deleteItem(laserItem);
@@ -1818,7 +1777,7 @@ void MainWindow::onLayerButtonClicked(int index)
 
 void MainWindow::onAddLayerButtonClicked()
 {
-    // QLayout *graphicsViewLayout = ui->mainLayout->findChild<QLayout*>("graphicsViewLayout");
+    // QLayout *graphicsViewLayout = UiManager::getIns().UI()->mainLayout->findChild<QLayout*>("graphicsViewLayout");
     // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
     // if (!layerButtonLayout) {
     //     FATAL_MSG("layerButtonLayout can not be found");
@@ -1860,7 +1819,7 @@ void MainWindow::onAddLayerButtonClicked()
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
 {
     // 获取鼠标点击的位置
-    QModelIndex index = ui->treeView->indexAt(pos);
+    QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
     if (!index.isValid())
         return;
 
@@ -1877,13 +1836,13 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
     connect(removeNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelRemoveNode);
     connect(insertChildNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelInsertChild);
 
-    contextMenu.exec(ui->treeView->viewport()->mapToGlobal(pos));
+    contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
 
 void MainWindow::onTreeViewModelInsertChild()
 {
-    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-    QAbstractItemModel *model = ui->treeView->model();
+    const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    QAbstractItemModel *model = UiManager::getIns().UI()->treeView->model();
 
     if (model->columnCount(index) == 0) {
         if (!model->insertColumn(0, index))
@@ -1898,15 +1857,15 @@ void MainWindow::onTreeViewModelInsertChild()
         model->setData(child, QVariant(tr("[No data]")), Qt::EditRole);
     }
 
-    ui->treeView->selectionModel()->setCurrentIndex(model->index(0, 0, index),
+    UiManager::getIns().UI()->treeView->selectionModel()->setCurrentIndex(model->index(0, 0, index),
                                             QItemSelectionModel::ClearAndSelect);
     onTreeViewModelUpdateActions();
 }
 
 void MainWindow::onTreeViewModelAddNode(){
-    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+    const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
 
-    QAbstractItemModel *model =  ui->treeView->model();
+    QAbstractItemModel *model =  UiManager::getIns().UI()->treeView->model();
 
     if (!model->insertRow(index.row()+1, index.parent()))
         return;
@@ -1921,8 +1880,8 @@ void MainWindow::onTreeViewModelAddNode(){
 
 void MainWindow::onTreeViewModelRemoveNode()
 {
-    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-    TreeViewModel *model = qobject_cast<TreeViewModel *>(ui->treeView->model());
+    const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    TreeViewModel *model = qobject_cast<TreeViewModel *>(UiManager::getIns().UI()->treeView->model());
     auto UUID = model->getNode(index)->property(NodePropertyIndex::UUID).toString();
 
     // 删除manager内的laseritem
@@ -1933,10 +1892,10 @@ void MainWindow::onTreeViewModelRemoveNode()
     if (laserItem->getName() ==  "PolylineItem")
     {
         PolylineItem *item = static_cast<PolylineItem*>(laserItem);
-        this->scene->removeItem(laserItem);
+        SceneManager::getIns().scene->removeItem(laserItem);
     }else if (laserItem->getName() =="ArcItem"){
         ArcItem *item = static_cast<ArcItem*>(laserItem);
-        this->scene->removeItem(laserItem);
+        SceneManager::getIns().scene->removeItem(laserItem);
     }
     ///TODO
 
@@ -1949,16 +1908,16 @@ void MainWindow::onTreeViewModelUpdateActions()
     // 暂时禁用添加节点; 因为现在都是图形节点,先按照现有图形后有节点来操作
     this->addNodeAction->setEnabled(false);
 
-    const bool hasSelection = !ui->treeView->selectionModel()->selection().isEmpty();
+    const bool hasSelection = !UiManager::getIns().UI()->treeView->selectionModel()->selection().isEmpty();
     this->removeNodeAction->setEnabled(hasSelection);
 
-    const bool hasCurrent = ui->treeView->selectionModel()->currentIndex().isValid();
+    const bool hasCurrent = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex().isValid();
 
     if (hasCurrent) {
-        ui->treeView->closePersistentEditor(ui->treeView->selectionModel()->currentIndex());
+        UiManager::getIns().UI()->treeView->closePersistentEditor(UiManager::getIns().UI()->treeView->selectionModel()->currentIndex());
 
-        TreeViewModel *treeModel = qobject_cast<TreeViewModel *>(ui->treeView->model());
-        const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+        TreeViewModel *treeModel = qobject_cast<TreeViewModel *>(UiManager::getIns().UI()->treeView->model());
+        const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
         const auto name = treeModel->getNode(index)->property(NodePropertyIndex::Name).toString();
         const auto type = treeModel->getNode(index)->property(NodePropertyIndex::Type).toString();
         const auto uuid = treeModel->getNode(index)->property(NodePropertyIndex::UUID).toString();
@@ -2006,9 +1965,9 @@ void MainWindow::on_drawTestLineButton_clicked()
     ///
     // /*
     this->tmpPolyline = std::make_shared<PolylineItem>();
-    this->tmpPolyline->setLayer(this->currentLayer);
-    this->scene->addItem(this->tmpPolyline.get());
-    this->scene->removeItem(this->tmpPolyline.get());
+    this->tmpPolyline->setLayer(SceneManager::getIns().currentLayer);
+    SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
+    SceneManager::getIns().scene->removeItem(this->tmpPolyline.get());
     // */
 
 

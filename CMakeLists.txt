@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(LaserCAD_Designer VERSION 0.1 LANGUAGES CXX)
+project(LaserCAD VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -13,13 +13,13 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp            src/mainwindow.ui
+        src/main.cpp                    header/Manager/mainwindow.ui
         src/mainwindow.cpp      header/mainwindow.h
 )
 include_directories(${PROJECT_SOURCE_DIR})
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(LaserCAD_Designer
+    qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
         # cavaliercontours
@@ -55,38 +55,43 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/utils.h                              src/utils.cpp
         header/css.h                               #[[src/css.cpp]]
         resource/button.qrc
+        header/Manager/keyboardmanager.h            src/keyboardmanager.cpp
+        header/Manager/scenemanager.h                src/scenemanager.cpp
+        header/Manager/uimanager.h                      src/uimanager.cpp
     )
 # Define target properties for Android with Qt 6 as:
-#    set_property(TARGET LaserCAD_Designer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
+#    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
     if(ANDROID)
-        add_library(LaserCAD_Designer SHARED
+        add_library(LaserCAD SHARED
             ${PROJECT_SOURCES}
         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
     else()
-        add_executable(LaserCAD_Designer
+        add_executable(LaserCAD
             ${PROJECT_SOURCES}
         )
     endif()
 endif()
 
-target_link_libraries(LaserCAD_Designer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
-target_include_directories(LaserCAD_Designer PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
+target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Manager)
+
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 if(${QT_VERSION} VERSION_LESS 6.1.0)
-  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.LaserCAD_Designer)
+  set(BUNDLE_ID_OPTION MACOSX_BUNDLE_GUI_IDENTIFIER com.example.LaserCAD)
 endif()
-set_target_properties(LaserCAD_Designer PROPERTIES
+set_target_properties(LaserCAD PROPERTIES
     ${BUNDLE_ID_OPTION}
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -95,12 +100,12 @@ set_target_properties(LaserCAD_Designer PROPERTIES
 )
 
 include(GNUInstallDirs)
-install(TARGETS LaserCAD_Designer
+install(TARGETS LaserCAD
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(LaserCAD_Designer)
+    qt_finalize_executable(LaserCAD)
 endif()

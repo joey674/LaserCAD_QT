@@ -43,10 +43,7 @@ public:
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private:
-    Ui::MainWindow *ui;
-    QGraphicsScene *scene;
-private:// 编辑对象、ui
+private:// 编辑对象、UI
     void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
     void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<std::shared_ptr<LaserItem>>& items)
     {
@@ -60,17 +57,6 @@ private:// 编辑对象、ui
             }
         }
     }
-    void setAllDrawButtonChecked(bool);
-    void setAllToolButtonChecked(bool);
-    void setAllLayerButtonChecked(bool);
-private: //全局状态
-    // 记录画布放大倍率
-    std::pair<double,double> sceneScale = {1,1};
-    void setSceneScale(double, double);
-    std::pair<double, double> getSceneScale();
-    //记录图层情况
-    int layerCount = 1;
-    int currentLayer = 1;
 private: // 初始化组件
     //titlebar
     TitleBar* titleBar;
@@ -85,6 +71,7 @@ private: // 初始化组件
     QAction* addNodeAction;
     QAction* removeNodeAction;
     QAction* insertChildNodeAction;
+    /// 11
     void initTitleBar();
     void initGraphicsView();
     void initToolButton();

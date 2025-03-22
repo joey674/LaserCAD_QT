@@ -2,7 +2,6 @@
 
 #include <QApplication>
 #include "logger.h"
-#include "utils.h"
 
 int main(int argc, char *argv[])
 {
