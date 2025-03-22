@@ -5,8 +5,6 @@
 #include <QGraphicsScene>
 #include <QLabel>
 #include <qgraphicsitem.h>
-#include "polylineitem.h"
-#include "arcitem.h"
 #include "titlebar.h"
 
 
@@ -18,45 +16,8 @@ class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
-    enum DrawToolType {
-        // 编辑工具
-        DragScene,
-        EditProperty,
-        // 绘制工具
-        None,
-        Line,
-        Circle,
-        Polyline,
-        Spiral,
-        Arc,
-        Rect,
-        Ellipse,
-        Polygon
-    };
-    enum DrawEventType {
-        LeftPress,
-        RightPress,
-        LeftRelease,
-        RightRelease,
-        MouseMove,
-    };
-public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private:// 编辑对象、UI
-    void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
-    void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<std::shared_ptr<LaserItem>>& items)
-    {
-        for (const auto& item : items)
-        {
-            if (item)
-            {
-                item->setVisible(visible);
-                item->setFlag(QGraphicsItem::ItemIsMovable, movable);
-                item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
-            }
-        }
-    }
 private: // 初始化组件
     //titlebar
     TitleBar* titleBar;
@@ -65,13 +26,11 @@ private: // 初始化组件
     QLabel* labelCurrentLayer;
     QLabel* labelCurrentGroup;
     QLabel* labelOperation;
-    // Layer
-    QVector<QPushButton*> layerButtons;
     //
     QAction* addNodeAction;
     QAction* removeNodeAction;
     QAction* insertChildNodeAction;
-    /// 11
+    ///
     void initTitleBar();
     void initGraphicsView();
     void initToolButton();
@@ -80,44 +39,6 @@ private: // 初始化组件
     void initPropertyTableWidget();
     void initTreeViewModel();
     void displayOperation(QString);
-private:    // 编辑工具
-    QPointF dragScenePoint = QPointF(0,0);
-    void dragScene(QPointF,  DrawEventType);
-    void copyItem();
-    void deleteItem();
-    // 编辑item对象
-    QGraphicsItem *currentEditItem = NULL;
-    int currentEditPolylineVertexIndex = -1;
-    void editItem(QPointF,DrawEventType);
-    void editPolyline(QPointF, PolylineItem *, DrawEventType);/*TODO*/
-    void editArc(QPointF, ArcItem *, DrawEventType);/*TODO*/
-    void editCircle(QGraphicsEllipseItem *, DrawEventType);/*TODO*/
-    void editSpiral();/*TODO*/
-    // 辅助线输入绘制
-    QGraphicsLineItem* assisstLine1;
-    QGraphicsLineItem* assisstLine2;
-    QGraphicsPathItem* assisstArc1;
-private:  // 绘制item工具
-    DrawToolType currentDrawTool = None;
-    int polygonEdgeNum = 3; //绘制polygon使用
-    void resetDrawToolStatus();
-    //绘制对象暂存
-    std::shared_ptr<QGraphicsEllipseItem> tmpCircle;
-    std::shared_ptr<PolylineItem> tmpPolyline;
-    std::shared_ptr<ArcItem> tmpArc;
-    std::shared_ptr<QGraphicsRectItem> tmpRect;
-    std::shared_ptr<QGraphicsPathItem> tmpSpiral;
-    std::shared_ptr<QGraphicsPolygonItem> tmpPolygon;
-    std::shared_ptr<QGraphicsEllipseItem> tmpEllipse;
-    // 绘制逻辑
-    void drawPolyline(QPointF,DrawEventType);
-    void drawArc(QPointF,DrawEventType);
-    void drawCircle(QPointF,DrawEventType);
-    void drawRect(QPointF,DrawEventType);
-    void drawSpiral(QPointF,DrawEventType);
-    void drawPolygon(QPointF,DrawEventType);
-    void drawEllipse(QPointF,DrawEventType);
-private: // treeWidget事件
 
 protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;

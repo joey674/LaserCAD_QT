@@ -13,13 +13,11 @@ class UiManager
 private:
     std::unique_ptr<Ui::MainWindow> ui;
 public:
+    Ui::MainWindow* UI();
+    void setUI(std::unique_ptr<Ui::MainWindow> newUi);
+public:
     void setAllDrawButtonChecked(bool isChecked);
     void setAllToolButtonChecked(bool isChecked);
-    Ui::MainWindow* UI();
-    void setUI(std::unique_ptr<Ui::MainWindow> newUi) {
-        ui = std::move(newUi);
-    }
-
 
 /// Manager Initialization
 private:
