@@ -11,6 +11,7 @@
 #include <QString>
 #include <QtMath>
 #include <QButtonGroup>
+#include <QMenu>
 #include "css.h"
 // #include "utils.h"
 #include "logger.h"
@@ -406,8 +407,6 @@ void MainWindow::initStatusBar()
     ui->statusBar->addWidget(this->labelOperation);
 }
 
-
-
 void MainWindow::initPropertyTableWidget()
 {
     ui->propertyTableWidget->setColumnCount(2);
@@ -418,10 +417,8 @@ void MainWindow::initTreeViewModel()
 {
     auto *model = new TreeViewModel("testTreeViewModel", this);
 
+    ui->treeView->setStyleSheet(treeViewModelStyle1);
     ui->treeView->setModel(model);
-
-    // for (int column = 0; column < model->columnCount(); ++column)
-    //     view->resizeColumnToContents(column);
     ui->treeView->expandAll();
 
     ui->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -430,19 +427,9 @@ void MainWindow::initTreeViewModel()
     ui->treeView->setDropIndicatorShown(true);
     ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    // connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-
-    // connect(view->selectionModel(), &QItemSelectionModel::selectionChanged,
-    //         this, &MainWindow::updateActions);
-
-    // connect(actionsMenu, &QMenu::aboutToShow, this, &MainWindow::updateActions);
-    // connect(insertRowAction, &QAction::triggered, this, &MainWindow::insertRow);
-    // connect(insertColumnAction, &QAction::triggered, this, &MainWindow::insertColumn);
-    // connect(removeRowAction, &QAction::triggered, this, &MainWindow::removeRow);
-    // connect(removeColumnAction, &QAction::triggered, this, &MainWindow::removeColumn);
-    // connect(insertChildAction, &QAction::triggered, this, &MainWindow::insertChild);
-
-    // updateActions();
+    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
+    // connect(ui->treeView, &QTreeView::clicked, this, &MainWindow::onItemClicked);
 }
 
 void MainWindow::displayOperation(QString text)
@@ -767,6 +754,7 @@ void MainWindow::drawPolyline(QPointF pointCoordscene, DrawEventType event)
         this->tmpPolyline = std::make_shared<PolylineItem>();
         this->tmpPolyline->setLayer(this->currentLayer);
         this->scene->addItem(this->tmpPolyline.get());
+        DEBUG_VAR(this->tmpPolyline.get());
 
         this->tmpPolyline->addVertex(pointCoordscene,0);
         this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -1787,9 +1775,10 @@ void MainWindow::on_deleteButton_clicked()
     for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
     {
         QGraphicsItem* graphicsItem = *it;
-        this->scene ->removeItem(graphicsItem);
-
         LaserItem* laserItem = dynamic_cast<LaserItem*>(graphicsItem);
+
+
+        this->scene ->removeItem(graphicsItem);
         if(!laserItem)
             FATAL_MSG("fail pointer convertion");
         Manager::getIns().deleteItem(laserItem);
@@ -1863,6 +1852,125 @@ void MainWindow::onAddLayerButtonClicked()
     // INFO_MSG("newLayerButton added");
 }
 
+
+///
+/// \brief MainWindow::onTreeViewModelShowContextMenu
+/// \param pos
+///
+void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
+{
+    // 获取鼠标点击的位置
+    QModelIndex index = ui->treeView->indexAt(pos);
+    if (!index.isValid())
+        return;
+
+    QMenu contextMenu(this);
+    this->addNodeAction = new QAction("Add Node", &contextMenu);
+    this->removeNodeAction = new QAction("Remove Node", &contextMenu);
+    this->insertChildNodeAction = new QAction("Insert Child Node", &contextMenu);
+
+    contextMenu.addAction(addNodeAction);
+    contextMenu.addAction(removeNodeAction);
+    contextMenu.addAction(insertChildNodeAction);
+
+    connect(addNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddNode);
+    connect(removeNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelRemoveNode);
+    connect(insertChildNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelInsertChild);
+
+    contextMenu.exec(ui->treeView->viewport()->mapToGlobal(pos));
+}
+
+void MainWindow::onTreeViewModelInsertChild()
+{
+    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+    QAbstractItemModel *model = ui->treeView->model();
+
+    if (model->columnCount(index) == 0) {
+        if (!model->insertColumn(0, index))
+            return;
+    }
+
+    if (!model->insertRow(0, index))
+        return;
+
+    for (int column = 0; column < model->columnCount(index); ++column) {
+        const QModelIndex child = model->index(0, column, index);
+        model->setData(child, QVariant(tr("[No data]")), Qt::EditRole);
+    }
+
+    ui->treeView->selectionModel()->setCurrentIndex(model->index(0, 0, index),
+                                            QItemSelectionModel::ClearAndSelect);
+    onTreeViewModelUpdateActions();
+}
+
+void MainWindow::onTreeViewModelAddNode(){
+    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+
+    QAbstractItemModel *model =  ui->treeView->model();
+
+    if (!model->insertRow(index.row()+1, index.parent()))
+        return;
+
+    onTreeViewModelUpdateActions();
+
+    for (int column = 0; column < model->columnCount(index.parent()); ++column) {
+        const QModelIndex child = model->index(index.row() + 1, column, index.parent());
+        model->setData(child, QVariant(tr("[No data]")), Qt::EditRole);
+    }
+}
+
+void MainWindow::onTreeViewModelRemoveNode()
+{
+    const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+    TreeViewModel *model = qobject_cast<TreeViewModel *>(ui->treeView->model());
+    auto UUID = model->getNode(index)->property(NodePropertyIndex::UUID).toString();
+
+    // 删除manager内的laseritem
+    auto laserItem = Manager::getIns().ItemMap.find(UUID)->second.get();
+    Manager::getIns().deleteItem(laserItem);
+
+    // 删除scene内的laserItem; 但是要先进行指针转换 要更具体一些
+    if (laserItem->getName() ==  "PolylineItem")
+    {
+        PolylineItem *item = static_cast<PolylineItem*>(laserItem);
+        this->scene->removeItem(laserItem);
+    }else if (laserItem->getName() =="ArcItem"){
+        ArcItem *item = static_cast<ArcItem*>(laserItem);
+        this->scene->removeItem(laserItem);
+    }
+    ///TODO
+
+
+    onTreeViewModelUpdateActions();
+}
+
+void MainWindow::onTreeViewModelUpdateActions()
+{
+    // 暂时禁用添加节点; 因为现在都是图形节点,先按照现有图形后有节点来操作
+    this->addNodeAction->setEnabled(false);
+
+    const bool hasSelection = !ui->treeView->selectionModel()->selection().isEmpty();
+    this->removeNodeAction->setEnabled(hasSelection);
+
+    const bool hasCurrent = ui->treeView->selectionModel()->currentIndex().isValid();
+
+    if (hasCurrent) {
+        ui->treeView->closePersistentEditor(ui->treeView->selectionModel()->currentIndex());
+
+        TreeViewModel *treeModel = qobject_cast<TreeViewModel *>(ui->treeView->model());
+        const QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+        const auto name = treeModel->getNode(index)->property(NodePropertyIndex::Name).toString();
+        const auto type = treeModel->getNode(index)->property(NodePropertyIndex::Type).toString();
+        const auto uuid = treeModel->getNode(index)->property(NodePropertyIndex::UUID).toString();
+
+        statusBar()->showMessage(tr("%3,%4,%5")
+                                     .arg(name)
+                                     .arg(type)
+                                     .arg(uuid)
+                                 );
+    }
+}
+
 ///
 /// test function
 ///
@@ -1897,6 +2005,10 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// test template
     ///
     // /*
+    this->tmpPolyline = std::make_shared<PolylineItem>();
+    this->tmpPolyline->setLayer(this->currentLayer);
+    this->scene->addItem(this->tmpPolyline.get());
+    this->scene->removeItem(this->tmpPolyline.get());
     // */
 
 

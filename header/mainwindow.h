@@ -46,7 +46,7 @@ public:
 private:
     Ui::MainWindow *ui;
     QGraphicsScene *scene;
-    // 编辑对象、ui
+private:// 编辑对象、ui
     void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* );
     void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<std::shared_ptr<LaserItem>>& items)
     {
@@ -63,19 +63,28 @@ private:
     void setAllDrawButtonChecked(bool);
     void setAllToolButtonChecked(bool);
     void setAllLayerButtonChecked(bool);
+private: //全局状态
     // 记录画布放大倍率
     std::pair<double,double> sceneScale = {1,1};
     void setSceneScale(double, double);
     std::pair<double, double> getSceneScale();
-    // 初始化组件
+    //记录图层情况
+    int layerCount = 1;
+    int currentLayer = 1;
+private: // 初始化组件
+    //titlebar
     TitleBar* titleBar;
+    //statusbar
     QLabel* labelMouseCoordinate;
     QLabel* labelCurrentLayer;
     QLabel* labelCurrentGroup;
     QLabel* labelOperation;
+    // Layer
     QVector<QPushButton*> layerButtons;
-    int layerCount = 1;
-    int currentLayer = 1;
+    //
+    QAction* addNodeAction;
+    QAction* removeNodeAction;
+    QAction* insertChildNodeAction;
     void initTitleBar();
     void initGraphicsView();
     void initToolButton();
@@ -126,8 +135,7 @@ private: // treeWidget事件
 protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;
     void keyReleaseEvent(QKeyEvent* ) override;
-private slots:
-    // 接收graphicsview信号的槽
+private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseMoved(QPoint);
     void onGraphicsviewMouseLeftPressed(QPoint);
     void onGraphicsviewMouseRightPressed(QPoint);
@@ -135,7 +143,7 @@ private slots:
     void onGraphicsviewMouseRightReleased(QPoint);
     void onGraphicsviewMouseDoubleClicked(QPoint);
     void onGraphicsviewMouseWheelTriggered(QWheelEvent *);
-    // 绘制工具
+private slots: // 绘制工具按钮
     void on_drawCircleButton_clicked();
     void on_propertyTableWidget_cellChanged(int row, int column);
     void on_drawPolylineButton_clicked();
@@ -144,7 +152,7 @@ private slots:
     void on_drawRectButton_clicked();
     void on_drawPolygonButton_clicked();
     void on_drawEllipseButton_clicked();
-    // 编辑工具
+private slots: // 编辑工具按钮
     void on_editButton_clicked();
     void on_drawTestLineButton_clicked();
     void on_rotateButton_clicked();
@@ -154,9 +162,16 @@ private slots:
     void on_dragSceneButton_clicked();
     void on_undoButton_clicked();
     void on_redoButton_clicked();
-    // 图层按钮
+private slots: // 图层按钮
     void onLayerButtonClicked(int);
     void onAddLayerButtonClicked();
+private slots: // TreeViewModel的右键菜单栏
+    void onTreeViewModelShowContextMenu(const QPoint &pos);
+    void onTreeViewModelInsertChild();
+    void onTreeViewModelAddNode();
+    void onTreeViewModelRemoveNode();
+public slots:
+    void onTreeViewModelUpdateActions();
 };
 #endif // MAINWINDOW_H
 

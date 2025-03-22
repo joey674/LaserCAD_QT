@@ -12,12 +12,14 @@
      // 插入TreeViewModel
      TreeViewModel *model = qobject_cast<TreeViewModel *>(treeview->model());
      QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
-     DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
+     // DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
 
-     if (!model->insertRow(0, layerNodeIndex))
+     auto rowCount = model->rowCount(layerNodeIndex);
+
+     if (!model->insertRow(rowCount, layerNodeIndex))
          FATAL_MSG("insert  child fail");
 
-     const QModelIndex childNodeIndex = model->index(0, 0, layerNodeIndex);
+     const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
      model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
      model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
      model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,UUID);
@@ -26,7 +28,33 @@
                                                  QItemSelectionModel::ClearAndSelect);
 
      // 插入ItemMap
+    DEBUG_VAR(ptr.get());
      ItemMap.insert({UUID,ptr});
+ }
+
+ void Manager::deleteItem(LaserItem *item)
+ {
+     if (!item) return;
+
+     TreeViewModel *model = qobject_cast<TreeViewModel *>(treeview->model());
+
+     // 删去在treeViewModel内的节点;
+     QModelIndex nodeIndex = QModelIndex();
+     auto allNodes = model->getAllChildNodes(nodeIndex);
+     for (const auto& node : allNodes) {
+         if(item->getUUID() == node->property(NodePropertyIndex::UUID).toString()){
+             auto parentNodeIndex = model->getIndex(node->parent());
+
+             if (!model->removeRow(node->indexInParent(), parentNodeIndex)) {
+                 FATAL_MSG("fail to removeRow");
+             }
+
+             break;
+         }
+     }
+
+     // 删去在map中的节点
+     ItemMap.erase(item->getUUID());
  }
 
  std::vector<std::shared_ptr<LaserItem> > Manager::getItems(int layer)

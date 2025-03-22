@@ -43,14 +43,14 @@ QString buttonStyle2 = R"(
         }
     )";
 
-QString treeWidgetStyle1 = (R"(
-    QTreeWidget {
-        font-size: 15px;   /* 设置字体大小 */
+QString treeViewModelStyle1 = (R"(
+    QTreeView {
+        font-size: 13px;   /* 设置字体大小 */
     }
-    QTreeWidget::item {
-        min-height: 25px;  /* 设置每一行的最小高度 */
+    QTreeView::item {
+        min-height: 20px;  /* 设置每一行的最小高度 */
     }
-    QTreeWidget::item:selected {
+    QTreeView::item:selected {
         background: #3399FF;  /* 选中时的背景颜色 */
         color: white;
     }
