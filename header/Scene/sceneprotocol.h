@@ -1,5 +1,5 @@
-#ifndef PROTOCOL1_H
-#define PROTOCOL1_H
+#ifndef SCENEPROTOCOL_H
+#define SCENEPROTOCOL_H
 
 enum OperationEvent
 {
@@ -26,4 +26,4 @@ enum MouseEvent
     MouseMove,
 };
 
-#endif // PROTOCOL1_H
+#endif // SCENEPROTOCOL_H

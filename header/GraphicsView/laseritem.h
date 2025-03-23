@@ -6,7 +6,7 @@
 #include <QPainter>
 #include <QDebug.h>
 #include <QStyleOptionGraphicsItem>
-#include "protocol.h"
+#include "graphicsviewprotocol.h"
 
 class LaserItem: public QGraphicsItem
 {

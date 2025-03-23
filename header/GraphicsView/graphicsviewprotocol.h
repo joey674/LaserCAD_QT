@@ -1,5 +1,5 @@
-#ifndef PROTOCOL_H
-#define PROTOCOL_H
+#ifndef GRAPHICSVIEWPROTOCOL_H
+#define GRAPHICSVIEWPROTOCOL_H
 
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
@@ -36,4 +36,4 @@ void getAngleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF
 void getIntersectPoint(const QPointF& p1, const QPointF& p3, const double& p1p3Angle,const double & sweepAngle, QPointF& intersectPoint);
 //
 QPainterPath createArcPath(const QPointF& p1, const QPointF& p3, const double & angle);
-#endif // PROTOCOL_H
+#endif // GRAPHICSVIEWPROTOCOL_H

@@ -13,7 +13,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp                    header/Manager/mainwindow.ui
+        src/main.cpp                    header/Ui/mainwindow.ui
         src/mainwindow.cpp      header/mainwindow.h
 )
 include_directories(${PROJECT_SOURCE_DIR})
@@ -39,11 +39,11 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
         # GraphicsView
-        header/GraphicsView/graphicsview.h                    src/graphicsview.cpp
+        header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
         header/GraphicsView/laseritem.h                             src/laseritem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
-        header/GraphicsView/protocol.h                               src/protocol.cpp
+        header/GraphicsView/graphicsviewprotocol.h    src/protocol.cpp
         # TreeViewModel
         header/TreeViewModel/manager.h                            src/manager.cpp
         header/TreeViewModel/treenode.h                           src/treenode.cpp
@@ -51,18 +51,19 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # widget
         header/titlebar.h                                                                src/titlebar.cpp
         #utils
-        header/logger.h                          src/logger.cpp
-        header/utils.h                              src/utils.cpp
-        header/css.h                               #[[src/css.cpp]]
+        header/logger.h                                                                 src/logger.cpp
+        header/utils.h                                                                     src/utils.cpp
         resource/button.qrc
-
-        header/Manager/keyboardmanager.h            src/keyboardmanager.cpp
-        header/Manager/scenemanager.h                    src/scenemanager.cpp
-        header/Manager/uimanager.h                          src/uimanager.cpp
-        header/Manager/drawmanager.h             src/drawmanager.cpp
-        header/Manager/protocol1.h
-        header/Manager/editmanager.h
-        src/editmanager.cpp
+        #Ui
+        header/Ui/uimanager.h                                                   src/uimanager.cpp
+        header/Ui//css.h                                                                #[[src/css.cpp]]
+        #Keyboard
+        header/Keyboard/keyboardmanager.h                   src/keyboardmanager.cpp
+        # Scene
+        header/Scene/scenemanager.h                                 src/scenemanager.cpp
+        header/Scene/drawmanager.h                                   src/drawmanager.cpp
+        header/Scene/sceneprotocol.h
+        header/Scene/editmanager.h                                     src/editmanager.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -87,7 +88,9 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Manager)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Scene)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
 
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

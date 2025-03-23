@@ -6,7 +6,7 @@
 #include <qgraphicsitem.h>
 #include "polylineitem.h"
 #include "arcitem.h"
-#include "protocol1.h"
+#include "sceneprotocol.h"
 #include "logger.h"
 #include "manager.h"
 #include "scenemanager.h"

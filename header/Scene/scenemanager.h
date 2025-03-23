@@ -4,7 +4,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <utility>
-#include "protocol1.h"
+#include "sceneprotocol.h"
 
 class SceneManager
 {
