@@ -1,7 +1,7 @@
 #include "manager.h"
 #include "treenode.h"
 #include "logger.h"
-#include "treeviewmodel.h"
+#include "treemodel.h"
 #include "uimanager.h"
 
  Manager Manager::ins;
@@ -19,11 +19,12 @@ Manager &Manager::getIns()
      QString UUID = ptr->getUUID();
 
      // 插入TreeViewModel
-     TreeViewModel *model = qobject_cast<TreeViewModel *>(treeView->model());
+     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
      QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
      // DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
 
      auto rowCount = model->rowCount(layerNodeIndex);
+     name = name + QString::number(rowCount+1);
 
      if (!model->insertRow(rowCount, layerNodeIndex))
          FATAL_MSG("insert  child fail");
@@ -46,7 +47,7 @@ Manager &Manager::getIns()
      if (!item) return;
 
     auto treeView = UiManager::getIns().UI()->treeView;
-    TreeViewModel *model = qobject_cast<TreeViewModel *>(treeView->model());
+    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
 
      // 删去在treeViewModel内的节点;
      QModelIndex nodeIndex = QModelIndex();
@@ -70,7 +71,7 @@ Manager &Manager::getIns()
  std::vector<std::shared_ptr<LaserItem> > Manager::getItems(int layer)
  {
      auto treeView = UiManager::getIns().UI()->treeView;
-     TreeViewModel *model = qobject_cast<TreeViewModel *>(treeView->model());
+     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
 
      QModelIndex nodeIndex;
      if (layer==0){

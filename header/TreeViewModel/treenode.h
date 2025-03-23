@@ -17,11 +17,11 @@ enum NodePropertyIndex: int
 
 static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID","UndefinedGraphicsViewItem"};
 
-class TreeViewModel;
+class TreeModel;
 
 class TreeNode
 {
-    friend class TreeViewModel;
+    friend class TreeModel;
 public:
     explicit TreeNode(QVariantList property = DefaultNodeProperty, TreeNode *parent = nullptr);
 

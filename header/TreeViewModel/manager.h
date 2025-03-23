@@ -23,7 +23,7 @@ public:
 public:
     void addItem(std::shared_ptr<LaserItem> ptr);
     void deleteItem(LaserItem *item);
-    /// 获得这个图层下的所有节点;    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+    /// \brief 获得这个图层下的所有节点;    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
     std::vector<std::shared_ptr<LaserItem>> getItems(int layer);
 
 private:

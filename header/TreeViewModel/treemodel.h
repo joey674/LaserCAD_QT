@@ -15,15 +15,15 @@
 #include "logger.h"
 
 
-class TreeViewModel : public QAbstractItemModel
+class TreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 
 public:
-    Q_DISABLE_COPY_MOVE(TreeViewModel)
+    Q_DISABLE_COPY_MOVE(TreeModel)
 
-    TreeViewModel(const QString &modelName, QObject *parent = nullptr);
-    ~TreeViewModel() override;
+    TreeModel(const QString &modelName, QObject *parent = nullptr);
+    ~TreeModel() override;
 
     /// 获取/修改node名字
     QVariant data(const QModelIndex &nodeIndex, int role) const override;
@@ -55,50 +55,14 @@ public:
     bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
 public:
-    /// 获取某个对象; 如果输入空index,就返回root
-    TreeNode *getNode(const QModelIndex &index) const
-    {
-        if (index.isValid()) {
-            if (auto *item = static_cast<TreeNode*>(index.internalPointer()))
-                return item;
-        }
-        return m_rootItem.get();
-    }
-    ///
+    ///  获取某个对象; 如果输入空index,就返回root
+    TreeNode *getNode(const QModelIndex &index) const;
     /// \brief getIndex:获取某个节点的QtModelIndex; column输入0
     /// \param node 要获取的节点的指针
-    /// \return
-    ///
-    QModelIndex getIndex(const TreeNode* node) const
-    {
-        auto index = node->indexInParent();
-        return createIndex(index, 0, node);
-    }
-    std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const
-    {
-        std::vector<TreeNode*> children;
-        int childCount = rowCount(nodeIndex);
+    QModelIndex getIndex(const TreeNode* node) const;
+    std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const;;
 
-        for (int row = 0; row < childCount; ++row) {
-            QModelIndex childIndex = this->index(row, 0, nodeIndex);
-            TreeNode* childNode = getNode(childIndex);
-
-            children.push_back(childNode);
-            auto subChildren = getAllChildNodes(childIndex);
-            children.insert(children.end(), subChildren.begin(), subChildren.end());
-        }
-
-        return children;
-    };
-
-    void setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value)
-    {
-        auto node = getNode(nodeIndex);
-        if (!node)
-            FATAL_MSG("nodeindex not found");
-
-        node->setProperty(propertyIndex,value);
-    }
+    void setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value);
     QVariant nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex);
 
 private:

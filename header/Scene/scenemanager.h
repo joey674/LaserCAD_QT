@@ -19,7 +19,6 @@ public:
     std::pair<double, double> getSceneScale();
 public:
     /// layer
-    int layerCount = 1;
     int currentLayer = 1;
 public:
     QPointF dragScenePoint = QPointF(0,0);

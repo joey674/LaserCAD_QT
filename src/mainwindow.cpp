@@ -18,7 +18,7 @@
 // #include "titlebar.h"
 #include "CavalierContours/polyline.hpp"
 #include "manager.h"
-#include "treeviewmodel.h"
+#include "treemodel.h"
 #include "keyboardmanager.h"
 #include "uimanager.h"
 #include "scenemanager.h"
@@ -385,7 +385,10 @@ void MainWindow::initPropertyTableWidget()
 
 void MainWindow::initTreeViewModel()
 {
-    auto *model = new TreeViewModel("testTreeViewModel", this);
+    ///
+    /// \brief model
+    ///
+    auto *model = new TreeModel("testTreeViewModel", this);
 
     UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
     UiManager::getIns().UI()->treeView->setModel(model);
@@ -397,8 +400,13 @@ void MainWindow::initTreeViewModel()
     UiManager::getIns().UI()->treeView->setDropIndicatorShown(true);
     UiManager::getIns().UI()->treeView->setDragDropMode(QAbstractItemView::InternalMove);
 
+    ///
+    ///  contextmenu
+    ///
     UiManager::getIns().UI()->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(UiManager::getIns().UI()->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
+
+    // click
     // connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onItemClicked);
 }
 
@@ -406,24 +414,6 @@ void MainWindow::displayOperation(QString text)
 {
     this->labelOperation->setText("operation: "+ text);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ///
 /// \brief MainWindow::keyPressEvent
@@ -1227,31 +1217,37 @@ void MainWindow::onAddLayerButtonClicked()
     // INFO_MSG("newLayerButton added");
 }
 
-
 ///
-/// \brief MainWindow::onTreeViewModelShowContextMenu
+/// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
 /// \param pos
 ///
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
 {
+    this->addGroupIndex = QModelIndex();
+
     // 获取鼠标点击的位置
     QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
     if (!index.isValid())
         return;
 
     QMenu contextMenu(this);
-    this->addNodeAction = new QAction("Add Node", &contextMenu);
-    this->removeNodeAction = new QAction("Remove Node", &contextMenu);
-    this->insertChildNodeAction = new QAction("Insert Child Node", &contextMenu);
 
-    contextMenu.addAction(addNodeAction);
-    contextMenu.addAction(removeNodeAction);
-    contextMenu.addAction(insertChildNodeAction);
+    this->addLayerAction = new QAction("Add Layer", &contextMenu);
+    this->addGroupAction = new QAction("Add Group", &contextMenu);
+     this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
 
-    connect(addNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddNode);
-    connect(removeNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelRemoveNode);
-    connect(insertChildNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelInsertChild);
+    contextMenu.addAction(this->addLayerAction);
+    contextMenu.addAction(this->addGroupAction);
+    contextMenu.addAction(this->deleteNodeAction);
 
+    connect(this->addLayerAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddLayer);
+    connect(this->addGroupAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddGroup);
+    connect(this->deleteNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelDeleteNode);
+
+    // 重置addgroup的位置
+    this->addGroupIndex = QModelIndex();
+
+     onTreeViewModelUpdateActions();
     contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
 
@@ -1278,7 +1274,8 @@ void MainWindow::onTreeViewModelInsertChild()
     onTreeViewModelUpdateActions();
 }
 
-void MainWindow::onTreeViewModelAddNode(){
+void MainWindow::onTreeViewModelAddNode()
+{
     const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
 
     QAbstractItemModel *model =  UiManager::getIns().UI()->treeView->model();
@@ -1294,10 +1291,10 @@ void MainWindow::onTreeViewModelAddNode(){
     }
 }
 
-void MainWindow::onTreeViewModelRemoveNode()
+void MainWindow::onTreeViewModelDeleteNode()
 {
     const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    TreeViewModel *model = qobject_cast<TreeViewModel *>(UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     auto UUID = model->getNode(index)->property(NodePropertyIndex::UUID).toString();
 
     // 删除manager内的laseritem
@@ -1319,31 +1316,65 @@ void MainWindow::onTreeViewModelRemoveNode()
     onTreeViewModelUpdateActions();
 }
 
+void MainWindow::onTreeViewModelAddLayer()
+{
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    auto layerCount = model->rowCount(QModelIndex());
+
+    if (!model->insertRow(layerCount, QModelIndex()))
+        FATAL_MSG("fail insert layer");
+
+    const QModelIndex layerNodeIndex = model->index(layerCount, 0,QModelIndex());
+    QString name = "Layer" + QString::number(layerCount + 1);
+    QString type = "Layer";
+    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Name,name);
+    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Type,type);
+
+    onTreeViewModelUpdateActions();
+}
+
+void MainWindow::onTreeViewModelAddGroup()
+{
+
+
+
+}
+
 void MainWindow::onTreeViewModelUpdateActions()
 {
-    // 暂时禁用添加节点; 因为现在都是图形节点,先按照现有图形后有节点来操作
-    this->addNodeAction->setEnabled(false);
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
-    const bool hasSelection = !UiManager::getIns().UI()->treeView->selectionModel()->selection().isEmpty();
-    this->removeNodeAction->setEnabled(hasSelection);
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        QString type = model->nodeProperty(nodeIndex, NodePropertyIndex::Type).toString();
 
-    const bool hasCurrent = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex().isValid();
-
-    if (hasCurrent) {
-        UiManager::getIns().UI()->treeView->closePersistentEditor(UiManager::getIns().UI()->treeView->selectionModel()->currentIndex());
-
-        TreeViewModel *treeModel = qobject_cast<TreeViewModel *>(UiManager::getIns().UI()->treeView->model());
-        const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-        const auto name = treeModel->getNode(index)->property(NodePropertyIndex::Name).toString();
-        const auto type = treeModel->getNode(index)->property(NodePropertyIndex::Type).toString();
-        const auto uuid = treeModel->getNode(index)->property(NodePropertyIndex::UUID).toString();
-
-        statusBar()->showMessage(tr("%3,%4,%5")
-                                     .arg(name)
-                                     .arg(type)
-                                     .arg(uuid)
-                                 );
+        if (type == "Layer") {
+            this->addLayerAction->setEnabled(true);
+            this->addGroupAction->setEnabled(false);
+            this->deleteNodeAction->setEnabled(false);
+            return;
+        }
     }
+
+    // // 只有选中layer才可以添加图层
+    // if (model->nodeProperty(nodeIndex,NodePropertyIndex::Type).toString() == "Layer")
+    //     this->addLayerAction->setEnabled(true);
+    // else
+    //     this->addLayerAction->setEnabled(false);
+
+    // if (hasCurrent) {
+        // UiManager::getIns().UI()->treeView->closePersistentEditor(UiManager::getIns().UI()->treeView->selectionModel()->currentIndex());
+
+        // TreeModel *treeModel = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+        // const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+        // const auto name = treeModel->getNode(index)->property(NodePropertyIndex::Name).toString();
+        // const auto type = treeModel->getNode(index)->property(NodePropertyIndex::Type).toString();
+        // const auto uuid = treeModel->getNode(index)->property(NodePropertyIndex::UUID).toString();
+
+        // DEBUG_VAR(name);
+        // DEBUG_VAR(type);
+        // DEBUG_VAR(uuid);
+    // }
 }
 
 ///

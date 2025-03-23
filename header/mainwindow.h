@@ -5,6 +5,7 @@
 #include <QGraphicsScene>
 #include <QLabel>
 #include <qgraphicsitem.h>
+#include <QTreeView>
 #include "titlebar.h"
 
 
@@ -27,9 +28,11 @@ private: // 初始化组件
     QLabel* labelCurrentGroup;
     QLabel* labelOperation;
     //
-    QAction* addNodeAction;
-    QAction* removeNodeAction;
-    QAction* insertChildNodeAction;
+    QAction* addLayerAction;
+    QAction* addGroupAction;
+    QAction* deleteNodeAction;
+    QModelIndex addGroupIndex;
+
     ///
     void initTitleBar();
     void initGraphicsView();
@@ -74,10 +77,13 @@ private slots: // 图层按钮
     void onLayerButtonClicked(int);
     void onAddLayerButtonClicked();
 private slots: // TreeViewModel的右键菜单栏
-    void onTreeViewModelShowContextMenu(const QPoint &pos);
     void onTreeViewModelInsertChild();
     void onTreeViewModelAddNode();
-    void onTreeViewModelRemoveNode();
+
+    void onTreeViewModelShowContextMenu(const QPoint &pos);
+    void onTreeViewModelAddLayer();
+    void onTreeViewModelAddGroup();
+    void onTreeViewModelDeleteNode();
 public slots:
     void onTreeViewModelUpdateActions();
 };
