@@ -21,6 +21,7 @@ public:
     void deleteVetex(const int &index) override;
     void createParallelOffset(const double& offset, const double& offsetNum) override;
     void rotate(const double& angle) override;
+    void setColor(Qt::GlobalColor) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
@@ -28,13 +29,13 @@ public:
     void animate() override;
     /// \brief get info
     /// 只获取信息
-    double getSize();
     double getParallelOffset() override;
     double getParallelOffsetNum() override;
     Vertex getVertex(const int& index) override;
     QPointF getVertexPos(const int& index)override ;
     QPointF getCenterPos() override;
     QString getName() override;
+    double getSize();
     /// \brief reload
     enum { Type = 6270 };
     int type() const override;
@@ -48,6 +49,8 @@ private:
     double offset  = 0;
     uint offsetNum = 0;
     std::vector<std::shared_ptr<PolylineItem>> offsetItemList;
+    ///
+    Qt::GlobalColor color = DisplayColor;
 };
 
 

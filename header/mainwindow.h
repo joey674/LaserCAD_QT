@@ -20,9 +20,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private: // 初始化组件
-    //titlebar
+    // titlebar
     TitleBar* titleBar;
-    //statusbar
+    // statusbar
     QLabel* labelMouseCoordinate;
     QLabel* labelCurrentLayer;
     QLabel* labelCurrentGroup;
@@ -30,8 +30,11 @@ private: // 初始化组件
     //
     QAction* addLayerAction;
     QAction* addGroupAction;
-    QAction* deleteNodeAction;
     QModelIndex addGroupIndex;
+    QAction* deleteNodeAction;
+    QAction* setLayerVisibleAction;
+    QAction* setLayerUnvisibleAction;
+    int selectedLayerIndex;
 
     ///
     void initTitleBar();
@@ -73,9 +76,6 @@ private slots: // 编辑工具按钮
     void on_dragSceneButton_clicked();
     void on_undoButton_clicked();
     void on_redoButton_clicked();
-private slots: // 图层按钮
-    void onLayerButtonClicked(int);
-    void onAddLayerButtonClicked();
 private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelInsertChild();
     void onTreeViewModelAddNode();
@@ -84,6 +84,9 @@ private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelAddLayer();
     void onTreeViewModelAddGroup();
     void onTreeViewModelDeleteNode();
+    void onTreeViewModelSetLayerVisible();
+    void onTreeViewModelSetLayerUnvisible();
+    void onTreeViewModelNodeClicked();
 public slots:
     void onTreeViewModelUpdateActions();
 };

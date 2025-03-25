@@ -1,0 +1,111 @@
+/*
+Manager用于存储与管理数据,并同步
+要管理的内容有三块:
+    1. ItemMap
+    2. TreeViewModel中的节点
+    3. Scene
+
+除了一开始的addItem和deleteItem scene和tree可能需要分开处理,后面的都用UUID作为索引;
+所有节点 包括layer group都有存itemmap和propertymap;itemmap不使用; propertymap用于存储layer/group的数据信息
+*/
+
+#ifndef MANAGER_H
+#define MANAGER_H
+
+#include <QMainWindow>
+#include <QGraphicsScene>
+#include <QLabel>
+#include <qgraphicsitem.h>
+#include <memory>
+#include "laseritem.h"
+#include <QTreeView>
+#include <vector>
+#include <unordered_map>
+#include "logger.h"
+
+const std::map<QString, QVariant> DefaultPropertyMap = {
+    {"Visible", QVariant(true)},
+    {"Selectable", QVariant(true)},
+    {"Movable",QVariant(true)},
+    {"Color",QVariant("black")}
+};
+
+class Manager
+{
+public:
+    std::unordered_map<QString,std::shared_ptr<LaserItem>> ItemMap;
+    std::unordered_map<QString,std::map<QString,QVariant>> PropertyMap;
+public:
+    /// \brief addItem 将graphicitem添加到 1. ItemMap  2. TreeViewModel ;暂时不考虑3. Scene
+    void addItem(std::shared_ptr<LaserItem> ptr);
+    /// \brief deleteItem 将graphicitem添加到 1. ItemMap  2. TreeViewModel ;暂时不考虑3. Scene
+    void deleteItem(LaserItem *item);
+    /// \brief setItemVisible
+    void setItemVisible(QString UUID,bool status)
+    {
+        // - ItemMap
+        // - PropertyMap
+        DEBUG_MSG(UUID);
+        DEBUG_MSG(PropertyMap.find(UUID)->second.find("Visible")->second);
+        PropertyMap.find(UUID)->second.find("Visible")->second = status;
+        // - TreeViewModel中的节点
+        // - Scene
+
+        ItemMap.find(UUID)->second.get()->setVisible(status);
+    };
+    void setItemSelectable(QString UUID,bool status)
+    {
+        // - ItemMap
+        // - PropertyMap
+        PropertyMap.find(UUID)->second.find("Selectable")->second = status;
+        // - TreeViewModel中的节点
+        // - Scene
+        ItemMap.find(UUID)->second.get()->setFlag(QGraphicsItem::ItemIsSelectable, status);
+    };
+    void setItemMovable(QString UUID,bool status)
+    {
+        // - ItemMap
+        // - PropertyMap
+        PropertyMap.find(UUID)->second.find("Movable")->second = status;
+        // - TreeViewModel中的节点
+        // - Scene
+        ItemMap.find(UUID)->second.get()->setFlag(QGraphicsItem::ItemIsMovable, status);
+    }
+    void setItemColor(QString UUID,Qt::GlobalColor status)
+    {
+        // - ItemMap
+        // - PropertyMap
+        QString color;
+        if (status == Qt::black)
+            color = "black";
+        else if (status == Qt::blue)
+            color = "blue";
+        else if (status == Qt::red)
+            color = "red";
+        else if (status == Qt::green)
+            color = "green";
+        else
+            FATAL_MSG("Unknow color");
+        PropertyMap.find(UUID)->second.find("Color")->second = color;
+        // - TreeViewModel中的节点
+        // - Scene
+        ItemMap.find(UUID)->second.get()->setColor(status);
+    }
+
+    QString getItem(QModelIndex index);
+    QString getItem(QGraphicsItem* item);
+
+    /// \brief 获得这个图层下的所有节点;    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+    std::vector<QString> getItems(int layer);
+
+private:
+    static Manager ins;
+    Manager(){};
+    Manager(const Manager&);
+    ~Manager(){};
+    Manager& operator = (const Manager&);
+public:
+    static Manager& getIns();
+};
+
+#endif // MANAGER_H

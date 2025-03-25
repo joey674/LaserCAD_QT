@@ -38,21 +38,31 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/CavalierContours/vector.hpp
         header/CavalierContours/vector2.hpp
         header/CavalierContours/cavaliercontours.h
+        # MagicEnum
+        header/MagicEnum/magic_enum.hpp
+        header/MagicEnum/magic_enum_all.hpp
+        header/MagicEnum/magic_enum_containers.hpp
+        header/MagicEnum/magic_enum_flags.hpp
+        header/MagicEnum/magic_enum_format.hpp
+        header/MagicEnum/magic_enum_fuse.hpp
+        header/MagicEnum/magic_enum_iostream.hpp
+        header/MagicEnum/magic_enum_switch.hpp
+        header/MagicEnum/magic_enum_utility.hpp
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
         header/GraphicsView/laseritem.h                             src/laseritem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
-        header/GraphicsView/graphicsviewprotocol.h    src/protocol.cpp
+        header/GraphicsView/graphicsviewprotocol.h    src/graphicsviewprotocol.cpp
         # TreeViewModel
-        header/TreeViewModel/manager.h                            src/manager.cpp
         header/TreeViewModel/treenode.h                           src/treenode.cpp
-        header/TreeViewModel/treemodel.h               src/treemodel.cpp
+        header/TreeViewModel/treemodel.h                        src/treemodel.cpp
+        header/TreeViewModel/treeview.h                            src/treeview.cpp
         # widget
         header/titlebar.h                                                                src/titlebar.cpp
         #utils
         header/logger.h                                                                 src/logger.cpp
-        header/utils.h                                                                     src/utils.cpp
+        header/utils.hpp                                                                     src/utils.cpp
         resource/button.qrc
         #Ui
         header/Ui/uimanager.h                                                   src/uimanager.cpp
@@ -64,8 +74,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Scene/drawmanager.h                                   src/drawmanager.cpp
         header/Scene/sceneprotocol.h
         header/Scene/editmanager.h                                     src/editmanager.cpp
-        header/TreeViewModel/treeview.h
-        src/treeview.cpp
+        # main
+        header/manager.h                            src/manager.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -93,7 +103,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Cavalie
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Scene)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
-
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MagicEnum)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

@@ -11,7 +11,6 @@
 class LaserItem: public QGraphicsItem
 {
 public:
-    QPen defaultLinePen = QPen(Qt::black, 1);
     std::pair<double,double> editPointSize = std::pair<double,double>{1,1};
 public:
     LaserItem();
@@ -21,8 +20,9 @@ public:
     virtual void addVertex(const QPointF& point, const double& angle);
     virtual void editVertex(const int &index, const QPointF& point, const double& angle);
     virtual void deleteVetex(const int &index);
-    virtual void createParallelOffset(const double& offset, const double& offsetNum);
-    virtual void rotate(const double& angle);
+    virtual void createParallelOffset(const double& offset, const double& offsetNum) = 0;
+    virtual void rotate(const double& angle) = 0;
+    virtual void setColor(Qt::GlobalColor) = 0;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     virtual void updateParallelOffset();
@@ -37,17 +37,8 @@ public:
     virtual QPointF getCenterPos();
     virtual QString getName();
     const QString& getUUID();
-    const int& getLayer();
-    const int& getGroup();
-    /// \brief 设置参数
-    void setLayer(int index);
 private:
     QString uuid;
-private:
-    int Layer = 1;
-private:
-    double Frequency;
-    double Power;
 };
 
 #endif // LASERITEM_H

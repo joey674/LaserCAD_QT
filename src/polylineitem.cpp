@@ -46,6 +46,12 @@ void PolylineItem::rotate(const double& angle)
 
 }
 
+void PolylineItem::setColor(Qt::GlobalColor setColor)
+{
+    this->color = setColor;
+    this->animate();
+}
+
 void PolylineItem::updateParallelOffset()
 {
     if (this->offset == 0) return;
@@ -136,14 +142,14 @@ void PolylineItem::updateItemList()
             auto lineItem = std::make_shared<QGraphicsLineItem>(
                 QLineF(v1, v2)
                 );
-            lineItem->setPen(defaultLinePen);
+            lineItem->setPen(QPen(this->color,1));
             PaintItemList.push_back(std::move(lineItem));
         }
         else
         {
             QPainterPath arcPath = createArcPath(v1,v2,angle);
             auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
-            pathItem->setPen(defaultLinePen);
+            pathItem->setPen(QPen(this->color,1));
             PaintItemList.push_back(std::move(pathItem));
         }
     }

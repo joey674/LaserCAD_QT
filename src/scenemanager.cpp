@@ -1,6 +1,7 @@
 #include "scenemanager.h"
 #include "logger.h"
 #include "uimanager.h"
+#include "treemodel.h"
 
 SceneManager SceneManager::ins;
 
@@ -16,6 +17,13 @@ SceneManager &SceneManager::getIns()
 std::pair<double, double> SceneManager::getSceneScale()
 {
     return this->sceneScale;
+}
+
+int SceneManager::layerCount(){
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    auto layerCount = model->rowCount(QModelIndex());
+
+    return layerCount;
 }
 
 void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event)
@@ -53,17 +61,6 @@ void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event)
         this->dragScenePoint = QPointF(0,0);
     }
 }
-
-///
-/// \brief SceneManager::setItemStatus  设置物体状态
-/// \param visible
-/// \param selectable
-/// \param movable
-/// \param item
-///
-
-
-
 
 ///
 /// \brief SceneManager::setSceneScale  放大缩小画布

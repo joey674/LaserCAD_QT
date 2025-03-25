@@ -1,6 +1,6 @@
 #include "laseritem.h"
 #include "logger.h"
-#include "utils.h"
+#include "utils.hpp"
 
 
 LaserItem::LaserItem()
@@ -19,16 +19,6 @@ void LaserItem::editVertex(const int &index, const QPointF &point, const double 
 }
 
 void LaserItem::deleteVetex(const int &index)
-{
-    WARN_MSG("need to be realized");
-}
-
-void LaserItem::createParallelOffset(const double &offset, const double &offsetNum)
-{
-    WARN_MSG("need to be realized");
-}
-
-void LaserItem::rotate(const double &angle)
 {
     WARN_MSG("need to be realized");
 }
@@ -82,16 +72,6 @@ QString LaserItem::getName()
 const QString& LaserItem::getUUID()
 {
     return this->uuid;
-}
-
-const int &LaserItem::getLayer()
-{
-    return this->Layer;
-}
-
-void LaserItem::setLayer(int index)
-{
-    this->Layer = index;
 }
 
 

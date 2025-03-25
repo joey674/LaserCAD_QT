@@ -15,34 +15,6 @@
 
 class EditManager
 {
-public: // 操作对象
-    void copyItem()
-    {
-
-    }
-    void deleteItem()
-    {
-
-    }
-    void setItemStatus(bool visible, bool selectable, bool movable, QGraphicsItem* item)
-    {
-        item->setVisible(visible);
-        item->setFlag(QGraphicsItem::ItemIsMovable, movable);
-        item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
-    }
-    void setItemsStatus(bool visible,bool selectable, bool movable,const std::vector<std::shared_ptr<LaserItem>>& items)
-    {
-        for (const auto& item : items)
-        {
-            if (item)
-            {
-                item->setVisible(visible);
-                item->setFlag(QGraphicsItem::ItemIsMovable, movable);
-                item->setFlag(QGraphicsItem::ItemIsSelectable, selectable);
-            }
-        }
-    }
-
 public: // 编辑对象
     QGraphicsItem *currentEditItem = NULL;
     int currentEditPolylineVertexIndex = -1;
@@ -51,19 +23,28 @@ public: // 编辑对象
         if (SceneManager::getIns().scene->selectedItems().empty())
             return;
 
+        // DEBUG_MSG("edit");
+        // 把所有对象颜色设置成黑色
+        auto group = Manager::getIns().getItems(0);
+        for (const auto& uuid : group) {
+            Manager::getIns().setItemColor(uuid,DisplayColor);
+        }
+
         this->currentEditItem = SceneManager::getIns().scene->selectedItems()[0];
         switch (this->currentEditItem->type())
         {
         case PolylineItem::Type:
         {
             PolylineItem *item = static_cast<PolylineItem*>(this->currentEditItem);
+            item->setColor(EditColor);
             this->editPolyline(pointCoordscene,item,event);
             break;
         }
         case ArcItem::Type:
         {
-            ArcItem *Item = static_cast<ArcItem*>(this->currentEditItem);
-            this->editArc(pointCoordscene,Item,event);
+            ArcItem *item = static_cast<ArcItem*>(this->currentEditItem);
+            item->setColor(EditColor);
+            this->editArc(pointCoordscene,item,event);
             break;
         }
         default:

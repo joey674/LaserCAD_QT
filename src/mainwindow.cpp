@@ -407,7 +407,7 @@ void MainWindow::initTreeViewModel()
     connect(UiManager::getIns().UI()->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
 
     // click
-    // connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onItemClicked);
+    connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onTreeViewModelNodeClicked);
 }
 
 void MainWindow::displayOperation(QString text)
@@ -544,7 +544,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
     this->labelCurrentLayer->setText(
         QString::asprintf(
             "layer: %i",
-            SceneManager::getIns().currentLayer
+            SceneManager::getIns().getCurrentLayer()
             )
         );
 
@@ -637,6 +637,11 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
         SceneManager::getIns().dragScene(pointCoordView,MouseEvent::LeftPress);
         break;
     }
+    // case OperationEvent:: EditProperty:
+    // {
+    //     EditManager::getIns().editItem(pointCoordscene,MouseEvent::LeftPress);
+    //     break;
+    // }
     default:
     {}
     }
@@ -895,14 +900,9 @@ void MainWindow::on_editButton_clicked()
 
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-    // 设置当前图层内物体可动
-    auto inLayerItems = Manager::getIns().getItems(SceneManager::getIns().currentLayer);
-    auto allItems = Manager::getIns().getItems(0);
-    EditManager::getIns().setItemsStatus(false,false,false,allItems);
-    EditManager::getIns().setItemsStatus(true,true,true,inLayerItems);
-    // DEBUG_VAR(this->currentLayer);
-    DEBUG_VAR(inLayerItems.size());
-    DEBUG_VAR(allItems.size());
+
+    // 设置当前图层内物体可动;所有物体颜色为黑
+    SceneManager::getIns().setCurrentLayer(SceneManager::getIns().getCurrentLayer());
 
     // button check
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -1161,63 +1161,6 @@ void MainWindow::on_redoButton_clicked()
 }
 
 ///
-/// \brief onLayerButton
-///
-void MainWindow::onLayerButtonClicked(int index)
-{
-    // DrawManager::getIns().resetTmpItemStatus();
-
-    // this->currentLayer = index;
-    // DEBUG_VAR(this->currentLayer);
-
-    // //设置按钮选中
-    // this->setAllLayerButtonChecked(false);
-    // layerButtons[this->currentLayer-1]->setChecked(true);
-
-    // //显示对应layer的元素
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-    // auto allItems = Manager::getIns().getItems();
-    // this->setItemsStatus(false,false,false,allItems);
-    // this->setItemsStatus(true,true,true,inLayerItems);
-}
-
-void MainWindow::onAddLayerButtonClicked()
-{
-    // QLayout *graphicsViewLayout = UiManager::getIns().UI()->mainLayout->findChild<QLayout*>("graphicsViewLayout");
-    // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
-    // if (!layerButtonLayout) {
-    //     FATAL_MSG("layerButtonLayout can not be found");
-    //     return;
-    // }
-
-    // layerCount++;
-    // QString buttonName = QString("Layer %1").arg(layerCount);
-
-    // QPushButton *newLayerButton = new QPushButton(buttonName);
-    // newLayerButton->setStyleSheet(buttonStyle1);
-    // newLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-    // newLayerButton->setCheckable(true);
-
-    // QPushButton *addLayerButton = qobject_cast<QPushButton*>(layerButtonLayout->itemAt(layerButtonLayout->count() - 1)->widget());
-    // if (!addLayerButton)
-    // {
-    //     FATAL_MSG("addLayerButton not found");
-    //     return;
-    // }
-    // layerButtonLayout->removeWidget(addLayerButton);
-
-    // layerButtonLayout->addWidget(newLayerButton);
-    // layerButtons.append(newLayerButton);
-
-    // layerButtonLayout->addWidget(addLayerButton);
-
-    // auto tmpLayerCount = layerCount;
-    // connect(newLayerButton, &QPushButton::clicked, this, [=](){ onLayerButtonClicked(tmpLayerCount); });
-
-    // INFO_MSG("newLayerButton added");
-}
-
-///
 /// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
 /// \param pos
 ///
@@ -1234,15 +1177,21 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
 
     this->addLayerAction = new QAction("Add Layer", &contextMenu);
     this->addGroupAction = new QAction("Add Group", &contextMenu);
-     this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
+    this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
+    this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
+    this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
 
     contextMenu.addAction(this->addLayerAction);
     contextMenu.addAction(this->addGroupAction);
     contextMenu.addAction(this->deleteNodeAction);
+    contextMenu.addAction(this->setLayerVisibleAction);
+    contextMenu.addAction(this->setLayerUnvisibleAction);
 
     connect(this->addLayerAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddLayer);
     connect(this->addGroupAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddGroup);
     connect(this->deleteNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelDeleteNode);
+    connect(this->setLayerVisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerVisible);
+    connect(this->setLayerUnvisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerUnvisible);
 
     // 重置addgroup的位置
     this->addGroupIndex = QModelIndex();
@@ -1316,6 +1265,35 @@ void MainWindow::onTreeViewModelDeleteNode()
     onTreeViewModelUpdateActions();
 }
 
+void MainWindow::onTreeViewModelSetLayerVisible()
+{
+    auto inLayerItems = Manager::getIns().getItems(this->selectedLayerIndex);
+
+    for (const auto& item : inLayerItems) {
+        Manager::getIns().setItemVisible(item,true);
+    }
+}
+
+void MainWindow::onTreeViewModelSetLayerUnvisible()
+{
+    auto inLayerItems = Manager::getIns().getItems(this->selectedLayerIndex);
+    for (const auto& item : inLayerItems) {
+        Manager::getIns().setItemVisible(item,false);
+    }
+}
+
+void MainWindow::onTreeViewModelNodeClicked()
+{
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+
+    QString type = model->nodeProperty(node, NodePropertyIndex::Type).toString();
+    if (type == "Layer") {
+        this->selectedLayerIndex = model->getNode(node)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
+        SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
+    }
+}
+
 void MainWindow::onTreeViewModelAddLayer()
 {
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
@@ -1327,9 +1305,12 @@ void MainWindow::onTreeViewModelAddLayer()
     const QModelIndex layerNodeIndex = model->index(layerCount, 0,QModelIndex());
     QString name = "Layer" + QString::number(layerCount + 1);
     QString type = "Layer";
+    QString UUID = name+"UUID";
     model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Name,name);
     model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Type,type);
-
+    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::UUID, UUID);
+    Manager::getIns().PropertyMap.insert({UUID,DefaultPropertyMap});
+    Manager::getIns().ItemMap.insert({UUID,std::make_shared<PolylineItem>()});
     onTreeViewModelUpdateActions();
 }
 
@@ -1348,33 +1329,25 @@ void MainWindow::onTreeViewModelUpdateActions()
     for (const QModelIndex &nodeIndex : nodeIndexList) {
         QString type = model->nodeProperty(nodeIndex, NodePropertyIndex::Type).toString();
 
-        if (type == "Layer") {
+        if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
             this->addLayerAction->setEnabled(true);
+            this->setLayerVisibleAction->setEnabled(true);
+            this->setLayerUnvisibleAction->setEnabled(true);
             this->addGroupAction->setEnabled(false);
             this->deleteNodeAction->setEnabled(false);
+
+            this->selectedLayerIndex = model->getNode(nodeIndex)->indexInParent() + 1;
+            SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
+            return;
+        } else {
+            this->addLayerAction->setEnabled(false);
+            this->setLayerVisibleAction->setEnabled(false);
+            this->setLayerUnvisibleAction->setEnabled(false);
+            this->addGroupAction->setEnabled(true);
+            this->deleteNodeAction->setEnabled(true);
             return;
         }
     }
-
-    // // 只有选中layer才可以添加图层
-    // if (model->nodeProperty(nodeIndex,NodePropertyIndex::Type).toString() == "Layer")
-    //     this->addLayerAction->setEnabled(true);
-    // else
-    //     this->addLayerAction->setEnabled(false);
-
-    // if (hasCurrent) {
-        // UiManager::getIns().UI()->treeView->closePersistentEditor(UiManager::getIns().UI()->treeView->selectionModel()->currentIndex());
-
-        // TreeModel *treeModel = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
-        // const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-        // const auto name = treeModel->getNode(index)->property(NodePropertyIndex::Name).toString();
-        // const auto type = treeModel->getNode(index)->property(NodePropertyIndex::Type).toString();
-        // const auto uuid = treeModel->getNode(index)->property(NodePropertyIndex::UUID).toString();
-
-        // DEBUG_VAR(name);
-        // DEBUG_VAR(type);
-        // DEBUG_VAR(uuid);
-    // }
 }
 
 ///

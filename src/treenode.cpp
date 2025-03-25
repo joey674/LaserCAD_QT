@@ -3,7 +3,9 @@
 
 TreeNode::TreeNode(QVariantList property, TreeNode *parent)
     : m_propertyList(std::move(property)), m_parentItem(parent)
-{}
+{
+    this->m_propertyList.resize(3);
+}
 
 TreeNode *TreeNode::child(int index)
 {
@@ -83,6 +85,11 @@ QVariantList TreeNode::propertyList() const
     return m_propertyList;
 }
 
+///
+/// \brief TreeNode::setPropertyList 最好别用
+/// \param value
+/// \return
+///
 bool TreeNode::setPropertyList(const QVariantList &value)
 {
     m_propertyList = value;

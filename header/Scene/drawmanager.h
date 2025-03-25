@@ -43,14 +43,24 @@ public:  // 绘制
     {
         if (!this->tmpPolyline && event == MouseEvent::LeftRelease)
         {
-            // 设置当前图层其他元素不可动不可选中
-            auto inLayerItems = Manager::getIns().getItems(SceneManager::getIns().currentLayer);
-            EditManager::getIns().setItemsStatus(true,false,false,inLayerItems);
+            // 设置其他元素不可动不可选中,且颜色为黑色;
+            auto allItems = Manager::getIns().getItems(0);
+            // DEBUG_VAR(allItems);
+            for (const auto& item : allItems) {
+                Manager::getIns().setItemVisible(item,true);
+                // DEBUG_VAR("success1");
+                Manager::getIns().setItemSelectable(item,false);
+                // DEBUG_VAR("success2");
+                Manager::getIns().setItemMovable(item,false);
+                // DEBUG_VAR("success3");
+                Manager::getIns().setItemColor(item,DisplayColor);
+                // DEBUG_VAR("success4");
+            }
 
             this->tmpPolyline = std::make_shared<PolylineItem>();
-            this->tmpPolyline->setLayer(SceneManager::getIns().currentLayer);
+            this->tmpPolyline->setColor(EditColor);
             SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
-            DEBUG_VAR(this->tmpPolyline.get());
+            // DEBUG_VAR(this->tmpPolyline.get());
 
             this->tmpPolyline->addVertex(pointCoordscene,0);
             this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -89,12 +99,15 @@ public:  // 绘制
     {
         if (!this->tmpArc && event == MouseEvent::LeftRelease)
         {
-            // 设置当前图层不可动不可选中
-            auto inLayerItems = Manager::getIns().getItems(SceneManager::getIns().currentLayer);
-            EditManager::getIns().setItemsStatus(true,false,false,inLayerItems);
+            // 设置其他元素不可动不可选中
+            auto allItems = Manager::getIns().getItems(0);
+            for (const auto& item : allItems) {
+                Manager::getIns().setItemVisible(item,true);
+                Manager::getIns().setItemSelectable(item,false);
+                Manager::getIns().setItemMovable(item,false);
+            }
 
             this->tmpArc = std::make_shared<ArcItem>();
-            this->tmpArc->setLayer(SceneManager::getIns().currentLayer);
             SceneManager::getIns().scene->addItem(this->tmpArc.get());
             this->tmpArc->operateIndex += 1;
 

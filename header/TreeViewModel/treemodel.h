@@ -65,6 +65,19 @@ public:
     void setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value);
     QVariant nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex);
 
+    /// 外部强制视图刷新(暂时设置只刷新layer的选中以及visible)
+    void update()
+    {
+        QModelIndex rootIndex = QModelIndex();
+        int topLevelCount = rowCount(rootIndex);
+
+        for (int row = 0; row < topLevelCount; ++row) {
+            QModelIndex topIndex = index(row, 0, rootIndex);
+            if (topIndex.isValid()) {
+                emit dataChanged(topIndex, topIndex);
+            }
+        }
+    }
 private:
     void setupExemplarModelData();
     void setupDefaultModelData();
@@ -72,6 +85,7 @@ private:
     void serializeNodeToStream(TreeNode *item, QDataStream &stream,int currentLevel) const;
 
     std::unique_ptr<TreeNode> m_rootItem;// 整个model的信息都存在rootItem里; 现在暂时存了model名字
+    std::unordered_map<QString,TreeNode> UUIDMap;
 };
 
 #endif // TREEVIEWMODEL_H

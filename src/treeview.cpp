@@ -5,7 +5,7 @@
 
 TreeView::TreeView(QWidget *parent) : QTreeView(parent)
 {
-    DEBUG_MSG("use custom treeview");
+    // DEBUG_MSG("use custom treeview");
 }
 
 void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)

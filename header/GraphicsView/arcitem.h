@@ -21,7 +21,8 @@ public:
     /// 这里面所有函数结束都要调用animate
     void editVertex(const int &index, const QPointF& point, const double& angle) override;
     void createParallelOffset(const double& offset, const double& offsetNum) override;
-    void rotate(double angle);
+    void rotate(const double& angle) override;
+    void setColor(Qt::GlobalColor setColor) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
@@ -48,6 +49,8 @@ private:
     double offset  = 0;
     int offsetNum = 1;
     std::vector<std::shared_ptr<ArcItem>> offsetItemList;
+    ///
+    Qt::GlobalColor color = Qt::black;
 };
 
 #endif // ARCITEM_H

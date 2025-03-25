@@ -3,6 +3,7 @@
 #include "logger.h"
 #include "treemodel.h"
 #include "uimanager.h"
+#include "scenemanager.h"
 
  Manager Manager::ins;
 
@@ -11,37 +12,49 @@ Manager &Manager::getIns()
      return ins;
  }
 
+ ///
+ /// \brief Manager::addItem
+ /// \param ptr
+ ///
  void Manager::addItem(std::shared_ptr<LaserItem> ptr)
  {
-     auto treeView = UiManager::getIns().UI()->treeView;
-     int layer = ptr->getLayer();
-     QString name = ptr->getName();
-     QString UUID = ptr->getUUID();
+    auto treeView = UiManager::getIns().UI()->treeView;
+     int layer = SceneManager::getIns().getCurrentLayer();
+    QString name = ptr->getName();
+    QString UUID = ptr->getUUID();
 
-     // 插入TreeViewModel
-     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
-     QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
-     // DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
+    // 插入TreeViewModel
+    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+    QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
+    // DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
 
-     auto rowCount = model->rowCount(layerNodeIndex);
-     name = name + QString::number(rowCount+1);
+    auto rowCount = model->rowCount(layerNodeIndex);
+    name = name + QString::number(rowCount+1);
 
-     if (!model->insertRow(rowCount, layerNodeIndex))
-         FATAL_MSG("insert  child fail");
+    if (!model->insertRow(rowCount, layerNodeIndex))
+     FATAL_MSG("insert  child fail");
 
-     const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
-     model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
-     model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
-     model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,UUID);
+    const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,UUID);
 
-     treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
+    treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
                                                  QItemSelectionModel::ClearAndSelect);
 
-     // 插入ItemMap
-    DEBUG_VAR(ptr.get());
-     ItemMap.insert({UUID,ptr});
+    // 插入ItemMap
+    // DEBUG_VAR(ptr.get());
+    ItemMap.insert({UUID,ptr});
+
+    // 插入propertyMap
+    auto map = DefaultPropertyMap;
+    PropertyMap.insert({UUID,map});
  }
 
+ ///
+ /// \brief Manager::deleteItem
+ /// \param item
+ ///
  void Manager::deleteItem(LaserItem *item)
  {
      if (!item) return;
@@ -68,7 +81,21 @@ Manager &Manager::getIns()
      ItemMap.erase(item->getUUID());
  }
 
- std::vector<std::shared_ptr<LaserItem> > Manager::getItems(int layer)
+ QString Manager::getItem(QModelIndex index)
+ {
+     auto treeView = UiManager::getIns().UI()->treeView;
+     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+
+     return model->getNode(index)->property(NodePropertyIndex::UUID).toString();
+ }
+
+ QString Manager::getItem(QGraphicsItem *item)
+ {
+    LaserItem *laseritem = dynamic_cast<LaserItem *>(item);
+     return laseritem->getUUID();
+ }
+
+ std::vector<QString> Manager::getItems(int layer)
  {
      auto treeView = UiManager::getIns().UI()->treeView;
      TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -83,18 +110,15 @@ Manager &Manager::getIns()
          nodeIndex = model->index(layer-1,0,QModelIndex());
      }
      auto nodesGroup = model->getAllChildNodes(nodeIndex);
-     auto itemsGroup = std::vector<std::shared_ptr<LaserItem>>();
+     auto itemsGroup = std::vector<QString>();
+
+
      for (const auto& node : nodesGroup) {
-         if(node->property(NodePropertyIndex::Type).toString() != "Item")
-             continue;
-         auto item = ItemMap.find(node->property(NodePropertyIndex::UUID).toString())->second;
-         itemsGroup.push_back(item);
+         itemsGroup.push_back(node->property(NodePropertyIndex::UUID).toString());
      }
+
+     if (layer>0)
+        itemsGroup.push_back("Layer"+QString::number(layer)+"UUID");
 
      return itemsGroup;
  }
- 
-
- 
-
- 

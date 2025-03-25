@@ -9,13 +9,12 @@
 
 enum NodePropertyIndex: int
 {
-    Name = 0,
-    Type = 1,
-    UUID = 2,// 可能不用
-    GraphicsViewItem = 3
+    Name = 0,       // QString
+    Type = 1,         // QString
+    UUID = 2,        // QString
 };
 
-static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID","UndefinedGraphicsViewItem"};
+static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
 
 class TreeModel;
 

@@ -25,6 +25,10 @@ enum ItemTypeId /* 只用于对照 不参与实际使用 */
     Arc = 6271,
 };
 
+const static Qt::GlobalColor DisplayColor = Qt::black;
+const static Qt::GlobalColor EditColor = Qt::green;
+
+
 // 弧和凸度转化
 void getAngleFromBulge(const double& bulge, double& angle);
 void getBulgeFromAngle(const double& angle, double& bulge);

@@ -1,5 +1,8 @@
 #include "treemodel.h"
 #include "treenode.h"
+#include "scenemanager.h"
+#include "manager.h"
+#include "polylineitem.h"
 
 using namespace Qt::StringLiterals;
 
@@ -21,13 +24,50 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
     if (!nodeIndex.isValid())
         return {};
 
-    if (role != Qt::DisplayRole && role != Qt::EditRole)
-        return {};
-
+    // 获取当前选中的图层
+    int curlayer = SceneManager::getIns().getCurrentLayer();
     TreeNode *item = getNode(nodeIndex);
-    // qDebug() <<  item->property(NodePropertyIndex::Name);
+    QString itemName = item->property(NodePropertyIndex::Name).toString();
+    QString itemType = item->property(NodePropertyIndex::Type).toString();
+    QString itemUUID = item->property(NodePropertyIndex::UUID).toString();
 
-    return item->property(NodePropertyIndex::Name);
+    ///
+    /// \brief isVisible
+    /// TODO 有BUG
+    bool isVisible = false;
+    auto itemIt = Manager::getIns().PropertyMap.find(itemUUID);
+    if (itemIt != Manager::getIns().PropertyMap.end()) {
+        auto& propertyMap = itemIt->second;
+
+        auto propertyIt = propertyMap.find("Visible");
+        if (propertyIt != propertyMap.end()) {
+            isVisible = propertyIt->second.toBool();
+            // qDebug() << "Visible property found:" << isVisible;
+        } else {
+            // qDebug() << "Property 'Visible' not found";
+        }
+    } else {
+        // qDebug() << "Item with UUID" << itemUUID << "not found";
+    }
+    ///
+    ///
+    ///
+
+    // bool isVisible = Manager::getIns().PropertyMap.find(itemUUID)->second.find("Visible")->second.toBool();
+    // DEBUG_VAR(isVisible);
+
+    if (role == Qt::DisplayRole || role == Qt::EditRole) {
+        if (itemType == "Layer" && !isVisible)
+            return (item->property(NodePropertyIndex::Name).toString() + "     " + "Hide");
+        else
+            return item->property(NodePropertyIndex::Name);
+    }
+
+    if (role == Qt::ForegroundRole && itemName == ("Layer" + QString::number(curlayer))) {
+        return QBrush(Qt::blue);  // 蓝色表示选中
+    }
+
+    return {};
 }
 
 bool TreeModel::setData(const QModelIndex &nodeIndex, const QVariant &name, int role)
@@ -224,6 +264,9 @@ void TreeModel::setupDefaultModelData()
     auto layer1 =  m_rootItem->child(m_rootItem->childCount() - 1);
     layer1->setProperty(NodePropertyIndex::Name, "Layer1");
     layer1->setProperty(NodePropertyIndex::Type, "Layer");
+    layer1->setProperty(NodePropertyIndex::UUID, "Layer1UUID");
+    Manager::getIns().PropertyMap.insert({"Layer1UUID",DefaultPropertyMap});
+    Manager::getIns().ItemMap.insert({"Layer1UUID",std::make_shared<PolylineItem>()});
 }
 
 void TreeModel::setupModelData(const QList<QStringView> &lines)
