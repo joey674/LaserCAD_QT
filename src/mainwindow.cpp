@@ -44,6 +44,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     initTreeViewModel();
     initPropertyTableWidget();
     initStatusBar();
+    test();
 }
 
 MainWindow::~MainWindow()
@@ -359,18 +360,6 @@ void MainWindow::initStatusBar()
     this->labelMouseCoordinate = new QLabel("coordinate: ");
     this->labelMouseCoordinate->setMinimumWidth(150);
     UiManager::getIns().UI()->statusBar->addWidget(this->labelMouseCoordinate);
-
-    this->labelCurrentLayer = new QLabel("layer: ");
-    this->labelCurrentLayer->setMinimumWidth(150);
-    UiManager::getIns().UI()->statusBar->addWidget(this->labelCurrentLayer);
-
-    this->labelCurrentGroup = new QLabel("layer: ");
-    this->labelCurrentGroup->setMinimumWidth(150);
-    UiManager::getIns().UI()->statusBar->addWidget(this->labelCurrentGroup);
-
-    this->labelOperation = new QLabel("operation: ");
-    this->labelOperation->setMinimumWidth(300);
-    UiManager::getIns().UI()->statusBar->addWidget(this->labelOperation);
 }
 
 void MainWindow::initPropertyTableWidget()
@@ -388,6 +377,7 @@ void MainWindow::initTreeViewModel()
 
     UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
     UiManager::getIns().UI()->treeView->setModel(model);
+    UiManager::getIns().UI()->treeView->bindModel();
     UiManager::getIns().UI()->treeView->expandAll();
 
     UiManager::getIns().UI()->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -406,9 +396,7 @@ void MainWindow::initTreeViewModel()
     connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onTreeViewModelNodeClicked);
 }
 
-void MainWindow::displayOperation(QString text)
-{
-    this->labelOperation->setText("operation: "+ text);
+void MainWindow::test(){
 }
 
 ///
@@ -519,7 +507,6 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event)
         break;
     }
     }
-    displayOperation("keyrelease");
 }
 
 ///
@@ -537,12 +524,6 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
             pointCoordscene.y()
         )
     );
-    this->labelCurrentLayer->setText(
-        QString::asprintf(
-            "layer: %i",
-            SceneManager::getIns().getCurrentLayer()
-            )
-        );
 
     // 非拖拽行为
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false)
@@ -640,7 +621,6 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
 {
-    displayOperation("mouse right press");
     KeyboardManager::getIns().IsMouseRightButtonHold = true;
 
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
@@ -657,7 +637,6 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
 {
-    displayOperation("mouse left release");
     KeyboardManager::getIns().IsMouseLeftButtonHold = false;
 
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
@@ -716,7 +695,6 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
 {
-    displayOperation("mouse right release");
     KeyboardManager::getIns().IsMouseRightButtonHold = false;
 
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
@@ -754,7 +732,6 @@ void MainWindow::onGraphicsviewMouseDoubleClicked(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
 {
-    displayOperation("mouse wheel occourred");
     if (event->angleDelta().y() > 0)
     {
         SceneManager::getIns().setSceneScale(1.2, 1.2);
@@ -770,7 +747,6 @@ void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
 ///
 void MainWindow::on_drawCircleButton_clicked()
 {
-    displayOperation("drawCircle button click");
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -785,7 +761,6 @@ void MainWindow::on_drawCircleButton_clicked()
 
 void MainWindow::on_drawPolylineButton_clicked()
 {
-    displayOperation("drawPolyline button click");
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -800,7 +775,6 @@ void MainWindow::on_drawPolylineButton_clicked()
 
 void MainWindow::on_drawArcButton_clicked()
 {
-    displayOperation("drawArc button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -815,7 +789,6 @@ void MainWindow::on_drawArcButton_clicked()
 
 void MainWindow::on_drawSpiralButton_clicked()
 {
-    displayOperation("drawSpiral button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -830,7 +803,6 @@ void MainWindow::on_drawSpiralButton_clicked()
 
 void MainWindow::on_drawRectButton_clicked()
 {
-    displayOperation("drawRect button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -845,7 +817,6 @@ void MainWindow::on_drawRectButton_clicked()
 
 void MainWindow::on_drawPolygonButton_clicked()
 {
-    displayOperation("drawPolygon button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -860,7 +831,6 @@ void MainWindow::on_drawPolygonButton_clicked()
 
 void MainWindow::on_drawEllipseButton_clicked()
 {
-    displayOperation("drawEllipse button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -878,8 +848,6 @@ void MainWindow::on_drawEllipseButton_clicked()
 ///
 void MainWindow::on_editButton_clicked()
 {
-    displayOperation("edit button click");
-
      // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::EditProperty;
     DrawManager::getIns().resetTmpItemStatus();
@@ -903,8 +871,6 @@ void MainWindow::on_editButton_clicked()
 
 void MainWindow::on_dragSceneButton_clicked()
 {
-    displayOperation("dragscene button click");
-
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::DragScene;
     DrawManager::getIns().resetTmpItemStatus();
@@ -955,7 +921,7 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
                 double value = propertyValue.toDouble(&transformIsOk);
                 if (!transformIsOk)
                 {
-                    displayOperation("error, input right form");
+                    FATAL_MSG("error, input right form");
                     continue;
                 }
 
@@ -1013,7 +979,7 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
                 double value = propertyValue.toDouble(&transformIsOk);
                 if (!transformIsOk)
                 {
-                    displayOperation("error, input right form");
+                    FATAL_MSG("error, input right form");
                     continue;
                 }
 
@@ -1042,7 +1008,6 @@ void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
 ///
 void MainWindow::on_rotateButton_clicked()
 {
-    displayOperation("rotate button click");
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -1062,8 +1027,6 @@ void MainWindow::on_rotateButton_clicked()
 
 void MainWindow::on_centerButton_clicked()
 {
-    displayOperation("center button click");
-
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -1081,8 +1044,6 @@ void MainWindow::on_centerButton_clicked()
 
 void MainWindow::on_createOffsetButton_clicked()
 {
-    displayOperation("createOffset button click");
-
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
 
@@ -1117,7 +1078,6 @@ void MainWindow::on_createOffsetButton_clicked()
 
 void MainWindow::on_deleteButton_clicked()
 {
-    displayOperation("delete button click");
      SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -1133,11 +1093,11 @@ void MainWindow::on_deleteButton_clicked()
         QGraphicsItem* graphicsItem = *it;
         LaserItem* laserItem = dynamic_cast<LaserItem*>(graphicsItem);
 
-
-        SceneManager::getIns().scene ->removeItem(graphicsItem);
+        // TODO 注意 这里不用删除scene; 会自动处理掉
+        // SceneManager::getIns().scene ->removeItem(graphicsItem);
         if(!laserItem)
             FATAL_MSG("fail pointer convertion");
-        Manager::getIns().deleteItem(laserItem);
+        Manager::getIns().deleteItem(laserItem->getUUID());
     }
 }
 
@@ -1157,8 +1117,6 @@ void MainWindow::on_redoButton_clicked()
 ///
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
 {
-    this->addGroupIndex = QModelIndex();
-
     // 获取鼠标点击的位置
     QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
     if (!index.isValid())
@@ -1183,9 +1141,6 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
     connect(this->deleteNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelDeleteNode);
     connect(this->setLayerVisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerVisible);
     connect(this->setLayerUnvisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerUnvisible);
-
-    // 重置addgroup的位置
-    this->addGroupIndex = QModelIndex();
 
      onTreeViewModelUpdateActions();
     contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
@@ -1233,32 +1188,22 @@ void MainWindow::onTreeViewModelAddNode()
 
 void MainWindow::onTreeViewModelDeleteNode()
 {
-    const QModelIndex index = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
-    auto UUID = model->getNode(index)->property(NodePropertyIndex::UUID).toString();
+    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
-    // 删除manager内的laseritem
-    auto laserItem = Manager::getIns().ItemMap.find(UUID)->second.get();
-    Manager::getIns().deleteItem(laserItem);
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        auto UUID = model->getNode(nodeIndex)->property(NodePropertyIndex::UUID).toString();
 
-    // 删除scene内的laserItem; 但是要先进行指针转换 要更具体一些
-    if (laserItem->getName() ==  "PolylineItem")
-    {
-        PolylineItem *item = static_cast<PolylineItem*>(laserItem);
-        SceneManager::getIns().scene->removeItem(laserItem);
-    }else if (laserItem->getName() =="ArcItem"){
-        ArcItem *item = static_cast<ArcItem*>(laserItem);
-        SceneManager::getIns().scene->removeItem(laserItem);
+        Manager::getIns().deleteItem(UUID);
     }
-    ///TODO
-
 
     onTreeViewModelUpdateActions();
 }
 
 void MainWindow::onTreeViewModelSetLayerVisible()
 {
-    auto inLayerItems = Manager::getIns().getItems(this->selectedLayerIndex);
+    auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
 
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemVisible(item,true);
@@ -1267,7 +1212,7 @@ void MainWindow::onTreeViewModelSetLayerVisible()
 
 void MainWindow::onTreeViewModelSetLayerUnvisible()
 {
-    auto inLayerItems = Manager::getIns().getItems(this->selectedLayerIndex);
+    auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemVisible(item,false);
     }
@@ -1277,7 +1222,6 @@ void MainWindow::onTreeViewModelNodeClicked()
 {
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    UiManager::getIns().UI()->treeView->expand(node);
 
     QString type = model->nodeProperty(node, NodePropertyIndex::Type).toString();
     if (type == "Layer") {
@@ -1297,20 +1241,41 @@ void MainWindow::onTreeViewModelAddLayer()
     const QModelIndex layerNodeIndex = model->index(layerCount, 0,QModelIndex());
     QString name = "Layer" + QString::number(layerCount + 1);
     QString type = "Layer";
-    QString UUID = name+"UUID";
-    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Name,name);
-    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::Type,type);
-    model->setNodeProperty(layerNodeIndex,NodePropertyIndex::UUID, UUID);
-    Manager::getIns().PropertyMap.insert({UUID,DefaultPropertyMap});
-    Manager::getIns().ItemMap.insert({UUID,std::make_shared<PolylineItem>()});
+    Manager::getIns().addItem(layerNodeIndex,name,type);
     onTreeViewModelUpdateActions();
 }
 
 void MainWindow::onTreeViewModelAddGroup()
 {
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
 
+    // 提取选中的节点列表
+    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    auto mimeList = model->mimeData(nodeIndexList);
 
+    // //在目标处创建group节点
+    QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    // DEBUG_VAR(model->getNode(targetIndex)->property(NodePropertyIndex::Type));
 
+    if (!model->insertRow(targetIndex.row()+1, targetIndex.parent()))
+        return;
+
+    const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
+    QString name = "Group";
+    QString type = "Group";
+    Manager::getIns().addItem(groupIndex,name,type);
+
+    // 把节点列表移动到group节点下
+    model->dropMimeData(mimeList,Qt::MoveAction,0,0,groupIndex);
+
+    // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        auto node = model->getNode(nodeIndex);
+        auto parentNode = node->parent();
+        auto parentNodeIndex = model->getIndex(parentNode);
+        model->removeRows(node->indexInParent(),1,parentNodeIndex);
+    }
+    onTreeViewModelUpdateActions();
 }
 
 void MainWindow::onTreeViewModelUpdateActions()

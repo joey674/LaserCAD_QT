@@ -24,13 +24,9 @@ private: // 初始化组件
     TitleBar* titleBar;
     // statusbar
     QLabel* labelMouseCoordinate;
-    QLabel* labelCurrentLayer;
-    QLabel* labelCurrentGroup;
-    QLabel* labelOperation;
     //
     QAction* addLayerAction;
     QAction* addGroupAction;
-    QModelIndex addGroupIndex;
     QAction* deleteNodeAction;
     QAction* setLayerVisibleAction;
     QAction* setLayerUnvisibleAction;
@@ -44,7 +40,7 @@ private: // 初始化组件
     void initStatusBar();
     void initPropertyTableWidget();
     void initTreeViewModel();
-    void displayOperation(QString);
+    void test();
 
 protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;

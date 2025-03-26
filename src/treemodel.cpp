@@ -3,6 +3,7 @@
 #include "scenemanager.h"
 #include "manager.h"
 #include "polylineitem.h"
+#include "logger.h"
 
 using namespace Qt::StringLiterals;
 
@@ -168,6 +169,9 @@ bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex 
     const bool success = nodeItem->removeChilds(removePosition, nodeCount);
     endRemoveRows();
 
+    //     DEBUG_MSG("after moved");
+    Manager::getIns().setVisibleSync();
+
     return success;
 }
 
@@ -205,6 +209,19 @@ QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const int propert
         FATAL_MSG("nodeindex not found");
 
     return node->property(propertyIndex);
+}
+
+void TreeModel::update()
+{
+    QModelIndex rootIndex = QModelIndex();
+    int topLevelCount = rowCount(rootIndex);
+
+    for (int row = 0; row < topLevelCount; ++row) {
+        QModelIndex topIndex = index(row, 0, rootIndex);
+        if (topIndex.isValid()) {
+            emit dataChanged(topIndex, topIndex);
+        }
+    }
 }
 
 
@@ -262,11 +279,8 @@ void TreeModel::setupDefaultModelData()
 {
     m_rootItem->insertChilds(m_rootItem->childCount(),1);
     auto layer1 =  m_rootItem->child(m_rootItem->childCount() - 1);
-    layer1->setProperty(NodePropertyIndex::Name, "Layer1");
-    layer1->setProperty(NodePropertyIndex::Type, "Layer");
-    layer1->setProperty(NodePropertyIndex::UUID, "Layer1UUID");
-    Manager::getIns().PropertyMap.insert({"Layer1UUID",DefaultPropertyMap});
-    Manager::getIns().ItemMap.insert({"Layer1UUID",std::make_shared<PolylineItem>()});
+
+    Manager::getIns().addItem(getIndex(layer1),"Layer1","Layer");
 }
 
 void TreeModel::setupModelData(const QList<QStringView> &lines)
@@ -322,8 +336,6 @@ void TreeModel::serializeNodeToStream(TreeNode *item, QDataStream &stream, int c
         line += item->property(i).toString();
         line += "|";
     }
-
-    qDebug() <<"send"<< line;
     stream << line;
 
     for (int i = 0; i < item->childCount(); i++) {
@@ -400,8 +412,12 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
         ++rows;
     }
 
+    // 保存父节点和索引的栈
     QVector<QPair<TreeNode*, QModelIndex>> parentStack;
     parentStack.push_back(qMakePair(getNode(parentNodeIndex), parentNodeIndex));
+
+    int currentLevel = 0; // 当前处理的层级
+    int childIndex = beginRowInTopLevel;
 
     for (const QString &line : std::as_const(newItems)) {
         // 解析层级和节点属性
@@ -409,36 +425,113 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
         int level = itemList[0].toInt();
         itemList.pop_front();
 
-        // qDebug() << "Level:" << level << "ItemList:" << itemList;
+        // DEBUG_VAR(level);
+        // DEBUG_VAR(itemList);
 
+        // 如果当前级别比之前低，说明需要退回到父节点
         while (parentStack.size() > level + 1) {
             parentStack.pop_back();
         }
 
+        // 重新计算父节点和插入位置
         TreeNode *parentItem = parentStack.last().first;
         QModelIndex parentIndex = parentStack.last().second;
 
-        int childIndex = parentItem->childCount();
-        if (level == 0) // 如果level是0,那么就用我们指示的插入位置;如果是大于0 也就是子节点, 就按照最后位置去插入位置
-            childIndex = beginRowInTopLevel;
+        // 如果层级为 0，则说明是根节点，需要重新计算根节点插入位置
+        if (level == 0) {
+            childIndex = beginRowInTopLevel++;
+        } else {
+            // 非根节点，按照子节点数量排列
+            childIndex = parentItem->childCount();
+        }
 
+        // 插入新节点
         insertRows(childIndex, 1, parentIndex);
         QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
         TreeNode *item = this->getNode(newIdx);
 
+        // 更新节点属性
         for (int i = 0; i < item->propertyCount(); i++) {
             if (i < itemList.size()) {
                 item->setProperty(i, itemList[i]);
             }
         }
 
+        // 压入栈中以便子节点正确嵌套
         parentStack.push_back(qMakePair(item, newIdx));
 
-        beginRowInTopLevel++;
+        // 更新当前层级
+        currentLevel = level;
     }
 
     return true;
 }
+
+// bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex)
+// {
+//     if (!canDropMimeData(data, action, row, column, parentNodeIndex))
+//         return false;
+
+//     if (action == Qt::IgnoreAction)
+//         return true;
+
+//     int beginRowInTopLevel;
+//     if (row != -1) // 如果是parent节点当前没有子节点, row会设置成-1
+//         beginRowInTopLevel = row;
+//     else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
+//         beginRowInTopLevel = rowCount(parentNodeIndex);
+
+//     QByteArray encodedData = data->data("application/vnd.text.list");
+//     QDataStream stream(&encodedData, QIODevice::ReadOnly);
+//     QStringList newItems;
+//     int rows = 0;
+//     while (!stream.atEnd()) {
+//         QString line;
+//         stream >> line;
+//         newItems << line;
+//         ++rows;
+//     }
+
+//     QVector<QPair<TreeNode*, QModelIndex>> parentStack;
+//     parentStack.push_back(qMakePair(getNode(parentNodeIndex), parentNodeIndex));
+
+//     for (const QString &line : std::as_const(newItems)) {
+//         // 解析层级和节点属性
+//         QStringList itemList = line.split('|', Qt::SkipEmptyParts);
+//         int level = itemList[0].toInt();
+//         itemList.pop_front();
+
+//         DEBUG_VAR(level);
+//         DEBUG_VAR(itemList);
+
+//         while (parentStack.size() > level + 1) {
+//             parentStack.pop_back();
+//         }
+
+//         TreeNode *parentItem = parentStack.last().first;
+//         QModelIndex parentIndex = parentStack.last().second;
+
+//         int childIndex = parentItem->childCount();
+//         if (level == 0) // 如果level是0,那么就用我们指示的插入位置;如果是大于0 也就是子节点, 就按照最后位置去插入位置
+//             childIndex = beginRowInTopLevel;
+
+//         insertRows(childIndex, 1, parentIndex);
+//         QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
+//         TreeNode *item = this->getNode(newIdx);
+
+//         for (int i = 0; i < item->propertyCount(); i++) {
+//             if (i < itemList.size()) {
+//                 item->setProperty(i, itemList[i]);
+//             }
+//         }
+
+//         parentStack.push_back(qMakePair(item, newIdx));
+
+//         beginRowInTopLevel++;
+//     }
+
+//     return true;
+// }
 
 TreeNode *TreeModel::getNode(const QModelIndex &index) const
 {

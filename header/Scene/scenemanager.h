@@ -5,9 +5,6 @@
 #include <QGraphicsItem>
 #include <utility>
 #include "sceneprotocol.h"
-#include "uimanager.h"
-#include "treemodel.h"
-#include "manager.h"
 
 class SceneManager
 {
@@ -20,24 +17,7 @@ public:
     void setSceneScale(double x, double y);
     std::pair<double, double> getSceneScale();
     /// layer
-    void setCurrentLayer(int layer){
-        this->currentLayer = layer;
-
-        TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
-        model->update();
-
-        auto inLayerItems = Manager::getIns().getItems(this->currentLayer);
-        auto allItems = Manager::getIns().getItems(0);
-        for (const auto& item : allItems) {
-            Manager::getIns().setItemSelectable(item,false);
-            Manager::getIns().setItemMovable(item,false);
-            Manager::getIns().setItemColor(item,DisplayColor);
-        }
-        for (const auto& item : inLayerItems) {
-            Manager::getIns().setItemSelectable(item,true);
-            Manager::getIns().setItemMovable(item,true);
-        }
-    };
+    void setCurrentLayer(int layer);
     int getCurrentLayer(){
         return currentLayer;
     };
@@ -47,6 +27,7 @@ public:
     void dragScene(QPointF pointCoordView,  MouseEvent event);
 private:
     int currentLayer = 1;
+
 private:
     static SceneManager ins;
     SceneManager(){};

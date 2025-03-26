@@ -2,11 +2,8 @@
 #include <QDebug>
 #include "treemodel.h"
 #include "logger.h"
+#include "manager.h"
 
-TreeView::TreeView(QWidget *parent) : QTreeView(parent)
-{
-    // DEBUG_MSG("use custom treeview");
-}
 
 void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
@@ -25,4 +22,15 @@ void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelec
     }
 
     QTreeView::selectionChanged(selected, deselected);
+}
+
+void TreeView::dropEvent(QDropEvent *event)
+{
+    QTreeView::dropEvent(event);
+
+    // QTimer::singleShot(10, [this]() {
+    //     DEBUG_MSG("after moved");
+    //     Manager::getIns().setVisibleSync();
+    // });
+
 }

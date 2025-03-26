@@ -23,7 +23,7 @@ public: // 编辑对象
             return;
 
         // 把所有对象颜色设置成黑色
-        auto group = Manager::getIns().getItems(0);
+        auto group = Manager::getIns().getItemsByLayer(0);
         for (const auto& uuid : group) {
             Manager::getIns().setItemColor(uuid,DisplayColor);
         }

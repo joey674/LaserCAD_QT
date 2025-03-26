@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "uimanager.h"
 #include "treemodel.h"
+#include "manager.h"
 
 SceneManager SceneManager::ins;
 
@@ -17,6 +18,25 @@ SceneManager &SceneManager::getIns()
 std::pair<double, double> SceneManager::getSceneScale()
 {
     return this->sceneScale;
+}
+
+void SceneManager::setCurrentLayer(int layer){
+    this->currentLayer = layer;
+
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    model->update();
+
+    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
+    auto allItems = Manager::getIns().getItemsByLayer(0);
+    for (const auto& item : allItems) {
+        Manager::getIns().setItemSelectable(item,false);
+        Manager::getIns().setItemMovable(item,false);
+        Manager::getIns().setItemColor(item,DisplayColor);
+    }
+    for (const auto& item : inLayerItems) {
+        Manager::getIns().setItemSelectable(item,true);
+        Manager::getIns().setItemMovable(item,true);
+    }
 }
 
 int SceneManager::layerCount(){

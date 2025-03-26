@@ -12,7 +12,6 @@
 #include <QMimeData>
 #include <QIODevice>
 #include "treenode.h"
-#include "logger.h"
 
 
 class TreeModel : public QAbstractItemModel
@@ -51,6 +50,7 @@ public:
     /// mime格式将可以存储整个树状结构 以字符串形式;
     /// mimedata格式:0|Group1|Group|UndefinedUUID|
     /// 首位代表层级; 层级1如果直接在层级0下,就说明是0的子节点;
+    /// 所有批量操作TreeNode,都用这个形式;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
     bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
@@ -60,24 +60,14 @@ public:
     /// \brief getIndex:获取某个节点的QtModelIndex; column输入0
     /// \param node 要获取的节点的指针
     QModelIndex getIndex(const TreeNode* node) const;
+    /// \brief getAllChildNodes 获取所有子节点
     std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const;;
 
     void setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value);
     QVariant nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex);
 
     /// 外部强制视图刷新(暂时设置只刷新layer的选中以及visible)
-    void update()
-    {
-        QModelIndex rootIndex = QModelIndex();
-        int topLevelCount = rowCount(rootIndex);
-
-        for (int row = 0; row < topLevelCount; ++row) {
-            QModelIndex topIndex = index(row, 0, rootIndex);
-            if (topIndex.isValid()) {
-                emit dataChanged(topIndex, topIndex);
-            }
-        }
-    }
+    void update();
 private:
     void setupExemplarModelData();
     void setupDefaultModelData();

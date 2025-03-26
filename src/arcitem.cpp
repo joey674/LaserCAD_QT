@@ -5,7 +5,7 @@
 ArcItem::ArcItem()
 {
     INFO_MSG("create ArcItem");
-    DEBUG_VAR(this->getUUID());
+    INFO_MSG(this->getUUID());
 }
 
 void ArcItem::editVertex(const int &index, const QPointF &point, const double &angle)
