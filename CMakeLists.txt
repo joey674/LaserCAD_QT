@@ -53,16 +53,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsView/laseritem.h                             src/laseritem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
-        header/GraphicsView/graphicsviewprotocol.h    src/graphicsviewprotocol.cpp
+        header/GraphicsView/graphicsmath.h                     src/graphicsmath.cpp
+        header/GraphicsView/protocol.h
         # TreeViewModel
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
         header/TreeViewModel/treeview.h                            src/treeview.cpp
-        # widget
-        header/titlebar.h                                                                src/titlebar.cpp
-        #utils
-        header/logger.h                                                                 src/logger.cpp
-        header/utils.hpp                                                                     src/utils.cpp
+        #Utils
+        header/Utils/logger.h                                                      src/logger.cpp
+        header/Utils/utils.hpp                                                     src/utils.cpp
+        header/Utils/titlebar.h                                                    src/titlebar.cpp
         resource/button.qrc
         #Ui
         header/Ui/uimanager.h                                                   src/uimanager.cpp
@@ -104,6 +104,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Scene)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MagicEnum)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

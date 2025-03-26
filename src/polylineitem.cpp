@@ -2,6 +2,7 @@
 #include "logger.h"
 #include "CavalierContours/polyline.hpp"
 #include "CavalierContours/polylineoffset.hpp"
+#include "graphicsmath.h"
 
 PolylineItem::PolylineItem()
 {
@@ -44,12 +45,6 @@ void PolylineItem::createParallelOffset(const double& offset, const double& offs
 void PolylineItem::rotate(const double& angle)
 {
 
-}
-
-void PolylineItem::setColor(Qt::GlobalColor setColor)
-{
-    this->color = setColor;
-    this->animate();
 }
 
 void PolylineItem::updateParallelOffset()
@@ -127,7 +122,7 @@ void PolylineItem::updateParallelOffset()
     }
 }
 
-void PolylineItem::updateItemList()
+void PolylineItem::updatePaintItem()
 {
     // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
     PaintItemList.clear();
@@ -142,14 +137,14 @@ void PolylineItem::updateItemList()
             auto lineItem = std::make_shared<QGraphicsLineItem>(
                 QLineF(v1, v2)
                 );
-            lineItem->setPen(QPen(this->color,1));
+            lineItem->setPen(QPen(this->getColor(),1));
             PaintItemList.push_back(std::move(lineItem));
         }
         else
         {
             QPainterPath arcPath = createArcPath(v1,v2,angle);
             auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
-            pathItem->setPen(QPen(this->color,1));
+            pathItem->setPen(QPen(this->getColor(),1));
             PaintItemList.push_back(std::move(pathItem));
         }
     }
@@ -162,7 +157,7 @@ void PolylineItem::animate()
     if (VertexList.size()<2) return;
 
     // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
-    this->updateItemList();
+    this->updatePaintItem();
 
     // 更新offsetitem
     this->updateParallelOffset();

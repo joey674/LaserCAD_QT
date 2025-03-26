@@ -7,11 +7,11 @@
 #include "polylineitem.h"
 #include "arcitem.h"
 #include "sceneprotocol.h"
-#include "logger.h"
 #include "manager.h"
 #include "scenemanager.h"
 #include "keyboardmanager.h"
-#include "editmanager.h"
+#include "protocol.h"
+#include "graphicsmath.h"
 
 
 class DrawManager
@@ -45,22 +45,15 @@ public:  // 绘制
         {
             // 设置其他元素不可动不可选中,且颜色为黑色;
             auto allItems = Manager::getIns().getItems(0);
-            // DEBUG_VAR(allItems);
             for (const auto& item : allItems) {
-                Manager::getIns().setItemVisible(item,true);
-                // DEBUG_VAR("success1");
                 Manager::getIns().setItemSelectable(item,false);
-                // DEBUG_VAR("success2");
                 Manager::getIns().setItemMovable(item,false);
-                // DEBUG_VAR("success3");
                 Manager::getIns().setItemColor(item,DisplayColor);
-                // DEBUG_VAR("success4");
             }
 
             this->tmpPolyline = std::make_shared<PolylineItem>();
             this->tmpPolyline->setColor(EditColor);
             SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
-            // DEBUG_VAR(this->tmpPolyline.get());
 
             this->tmpPolyline->addVertex(pointCoordscene,0);
             this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -99,16 +92,18 @@ public:  // 绘制
     {
         if (!this->tmpArc && event == MouseEvent::LeftRelease)
         {
-            // 设置其他元素不可动不可选中
+            // 设置其他元素不可动不可选中,且颜色为黑色;
             auto allItems = Manager::getIns().getItems(0);
             for (const auto& item : allItems) {
-                Manager::getIns().setItemVisible(item,true);
                 Manager::getIns().setItemSelectable(item,false);
                 Manager::getIns().setItemMovable(item,false);
+                Manager::getIns().setItemColor(item,DisplayColor);
             }
 
             this->tmpArc = std::make_shared<ArcItem>();
+            this->tmpArc->setColor(EditColor);
             SceneManager::getIns().scene->addItem(this->tmpArc.get());
+
             this->tmpArc->operateIndex += 1;
 
             this->tmpArc->editVertex(0,pointCoordscene,0);
@@ -137,6 +132,7 @@ public:  // 绘制
         }
         else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftRelease)
         {
+            this->tmpArc->setColor(DisplayColor);
             Manager::getIns().addItem(std::move(this->tmpArc));
         }
     }

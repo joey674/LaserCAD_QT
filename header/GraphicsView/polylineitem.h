@@ -1,12 +1,6 @@
 #ifndef POLYLINEITEM_H
 #define POLYLINEITEM_H
 
-#include <qgraphicsitem.h>
-#include <qgraphicsscene.h>
-#include <QPainter>
-#include <QDebug.h>
-#include <QStyleOptionGraphicsItem>
-#include "graphicsviewprotocol.h"
 #include "laseritem.h"
 
 class PolylineItem: public LaserItem
@@ -16,16 +10,15 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void addVertex(const QPointF& point, const double& angle) override;
-    void editVertex(const int &index, const QPointF& point, const double& angle) override;
-    void deleteVetex(const int &index) override;
+    void addVertex(const QPointF& point, const double& angle);
+    void editVertex(const int &index, const QPointF& point, const double& angle);
+    void deleteVetex(const int &index);
     void createParallelOffset(const double& offset, const double& offsetNum) override;
     void rotate(const double& angle) override;
-    void setColor(Qt::GlobalColor) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
-    void updateItemList() override;
+    void updatePaintItem() override;
     void animate() override;
     /// \brief get info
     /// 只获取信息
@@ -37,6 +30,7 @@ public:
     QString getName() override;
     double getSize();
     /// \brief reload
+    /// 重载QGraphicsItem类的成员函数
     enum { Type = 6270 };
     int type() const override;
     QRectF boundingRect() const override;
@@ -49,8 +43,6 @@ private:
     double offset  = 0;
     uint offsetNum = 0;
     std::vector<std::shared_ptr<PolylineItem>> offsetItemList;
-    ///
-    Qt::GlobalColor color = DisplayColor;
 };
 
 

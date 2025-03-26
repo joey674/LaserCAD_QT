@@ -1,33 +1,7 @@
-#ifndef GRAPHICSVIEWPROTOCOL_H
-#define GRAPHICSVIEWPROTOCOL_H
+#ifndef MATH_H
+#define MATH_H
 
-#include <qgraphicsitem.h>
-#include <qgraphicsscene.h>
 #include <QPainter>
-#include <QDebug.h>
-#include <QStyleOptionGraphicsItem>
-
-struct Vertex
-{
-    QPointF point;
-    double angle;
-};
-
-enum LineType
-{
-    OriginItem,
-    offsetItem,
-};
-
-enum ItemTypeId /* 只用于对照 不参与实际使用 */
-{
-    Polyline = 6270,
-    Arc = 6271,
-};
-
-const static Qt::GlobalColor DisplayColor = Qt::black;
-const static Qt::GlobalColor EditColor = Qt::green;
-
 
 // 弧和凸度转化
 void getAngleFromBulge(const double& bulge, double& angle);
@@ -40,4 +14,5 @@ void getAngleFromThreePoints(const QPointF& p1, const QPointF& p2, const QPointF
 void getIntersectPoint(const QPointF& p1, const QPointF& p3, const double& p1p3Angle,const double & sweepAngle, QPointF& intersectPoint);
 //
 QPainterPath createArcPath(const QPointF& p1, const QPointF& p3, const double & angle);
-#endif // GRAPHICSVIEWPROTOCOL_H
+
+#endif // MATH_H

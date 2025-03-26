@@ -10,7 +10,6 @@
 #include "logger.h"
 #include "manager.h"
 #include "scenemanager.h"
-#include "keyboardmanager.h"
 
 
 class EditManager
@@ -23,7 +22,6 @@ public: // 编辑对象
         if (SceneManager::getIns().scene->selectedItems().empty())
             return;
 
-        // DEBUG_MSG("edit");
         // 把所有对象颜色设置成黑色
         auto group = Manager::getIns().getItems(0);
         for (const auto& uuid : group) {

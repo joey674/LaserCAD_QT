@@ -76,30 +76,26 @@ void MainWindow::initGraphicsView()
     SceneManager::getIns().scene=new QGraphicsScene();
     UiManager::getIns().UiManager::getIns().UI()->graphicsView->setScene(SceneManager::getIns().scene);
 
-    // add axis
-    QPen pen(Qt::red);
-    pen.setWidth(1);
-
     QGraphicsLineItem *xAxis=new QGraphicsLineItem(-100,0,100,0);
     QGraphicsLineItem *yAxis=new QGraphicsLineItem(0,-100,0,100);
-    xAxis->setPen(pen);
+    xAxis->setPen(QPen(Qt::red,1));
     xAxis->setPos(0,0);
-    yAxis->setPen(pen);
+    yAxis->setPen(QPen(Qt::red,1));
     yAxis->setPos(0,0);
     SceneManager::getIns().scene->addItem(xAxis);
     SceneManager::getIns().scene->addItem(yAxis);
 
     QGraphicsLineItem *xArrowL=new QGraphicsLineItem(90,10,100,0);
     QGraphicsLineItem *xArrowR=new QGraphicsLineItem(90,-10,100,0);
-    xArrowL->setPen(pen);
-    xArrowR->setPen(pen);
+    xArrowL->setPen(QPen(Qt::red,1));
+    xArrowR->setPen(QPen(Qt::red,1));
     SceneManager::getIns().scene->addItem(xArrowL);
     SceneManager::getIns().scene->addItem(xArrowR);
 
     QGraphicsLineItem *yArrowL=new QGraphicsLineItem(10,90,0,100);
     QGraphicsLineItem *yArrowR=new QGraphicsLineItem(-10,90,0,100);
-    yArrowL->setPen(pen);
-    yArrowR->setPen(pen);
+    yArrowL->setPen(QPen(Qt::red,1));
+    yArrowR->setPen(QPen(Qt::red,1));
     SceneManager::getIns().scene->addItem(yArrowL);
     SceneManager::getIns().scene->addItem(yArrowR);
 
@@ -626,7 +622,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
 
 void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
 {
-    displayOperation("mouse left press");
+    // INFO_MSG("LeftPress");
     KeyboardManager::getIns().IsMouseLeftButtonHold = true;
 
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
@@ -637,11 +633,6 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
         SceneManager::getIns().dragScene(pointCoordView,MouseEvent::LeftPress);
         break;
     }
-    // case OperationEvent:: EditProperty:
-    // {
-    //     EditManager::getIns().editItem(pointCoordscene,MouseEvent::LeftPress);
-    //     break;
-    // }
     default:
     {}
     }
@@ -1286,6 +1277,7 @@ void MainWindow::onTreeViewModelNodeClicked()
 {
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    UiManager::getIns().UI()->treeView->expand(node);
 
     QString type = model->nodeProperty(node, NodePropertyIndex::Type).toString();
     if (type == "Layer") {

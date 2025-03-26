@@ -1,12 +1,7 @@
 #ifndef ARCITEM_H
 #define ARCITEM_H
 
-#include <qgraphicsitem.h>
-#include <qgraphicsscene.h>
-#include <QPainter>
-#include <QDebug.h>
-#include <QStyleOptionGraphicsItem>
-#include "graphicsviewprotocol.h"
+#include "protocol.h"
 #include "laseritem.h"
 
 class ArcItem: public LaserItem
@@ -19,14 +14,13 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void editVertex(const int &index, const QPointF& point, const double& angle) override;
+    void editVertex(const int &index, const QPointF& point, const double& angle);
     void createParallelOffset(const double& offset, const double& offsetNum) override;
     void rotate(const double& angle) override;
-    void setColor(Qt::GlobalColor setColor) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
-    void updatePaintItem();
+    void updatePaintItem() override;
     void animate() override;
     /// \brief get info
     /// 只获取信息
@@ -49,8 +43,6 @@ private:
     double offset  = 0;
     int offsetNum = 1;
     std::vector<std::shared_ptr<ArcItem>> offsetItemList;
-    ///
-    Qt::GlobalColor color = Qt::black;
 };
 
 #endif // ARCITEM_H

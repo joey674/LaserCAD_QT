@@ -1,5 +1,6 @@
 #include "arcitem.h"
 #include "logger.h"
+#include "graphicsmath.h"
 
 ArcItem::ArcItem()
 {
@@ -27,12 +28,6 @@ void ArcItem::createParallelOffset(const double &offset, const double &offsetNum
 void ArcItem::rotate(const double &angle)
 {
 
-}
-
-
-void ArcItem::setColor(Qt::GlobalColor setColor)
-{
-    this->color = setColor;
 }
 
 void ArcItem::updateParallelOffset()
@@ -87,7 +82,7 @@ void ArcItem::updatePaintItem()
 
     QPainterPath arcPath = createArcPath(v1,v2,angle);
     this->PaintItem = std::make_unique<QGraphicsPathItem>(arcPath);
-    this->PaintItem->setPen(QPen(this->color,1));
+    this->PaintItem->setPen(QPen(this->getColor(),1));
 }
 
 void ArcItem::animate()

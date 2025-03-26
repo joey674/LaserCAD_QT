@@ -1,6 +1,6 @@
-#include "graphicsviewprotocol.h"
+#include "graphicsmath.h"
+#include <qgraphicsitem.h>
 #include "logger.h"
-
 
 QPainterPath createArcPath(const QPointF& p1, const QPointF& p2,const double & angle)
 {
