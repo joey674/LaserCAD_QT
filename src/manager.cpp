@@ -4,9 +4,7 @@
 #include "treemodel.h"
 #include "uimanager.h"
 #include "scenemanager.h"
-#include "utils.hpp"
 #include "polylineitem.h"
-#include "arcitem.h"
 
  Manager Manager::ins;
 
@@ -24,7 +22,7 @@ Manager &Manager::getIns()
     auto treeView = UiManager::getIns().UI()->treeView;
      int layer = SceneManager::getIns().getCurrentLayer();
     QString name = ptr->getName();
-    QString UUID = ptr->getUUID();
+    QString uuid = ptr->getUUID();
 
     // 插入TreeViewModel
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -40,18 +38,18 @@ Manager &Manager::getIns()
     const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
     model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
     model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,UUID);
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,uuid);
 
     treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
                                                  QItemSelectionModel::ClearAndSelect);
 
     // 插入ItemMap
     // DEBUG_VAR(ptr.get());
-    ItemMap.insert({UUID,ptr});
+    itemMapInsert(uuid,ptr);
 
     // 插入propertyMap
     auto map = DefaultPropertyMap;
-    PropertyMap.insert({UUID,map});
+    propertyMapInsert(uuid,map);
  }
 
  void Manager::addItem(QModelIndex position, QString name, QString type)
@@ -67,18 +65,18 @@ Manager &Manager::getIns()
      model->setNodeProperty(position,NodePropertyIndex::UUID, item.get()->getUUID());
      // 插入ItemMap
      // DEBUG_VAR(ptr.get());
-     ItemMap.insert({item.get()->getUUID(),item});
+     itemMapInsert(item.get()->getUUID(),item);
 
      // 插入propertyMap
      auto map = DefaultPropertyMap;
-     PropertyMap.insert({item.get()->getUUID(),map});
+     propertyMapInsert(item.get()->getUUID(),map);
  }
 
  ///
  /// \brief Manager::deleteItem
  /// \param item
  ///
- void Manager::deleteItem(QString UUID)
+ void Manager::deleteItem(QString uuid)
  {
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -87,7 +85,7 @@ Manager &Manager::getIns()
     QModelIndex nodeIndex = QModelIndex();
     auto allNodes = model->getAllChildNodes(nodeIndex);
     for (const auto& node : allNodes) {
-        if(UUID == node->property(NodePropertyIndex::UUID).toString()){
+        if(uuid == node->property(NodePropertyIndex::UUID).toString()){
             //删除目标节点下所有子节点
             auto nodefamily = model->getAllChildNodes(model->getIndex(node));
             for (auto childNode: nodefamily)
@@ -96,8 +94,8 @@ Manager &Manager::getIns()
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
                     FATAL_MSG("fail to removeRow");
                 }
-                ItemMap.erase(childNode->property(NodePropertyIndex::UUID).toString());
-                PropertyMap.erase(childNode->property(NodePropertyIndex::UUID).toString());
+                itemMapErase(childNode->property(NodePropertyIndex::UUID).toString());
+                propertyMapErase(childNode->property(NodePropertyIndex::UUID).toString());
             }
 
              // 删除目标节点(不能先删 不然的话treenode直接被model给清空了)
@@ -106,8 +104,8 @@ Manager &Manager::getIns()
                  FATAL_MSG("fail to removeRow");
              }
 
-             ItemMap.erase(UUID);
-             PropertyMap.erase(UUID);
+             itemMapErase(uuid);
+             propertyMapErase(uuid);
              break;
          }
      }

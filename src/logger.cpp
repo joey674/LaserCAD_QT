@@ -39,7 +39,7 @@ void MessageHandler(QtMsgType type,
         break;
     }
 
-    QString finalMsg = QString("[%1] [%2] [%3:%4] [%5]  %6")
+    QString finalMsg = QString("[%1]  [%2]  [%3:%4]  [%5]  %6")
                            .arg(QDateTime::currentDateTime().toString("MMdd h:mm:ss"))
                            .arg(level)
                            .arg(fileName)

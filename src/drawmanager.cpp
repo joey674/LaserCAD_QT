@@ -29,11 +29,11 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
-            Manager::getIns().setItemColor(item,DisplayColor);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpPolyline = std::make_shared<PolylineItem>();
-        this->tmpPolyline->setColor(EditColor);
+        this->tmpPolyline->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
 
         this->tmpPolyline->addVertex(pointCoordscene,0);
@@ -79,11 +79,11 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
-            Manager::getIns().setItemColor(item,DisplayColor);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpArc = std::make_shared<ArcItem>();
-        this->tmpArc->setColor(EditColor);
+        this->tmpArc->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpArc.get());
 
         this->tmpArc->operateIndex += 1;
@@ -114,7 +114,7 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
     }
     else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftRelease)
     {
-        this->tmpArc->setColor(DisplayColor);
+        this->tmpArc->setPen(DISPLAY_PEN);
         Manager::getIns().addItem(std::move(this->tmpArc));
     }
 }

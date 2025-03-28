@@ -3,6 +3,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsItem>
 #include <QGraphicsScene>
+#include "keyboardmanager.h"
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
 {
@@ -51,4 +52,14 @@ void GraphicsView::mouseDoubleClickEvent(QMouseEvent* event)
         emit mouseDoubleClicked(point);
 
     QGraphicsView::mouseDoubleClickEvent(event);
+}
+
+void GraphicsView::keyPressEvent(QKeyEvent *event)
+{
+    KeyboardManager::getIns().onGraphicsViewKeyPressEvent(event);
+}
+
+void GraphicsView::keyReleaseEvent(QKeyEvent *event)
+{
+KeyboardManager::getIns().onGraphicsViewKeyReleaseEvent(event);
 }

@@ -13,16 +13,7 @@ class GraphicsView: public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit GraphicsView(QWidget *parent = nullptr) {
-        // setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
-    };
-    enum EventType {
-        LeftPress,
-        RightPress,
-        LeftRelease,
-        RightRelease,
-        MouseMove,
-    };
+    explicit GraphicsView(QWidget *parent = nullptr) {};
 
 protected:
     void mousePressEvent(QMouseEvent *) override;
@@ -30,6 +21,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent *) override;
     void wheelEvent(QWheelEvent *) override;
     void mouseDoubleClickEvent(QMouseEvent*) override;
+    void keyPressEvent(QKeyEvent * event) override;
+    void keyReleaseEvent(QKeyEvent * event) override;
 signals:
     void mouseLeftPressed(QPoint);
     void mouseRightPressed(QPoint);

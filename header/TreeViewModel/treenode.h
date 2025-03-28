@@ -1,20 +1,9 @@
-// Copyright (C) 2016 The Qt Company Ltd.
-// SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
-
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
 #include <QVariant>
 #include <QList>
-
-enum NodePropertyIndex: int
-{
-    Name = 0,       // QString
-    Type = 1,         // QString
-    UUID = 2,        // QString
-};
-
-static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
+#include "protocol.h"
 
 class TreeModel;
 
@@ -31,13 +20,15 @@ public:
     int indexInParent() const;
 
     int propertyCount() const;
-    QVariant property(int index) const;
+    QVariant property(NodePropertyIndex index) const;
+    QVariant property(int  index) const;// 可能越界的版本;
 
     QVariantList propertyList() const;
 private:
     bool insertChilds(int position, int count);// 只添加新默认节点
     bool removeChilds(int position, int count);
 
+    bool setProperty(NodePropertyIndex index, const QVariant &value);
     bool setProperty(int index, const QVariant &value);
     bool setPropertyList(const QVariantList &value);
 private:

@@ -6,7 +6,7 @@
 #include <qgraphicsitem.h>
 #include "polylineitem.h"
 #include "arcitem.h"
-#include "sceneprotocol.h"
+#include "protocol.h"
 #include "logger.h"
 #include "manager.h"
 #include "scenemanager.h"
@@ -25,7 +25,7 @@ public: // 编辑对象
         // 把所有对象颜色设置成黑色
         auto group = Manager::getIns().getItemsByLayer(0);
         for (const auto& uuid : group) {
-            Manager::getIns().setItemColor(uuid,DisplayColor);
+            Manager::getIns().setItemRenderPen(uuid,DISPLAY_PEN);
         }
 
         this->currentEditItem = SceneManager::getIns().scene->selectedItems()[0];
@@ -34,14 +34,14 @@ public: // 编辑对象
         case PolylineItem::Type:
         {
             PolylineItem *item = static_cast<PolylineItem*>(this->currentEditItem);
-            item->setColor(EditColor);
+            item->setPen(EDIT_PEN);
             this->editPolyline(pointCoordscene,item,event);
             break;
         }
         case ArcItem::Type:
         {
             ArcItem *item = static_cast<ArcItem*>(this->currentEditItem);
-            item->setColor(EditColor);
+            item->setPen(EDIT_PEN);
             this->editArc(pointCoordscene,item,event);
             break;
         }

@@ -82,7 +82,7 @@ void ArcItem::updatePaintItem()
 
     QPainterPath arcPath = createArcPath(v1,v2,angle);
     this->PaintItem = std::make_unique<QGraphicsPathItem>(arcPath);
-    this->PaintItem->setPen(QPen(this->getColor(),1));
+    this->PaintItem->setPen(this->getPen());
 }
 
 void ArcItem::animate()

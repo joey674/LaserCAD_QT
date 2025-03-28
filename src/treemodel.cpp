@@ -32,30 +32,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
     QString itemType = item->property(NodePropertyIndex::Type).toString();
     QString itemUUID = item->property(NodePropertyIndex::UUID).toString();
 
-    ///
-    /// \brief isVisible
-    /// TODO 有BUG
-    bool isVisible = false;
-    auto itemIt = Manager::getIns().PropertyMap.find(itemUUID);
-    if (itemIt != Manager::getIns().PropertyMap.end()) {
-        auto& propertyMap = itemIt->second;
-
-        auto propertyIt = propertyMap.find("Visible");
-        if (propertyIt != propertyMap.end()) {
-            isVisible = propertyIt->second.toBool();
-            // qDebug() << "Visible property found:" << isVisible;
-        } else {
-            // qDebug() << "Property 'Visible' not found";
-        }
-    } else {
-        // qDebug() << "Item with UUID" << itemUUID << "not found";
-    }
-    ///
-    ///
-    ///
-
-    // bool isVisible = Manager::getIns().PropertyMap.find(itemUUID)->second.find("Visible")->second.toBool();
-    // DEBUG_VAR(isVisible);
+    bool isVisible = Manager::getIns().propertyMapFind(itemUUID,PropertyIndex::Visible).toBool();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (itemType == "Layer" && !isVisible)
@@ -66,6 +43,13 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
 
     if (role == Qt::ForegroundRole && itemName == ("Layer" + QString::number(curlayer))) {
         return QBrush(Qt::blue);  // 蓝色表示选中
+    }
+
+    if (role == Qt::FontRole && itemName == ("Layer" + QString::number(curlayer))) {
+        QFont font;
+        font.setBold(true);
+        // font.setItalic(true);
+        return font;
     }
 
     return {};
@@ -196,13 +180,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
-
-
-
-
-
-
-QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const int propertyIndex)
+QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex)
 {
     auto node = getNode(nodeIndex);
     if (!node)
@@ -565,7 +543,7 @@ std::vector<TreeNode *> TreeModel::getAllChildNodes(const QModelIndex &nodeIndex
     return children;
 }
 
-void TreeModel::setNodeProperty(const QModelIndex &nodeIndex, const int propertyIndex, const QVariant &value)
+void TreeModel::setNodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex, const QVariant &value)
 {
     auto node = getNode(nodeIndex);
     if (!node)

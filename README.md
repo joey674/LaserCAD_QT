@@ -10,8 +10,14 @@ https://bo7zwj4hof.larksuite.com/docx/S4YudowaZowtVMxJ7Goua4irsJg?from=from_copy
 - off (visualize indent)
 
 ## 命名
+- 普通成员函数:          
+    - Camel Case    initTitleBar;
+- Qt 框架重载函数:    
+    - Camel Case    keyPressEvent;
+-  signals函数: 
+    - Camel Case    keyPressed;
+- slots函数: 
+    - Camel Case    onKeyPressed;   
 
-- Qt 框架重载函数: Camel Case;
-- 普通成员函数: Camel Case;
-- 自定义 signals/函数: Snake Case;
+- 成员变量: m_variableA
 

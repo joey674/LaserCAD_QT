@@ -54,7 +54,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
         header/GraphicsView/graphicsmath.h                     src/graphicsmath.cpp
-        header/GraphicsView/protocol.h
         # TreeViewModel
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
@@ -66,16 +65,16 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resource/button.qrc
         #Ui
         header/Ui/uimanager.h                                                   src/uimanager.cpp
-        header/Ui//css.h                                                                #[[src/css.cpp]]
+        header/Ui//css.h
         #Keyboard
         header/Keyboard/keyboardmanager.h                   src/keyboardmanager.cpp
         # Scene
         header/Scene/scenemanager.h                                 src/scenemanager.cpp
         header/Scene/drawmanager.h                                   src/drawmanager.cpp
-        header/Scene/sceneprotocol.h
-        header/Scene/editmanager.h                                     src/editmanager.cpp
+        header/Scene/editmanager.h                                      src/editmanager.cpp
         # main
-        header/manager.h                            src/manager.cpp
+        header/manager.h                                                            src/manager.cpp
+        header/protocol.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

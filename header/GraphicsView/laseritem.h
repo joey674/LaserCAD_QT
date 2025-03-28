@@ -19,8 +19,8 @@ public:
     /// 这里面所有函数结束都要调用animate
     virtual void createParallelOffset(const double& offset, const double& offsetNum) = 0;
     virtual void rotate(const double& angle) = 0;
-    void setColor(Qt::GlobalColor setColor){
-        this->color = setColor;
+    void setPen(QPen setPen){
+        this->m_pen = setPen;
         this->animate();
     }
     /// \brief update
@@ -41,14 +41,14 @@ public:
     }
     const QString getUUID()
     {
-        return this->uuid;
+        return this->m_uuid;
     }
-    const Qt::GlobalColor getColor(){
-        return this->color;
+    const QPen getPen(){
+        return this->m_pen;
     };
 private:
-    QString uuid;
-    Qt::GlobalColor color = DisplayColor;
+    QString m_uuid;
+    QPen m_pen = DISPLAY_PEN;
 };
 
 #endif // LASERITEM_H

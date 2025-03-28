@@ -1,14 +1,3 @@
-/*
-Manager用于存储与管理数据,并同步
-要管理的内容有三块:
-    1. ItemMap
-    2. TreeViewModel中的节点
-    3. Scene
-
-除了一开始的addItem和deleteItem scene和tree可能需要分开处理,后面的都用UUID作为索引;
-所有节点 包括layer group都有存itemmap和propertymap;itemmap不使用; propertymap用于存储layer/group的数据信息
-*/
-
 #ifndef MANAGER_H
 #define MANAGER_H
 
@@ -24,105 +13,118 @@ Manager用于存储与管理数据,并同步
 #include "logger.h"
 #include "scenemanager.h"
 
-const std::map<QString, QVariant> DefaultPropertyMap = {
-    {"Visible", QVariant(true)},
-    {"Selectable", QVariant(true)},
-    {"Movable",QVariant(true)},
-    {"Color",QVariant("black")}
-};
 
 class Manager
 {
+private:
+    std::unordered_map<UUID,std::shared_ptr<LaserItem>> m_itemMap;
+    std::unordered_map<UUID,std::map<PropertyIndex,QVariant>> m_propertyMap;
 public:
-    std::unordered_map<QString,std::shared_ptr<LaserItem>> ItemMap;
-    std::unordered_map<QString,std::map<QString,QVariant>> PropertyMap;
-public:
-    /// \brief addItem 将graphicitem添加到 1. ItemMap  2. TreeViewModel ;暂时不考虑3. Scene
+    /// \brief addItem 将graphicitem添加到 1. m_itemMap  2. TreeViewModel ;暂时不考虑3. Scene
     void addItem(std::shared_ptr<LaserItem> ptr);
-    /// \brief addItem 将非graphicitem(包括layer node physicItem)添加到 1. ItemMap  2. TreeViewModel ;
+    /// \brief addItem 将非graphicitem(包括layer node physicItem)添加到 1. m_itemMap  2. TreeViewModel ;
     void addItem(QModelIndex position, QString name, QString type);
-    /// \brief deleteItem 将graphicitem删除 1. ItemMap  2. TreeViewModel ; 自动包含3. Scene
-    void deleteItem(QString UUID);
+    /// \brief deleteItem 将graphicitem删除 1. m_itemMap  2. TreeViewModel ; 自动包含3. Scene
+    void deleteItem(UUID uuid);
     /// \brief setItem property
-    void setItemVisible(QString UUID,bool status)
+    void setItemVisible(UUID uuid,bool status)
     {
-        auto propIt = PropertyMap.find(UUID);
-        if (propIt == PropertyMap.end()) {
-            WARN_MSG("fail to find item");
-            return;
-        }
-        // - ItemMap
-        // - PropertyMap
-        PropertyMap.find(UUID)->second.find("Visible")->second = status;
+        // - m_itemMap
+        // - m_propertyMap
+        propertyMapFind(uuid,PropertyIndex::Visible) = status;
         // - TreeViewModel中的节点
         // - Scene
-
-        ItemMap.find(UUID)->second.get()->setVisible(status);
+        itemMapFind(uuid)->setVisible(status);
     };
-    void setItemSelectable(QString UUID,bool status)
+    void setItemSelectable(UUID uuid,bool status)
     {
-        auto propIt = PropertyMap.find(UUID);
-        if (propIt == PropertyMap.end()) {
-            WARN_MSG("fail to find item");
-            return;
-        }
-        // - ItemMap
-        // - PropertyMap
-        PropertyMap.find(UUID)->second.find("Selectable")->second = status;
+        // - m_itemMap
+        // - m_propertyMap
+        propertyMapFind(uuid,PropertyIndex::Selectable) = status;
         // - TreeViewModel中的节点
         // - Scene
-        ItemMap.find(UUID)->second.get()->setFlag(QGraphicsItem::ItemIsSelectable, status);
+        itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
     };
-    void setItemMovable(QString UUID,bool status)
+    void setItemMovable(UUID uuid,bool status)
     {
-        auto propIt = PropertyMap.find(UUID);
-        if (propIt == PropertyMap.end()) {
-            WARN_MSG("fail to find item");
-            return;
-        }
-        // - ItemMap
-        // - PropertyMap
-        PropertyMap.find(UUID)->second.find("Movable")->second = status;
+        // - m_itemMap
+        // - m_propertyMap
+        propertyMapFind(uuid,PropertyIndex::Movable) = status;
         // - TreeViewModel中的节点
         // - Scene
-        ItemMap.find(UUID)->second.get()->setFlag(QGraphicsItem::ItemIsMovable, status);
+        itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
     }
-    void setItemColor(QString UUID,Qt::GlobalColor status)
+    void setItemRenderPen(UUID uuid,QPen pen)
     {
-        auto propIt = PropertyMap.find(UUID);
-        if (propIt == PropertyMap.end()) {
-            WARN_MSG("fail to find item");
-            return;
-        }
-        // - ItemMap
-        // - PropertyMap
-        QString color;
-        if (status == Qt::black)
-            color = "black";
-        else if (status == Qt::blue)
-            color = "blue";
-        else if (status == Qt::red)
-            color = "red";
-        else if (status == Qt::green)
-            color = "green";
-        else
-            FATAL_MSG("Unknow color");
-        PropertyMap.find(UUID)->second.find("Color")->second = color;
+        // - m_itemMap
+        // - m_propertyMap
+        propertyMapFind(uuid,PropertyIndex::Pen) = pen;
         // - TreeViewModel中的节点
         // - Scene
-        ItemMap.find(UUID)->second.get()->setColor(status);
+        itemMapFind(uuid)->setPen(pen);
     }
 
-    QString getItem(QModelIndex index);
-    QString getItem(QGraphicsItem* item);
+    /// \brief getItem
+    /// \param index
+    UUID getItem(QModelIndex index);
+    UUID getItem(QGraphicsItem* item);
+    /// \brief  getItemsByLayer 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+    std::vector<UUID> getItemsByLayer(int layer);
 
-    /// \brief 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
-    std::vector<QString> getItemsByLayer(int layer);
+    /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
+    /// \param UUID
+    std::shared_ptr<LaserItem> itemMapFind(UUID uuid)
+    {
+        auto it = m_itemMap.find(uuid);
+        if (it == m_itemMap.end()) {
+            WARN_VAR(uuid);
+            FATAL_MSG("fail to find item by uuid");
+        }
+        return it->second;
+    }
+    void itemMapInsert(UUID uuid, std::shared_ptr<LaserItem> ptr)
+    {
+        m_itemMap.insert({uuid,ptr});
+    }
+    void itemMapErase(UUID uuid)
+    {
+        m_itemMap.erase(uuid);
+    }
 
-    void setVisibleSync(){
+    QVariant& propertyMapFind(UUID uuid, PropertyIndex index)
+    {
+        auto it = m_propertyMap.find(uuid);
+        if (it == m_propertyMap.end()) {
+            WARN_VAR(uuid);
+            FATAL_MSG("fail to find item in this uuid");
+        }
+
+        auto& map = it->second;
+        auto it1 = map.find(index);
+        if (it1 == map.end()) {
+            WARN_VAR(index);
+            FATAL_MSG("fail to find property in this item");
+        }
+
+        return it1->second;
+    }
+    void propertyMapInsert(UUID uuid, std::map<PropertyIndex,QVariant> map)
+    {
+        m_propertyMap.insert({uuid,map});
+    }
+    void propertyMapErase(UUID uuid)
+    {
+        m_propertyMap.erase(uuid);
+    }
+
+
+
+    /// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
+    void setVisibleSync()
+    {
         for (int layer = 1;layer <= SceneManager::getIns().layerCount();++layer){
             auto items = getItemsByLayer(layer);
-            bool isVisible = PropertyMap.find(items[0])->second.find("Visible")->second.toBool();
+            bool isVisible = propertyMapFind(items[0],PropertyIndex::Visible).toBool();
             // DEBUG_VAR(layer);
             // DEBUG_VAR(isVisible);
             for (const auto& item: items){
@@ -131,6 +133,7 @@ public:
             }
         }
     }
+
 private:
     static Manager ins;
     Manager(){};

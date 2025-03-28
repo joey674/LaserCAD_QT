@@ -3,6 +3,7 @@
 #include "uimanager.h"
 #include "treemodel.h"
 #include "manager.h"
+#include <QScrollBar>
 
 SceneManager SceneManager::ins;
 
@@ -11,10 +12,6 @@ SceneManager &SceneManager::getIns()
     return ins;
 }
 
-///
-/// \brief SceneManager::getSceneScale  获取当前画布缩放倍率
-/// \return
-///
 std::pair<double, double> SceneManager::getSceneScale()
 {
     return this->sceneScale;
@@ -31,12 +28,16 @@ void SceneManager::setCurrentLayer(int layer){
     for (const auto& item : allItems) {
         Manager::getIns().setItemSelectable(item,false);
         Manager::getIns().setItemMovable(item,false);
-        Manager::getIns().setItemColor(item,DisplayColor);
+        Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
     }
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemSelectable(item,true);
         Manager::getIns().setItemMovable(item,true);
     }
+}
+
+int SceneManager::getCurrentLayer(){
+    return currentLayer;
 }
 
 int SceneManager::layerCount(){
@@ -48,45 +49,26 @@ int SceneManager::layerCount(){
 
 void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event)
 {
+    if (event == MouseEvent::LeftPress) {
+        this->dragScenePoint = pointCoordView;
+    }
+    else if (event == MouseEvent::MouseMove) {
+        QPointF oldP  = this->dragScenePoint;
+        QPointF newP = pointCoordView;
+        QPointF translation = newP - oldP;
+        // DEBUG_VAR(translation);
+        translation.setX(translation.x() / SceneManager::getIns().getSceneScale().first);
+        translation.setY(translation.y() / SceneManager::getIns().getSceneScale().second);
 
-    if (event == MouseEvent::LeftPress)
-    {
-        DEBUG_MSG("dragScene: LeftPress");
-        // DEBUG_VAR(pointCoordView);
+        UiManager::getIns().UI()->graphicsView->translate(translation.x(), translation.y());
 
         this->dragScenePoint = pointCoordView;
     }
-    else if (event == MouseEvent::MouseMove)
-    {
-        // DEBUG_MSG("dragScene: MouseMove");
-        // DEBUG_VAR(pointCoordView);
+    else if (event == MouseEvent::LeftRelease) {
 
-        double dx = static_cast<double>(this->dragScenePoint.x()) - static_cast<double>(pointCoordView.x());
-        double dy = static_cast<double>(this->dragScenePoint.y()) - static_cast<double>(pointCoordView.y());
-        QPointF delta(dx, dy);
-
-        double newX = std::fma(delta.x(), 1.0 / SceneManager::getIns().getSceneScale().first, 0.0);
-        double newY = std::fma(delta.y(), 1.0 / SceneManager::getIns().getSceneScale().second, 0.0);
-        delta = QPointF(newX, newY);
-        // DEBUG_VAR(delta);
-
-        auto newRect = SceneManager::getIns().scene->sceneRect().adjusted(delta.x(),delta.y(),delta.x(),delta.y());
-        SceneManager::getIns().scene->setSceneRect(newRect);
-
-        this->dragScenePoint = pointCoordView;
-    }
-    else if (event == MouseEvent::LeftRelease)
-    {
-        DEBUG_MSG("dragScene: LeftRelease");
-        this->dragScenePoint = QPointF(0,0);
     }
 }
 
-///
-/// \brief SceneManager::setSceneScale  放大缩小画布
-/// \param x 缩放倍率(基于当前状态再缩放)
-/// \param y
-///
 void SceneManager::setSceneScale(double x, double y)
 {
     if (x <=0 || y<=0)

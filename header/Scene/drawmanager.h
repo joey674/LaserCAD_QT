@@ -6,7 +6,7 @@
 #include <qgraphicsitem.h>
 #include "polylineitem.h"
 #include "arcitem.h"
-#include "sceneprotocol.h"
+#include "protocol.h"
 
 
 class DrawManager

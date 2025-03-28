@@ -137,14 +137,14 @@ void PolylineItem::updatePaintItem()
             auto lineItem = std::make_shared<QGraphicsLineItem>(
                 QLineF(v1, v2)
                 );
-            lineItem->setPen(QPen(this->getColor(),1));
+            lineItem->setPen(this->getPen());
             PaintItemList.push_back(std::move(lineItem));
         }
         else
         {
             QPainterPath arcPath = createArcPath(v1,v2,angle);
             auto pathItem = std::make_shared<QGraphicsPathItem>(arcPath);
-            pathItem->setPen(QPen(this->getColor(),1));
+            pathItem->setPen(this->getPen());
             PaintItemList.push_back(std::move(pathItem));
         }
     }

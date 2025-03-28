@@ -1,5 +1,5 @@
 #include "treenode.h"
-
+#include "protocol.h"
 
 TreeNode::TreeNode(QVariantList property, TreeNode *parent)
     : m_propertyList(std::move(property)), m_parentItem(parent)
@@ -38,6 +38,11 @@ int TreeNode::propertyCount() const
     return int(m_propertyList.count());
 }
 
+QVariant TreeNode::property(NodePropertyIndex index) const
+{
+    return m_propertyList.value(static_cast<int>(index));
+}
+
 QVariant TreeNode::property(int index) const
 {
     return m_propertyList.value(index);
@@ -71,12 +76,15 @@ bool TreeNode::removeChilds(int position, int count)
     return true;
 }
 
-bool TreeNode::setProperty(int dataIndex, const QVariant &value)
+bool TreeNode::setProperty(NodePropertyIndex index, const QVariant &value)
 {
-    if (dataIndex < 0 || dataIndex >= m_propertyList.size())
-        return false;
+    m_propertyList[static_cast<int>(index)] = value;
+    return true;
+}
 
-    m_propertyList[dataIndex] = value;
+bool TreeNode::setProperty(int index, const QVariant &value)
+{
+    m_propertyList[index] = value;
     return true;
 }
 

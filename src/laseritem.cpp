@@ -5,7 +5,7 @@
 
 LaserItem::LaserItem()
 {
-    this->uuid = GenerateUUID();
+    this->m_uuid = GenerateUUID();
 }
 
 

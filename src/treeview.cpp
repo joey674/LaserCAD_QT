@@ -1,8 +1,6 @@
 #include "treeview.h"
 #include <QDebug>
 #include "treemodel.h"
-#include "logger.h"
-#include "manager.h"
 
 
 void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)

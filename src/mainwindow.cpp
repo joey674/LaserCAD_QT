@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     auto ui = std::make_unique<Ui::MainWindow>();
     ui->setupUi(this);
     UiManager::getIns().setUI(std::move(ui));
-    // showMaximized();
+    showMaximized();
 
     initTitleBar();
     initGraphicsView();
@@ -53,9 +53,6 @@ MainWindow::~MainWindow()
     // delete UiManager::getIns().UI();
 }
 
-///
-/// \brief MainWindow::initGraphicsView
-///
 void MainWindow::initTitleBar()
 {
     // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
@@ -75,37 +72,58 @@ void MainWindow::initTitleBar()
 void MainWindow::initGraphicsView()
 {
     SceneManager::getIns().scene=new QGraphicsScene();
-    UiManager::getIns().UiManager::getIns().UI()->graphicsView->setScene(SceneManager::getIns().scene);
+    UiManager::getIns().UI()->graphicsView->setScene(SceneManager::getIns().scene);
+    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
+    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
+    UiManager::getIns().UI()->graphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
+    UiManager::getIns().UI()->graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
+    UiManager::getIns().UI()->graphicsView->setResizeAnchor(QGraphicsView::NoAnchor);
+    UiManager::getIns().UI()->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UiManager::getIns().UI()->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UiManager::getIns().UI()->graphicsView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
+
+    SceneManager::getIns().setSceneScale(0.1,0.1);
+    QTimer::singleShot(100, []() {
+        SceneManager::getIns().setSceneScale(10, 10);
+    });
 
     QGraphicsLineItem *xAxis=new QGraphicsLineItem(-100,0,100,0);
     QGraphicsLineItem *yAxis=new QGraphicsLineItem(0,-100,0,100);
-    xAxis->setPen(QPen(Qt::red,1));
+    xAxis->setPen(AXIS_PEN);
     xAxis->setPos(0,0);
-    yAxis->setPen(QPen(Qt::red,1));
+    yAxis->setPen(AXIS_PEN);
     yAxis->setPos(0,0);
     SceneManager::getIns().scene->addItem(xAxis);
     SceneManager::getIns().scene->addItem(yAxis);
 
     QGraphicsLineItem *xArrowL=new QGraphicsLineItem(90,10,100,0);
     QGraphicsLineItem *xArrowR=new QGraphicsLineItem(90,-10,100,0);
-    xArrowL->setPen(QPen(Qt::red,1));
-    xArrowR->setPen(QPen(Qt::red,1));
+    xArrowL->setPen(AXIS_PEN);
+    xArrowR->setPen(AXIS_PEN);
     SceneManager::getIns().scene->addItem(xArrowL);
     SceneManager::getIns().scene->addItem(xArrowR);
 
     QGraphicsLineItem *yArrowL=new QGraphicsLineItem(10,90,0,100);
     QGraphicsLineItem *yArrowR=new QGraphicsLineItem(-10,90,0,100);
-    yArrowL->setPen(QPen(Qt::red,1));
-    yArrowR->setPen(QPen(Qt::red,1));
+    yArrowL->setPen(AXIS_PEN);
+    yArrowR->setPen(AXIS_PEN);
     SceneManager::getIns().scene->addItem(yArrowL);
     SceneManager::getIns().scene->addItem(yArrowR);
 
-    // 锁定当前场景矩形
-    SceneManager::getIns().setSceneScale(1,1);
-    SceneManager::getIns().scene->setSceneRect(SceneManager::getIns().scene->sceneRect());
+    QGraphicsLineItem *bound1=new QGraphicsLineItem(900,900,1000,1000);
+    QGraphicsLineItem *bound2=new QGraphicsLineItem(-1000,-1000,-900,-900);
+    QGraphicsLineItem *bound3=new QGraphicsLineItem(-900,900,-1000,1000);
+    QGraphicsLineItem *bound4=new QGraphicsLineItem(1000,-1000,900,-900);
+    bound1->setPen(AXIS_PEN);
+    bound2->setPen(AXIS_PEN);
+    bound3->setPen(AXIS_PEN);
+    bound4->setPen(AXIS_PEN);
+    SceneManager::getIns().scene->addItem(bound1);
+    SceneManager::getIns().scene->addItem(bound2);
+    SceneManager::getIns().scene->addItem(bound3);
+    SceneManager::getIns().scene->addItem(bound4);
 
-    // 设置初始为没有选框
-    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
 
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
@@ -316,9 +334,6 @@ void MainWindow::initToolButton()
         );
 }
 
-///
-/// \brief MainWindow::initLayerButton
-///
 void MainWindow::initLayerButton()
 {
     // QLayout *graphicsViewLayout = UiManager::getIns().UI()->mainLayout->findChild<QLayout*>("graphicsViewLayout");
@@ -405,108 +420,13 @@ void MainWindow::test(){
 ///
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
-    switch(event->key())
-    {
-    case Qt::Key_Shift:
-    {
-        KeyboardManager::getIns().IsShiftHold = true;
-        break;
-    }
-    case Qt::Key_Control:
-    {
-        KeyboardManager::getIns().IsControlHold = true;
-        break;
-    }
-
-    case Qt::Key_X:
-    {
-        KeyboardManager::getIns().IsXHold = true;
-        break;
-    }
-    case Qt::Key_Y:
-    {
-        KeyboardManager::getIns().IsYHold = true;
-        break;
-    }
-    case Qt::Key_Z:
-    {
-        KeyboardManager::getIns().IsZHold = true;
-        break;
-    }
-
-    case Qt::Key_CapsLock:
-    {
-        KeyboardManager::getIns().IsCapsLocked = !KeyboardManager::getIns().IsCapsLocked;
-        break;
-    }
-
-    case Qt::Key_W:
-    {
-        // ->polygonEdgeNum +=1;
-        break;
-    }
-    case Qt::Key_S:
-    {
-        // if (this->polygonEdgeNum>3){
-        //     this->polygonEdgeNum -=1;
-        // }
-        // break;
-    }
-    case Qt::Key_A:
-    {
-
-        break;
-    }
-    case Qt::Key_D:
-    {
-
-        break;
-    }
-
-    case Qt::Key_1:
-    {
-        break;
-    }
-    case Qt::Key_2:
-    {
-        break;
-    }
-    case Qt::Key_3:
-    {
-        break;
-    }
-    }
+    DEBUG_MSG("keypress");
+    KeyboardManager::getIns().onMainWindowKeyPressEvent(event);
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event)
 {
-    switch(event->key()) {
-    case Qt::Key_Shift:
-    {
-        KeyboardManager::getIns().IsShiftHold = false;
-        break;
-    }
-    case Qt::Key_Control:
-    {
-        KeyboardManager::getIns().IsControlHold = false;
-        break;
-    }
-    case Qt::Key_X:
-    {
-        KeyboardManager::getIns().IsXHold = false;
-        break;
-    }
-    case Qt::Key_Y:
-    {
-        KeyboardManager::getIns().IsYHold = false;
-        break;
-    }
-    case Qt::Key_Z:
-    {
-        KeyboardManager::getIns().IsZHold = false;
-        break;
-    }
-    }
+    KeyboardManager::getIns().onMainWindowKeyReleaseEvent(event);
 }
 
 ///
@@ -860,13 +780,13 @@ void MainWindow::on_editButton_clicked()
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
-    // 设置当前图层内物体可动;所有物体颜色为黑
-    SceneManager::getIns().setCurrentLayer(SceneManager::getIns().getCurrentLayer());
-
     // button check
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
+
+    // 设置当前图层内物体可动;所有物体颜色为黑
+    SceneManager::getIns().setCurrentLayer(SceneManager::getIns().getCurrentLayer());
 }
 
 void MainWindow::on_dragSceneButton_clicked()
@@ -875,8 +795,17 @@ void MainWindow::on_dragSceneButton_clicked()
     SceneManager::getIns().currentOperationEvent = OperationEvent::DragScene;
     DrawManager::getIns().resetTmpItemStatus();
 
-    // drag mode
+    // clean table
+    UiManager::getIns().UI()->propertyTableWidget->clearContents();
+    UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
+
+    // drag mode/所有物体设置不可动
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    auto allItems = Manager::getIns().getItemsByLayer(0);
+    for (auto item: allItems){
+        Manager::getIns().setItemMovable(item,false);
+        Manager::getIns().setItemSelectable(item,false);
+    }
 
     //button check
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -1108,7 +1037,6 @@ void MainWindow::on_undoButton_clicked()
 
 void MainWindow::on_redoButton_clicked()
 {
-
 }
 
 ///
@@ -1193,9 +1121,9 @@ void MainWindow::onTreeViewModelDeleteNode()
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
     for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto UUID = model->getNode(nodeIndex)->property(NodePropertyIndex::UUID).toString();
+        auto uuid = model->getNode(nodeIndex)->property(NodePropertyIndex::UUID).toString();
 
-        Manager::getIns().deleteItem(UUID);
+        Manager::getIns().deleteItem(uuid);
     }
 
     onTreeViewModelUpdateActions();
