@@ -96,6 +96,9 @@ public:
         auto it = m_propertyMap.find(uuid);
         if (it == m_propertyMap.end()) {
             WARN_VAR(uuid);
+            for (const auto& pair : m_propertyMap) {
+                 WARN_VAR(pair.first);
+            }
             FATAL_MSG("fail to find item in this uuid");
         }
 

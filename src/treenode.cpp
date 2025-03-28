@@ -1,10 +1,11 @@
 #include "treenode.h"
 #include "protocol.h"
+#include "logger.h"
 
-TreeNode::TreeNode(QVariantList property, TreeNode *parent)
-    : m_propertyList(std::move(property)), m_parentItem(parent)
+TreeNode::TreeNode(TreeNode *parent)
+    : m_parentItem(parent)
 {
-    this->m_propertyList.resize(3);
+    // this->m_propertyList.resize(3);
 }
 
 TreeNode *TreeNode::child(int index)
@@ -40,7 +41,12 @@ int TreeNode::propertyCount() const
 
 QVariant TreeNode::property(NodePropertyIndex index) const
 {
-    return m_propertyList.value(static_cast<int>(index));
+    auto idx = static_cast<int>(index);
+        // WARN_VAR(idx);
+        // WARN_VAR(m_parentItem);
+        // WARN_VAR(m_propertyList.size());
+        // WARN_VAR(m_propertyList);
+    return m_propertyList.value(idx);
 }
 
 QVariant TreeNode::property(int index) const
@@ -55,7 +61,7 @@ bool TreeNode::insertChilds(int position, int count)
 
     for (int row = 0; row < count; ++row) {
         m_childItems.insert(m_childItems.cbegin() + position,
-                            std::make_unique<TreeNode>(DefaultNodeProperty, this));
+                            std::make_unique<TreeNode>(this));
     }
     return true;
 }
@@ -78,12 +84,21 @@ bool TreeNode::removeChilds(int position, int count)
 
 bool TreeNode::setProperty(NodePropertyIndex index, const QVariant &value)
 {
-    m_propertyList[static_cast<int>(index)] = value;
+    auto idx = static_cast<int>(index);
+    if (idx> 2){
+        WARN_VAR(idx);
+        FATAL_MSG("exceed property size");
+    }
+    m_propertyList[idx] = value;
     return true;
 }
 
 bool TreeNode::setProperty(int index, const QVariant &value)
 {
+    if (index> 2){
+        WARN_VAR(index);
+        FATAL_MSG("exceed property size");
+    }
     m_propertyList[index] = value;
     return true;
 }

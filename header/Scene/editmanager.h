@@ -9,7 +9,9 @@
 #include "protocol.h"
 #include "logger.h"
 #include "manager.h"
+#include "uimanager.h"
 #include "scenemanager.h"
+#include "treemodel.h"
 
 
 class EditManager
@@ -35,6 +37,19 @@ public: // 编辑对象
         {
             PolylineItem *item = static_cast<PolylineItem*>(this->currentEditItem);
             item->setPen(EDIT_PEN);
+
+            // 在treeview中选中对象
+            auto treeView = UiManager::getIns().UI()->treeView;
+            TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+            auto allNodes = model->getAllChildNodes(QModelIndex());
+            for (auto node:allNodes){
+                if(node->property(NodePropertyIndex::UUID) == item->getUUID()){
+                    auto index = model->getIndex(node);
+                    treeView->selectionModel()->clearSelection();
+                    treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                }
+            }
+
             this->editPolyline(pointCoordscene,item,event);
             break;
         }
@@ -42,6 +57,19 @@ public: // 编辑对象
         {
             ArcItem *item = static_cast<ArcItem*>(this->currentEditItem);
             item->setPen(EDIT_PEN);
+
+            // 在treeview中选中对象
+            auto treeView = UiManager::getIns().UI()->treeView;
+            TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+            auto allNodes = model->getAllChildNodes(QModelIndex());
+            for (auto node:allNodes){
+                if(node->property(NodePropertyIndex::UUID) == item->getUUID()){
+                    auto index = model->getIndex(node);
+                    treeView->selectionModel()->clearSelection();
+                    treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                }
+            }
+
             this->editArc(pointCoordscene,item,event);
             break;
         }

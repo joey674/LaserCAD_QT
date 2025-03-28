@@ -20,7 +20,7 @@ public:
     /// \brief SceneManager::getSceneScale  获取当前画布缩放倍率
     /// \return
     std::pair<double, double> getSceneScale();
-    /// \brief setCurrentLayer
+    /// \brief setCurrentLayer 设置当前layer; 同时还会做一些操作: 设定只有当前图层物体可动,其他不可动; 以及其他图层颜色为display;
     /// \param layer
     void setCurrentLayer(int layer);
     /// \brief getCurrentLayer

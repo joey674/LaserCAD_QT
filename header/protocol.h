@@ -105,6 +105,5 @@ enum class NodePropertyIndex: int
     Type = 1,         // QString
     UUID = 2,        // QString
 };
-static const QVariantList DefaultNodeProperty = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
 
 #endif // PROTOCOL_H

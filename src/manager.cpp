@@ -63,8 +63,7 @@ Manager &Manager::getIns()
      model->setNodeProperty(position,NodePropertyIndex::Name,name);
      model->setNodeProperty(position,NodePropertyIndex::Type,type);
      model->setNodeProperty(position,NodePropertyIndex::UUID, item.get()->getUUID());
-     // 插入ItemMap
-     // DEBUG_VAR(ptr.get());
+     // 插入ItemMap;
      itemMapInsert(item.get()->getUUID(),item);
 
      // 插入propertyMap
@@ -81,29 +80,32 @@ Manager &Manager::getIns()
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
 
-    // 删去在treeViewModel内的节点;通过遍历所有节点来找到对应节点
-    QModelIndex nodeIndex = QModelIndex();
-    auto allNodes = model->getAllChildNodes(nodeIndex);
+    // 通过遍历所有节点来找到对应节点
+    auto allNodes = model->getAllChildNodes(QModelIndex());
     for (const auto& node : allNodes) {
         if(uuid == node->property(NodePropertyIndex::UUID).toString()){
+            // DEBUG_MSG("current delete uuid: " + uuid);
             //删除目标节点下所有子节点
             auto nodefamily = model->getAllChildNodes(model->getIndex(node));
             for (auto childNode: nodefamily)
             {
+                UUID childUuid = childNode->property(NodePropertyIndex::UUID).toString();
+                // DEBUG_MSG("current delete childUuid: " + childUuid);
                 auto parentNodeIndex = model->getIndex(childNode->parent());
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
                     FATAL_MSG("fail to removeRow");
                 }
-                itemMapErase(childNode->property(NodePropertyIndex::UUID).toString());
-                propertyMapErase(childNode->property(NodePropertyIndex::UUID).toString());
+                itemMapErase(childUuid);
+                propertyMapErase(childUuid);
             }
 
-             // 删除目标节点(不能先删 不然的话treenode直接被model给清空了)
+             // 删去在treeViewModel内的节点;
              auto parentNodeIndex = model->getIndex(node->parent());
-             if (!model->removeRow(node->indexInParent(), parentNodeIndex)) {
+             if (!model->removeRows(node->indexInParent(),1, parentNodeIndex)) {
                  FATAL_MSG("fail to removeRow");
              }
 
+             // 删去在itemmap中的节点
              itemMapErase(uuid);
              propertyMapErase(uuid);
              break;

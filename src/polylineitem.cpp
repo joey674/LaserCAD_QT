@@ -6,8 +6,7 @@
 
 PolylineItem::PolylineItem()
 {
-    INFO_MSG("create PolylineItem");
-    INFO_MSG(this->getUUID());
+    INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
 void PolylineItem::addVertex(const QPointF& point, const double& angle)

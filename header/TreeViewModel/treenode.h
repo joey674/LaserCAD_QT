@@ -11,7 +11,7 @@ class TreeNode
 {
     friend class TreeModel;
 public:
-    explicit TreeNode(QVariantList property = DefaultNodeProperty, TreeNode *parent = nullptr);
+    explicit TreeNode(TreeNode *parent = nullptr);
 
     TreeNode *child(int index);
     TreeNode *parent();
@@ -33,7 +33,7 @@ private:
     bool setPropertyList(const QVariantList &value);
 private:
     std::vector<std::unique_ptr<TreeNode>> m_childItems;
-    QVariantList m_propertyList;
+    QVariantList m_propertyList = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
     TreeNode *m_parentItem;
 };
 

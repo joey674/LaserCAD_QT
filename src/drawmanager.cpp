@@ -22,7 +22,7 @@ void DrawManager::resetTmpItemStatus()
 
 void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
 {
-    if (!this->tmpPolyline && event == MouseEvent::LeftRelease)
+    if (!this->tmpPolyline && event == MouseEvent::LeftPress)
     {
         // 设置其他元素不可动不可选中,且颜色为黑色;
         auto allItems = Manager::getIns().getItemsByLayer(0);
@@ -60,11 +60,11 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
                 this->tmpPolyline->editVertex(index, pointCoordscene,-180);
         }
     }
-    else if (this->tmpPolyline && event == MouseEvent::LeftRelease)
+    else if (this->tmpPolyline && event == MouseEvent::LeftPress)
     {
         this->tmpPolyline->addVertex(pointCoordscene,0);
     }
-    else if (this->tmpPolyline && event == MouseEvent::RightRelease)
+    else if (this->tmpPolyline && event == MouseEvent::RightPress)
     {
         Manager::getIns().addItem(std::move(this->tmpPolyline));
     }
@@ -72,7 +72,7 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
 
 void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
 {
-    if (!this->tmpArc && event == MouseEvent::LeftRelease)
+    if (!this->tmpArc && event == MouseEvent::LeftPress)
     {
         // 设置其他元素不可动不可选中,且颜色为黑色;
         auto allItems = Manager::getIns().getItemsByLayer(0);
@@ -95,7 +95,7 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
     {
         this->tmpArc->editVertex(1,pointCoordscene,180);
     }
-    else if (this->tmpArc && this->tmpArc->operateIndex == 1 && event == MouseEvent::LeftRelease)
+    else if (this->tmpArc && this->tmpArc->operateIndex == 1 && event == MouseEvent::LeftPress)
     {
         this->tmpArc->operateIndex += 1;
         this->tmpArc->assistPoint = pointCoordscene;
@@ -112,7 +112,7 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
 
         this->tmpArc->editVertex(1, pointCoordscene, angle);
     }
-    else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftRelease)
+    else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftPress)
     {
         this->tmpArc->setPen(DISPLAY_PEN);
         Manager::getIns().addItem(std::move(this->tmpArc));

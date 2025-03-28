@@ -534,6 +534,46 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
         SceneManager::getIns().dragScene(pointCoordView,MouseEvent::LeftPress);
         break;
     }
+    case OperationEvent:: EditProperty:
+    {
+        EditManager::getIns().editItem(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawCircle:
+    {
+        DrawManager::getIns().drawCircle(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawPolyline:
+    {
+        DrawManager::getIns().drawPolyline(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawArc:
+    {
+        DrawManager::getIns().drawArc(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawSpiral:
+    {
+        DrawManager::getIns().drawSpiral(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawRect:
+    {
+        DrawManager::getIns().drawRect(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawPolygon:
+    {
+        DrawManager::getIns().drawPolygon(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
+    case OperationEvent::DrawEllipse:
+    {
+        DrawManager::getIns().drawEllipse(pointCoordscene,MouseEvent::LeftPress);
+        break;
+    }
     default:
     {}
     }
@@ -546,8 +586,49 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (SceneManager::getIns().currentOperationEvent)
     {
-    case OperationEvent::None:
+    case OperationEvent::DragScene:
     {
+        SceneManager::getIns().dragScene(pointCoordView,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent:: EditProperty:
+    {
+        EditManager::getIns().editItem(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawCircle:
+    {
+        DrawManager::getIns().drawCircle(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawPolyline:
+    {
+        DrawManager::getIns().drawPolyline(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawArc:
+    {
+        DrawManager::getIns().drawArc(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawSpiral:
+    {
+        DrawManager::getIns().drawSpiral(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawRect:
+    {
+        DrawManager::getIns().drawRect(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawPolygon:
+    {
+        DrawManager::getIns().drawPolygon(pointCoordscene,MouseEvent::RightPress);
+        break;
+    }
+    case OperationEvent::DrawEllipse:
+    {
+        DrawManager::getIns().drawEllipse(pointCoordscene,MouseEvent::RightPress);
         break;
     }
     default:
@@ -607,7 +688,6 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
         DrawManager::getIns().drawEllipse(pointCoordscene,MouseEvent::LeftRelease);
         break;
     }
-
     default:
     {}
     }
@@ -619,9 +699,19 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
 
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (SceneManager::getIns().currentOperationEvent) {
+    case OperationEvent::DragScene:
+    {
+        SceneManager::getIns().dragScene(pointCoordView,MouseEvent::RightRelease);
+        break;
+    }
     case OperationEvent:: EditProperty:
     {
         EditManager::getIns().editItem(pointCoordscene,MouseEvent::RightRelease);
+        break;
+    }
+    case OperationEvent::DrawCircle:
+    {
+        DrawManager::getIns().drawCircle(pointCoordscene,MouseEvent::RightRelease);
         break;
     }
     case OperationEvent::DrawPolyline:
@@ -632,6 +722,21 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
     case OperationEvent::DrawArc:
     {
         DrawManager::getIns().drawArc(pointCoordscene,MouseEvent::RightRelease);
+        break;
+    }
+    case OperationEvent::DrawSpiral:
+    {
+        DrawManager::getIns().drawSpiral(pointCoordscene,MouseEvent::RightRelease);
+        break;
+    }
+    case OperationEvent::DrawRect:
+    {
+        DrawManager::getIns().drawRect(pointCoordscene,MouseEvent::RightRelease);
+        break;
+    }
+    case OperationEvent::DrawPolygon:
+    {
+        DrawManager::getIns().drawPolygon(pointCoordscene,MouseEvent::RightRelease);
         break;
     }
     case OperationEvent::DrawEllipse:
@@ -785,7 +890,7 @@ void MainWindow::on_editButton_clicked()
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
 
-    // 设置当前图层内物体可动;所有物体颜色为黑
+    // 设置当前图层内物体可动;所有物体颜色为黑;等等默认行为(都在setCurrentLayer里)
     SceneManager::getIns().setCurrentLayer(SceneManager::getIns().getCurrentLayer());
 }
 
@@ -1152,9 +1257,30 @@ void MainWindow::onTreeViewModelNodeClicked()
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
 
     QString type = model->nodeProperty(node, NodePropertyIndex::Type).toString();
+    UUID uuid = model->nodeProperty(node, NodePropertyIndex::UUID).toString();
+
     if (type == "Layer") {
         this->selectedLayerIndex = model->getNode(node)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
         SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
+    }
+    else if (type == "Group") {
+        auto a=model->getAllChildNodes(node);
+        for (auto aa: a){
+            DEBUG_VAR(aa->propertyList());
+        }
+        // DEBUG_VAR(node);
+    }
+    else if(type == "Item"){
+        // 用editpen显示该物体, displaypen其他物体
+        auto group = Manager::getIns().getItemsByLayer(0);
+        for (const auto& uuidInGroup : group) {
+            Manager::getIns().setItemRenderPen(uuidInGroup,DISPLAY_PEN);
+        }
+        Manager::getIns().setItemRenderPen(uuid, EDIT_PEN);
+
+        // 设置graphicsview选中该物体
+        SceneManager::getIns().scene->clearSelection();
+        Manager::getIns().itemMapFind(uuid)->setSelected(true);
     }
 }
 
@@ -1185,7 +1311,7 @@ void MainWindow::onTreeViewModelAddGroup()
     QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
     // DEBUG_VAR(model->getNode(targetIndex)->property(NodePropertyIndex::Type));
 
-    if (!model->insertRow(targetIndex.row()+1, targetIndex.parent()))
+    if (!model->insertRows(targetIndex.row()+1,1, targetIndex.parent()))
         return;
 
     const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
@@ -1203,6 +1329,8 @@ void MainWindow::onTreeViewModelAddGroup()
         auto parentNodeIndex = model->getIndex(parentNode);
         model->removeRows(node->indexInParent(),1,parentNodeIndex);
     }
+
+
     onTreeViewModelUpdateActions();
 }
 
