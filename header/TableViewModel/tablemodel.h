@@ -5,6 +5,8 @@
 #include <QRegularExpression>
 #include "manager.h"
 #include "magic_enum.hpp"
+#include "logger.h"
+#include "utils.hpp"
 
 class TableModel : public QAbstractTableModel
 {
@@ -63,25 +65,29 @@ public:
             auto it = m_propertyMap.begin();
             std::advance(it, index.row());
 
-
             PropertyIndex key = it->first;
             QVariant value = data;
 
-
+            ///
+            ///  写入类型为Position
+            ///
             if (key == PropertyIndex::Position) {
+                // 从String转换成pointF
                 QString text = value.toString();
-                QStringList parts = text.split(QRegularExpression("[,\\s]+"), Qt::SkipEmptyParts);
-                if (parts.size() == 2) {
-                    bool ok1 = false, ok2 = false;
-                    double x = parts[0].toDouble(&ok1);
-                    double y = parts[1].toDouble(&ok2);
-                    if (ok1 && ok2) {
-                        value = QPointF(x, y);
-                    }
-                }
+                value = parseStringToPointF(text);
 
+                // 记得同步更新真实属性(通过manager)
                 Manager::getIns().itemMapFind(this->m_currentUuid)->setCenterPos(value.toPointF());
             }
+            ///
+            /// 写入类型为Visible
+            ///
+            else if (key == PropertyIndex::Visible) {}
+            ///
+            /// 写入类型为Visible
+            ///
+            else if (key == PropertyIndex::Visible) {}
+
 
 
             // 写回 Manager 中的数据

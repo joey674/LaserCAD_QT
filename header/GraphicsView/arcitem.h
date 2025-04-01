@@ -2,9 +2,10 @@
 #define ARCITEM_H
 
 #include "protocol.h"
-#include "laseritem.h"
+#include "graphicsitem.h"
+#include "logger.h"
 
-class ArcItem: public LaserItem
+class ArcItem: public GraphicsItem
 {
 public: // 只用于暂存一些计算变量，不属于状态，不参与实际更新
     int operateIndex = 0;// 绘制时记录当前第几次点击
@@ -14,13 +15,17 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void editVertex(const int &index, const QPointF& point, const double& angle);
-    void setParallelOffset(const double& offset, const double& offsetNum) override;
-    void setCenterPos(const QPointF& point) override
+    void editVertex(const int index, const QPointF point, const double angle);
+    void setParallelOffset(const double offset, const double offsetNum) override;
+    void setCenterPos(const QPointF point) override
     {
-        ///TODO
+        DEBUG_MSG("use arc setCenterPos");
+        QPointF currentCenter = this->getCenterPos();
+        QPointF offset = point - currentCenter;
+        this->setPos(this->pos() + offset);
+        this->animate();
     };
-    void rotate(const double& angle) override;
+    void rotate(const double angle) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
@@ -30,8 +35,8 @@ public:
     /// 只获取信息
     double getParallelOffset()override;
     double getParallelOffsetNum()override;
-    Vertex getVertex(const int& index)override;
-    QPointF getVertexPos(const int& index)override;
+    Vertex getVertex(const int index)override;
+    QPointF getVertexPos(const int index)override;
     QPointF getCenterPos() override;
     QString getName() override;
     /// \brief reload

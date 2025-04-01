@@ -50,7 +50,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/MagicEnum/magic_enum_utility.hpp
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
-        header/GraphicsView/laseritem.h                             src/laseritem.cpp
+        header/GraphicsView/graphicsitem.h                      src/graphicsitem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                 src/arcitem.cpp
         header/GraphicsView/graphicsmath.h                     src/graphicsmath.cpp

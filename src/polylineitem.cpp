@@ -9,7 +9,7 @@ PolylineItem::PolylineItem()
     // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
-void PolylineItem::addVertex(const QPointF& point, const double& angle)
+void PolylineItem::addVertex(const QPointF point, const double angle)
 {
     Vertex newVertex = {point,angle};
     VertexList.push_back(newVertex);
@@ -17,7 +17,7 @@ void PolylineItem::addVertex(const QPointF& point, const double& angle)
     animate();
 }
 
-void PolylineItem::editVertex(const int &index, const QPointF& point, const double& angle)
+void PolylineItem::editVertex(const int &index, const QPointF point, const double angle)
 {
     QPointF pos = point - this->scenePos();
     this->VertexList[index] = Vertex{pos,angle};
@@ -25,14 +25,14 @@ void PolylineItem::editVertex(const int &index, const QPointF& point, const doub
     animate();
 }
 
-void PolylineItem::deleteVetex(const int &index)
+void PolylineItem::deleteVetex(const int index)
 {
     VertexList.erase(VertexList.begin() +index);
 
     animate();
 }
 
-void PolylineItem::setParallelOffset(const double& offset, const double& offsetNum)
+void PolylineItem::setParallelOffset(const double offset, const double offsetNum)
 {
     this->offset = offset;
     this->offsetNum = offsetNum;
@@ -41,7 +41,7 @@ void PolylineItem::setParallelOffset(const double& offset, const double& offsetN
     this->animate();
 }
 
-void PolylineItem::rotate(const double& angle)
+void PolylineItem::rotate(const double angle)
 {
 
 }
@@ -176,12 +176,12 @@ double PolylineItem::getParallelOffsetNum()
     return  this->offsetNum;
 }
 
-Vertex PolylineItem::getVertex(const int& index)
+Vertex PolylineItem::getVertex(const int index)
 {
     return  VertexList[index];
 }
 
-QPointF PolylineItem::getVertexPos(const int& index)
+QPointF PolylineItem::getVertexPos(const int index)
 {
     QPointF point = VertexList[index].point;
     QPointF pos = point + this->scenePos();
@@ -189,28 +189,7 @@ QPointF PolylineItem::getVertexPos(const int& index)
     return  pos;
 }
 
-QPointF PolylineItem::getCenterPos()
-{
-    if (this->VertexList.empty())
-        return QPointF(0,0);
 
-    qreal minX = std::numeric_limits<int>::max();
-    qreal minY = std::numeric_limits<int>::max();
-    qreal maxX =std::numeric_limits<int>::min();
-    qreal maxY =std::numeric_limits<int>::min();
-
-    for (auto& item: this->VertexList)
-    {
-        minX = std::min(minX, item.point.x() + this->scenePos().x());
-        minY = std::min(minY, item.point.y() + this->scenePos().y());
-        maxX = std::max(maxX,  item.point.x() + this->scenePos().x());
-        maxY = std::max(maxY,  item.point.y() + this->scenePos().y());
-    }
-
-    QPointF pos = QPointF((maxX+minX)/2,(maxY+minY)/2);
-
-    return pos;
-}
 
 QString PolylineItem::getName()
 {
@@ -222,14 +201,7 @@ double PolylineItem::getVertexCount()
     return VertexList.size();
 }
 
-QVariant PolylineItem::itemChange(GraphicsItemChange change, const QVariant &value)
-{
-    if (change == QGraphicsItem::ItemPositionHasChanged) {
-        Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position) = this->getCenterPos();
-        // DEBUG_MSG(Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position));
-    }
-    return QGraphicsItem::itemChange(change, value);
-}
+
 
 int PolylineItem::type() const
 {

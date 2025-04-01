@@ -10,15 +10,6 @@ EditManager EditManager::ins;
 
 void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
 {
-    // if (SceneManager::getIns().scene->selectedItems().empty())
-    //     return;
-
-    // 把所有对象颜色设置成黑色
-    auto group = Manager::getIns().getItemsByLayer(0);
-    for (const auto& uuid : group) {
-        Manager::getIns().setItemRenderPen(uuid,DISPLAY_PEN);
-    }
-
     // 获取treemodel
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -31,24 +22,22 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
             {
              case PolylineItem::Type:
                  {
-                    PolylineItem *item = static_cast<PolylineItem*>(editItem);
-                    item->setPen(EDIT_PEN);
-
                     // 在treeview中选中对象
+                    PolylineItem *item = static_cast<PolylineItem*>(editItem);
                     auto allNodes = model->getAllChildNodes(QModelIndex());
                     for (auto node:allNodes){
                         if(node->property(NodePropertyIndex::UUID) == item->getUUID()){
                             auto index = model->getIndex(node);
-
                             treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
                         }
                     }
+
                     break;
                 }
             case ArcItem::Type:
             {
                 ArcItem *item = static_cast<ArcItem*>(editItem);
-                item->setPen(EDIT_PEN);
+                // item->setPen(EDIT_PEN);
 
                 // 在treeview中选中对象
                 auto treeView = UiManager::getIns().UI()->treeView;

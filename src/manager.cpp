@@ -17,7 +17,7 @@ Manager &Manager::getIns()
  /// \brief Manager::addItem
  /// \param ptr
  ///
- void Manager::addItem(std::shared_ptr<LaserItem> ptr)
+ void Manager::addItem(std::shared_ptr<GraphicsItem> ptr)
  {
     auto treeView = UiManager::getIns().UI()->treeView;
      int layer = SceneManager::getIns().getCurrentLayer();
@@ -113,7 +113,7 @@ Manager &Manager::getIns()
      itemMapFind(uuid)->setPen(pen);
  }
 
- std::shared_ptr<LaserItem> Manager::itemMapFind(UUID uuid)
+ std::shared_ptr<GraphicsItem> Manager::itemMapFind(UUID uuid)
  {
      auto it = m_itemMap.find(uuid);
      if (it == m_itemMap.end()) {
@@ -123,7 +123,7 @@ Manager &Manager::getIns()
      return it->second;
  }
 
- void Manager::itemMapInsert(UUID uuid, std::shared_ptr<LaserItem> ptr)
+ void Manager::itemMapInsert(UUID uuid, std::shared_ptr<GraphicsItem> ptr)
  {
      m_itemMap.insert({uuid,ptr});
  }
@@ -167,10 +167,6 @@ Manager &Manager::getIns()
 
      return it->second;
  }
-
-
-
-
 
  void Manager::propertyMapInsert(UUID uuid, std::map<PropertyIndex, QVariant> map)
  {
@@ -248,7 +244,7 @@ Manager &Manager::getIns()
 
  QString Manager::getItem(QGraphicsItem *item)
  {
-    LaserItem *laseritem = dynamic_cast<LaserItem *>(item);
+    GraphicsItem *laseritem = dynamic_cast<GraphicsItem *>(item);
      return laseritem->getUUID();
  }
 

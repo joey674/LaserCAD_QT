@@ -7,7 +7,7 @@ ArcItem::ArcItem()
     // INFO_MSG("create ArcItem, uuid: "+this->getUUID());
 }
 
-void ArcItem::editVertex(const int &index, const QPointF &point, const double &angle)
+void ArcItem::editVertex(const int index, const QPointF point, const double angle)
 {
     if (index >1) return;
 
@@ -17,14 +17,14 @@ void ArcItem::editVertex(const int &index, const QPointF &point, const double &a
     animate();
 }
 
-void ArcItem::setParallelOffset(const double &offset, const double &offsetNum)
+void ArcItem::setParallelOffset(const double offset, const double offsetNum)
 {
     this->offset = offset;
     this->offsetNum = offsetNum;
     this->animate();
 }
 
-void ArcItem::rotate(const double &angle)
+void ArcItem::rotate(const double angle)
 {
 
 }
@@ -107,7 +107,7 @@ double ArcItem::getParallelOffsetNum()
     return this->offsetNum;
 }
 
-Vertex ArcItem::getVertex(const int &index)
+Vertex ArcItem::getVertex(const int index)
 {
     if (index > 1) assert("false index:only 0,1");
     return VertexPair[index];
@@ -181,7 +181,7 @@ QRectF ArcItem::boundingRect() const
     return newRect;
 }
 
-QPointF ArcItem::getVertexPos(const int &index)
+QPointF ArcItem::getVertexPos(const int index)
 {
     if (index > 1) assert("false index:only 0,1");
     QPointF point = VertexPair[index].point;

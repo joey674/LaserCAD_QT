@@ -1012,7 +1012,7 @@ void MainWindow::on_deleteButton_clicked()
     for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
     {
         QGraphicsItem* graphicsItem = *it;
-        LaserItem* laserItem = dynamic_cast<LaserItem*>(graphicsItem);
+        GraphicsItem* laserItem = dynamic_cast<GraphicsItem*>(graphicsItem);
 
         // TODO 注意 这里不用删除scene; 会自动处理掉
         // SceneManager::getIns().scene ->removeItem(graphicsItem);
