@@ -70,7 +70,6 @@ private:
     void serializeNodeToStream(TreeNode *item, QDataStream &stream,int currentLevel) const;
 
     std::unique_ptr<TreeNode> m_rootItem;// 整个model的信息都存在rootItem里; 现在暂时存了model名字
-    std::unordered_map<QString,TreeNode> UUIDMap;
 };
 
 #endif // TREEVIEWMODEL_H

@@ -38,13 +38,14 @@ private: // 初始化组件
     void initToolButton();
     void initLayerButton();
     void initStatusBar();
-    void initPropertyTableWidget();
     void initTreeViewModel();
     void test();
 
 protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;
     void keyReleaseEvent(QKeyEvent* ) override;
+    void resizeEvent(QResizeEvent *event) override;
+
 private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseMoved(QPoint);
     void onGraphicsviewMouseLeftPressed(QPoint);
@@ -55,7 +56,6 @@ private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseWheelTriggered(QWheelEvent *);
 private slots: // 绘制工具按钮
     void on_drawCircleButton_clicked();
-    void on_propertyTableWidget_cellChanged(int row, int column);
     void on_drawPolylineButton_clicked();
     void on_drawArcButton_clicked();
     void on_drawSpiralButton_clicked();

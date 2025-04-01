@@ -17,7 +17,7 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    virtual void createParallelOffset(const double& offset, const double& offsetNum) = 0;
+    virtual void setParallelOffset(const double& offset, const double& offsetNum) = 0;
     virtual void rotate(const double& angle) = 0;
     void setPen(QPen setPen){
         this->m_pen = setPen;

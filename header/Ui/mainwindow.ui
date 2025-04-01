@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>754</width>
-    <height>623</height>
+    <width>601</width>
+    <height>534</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,8 +39,35 @@
     <item>
      <widget class="QWidget" name="gridWidget" native="true">
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="1">
-        <widget class="QToolButton" name="rotateButton">
+       <item row="0" column="3">
+        <widget class="QToolButton" name="deleteButton">
+         <property name="text">
+          <string>delete</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10">
+        <widget class="QToolButton" name="redoButton">
+         <property name="text">
+          <string>redo</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QToolButton" name="drawPolylineButton">
+         <property name="text">
+          <string>drawPolyline</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QToolButton" name="centerButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -48,48 +75,17 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>rotate</string>
+          <string>center</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="1" column="4">
-        <widget class="QToolButton" name="drawCircleButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
+       <item row="0" column="9">
+        <widget class="QToolButton" name="undoButton">
          <property name="text">
-          <string>drawCircle</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QToolButton" name="dragSceneButton">
-         <property name="text">
-          <string>dragScene</string>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>30</width>
-           <height>30</height>
-          </size>
-         </property>
-         <property name="autoExclusive">
-          <bool>false</bool>
+          <string>undo</string>
          </property>
         </widget>
        </item>
@@ -128,18 +124,50 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="8">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Orientation::Horizontal</enum>
+       <item row="0" column="6">
+        <widget class="QToolButton" name="drawTestLineButton">
+         <property name="text">
+          <string>drawTestLine</string>
          </property>
-         <property name="sizeHint" stdset="0">
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="5">
+        <widget class="QToolButton" name="dragSceneButton">
+         <property name="text">
+          <string>dragScene</string>
+         </property>
+         <property name="iconSize">
           <size>
-           <width>40</width>
-           <height>20</height>
+           <width>30</width>
+           <height>30</height>
           </size>
          </property>
-        </spacer>
+         <property name="autoExclusive">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="6">
+        <widget class="QToolButton" name="drawSpiralButton">
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string>drawSpiral</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="autoExclusive">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item row="0" column="4">
         <widget class="QToolButton" name="createOffsetButton">
@@ -148,25 +176,25 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="6" rowspan="3" colspan="5">
-        <widget class="GraphicsView" name="graphicsView">
-         <property name="cursor" stdset="0">
-          <cursorShape>CrossCursor</cursorShape>
+       <item row="1" column="4">
+        <widget class="QToolButton" name="drawCircleButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
-         <property name="mouseTracking">
+         <property name="toolTipDuration">
+          <number>0</number>
+         </property>
+         <property name="text">
+          <string>drawCircle</string>
+         </property>
+         <property name="checkable">
           <bool>true</bool>
          </property>
-         <property name="verticalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="horizontalScrollBarPolicy">
-          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
-         </property>
-         <property name="renderHints">
-          <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::SmoothPixmapTransform|QPainter::RenderHint::TextAntialiasing</set>
-         </property>
-         <property name="viewportUpdateMode">
-          <enum>QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate</enum>
+         <property name="autoExclusive">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
@@ -189,13 +217,6 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="10">
-        <widget class="QToolButton" name="redoButton">
-         <property name="text">
-          <string>redo</string>
-         </property>
-        </widget>
-       </item>
        <item row="1" column="1">
         <widget class="QToolButton" name="drawArcButton">
          <property name="text">
@@ -209,31 +230,40 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="2">
-        <widget class="QToolButton" name="centerButton">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="2" column="6" rowspan="4" colspan="5">
+        <widget class="GraphicsView" name="graphicsView">
+         <property name="cursor" stdset="0">
+          <cursorShape>CrossCursor</cursorShape>
          </property>
-         <property name="text">
-          <string>center</string>
+         <property name="mouseTracking">
+          <bool>true</bool>
          </property>
-         <property name="checkable">
-          <bool>false</bool>
+         <property name="verticalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="renderHints">
+          <set>QPainter::RenderHint::Antialiasing|QPainter::RenderHint::SmoothPixmapTransform|QPainter::RenderHint::TextAntialiasing</set>
+         </property>
+         <property name="viewportUpdateMode">
+          <enum>QGraphicsView::ViewportUpdateMode::MinimalViewportUpdate</enum>
          </property>
         </widget>
        </item>
-       <item row="4" column="0" colspan="6">
-        <widget class="QTableWidget" name="propertyTableWidget">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="0" column="8">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Orientation::Horizontal</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item row="1" column="5">
         <widget class="QToolButton" name="drawEllipseButton">
@@ -251,62 +281,39 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0" rowspan="2" colspan="6">
-        <widget class="TreeView" name="treeView"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QToolButton" name="drawPolylineButton">
+       <item row="0" column="1">
+        <widget class="QToolButton" name="rotateButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
          <property name="text">
-          <string>drawPolyline</string>
+          <string>rotate</string>
          </property>
          <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
           <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="9">
-        <widget class="QToolButton" name="undoButton">
-         <property name="text">
-          <string>undo</string>
+       <item row="5" column="0" colspan="6">
+        <widget class="QTableView" name="tableView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QToolButton" name="deleteButton">
-         <property name="text">
-          <string>delete</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="6">
-        <widget class="QToolButton" name="drawTestLineButton">
-         <property name="text">
-          <string>drawTestLine</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="6">
-        <widget class="QToolButton" name="drawSpiralButton">
-         <property name="toolTipDuration">
-          <number>0</number>
-         </property>
-         <property name="text">
-          <string>drawSpiral</string>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
-         </property>
-         <property name="autoExclusive">
-          <bool>true</bool>
+       <item row="2" column="0" rowspan="3" colspan="6">
+        <widget class="TreeView" name="treeView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>

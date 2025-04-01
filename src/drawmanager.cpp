@@ -41,7 +41,7 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
     }
     else if  (this->tmpPolyline && event == MouseEvent::MouseMove)
     {
-        int index = this->tmpPolyline->getSize()-1;
+        int index = this->tmpPolyline->getVertexCount()-1;
         if (!KeyboardManager::getIns().IsControlHold) // 绘制line
         {
             QPointF lastPoint = this->tmpPolyline->getVertex(index - 1).point;

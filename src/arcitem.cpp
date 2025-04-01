@@ -4,7 +4,7 @@
 
 ArcItem::ArcItem()
 {
-    INFO_MSG("create ArcItem, uuid: "+this->getUUID());
+    // INFO_MSG("create ArcItem, uuid: "+this->getUUID());
 }
 
 void ArcItem::editVertex(const int &index, const QPointF &point, const double &angle)
@@ -17,7 +17,7 @@ void ArcItem::editVertex(const int &index, const QPointF &point, const double &a
     animate();
 }
 
-void ArcItem::createParallelOffset(const double &offset, const double &offsetNum)
+void ArcItem::setParallelOffset(const double &offset, const double &offsetNum)
 {
     this->offset = offset;
     this->offsetNum = offsetNum;

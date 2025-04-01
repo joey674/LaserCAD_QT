@@ -42,7 +42,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     initToolButton();
     initLayerButton();
     initTreeViewModel();
-    initPropertyTableWidget();
     initStatusBar();
     test();
 }
@@ -377,11 +376,7 @@ void MainWindow::initStatusBar()
     UiManager::getIns().UI()->statusBar->addWidget(this->labelMouseCoordinate);
 }
 
-void MainWindow::initPropertyTableWidget()
-{
-    UiManager::getIns().UI()->propertyTableWidget->setColumnCount(2);
-    UiManager::getIns().UI()->propertyTableWidget->setHorizontalHeaderLabels(QStringList() << "property" << "value");
-}
+
 
 void MainWindow::initTreeViewModel()
 {
@@ -420,13 +415,23 @@ void MainWindow::test(){
 ///
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
-    DEBUG_MSG("keypress");
     KeyboardManager::getIns().onMainWindowKeyPressEvent(event);
+     QMainWindow::keyPressEvent(event);
 }
 
 void MainWindow::keyReleaseEvent(QKeyEvent * event)
 {
     KeyboardManager::getIns().onMainWindowKeyReleaseEvent(event);
+     QMainWindow::keyReleaseEvent(event);
+}
+
+void MainWindow::resizeEvent(QResizeEvent *event)
+{
+    QMainWindow::resizeEvent(event);  // 调用基类实现（可选）
+    SceneManager::getIns().setSceneScale(0.1,0.1);
+    QTimer::singleShot(10, []() {
+        SceneManager::getIns().setSceneScale(10, 10);
+    });
 }
 
 ///
@@ -495,7 +500,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
         {}
         }
     }
-    // 左键拖拽
+    // 左键拖拽(尽量不要用 因为item的拖动也是左键拖拽 容易撞车造成bug)
     else if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == false)
     {
         switch (SceneManager::getIns().currentOperationEvent)
@@ -878,10 +883,6 @@ void MainWindow::on_editButton_clicked()
     DrawManager::getIns().resetTmpItemStatus();
    EditManager::getIns().currentEditItem = NULL;
 
-    // clean table
-    UiManager::getIns().UI()->propertyTableWidget->clearContents();
-    UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
-
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
 
@@ -900,10 +901,6 @@ void MainWindow::on_dragSceneButton_clicked()
     SceneManager::getIns().currentOperationEvent = OperationEvent::DragScene;
     DrawManager::getIns().resetTmpItemStatus();
 
-    // clean table
-    UiManager::getIns().UI()->propertyTableWidget->clearContents();
-    UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
-
     // drag mode/所有物体设置不可动
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     auto allItems = Manager::getIns().getItemsByLayer(0);
@@ -918,124 +915,6 @@ void MainWindow::on_dragSceneButton_clicked()
     UiManager::getIns().UI()->dragSceneButton->setChecked(true);
 }
 
-///
-/// \brief
-///
-void MainWindow::on_propertyTableWidget_cellChanged(int row, int column)
-{
-    if (EditManager::getIns().currentEditItem != NULL) {
-        switch (EditManager::getIns().currentEditItem->type())
-        {
-        case ArcItem::Type:
-        {
-            ///
-            ArcItem *item = dynamic_cast<ArcItem*>(EditManager::getIns().currentEditItem);
-             if (!item) FATAL_MSG("ptr cast fail");
-
-            double startPointX = item->getVertex(0).point.x();
-            double startPointY = item->getVertex(0).point.y();
-            double endPointX = item->getVertex(1).point.x();
-            double endPointY = item->getVertex(1).point.y();
-            double angle = item->getVertex(1).angle;
-            ///
-
-            int rowCount = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-
-            for (int r = 0; r < rowCount; ++r)
-            {
-                QTableWidgetItem *nameItem  = UiManager::getIns().UI()->propertyTableWidget->item(r, 0);
-                QTableWidgetItem *valueItem = UiManager::getIns().UI()->propertyTableWidget->item(r, 1);
-                if (!nameItem || !valueItem)
-                    continue;
-
-                QString propertyName  = nameItem->text();
-                QString propertyValue = valueItem->text();
-
-                bool transformIsOk = false;
-                double value = propertyValue.toDouble(&transformIsOk);
-                if (!transformIsOk)
-                {
-                    FATAL_MSG("error, input right form");
-                    continue;
-                }
-
-                ///
-                ///
-                if (propertyName == "startPoint.x")
-                {
-                    startPointX = value;
-                    DEBUG_VAR(startPointX);
-                }
-                else if (propertyName == "startPoint.y")
-                {
-                    startPointY = value;
-                    DEBUG_VAR(startPointY);
-                }
-                else if (propertyName == "endPoint.x")
-                {
-                    endPointX = value;
-                    DEBUG_VAR(endPointX);
-                }
-                else if (propertyName == "endPoint.y")
-                {
-                    endPointY = value;
-                    DEBUG_VAR(endPointY);
-                }
-                    else if (propertyName == "angle")
-                {
-                    angle = value;
-                    DEBUG_VAR(angle);
-                }
-                item->editVertex(0,QPointF{startPointX,startPointY},0);
-                item->editVertex(1,QPointF{endPointX,endPointY},angle);
-                ///
-                ///
-            }
-            break;
-        }
-        case PolylineItem::Type:
-        {
-
-            double offset = 0, offsetNum = 0;
-            int rowCount = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-
-            for (int r = 0; r < rowCount; ++r)
-            {
-                QTableWidgetItem *nameItem  = UiManager::getIns().UI()->propertyTableWidget->item(r, 0);
-                QTableWidgetItem *valueItem = UiManager::getIns().UI()->propertyTableWidget->item(r, 1);
-                if (!nameItem || !valueItem)
-                    continue;
-
-                QString propertyName  = nameItem->text();
-                QString propertyValue = valueItem->text();
-
-                bool transformIsOk = false;
-                double value = propertyValue.toDouble(&transformIsOk);
-                if (!transformIsOk)
-                {
-                    FATAL_MSG("error, input right form");
-                    continue;
-                }
-
-                if (propertyName == "offset")
-                    offset = value;
-                else if (propertyName == "offsetNum")
-                    offsetNum = value;
-
-                // update
-                PolylineItem *polyline = static_cast<PolylineItem*>(EditManager::getIns().currentEditItem);
-                polyline->createParallelOffset(offset,offsetNum);
-            }
-            break;
-        }
-
-        default:
-        {
-            WARN_MSG("unknown cell change");
-        }
-        };
-    }
-}
 
 ///
 /// \brief edit toolButton
@@ -1096,14 +975,14 @@ void MainWindow::on_createOffsetButton_clicked()
     {
         PolylineItem *polylineItem = static_cast<PolylineItem*>(EditManager::getIns().currentEditItem);
 
-        polylineItem->createParallelOffset(20,6);
+        polylineItem->setParallelOffset(20,6);
         break;
     }
     case ArcItem::Type:
     {
         ArcItem *arcItem = static_cast<ArcItem*>(EditManager::getIns().currentEditItem);
 
-        arcItem->createParallelOffset(20,6);
+        arcItem->setParallelOffset(20,6);
         break;
     }
     default:{}
@@ -1264,11 +1143,17 @@ void MainWindow::onTreeViewModelNodeClicked()
         SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
     }
     else if (type == "Group") {
-        auto a=model->getAllChildNodes(node);
-        for (auto aa: a){
-            DEBUG_VAR(aa->propertyList());
+        // 用displaypen显示其他物体
+        auto group = Manager::getIns().getItemsByLayer(0);
+        for (const auto& uuidInGroup : group) {
+            Manager::getIns().setItemRenderPen(uuidInGroup,DISPLAY_PEN);
         }
-        // DEBUG_VAR(node);
+        //用editpen显示该组成员
+        auto nodeGroup=model->getAllChildNodes(node);
+        for (auto node: nodeGroup){
+            auto nodeUuid = node->property(NodePropertyIndex::UUID).toString();
+            Manager::getIns().setItemRenderPen(nodeUuid, EDIT_PEN);
+        }
     }
     else if(type == "Item"){
         // 用editpen显示该物体, displaypen其他物体

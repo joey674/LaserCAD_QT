@@ -13,7 +13,7 @@ public:
     void addVertex(const QPointF& point, const double& angle);
     void editVertex(const int &index, const QPointF& point, const double& angle);
     void deleteVetex(const int &index);
-    void createParallelOffset(const double& offset, const double& offsetNum) override;
+    void setParallelOffset(const double& offset, const double& offsetNum) override;
     void rotate(const double& angle) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
@@ -25,10 +25,13 @@ public:
     double getParallelOffset() override;
     double getParallelOffsetNum() override;
     Vertex getVertex(const int& index) override;
-    QPointF getVertexPos(const int& index)override ;
+    QPointF getVertexPos(const int& index)override;
     QPointF getCenterPos() override;
     QString getName() override;
-    double getSize();
+    double getVertexCount()
+    {
+        return VertexList.size();
+    }
     /// \brief reload
     /// 重载QGraphicsItem类的成员函数
     enum { Type = 6270 };

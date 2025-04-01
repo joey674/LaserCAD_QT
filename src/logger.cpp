@@ -2,8 +2,8 @@
 
 void initLogger()
 {
-    qDebug() <<"init logger";
     qInstallMessageHandler(MessageHandler);
+    INFO_MSG("Logger init success");
 }
 
 #include <QFileInfo>

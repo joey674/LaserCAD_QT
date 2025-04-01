@@ -15,7 +15,7 @@ public:
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
     void editVertex(const int &index, const QPointF& point, const double& angle);
-    void createParallelOffset(const double& offset, const double& offsetNum) override;
+    void setParallelOffset(const double& offset, const double& offsetNum) override;
     void rotate(const double& angle) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用

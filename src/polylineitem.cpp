@@ -6,7 +6,7 @@
 
 PolylineItem::PolylineItem()
 {
-    INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
+    // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
 void PolylineItem::addVertex(const QPointF& point, const double& angle)
@@ -32,7 +32,7 @@ void PolylineItem::deleteVetex(const int &index)
     animate();
 }
 
-void PolylineItem::createParallelOffset(const double& offset, const double& offsetNum)
+void PolylineItem::setParallelOffset(const double& offset, const double& offsetNum)
 {
     this->offset = offset;
     this->offsetNum = offsetNum;
@@ -59,11 +59,11 @@ void PolylineItem::updateParallelOffset()
     {
         // 输入cavc库
         cavc::Polyline<double> input;
-        for (int i = 0; i < this->getSize(); ++i)
+        for (int i = 0; i < this->getVertexCount(); ++i)
         {
             auto p1 = this->VertexList[i].point;
             auto p2 = this->VertexList[i+1].point;
-            auto angle = (i+1 <= this->getSize())?
+            auto angle = (i+1 <= this->getVertexCount())?
                              this->VertexList[i+1].angle:0;
 
             if (angle>180.01 || angle < -180.01)
@@ -164,10 +164,7 @@ void PolylineItem::animate()
     update();
 }
 
-double PolylineItem::getSize()
-{
-    return VertexList.size();
-}
+
 
 double PolylineItem::getParallelOffset()
 {

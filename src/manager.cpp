@@ -24,25 +24,6 @@ Manager &Manager::getIns()
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
 
-    // 插入TreeViewModel
-    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
-    QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
-    // DEBUG_VAR(model->getNode(layerNodeIndex)->propertyList());
-
-    auto rowCount = model->rowCount(layerNodeIndex);
-    name = name + QString::number(rowCount+1);
-
-    if (!model->insertRow(rowCount, layerNodeIndex))
-     FATAL_MSG("insert  child fail");
-
-    const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,uuid);
-
-    treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
-                                                 QItemSelectionModel::ClearAndSelect);
-
     // 插入ItemMap
     // DEBUG_VAR(ptr.get());
     itemMapInsert(uuid,ptr);
@@ -50,6 +31,25 @@ Manager &Manager::getIns()
     // 插入propertyMap
     auto map = DefaultPropertyMap;
     propertyMapInsert(uuid,map);
+    INFO_MSG("item add: " + ptr->getUUID() + propertyMapFind(ptr->getUUID(),PropertyIndex::Visible).toString());
+
+    // 插入TreeViewModel 注意 这个要最后做 不然会报bug
+    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+    QModelIndex layerNodeIndex = model->index(layer-1,0,QModelIndex());
+
+    auto rowCount = model->rowCount(layerNodeIndex);
+    name = name + QString::number(rowCount+1);
+
+    if (!model->insertRow(rowCount, layerNodeIndex))
+        FATAL_MSG("insert  child fail");
+
+    const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
+    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,uuid);
+
+    treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
+                                                QItemSelectionModel::ClearAndSelect);
  }
 
  void Manager::addItem(QModelIndex position, QString name, QString type)
@@ -68,7 +68,113 @@ Manager &Manager::getIns()
 
      // 插入propertyMap
      auto map = DefaultPropertyMap;
-     propertyMapInsert(item.get()->getUUID(),map);
+     propertyMapInsert(item->getUUID(),map);
+     INFO_MSG("item add: " + item->getUUID() + propertyMapFind(item->getUUID(),PropertyIndex::Visible).toString());
+ }
+
+ void Manager::setItemVisible(UUID uuid, bool status)
+ {
+     // - m_itemMap
+     // - m_propertyMap
+     propertyMapFind(uuid,PropertyIndex::Visible) = status;
+     // - TreeViewModel中的节点
+     // - Scene
+     itemMapFind(uuid)->setVisible(status);
+ }
+
+ void Manager::setItemSelectable(UUID uuid, bool status)
+ {
+     // - m_itemMap
+     // - m_propertyMap
+     propertyMapFind(uuid,PropertyIndex::Selectable) = status;
+     // - TreeViewModel中的节点
+     // - Scene
+     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
+ }
+
+ void Manager::setItemMovable(UUID uuid, bool status)
+ {
+     // - m_itemMap
+     // - m_propertyMap
+     propertyMapFind(uuid,PropertyIndex::Movable) = status;
+     // - TreeViewModel中的节点
+     // - Scene
+     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
+ }
+
+ void Manager::setItemRenderPen(UUID uuid, QPen pen)
+ {
+     // - m_itemMap
+     // - m_propertyMap
+     propertyMapFind(uuid,PropertyIndex::Pen) = pen;
+     // - TreeViewModel中的节点
+     // - Scene
+     itemMapFind(uuid)->setPen(pen);
+ }
+
+ std::shared_ptr<LaserItem> Manager::itemMapFind(UUID uuid)
+ {
+     auto it = m_itemMap.find(uuid);
+     if (it == m_itemMap.end()) {
+         WARN_VAR(uuid);
+         FATAL_MSG("fail to find item by uuid");
+     }
+     return it->second;
+ }
+
+ void Manager::itemMapInsert(UUID uuid, std::shared_ptr<LaserItem> ptr)
+ {
+     m_itemMap.insert({uuid,ptr});
+ }
+
+ void Manager::itemMapErase(UUID uuid)
+ {
+     m_itemMap.erase(uuid);
+ }
+
+ QVariant &Manager::propertyMapFind(UUID uuid, PropertyIndex index)
+ {
+     auto it = m_propertyMap.find(uuid);
+     if (it == m_propertyMap.end()) {
+         WARN_MSG("target uuid: " + uuid);
+         for (const auto& pair : m_propertyMap) {
+             WARN_MSG("in map: " + pair.first);
+         }
+         FATAL_MSG("fail to find item in this uuid");
+     }
+
+     auto& map = it->second;
+     auto it1 = map.find(index);
+     if (it1 == map.end()) {
+         WARN_VAR(index);
+         FATAL_MSG("fail to find property in this item");
+     }
+
+     return it1->second;
+ }
+
+ void Manager::propertyMapInsert(UUID uuid, std::map<PropertyIndex, QVariant> map)
+ {
+     m_propertyMap.insert({uuid,map});
+ }
+
+ void Manager::propertyMapErase(UUID uuid)
+ {
+     m_propertyMap.erase(uuid);
+ }
+
+ void Manager::setVisibleSync()
+ {
+     for (int layer = 1;layer <= SceneManager::getIns().layerCount();++layer){
+         auto items = getItemsByLayer(layer);
+         bool isVisible = propertyMapFind(items[0],PropertyIndex::Visible).toBool();
+         // DEBUG_VAR(layer);
+         // DEBUG_VAR(isVisible);
+         for (const auto& item: items){
+             // DEBUG_VAR(item);
+             this->setItemVisible(item,isVisible);
+         }
+     }
  }
 
  ///
