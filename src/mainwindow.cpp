@@ -24,6 +24,7 @@
 #include "scenemanager.h"
 #include "editmanager.h"
 #include "drawmanager.h"
+#include "tablemodel.h"
 
 
 ///
@@ -42,6 +43,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     initToolButton();
     initLayerButton();
     initTreeViewModel();
+    initTableViewModel();
     initStatusBar();
     test();
 }
@@ -404,6 +406,12 @@ void MainWindow::initTreeViewModel()
 
     // click
     connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onTreeViewModelNodeClicked);
+}
+
+void MainWindow::initTableViewModel() {
+    auto *model = new TableModel(this);
+
+    UiManager::getIns().UI()->tableView->setModel(model);
 }
 
 void MainWindow::test(){

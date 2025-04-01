@@ -3,6 +3,7 @@
 #include "manager.h"
 #include "uimanager.h"
 #include "scenemanager.h"
+#include "tablemodel.h"
 #include "treemodel.h"
 
 EditManager EditManager::ins;
@@ -186,10 +187,11 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
         this->currentEditPolylineVertexIndex = -1;
         this->currentEditItem =NULL;
     }
-    else
-    {
-        WARN_MSG("unknow edit polyline event");
-    }
+
+
+    ///
+    TableModel* model = qobject_cast<TableModel*>(UiManager::getIns().UI()->tableView->model());
+    model->setCurrentUUID(item->getUUID());
 }
 
 EditManager &EditManager::getIns()

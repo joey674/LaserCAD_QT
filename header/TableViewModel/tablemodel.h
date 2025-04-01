@@ -2,6 +2,9 @@
 #define TABLEMODEL_H
 
 #include <QAbstractTableModel>
+#include <QRegularExpression>
+#include "manager.h"
+#include "magic_enum.hpp"
 
 class TableModel : public QAbstractTableModel
 {
@@ -11,14 +14,14 @@ public:
         : QAbstractTableModel(parent) {}
 
     void setCurrentUUID(const QString &uuid) {
-        currentUuid = uuid;
-        // propertyMap = Manager::getIns().propertyMapFor(uuid); // 拉取属性
+        m_currentUuid = uuid;
+        m_propertyMap = Manager::getIns().propertyMapFind(uuid);
         beginResetModel();
         endResetModel();
     }
 
     int rowCount(const QModelIndex &) const override {
-        return propertyMap.size();
+        return m_propertyMap.size();
     }
 
     int columnCount(const QModelIndex &) const override {
@@ -29,10 +32,18 @@ public:
         if (role != Qt::DisplayRole && role != Qt::EditRole)
             return QVariant();
 
-        auto it = propertyMap.begin();
+        auto it = m_propertyMap.begin();
         std::advance(it, index.row());
-        if (index.column() == 0) return it->first;
-        if (index.column() == 1) return it->second;
+        if (index.column() == 0)
+            return QString::fromStdString(std::string(magic_enum::enum_name(it->first)));
+        if (index.column() == 1) {
+            const QVariant &value = it->second;
+            if (value.canConvert<QPointF>()) {
+                QPointF point = value.toPointF();
+                return QString("(%1, %2)").arg(point.x(), 0, 'f', 1).arg(point.y(), 0, 'f', 1);
+            }
+            return value;
+        }
         return QVariant();
     }
 
@@ -43,18 +54,38 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override {
         if (index.column() == 1)
-            return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+            return /*Qt::ItemIsSelectable |*/ Qt::ItemIsEditable | Qt::ItemIsEnabled;
+        return /*Qt::ItemIsSelectable |*/ Qt::ItemIsEnabled;
     }
 
-    bool setData(const QModelIndex &index, const QVariant &value, int role) override {
+    bool setData(const QModelIndex &index, const QVariant &data, int role) override {
         if (role == Qt::EditRole && index.column() == 1) {
-            auto it = propertyMap.begin();
+            auto it = m_propertyMap.begin();
             std::advance(it, index.row());
-            it->second = value;
+
+
+            PropertyIndex key = it->first;
+            QVariant value = data;
+
+
+            if (key == PropertyIndex::Position) {
+                QString text = value.toString();
+                QStringList parts = text.split(QRegularExpression("[,\\s]+"), Qt::SkipEmptyParts);
+                if (parts.size() == 2) {
+                    bool ok1 = false, ok2 = false;
+                    double x = parts[0].toDouble(&ok1);
+                    double y = parts[1].toDouble(&ok2);
+                    if (ok1 && ok2) {
+                        value = QPointF(x, y);
+                    }
+                }
+
+                Manager::getIns().itemMapFind(this->m_currentUuid)->setCenterPos(value.toPointF());
+            }
+
 
             // 写回 Manager 中的数据
-            // Manager::getIns().setProperty(currentUuid, it->first, value);
+            Manager::getIns().propertyMapFind(this->m_currentUuid,key) = value;
 
             emit dataChanged(index, index);
             return true;
@@ -63,8 +94,8 @@ public:
     }
 
 private:
-    QString currentUuid;
-    std::map<QString, QVariant> propertyMap;
+    QString m_currentUuid;
+    std::map<PropertyIndex, QVariant> m_propertyMap;
 };
 
 

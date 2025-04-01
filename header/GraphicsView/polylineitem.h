@@ -2,6 +2,8 @@
 #define POLYLINEITEM_H
 
 #include "laseritem.h"
+#include "manager.h"
+#include "logger.h"
 
 class PolylineItem: public LaserItem
 {
@@ -14,6 +16,11 @@ public:
     void editVertex(const int &index, const QPointF& point, const double& angle);
     void deleteVetex(const int &index);
     void setParallelOffset(const double& offset, const double& offsetNum) override;
+    // void setCenterPos(const QPointF& point) override {
+    //     QPointF currentCenter = this->getCenterPos(); // 当前中心点（scene 坐标）
+    //     QPointF offset = point - currentCenter;       // 位移向量
+    //     this->setPos(this->pos() + offset);
+    // };
     void rotate(const double& angle) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
@@ -28,13 +35,11 @@ public:
     QPointF getVertexPos(const int& index)override;
     QPointF getCenterPos() override;
     QString getName() override;
-    double getVertexCount()
-    {
-        return VertexList.size();
-    }
+    double getVertexCount();
     /// \brief reload
     /// 重载QGraphicsItem类的成员函数
     enum { Type = 6270 };
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     int type() const override;
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;

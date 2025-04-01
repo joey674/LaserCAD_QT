@@ -217,6 +217,20 @@ QString PolylineItem::getName()
     return "PolylineItem";
 }
 
+double PolylineItem::getVertexCount()
+{
+    return VertexList.size();
+}
+
+QVariant PolylineItem::itemChange(GraphicsItemChange change, const QVariant &value)
+{
+    if (change == QGraphicsItem::ItemPositionHasChanged) {
+        Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position) = this->getCenterPos();
+        // DEBUG_MSG(Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position));
+    }
+    return QGraphicsItem::itemChange(change, value);
+}
+
 int PolylineItem::type() const
 {
     return Type;

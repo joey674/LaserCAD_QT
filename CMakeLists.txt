@@ -58,15 +58,17 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
         header/TreeViewModel/treeview.h                            src/treeview.cpp
-        #Utils
+        # TableViewModel
+        header/TableViewModel/tablemodel.h                     src/tablemodel.cpp
+        # Utils
         header/Utils/logger.h                                                      src/logger.cpp
         header/Utils/utils.hpp                                                     src/utils.cpp
         header/Utils/titlebar.h                                                    src/titlebar.cpp
         resource/button.qrc
-        #Ui
+        # Ui
         header/Ui/uimanager.h                                                   src/uimanager.cpp
         header/Ui//css.h
-        #Keyboard
+        # Keyboard
         header/Keyboard/keyboardmanager.h                   src/keyboardmanager.cpp
         # Scene
         header/Scene/scenemanager.h                                 src/scenemanager.cpp
@@ -75,7 +77,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # main
         header/manager.h                                                            src/manager.cpp
         header/protocol.h
-        header/TableViewModel/tablemodel.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -105,6 +106,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MagicEnum)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableViewModel)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

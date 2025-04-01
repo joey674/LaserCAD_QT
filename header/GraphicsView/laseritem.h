@@ -18,8 +18,14 @@ public:
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
     virtual void setParallelOffset(const double& offset, const double& offsetNum) = 0;
+    virtual void setCenterPos(const QPointF& point)  {
+        QPointF currentCenter = this->getCenterPos();
+        QPointF offset = point - currentCenter;
+        this->setPos(this->pos() + offset);
+    };
     virtual void rotate(const double& angle) = 0;
-    void setPen(QPen setPen){
+    void setPen(QPen setPen)
+    {
         this->m_pen = setPen;
         this->animate();
     }
@@ -43,7 +49,8 @@ public:
     {
         return this->m_uuid;
     }
-    const QPen getPen(){
+    const QPen getPen()
+    {
         return this->m_pen;
     };
 private:

@@ -82,17 +82,19 @@ const QPen AXIS_PEN = [](){
  *****************************************************************************/
 using UUID = QString;
 
-enum PropertyIndex {
+enum PropertyIndex{
     Visible,
     Selectable,
     Movable,
     Pen,
+    Position,
 };
 const std::map<PropertyIndex, QVariant> DefaultPropertyMap = {
     {PropertyIndex::Visible, QVariant(true)},
     {PropertyIndex::Selectable, QVariant(true)},
     {PropertyIndex::Movable,QVariant(true)},
-    {PropertyIndex::Pen,DISPLAY_PEN}
+    {PropertyIndex::Pen,DISPLAY_PEN},
+    {PropertyIndex::Position,QPointF{}}
 };
 
 /*****************************************************************************

@@ -297,20 +297,20 @@
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="6">
-        <widget class="QTableView" name="tableView">
+       <item row="2" column="0" rowspan="3" colspan="6">
+        <widget class="TreeView" name="treeView">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
         </widget>
        </item>
-       <item row="2" column="0" rowspan="3" colspan="6">
-        <widget class="TreeView" name="treeView">
+       <item row="5" column="0" colspan="6">
+        <widget class="QTableView" name="tableView">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>

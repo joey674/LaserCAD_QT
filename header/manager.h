@@ -44,7 +44,9 @@ public:
     void itemMapErase(UUID uuid);
     /// \brief propertyMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
     /// \param UUID
+    ///  \return 返回元素的引用；也就是可以直接修改propertymap里的值
     QVariant& propertyMapFind(UUID uuid, PropertyIndex index);
+    std::map<PropertyIndex,QVariant>& propertyMapFind(UUID uuid);
     void propertyMapInsert(UUID uuid, std::map<PropertyIndex,QVariant> map);
     void propertyMapErase(UUID uuid);
 

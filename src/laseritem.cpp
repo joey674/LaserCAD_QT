@@ -6,6 +6,8 @@
 LaserItem::LaserItem()
 {
     this->m_uuid = GenerateUUID();
+
+    this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
 }
 
 

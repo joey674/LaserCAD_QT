@@ -30,6 +30,7 @@ Manager &Manager::getIns()
 
     // 插入propertyMap
     auto map = DefaultPropertyMap;
+    map.find(PropertyIndex::Position)->second = ptr->getCenterPos();
     propertyMapInsert(uuid,map);
     INFO_MSG("item add: " + ptr->getUUID() + propertyMapFind(ptr->getUUID(),PropertyIndex::Visible).toString());
 
@@ -152,6 +153,24 @@ Manager &Manager::getIns()
 
      return it1->second;
  }
+
+ std::map<PropertyIndex, QVariant>& Manager::propertyMapFind(UUID uuid)
+ {
+     auto it = m_propertyMap.find(uuid);
+     if (it == m_propertyMap.end()) {
+         WARN_MSG("target uuid: " + uuid);
+         for (const auto& pair : m_propertyMap) {
+             WARN_MSG("in map: " + pair.first);
+         }
+         FATAL_MSG("fail to find item in this uuid");
+     }
+
+     return it->second;
+ }
+
+
+
+
 
  void Manager::propertyMapInsert(UUID uuid, std::map<PropertyIndex, QVariant> map)
  {
