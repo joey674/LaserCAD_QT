@@ -23,6 +23,7 @@ Manager &Manager::getIns()
      int layer = SceneManager::getIns().getCurrentLayer();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
+    auto type = ptr->type();
 
     // 插入ItemMap
     // DEBUG_VAR(ptr.get());
@@ -30,7 +31,23 @@ Manager &Manager::getIns()
 
     // 插入propertyMap
     auto map = DefaultPropertyMap;
-    map.find(PropertyIndex::Position)->second = ptr->getCenterPos();
+    map[PropertyIndex::Position] = ptr->getCenterPos();
+    if (type == ItemTypeId::Arc){
+        auto customs = DefaultCustomPropertyArc;
+        customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
+        customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
+        map[PropertyIndex::CustomProperty] = customs;
+    }
+    if (type == ItemTypeId::Line){
+        auto customs = DefaultCustomPropertyLine;
+        customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
+        customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
+        map[PropertyIndex::CustomProperty] = customs;
+    }
+    if (type == ItemTypeId::Polyline){
+
+    }
+
     propertyMapInsert(uuid,map);
     INFO_MSG("item add: " + ptr->getUUID() + propertyMapFind(ptr->getUUID(),PropertyIndex::Visible).toString());
 

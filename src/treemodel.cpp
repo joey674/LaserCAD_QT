@@ -12,9 +12,9 @@ TreeModel::TreeModel(const QString &modelName, QObject *parent)
 {
     // QVariantList rootProperty(1);
     // rootProperty.push_back(modelName);
-    // m_rootItem = std::make_unique<TreeNode>(rootProperty);
+    // m_rootItem = std::make_shared<TreeNode>(rootProperty);
 
-    m_rootItem = std::make_unique<TreeNode>();
+    m_rootItem = std::make_shared<TreeNode>();
     m_rootItem->setProperty(NodePropertyIndex::Name,modelName);
 
     // setupExemplarModelData();

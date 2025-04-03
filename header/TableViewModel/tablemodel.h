@@ -26,10 +26,10 @@ public:
             for (const auto& [key, val] : map) {
                 QString keyName = QString::fromStdString(std::string(magic_enum::enum_name(key)));
 
-                if (val.type() == QVariant::Map) {
+                if (val.typeId() == QVariant::Map) {
                     QVariantMap subMap = val.toMap();
                     for (auto it = subMap.begin(); it != subMap.end(); ++it) {
-                        m_propertyList.append({ keyName + "." + it.key(), it.value() });
+                        m_propertyList.append({ it.key(), it.value() });
                     }
                 } else {
                     m_propertyList.append({ keyName, val });
@@ -57,7 +57,8 @@ public:
         return 2; // key + value
     }
 
-    QVariant data(const QModelIndex &index, int role) const override {
+    QVariant data(const QModelIndex &index, int role) const override
+    {
         if (role != Qt::DisplayRole && role != Qt::EditRole)
             return QVariant();
 
@@ -70,11 +71,30 @@ public:
             return row.first;
 
         if (index.column() == 1) {
+            const QString key = row.first;
             const QVariant &value = row.second;
 
+            ///
+            ///
             if (value.canConvert<QPointF>()) {
                 return parsePointFToString(value.toPointF());
             }
+
+            if (value.canConvert<Vertex>()) {
+                // 注意 这里显示为Scene内坐标
+                if (key == "Vertex0") {
+                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexPos(0);
+                    auto ang = value.value<Vertex>().angle;
+                    return parseVertexToString(Vertex{pos,ang});
+                }else if (key == "Vertex1") {
+                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexPos(1);
+                    auto ang = value.value<Vertex>().angle;
+                    return parseVertexToString(Vertex{pos,ang});
+                }
+
+            }
+            ///
+            ///
 
             return value;
         }
@@ -86,7 +106,8 @@ public:
 
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
-    bool setData(const QModelIndex &index, const QVariant &data, int role) override {
+    bool setData(const QModelIndex &index, const QVariant &data, int role) override
+    {
         if (role != Qt::EditRole || index.column() != 1)
             return false;
 
@@ -97,21 +118,25 @@ public:
         QString key = row.first;
         QVariant value = data;
 
-        // 解析 key（如 Position、CustomProperty.width）
+        // 解析 key(不写的就代表不处理)
         if (key == "Position") {
             value = parseStringToPointF(data.toString());
             Manager::getIns().setItemPosition(m_uuid, value.toPointF());
         }
-        else if (key == "Visible") {
-            Manager::getIns().setItemVisible(m_uuid, value.toBool());
+        else if (key == "Vertex0") {
+            value.setValue(parseStringToVertex(data.toString()));
+            Manager::getIns().setItemCustomProperty(m_uuid,"Vertex0",value);
         }
-        // 可以继续扩展其它类型，如 Selectable、Pen 等
-        // else if (key == "Selectable") { ... }
+        else if (key == "Vertex1") {
+            value.setValue(parseStringToVertex(data.toString()));
+            Manager::getIns().setItemCustomProperty(m_uuid,"Vertex1",value);
+        }
 
-        // 更新本地值
+        // // 更新本地值
         row.second = value;
 
         emit dataChanged(index, index);
+
         return true;
     }
 private:

@@ -46,6 +46,12 @@
            <property name="text">
             <string>drawLine</string>
            </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
           </widget>
          </item>
          <item>

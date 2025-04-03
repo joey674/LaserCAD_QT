@@ -33,7 +33,7 @@ Ui::MainWindow *UiManager::UI(){
     return ui.get();
 }
 
-void UiManager::setUI(std::unique_ptr<Ui::MainWindow> newUi)
+void UiManager::setUI(std::shared_ptr<Ui::MainWindow> newUi)
 {
     ui = std::move(newUi);
 }

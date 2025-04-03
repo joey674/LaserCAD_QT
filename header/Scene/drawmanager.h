@@ -6,6 +6,7 @@
 #include <qgraphicsitem.h>
 #include "polylineitem.h"
 #include "arcitem.h"
+#include "lineitem.h"
 #include "protocol.h"
 
 
@@ -14,9 +15,11 @@ class DrawManager
 public:
     void resetTmpItemStatus();
     // 绘制对象暂存
-    std::shared_ptr<QGraphicsEllipseItem> tmpCircle;
+
     std::shared_ptr<PolylineItem> tmpPolyline;
     std::shared_ptr<ArcItem> tmpArc;
+    std::shared_ptr<LineItem> tmpLine;
+    std::shared_ptr<QGraphicsEllipseItem> tmpCircle;
     std::shared_ptr<QGraphicsRectItem> tmpRect;
     std::shared_ptr<QGraphicsPathItem> tmpSpiral;
     std::shared_ptr<QGraphicsPolygonItem> tmpPolygon;
@@ -26,6 +29,7 @@ public:
     // 绘制逻辑
     void drawPolyline(QPointF pointCoordscene,MouseEvent event);
     void drawArc(QPointF pointCoordscene,MouseEvent event);
+    void drawLine(QPointF pointCoordscene,MouseEvent event);;
     void drawCircle(QPointF pointCoordscene,MouseEvent event);
     void drawRect(QPointF pointCoordscene,MouseEvent event);
     void drawSpiral(QPointF pointCoordscene,MouseEvent event);

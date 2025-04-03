@@ -29,7 +29,7 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
-            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
+            // Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpPolyline = std::make_shared<PolylineItem>();
@@ -73,6 +73,55 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
 void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
 {
     if (!this->tmpArc && event == MouseEvent::LeftPress)
+    {
+        // 设置其他元素不可动不可选中,且颜色为黑色;
+        auto allItems = Manager::getIns().getItemsByLayer(0);
+        for (const auto& item : allItems) {
+            Manager::getIns().setItemSelectable(item,false);
+            Manager::getIns().setItemMovable(item,false);
+            // Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
+        }
+
+        this->tmpArc = std::make_shared<ArcItem>();
+        this->tmpArc->setPen(EDIT_PEN);
+        SceneManager::getIns().scene->addItem(this->tmpArc.get());
+
+        this->tmpArc->operateIndex += 1;
+
+        this->tmpArc->editVertex(0,pointCoordscene,0);
+        this->tmpArc->editVertex(1,pointCoordscene,0);
+    }
+    else if  (this->tmpArc  &&  this->tmpArc->operateIndex == 1 && event == MouseEvent::MouseMove)
+    {
+        this->tmpArc->editVertex(1,pointCoordscene,180);
+    }
+    else if (this->tmpArc && this->tmpArc->operateIndex == 1 && event == MouseEvent::LeftPress)
+    {
+        this->tmpArc->operateIndex += 1;
+        this->tmpArc->assistPoint = pointCoordscene;
+    }
+    else if  (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::MouseMove)
+    {
+        auto center = QPointF{};
+        double  radius = 0;
+        double  angle = 0;
+        auto p1 =this->tmpArc->getVertex(0).point;
+        auto p2 =this->tmpArc->assistPoint;
+        auto p3 =this->tmpArc->getVertex(1).point;
+        getAngleFromThreePoints(p1,p2,p3,angle);
+
+        this->tmpArc->editVertex(1, pointCoordscene, angle);
+    }
+    else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftPress)
+    {
+        this->tmpArc->setPen(DISPLAY_PEN);
+        Manager::getIns().addItem(std::move(this->tmpArc));
+    }
+}
+
+void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event)
+{
+    if (!this->tmpLine && event == MouseEvent::LeftPress)
     {
         // 设置其他元素不可动不可选中,且颜色为黑色;
         auto allItems = Manager::getIns().getItemsByLayer(0);

@@ -40,6 +40,7 @@ struct Vertex
     QPointF point;
     double angle;
 };
+Q_DECLARE_METATYPE(Vertex)
 
 enum LineType
 {
@@ -51,6 +52,7 @@ enum ItemTypeId /* 只用于GraphicsItem重载type变量, 用于识别type 不�
 {
     Polyline = 6270,
     Arc = 6271,
+    Line = 6272
 };
 
 
@@ -96,8 +98,15 @@ const std::map<PropertyIndex, QVariant> DefaultPropertyMap = {
     {PropertyIndex::Movable,QVariant(true)},
     {PropertyIndex::Pen,DISPLAY_PEN},
     {PropertyIndex::Position,QPointF{}},
-    {PropertyIndex::CustomProperty,QMap<QString,QVariant>{ { "width", 100 },{ "height", 200 }}},
+    {PropertyIndex::CustomProperty,QMap<QString,QVariant>()},
 };
+
+const QMap<QString,QVariant> DefaultCustomPropertyArc = QMap<QString,QVariant>{
+                                                                            { "Vertex0", QVariant::fromValue(Vertex{}) },
+                                                                            { "Vertex1", QVariant::fromValue(Vertex{}) }};
+const QMap<QString,QVariant> DefaultCustomPropertyLine = QMap<QString,QVariant>{
+                                                                             { "Vertex0", QVariant::fromValue(Vertex{}) },
+                                                                             { "Vertex1", QVariant::fromValue(Vertex{}) }};
 
 /*****************************************************************************
  * TreeViewModel

@@ -13,7 +13,7 @@ public:
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
     void addVertex(const QPointF point, const double angle);
-    void editVertex(const int &index, const QPointF point, const double angle);
+    void editVertex(const int index, const QPointF point, const double angle) override;
     void deleteVetex(const int index);
     void setParallelOffset(const double offset, const double offsetNum) override;
     void setCenterPos(const QPointF point) override
@@ -49,7 +49,7 @@ public:
     QPointF getVertexPos(const int index)override;
     QPointF getCenterPos() override
     {
-        if (this->VertexList.empty())
+        if (m_vertexList.empty())
             return QPointF(0,0);
 
         qreal minX = std::numeric_limits<int>::max();
@@ -57,7 +57,7 @@ public:
         qreal maxX =std::numeric_limits<int>::min();
         qreal maxY =std::numeric_limits<int>::min();
 
-        for (auto& item: this->VertexList)
+        for (auto& item: m_vertexList)
         {
             minX = std::min(minX, item.point.x() + this->scenePos().x());
             minY = std::min(minY, item.point.y() + this->scenePos().y());
@@ -73,18 +73,18 @@ public:
     double getVertexCount();
     /// \brief reload
     /// 重载QGraphicsItem类的成员函数
-    enum { Type = 6270 };
+    enum { Type = ItemTypeId::Polyline };
     int type() const override;
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 private:
     ///
-    std::vector<Vertex> VertexList;
-    std::vector<std::shared_ptr<QGraphicsItem>> PaintItemList;
+    std::vector<Vertex> m_vertexList;
+    std::vector<std::shared_ptr<QGraphicsItem>> m_paintItemList;
     ///
-    double offset  = 0;
-    uint offsetNum = 0;
-    std::vector<std::shared_ptr<PolylineItem>> offsetItemList;
+    double m_offset  = 0;
+    uint m_offsetNum = 0;
+    std::vector<std::shared_ptr<PolylineItem>> m_offsetItemList;
 };
 
 

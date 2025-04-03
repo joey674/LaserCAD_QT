@@ -32,7 +32,7 @@ private:
     bool setProperty(int index, const QVariant &value);
     bool setPropertyList(const QVariantList &value);
 private:
-    std::vector<std::unique_ptr<TreeNode>> m_childItems;
+    std::vector<std::shared_ptr<TreeNode>> m_childItems;
     QVariantList m_propertyList = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
     TreeNode *m_parentItem;
 };

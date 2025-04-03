@@ -35,7 +35,8 @@ private: // 初始化组件
     ///
     void initTitleBar();
     void initGraphicsView();
-    void initToolButton();
+    void initDrawToolButton();
+    void initEditToolButton();
     void initLayerButton();
     void initStatusBar();
     void initTreeViewModel();
@@ -53,16 +54,17 @@ private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseRightPressed(QPoint);
     void onGraphicsviewMouseLeftReleased(QPoint);
     void onGraphicsviewMouseRightReleased(QPoint);
-    void onGraphicsviewMouseDoubleClicked(QPoint);
+    void onGraphicsviewMouseRightDoubleClicked(QPoint);
     void onGraphicsviewMouseWheelTriggered(QWheelEvent *);
 private slots: // 绘制工具按钮
-    void on_drawCircleButton_clicked();
-    void on_drawPolylineButton_clicked();
-    void on_drawArcButton_clicked();
-    void on_drawSpiralButton_clicked();
-    void on_drawRectButton_clicked();
-    void on_drawPolygonButton_clicked();
-    void on_drawEllipseButton_clicked();
+    void onDrawLineButtonClicked();
+    void onDrawCircleButtonClicked();
+    void onDrawPolylineButtonClicked();
+    void onDrawArcButtonClicked();
+    void onDrawSpiralButtonClicked();
+    void onDrawRectButtonClicked();
+    void onDrawPolygonButtonClicked();
+    void onDrawEllipseButtonClicked();
 private slots: // 编辑工具按钮
     void on_editButton_clicked();
     void on_drawTestLineButton_clicked();
@@ -74,9 +76,6 @@ private slots: // 编辑工具按钮
     void on_undoButton_clicked();
     void on_redoButton_clicked();
 private slots: // TreeViewModel的右键菜单栏
-    void onTreeViewModelInsertChild();
-    void onTreeViewModelAddNode();
-
     void onTreeViewModelShowContextMenu(const QPoint &pos);
     void onTreeViewModelAddLayer();
     void onTreeViewModelAddGroup();

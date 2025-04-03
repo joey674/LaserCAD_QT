@@ -24,7 +24,7 @@ int TreeNode::indexInParent() const
     if (!m_parentItem)
         return 0;
     const auto it = std::find_if(m_parentItem->m_childItems.cbegin(), m_parentItem->m_childItems.cend(),
-                                 [this](const std::unique_ptr<TreeNode> &treeItem) {
+                                 [this](const std::shared_ptr<TreeNode> &treeItem) {
                                      return treeItem.get() == this;
                                  });
 
@@ -61,7 +61,7 @@ bool TreeNode::insertChilds(int position, int count)
 
     for (int row = 0; row < count; ++row) {
         m_childItems.insert(m_childItems.cbegin() + position,
-                            std::make_unique<TreeNode>(this));
+                            std::make_shared<TreeNode>(this));
     }
     return true;
 }

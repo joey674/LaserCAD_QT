@@ -15,22 +15,14 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void editVertex(const int index, const QPointF point, const double angle);
+    void editVertex(const int index, const QPointF point, const double angle) override;
     void setParallelOffset(const double offset, const double offsetNum) override;
-    void setCenterPos(const QPointF point) override
-    {
-        DEBUG_MSG("use arc setCenterPos");
-        QPointF currentCenter = this->getCenterPos();
-        QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
-        this->animate();
-    };
+    void setCenterPos(const QPointF point) override;
     void rotate(const double angle) override;
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
     void updateParallelOffset() override;
     void updatePaintItem() override;
-    void animate() override;
     /// \brief get info
     /// 只获取信息
     double getParallelOffset()override;
@@ -40,18 +32,18 @@ public:
     QPointF getCenterPos() override;
     QString getName() override;
     /// \brief reload
-    enum { Type = 6271 };
+    enum { Type = ItemTypeId::Arc };
     int type() const override;
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 private:
     ///
-    std::array<Vertex,2> VertexPair = {Vertex{QPointF{0,0}, 0},Vertex{QPointF{0,0}, 0}};
-    std::shared_ptr<QGraphicsPathItem> PaintItem;
+    std::array<Vertex,2> m_vertexPair = {Vertex{QPointF{0,0}, 0},Vertex{QPointF{0,0}, 0}};
+    std::shared_ptr<QGraphicsPathItem> m_paintItem;
     ///
-    double offset  = 0;
-    int offsetNum = 1;
-    std::vector<std::shared_ptr<ArcItem>> offsetItemList;
+    double m_offset  = 0;
+    int m_offsetNum = 1;
+    std::vector<std::shared_ptr<ArcItem>> m_offsetItemList;
 };
 
 #endif // ARCITEM_H

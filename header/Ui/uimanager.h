@@ -11,10 +11,10 @@ QT_END_NAMESPACE
 class UiManager
 {
 private:
-    std::unique_ptr<Ui::MainWindow> ui;
+    std::shared_ptr<Ui::MainWindow> ui;
 public:
     Ui::MainWindow* UI();
-    void setUI(std::unique_ptr<Ui::MainWindow> newUi);
+    void setUI(std::shared_ptr<Ui::MainWindow> newUi);
 public:
     void setAllDrawButtonChecked(bool isChecked);
     void setAllToolButtonChecked(bool isChecked);

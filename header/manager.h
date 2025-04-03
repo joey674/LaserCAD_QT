@@ -10,6 +10,7 @@
 #include <QTreeView>
 #include <vector>
 #include <unordered_map>
+#include "logger.h"
 
 
 class Manager
@@ -36,6 +37,38 @@ public:
         // - TreeViewModel中的节点
         // - Scene
         Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
+    };
+
+    void setItemCustomProperty(UUID uuid,QString key, QVariant value){
+        // - m_propertyMap
+        auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::CustomProperty);
+        QVariantMap map = variant.toMap();
+        map[key] = value;
+        variant = map;
+        // DEBUG_VAR(key);
+        // DEBUG_VAR(value);
+        DEBUG_VAR(Manager::getIns().propertyMapFind(uuid,PropertyIndex::CustomProperty).toMap()[key]);
+
+        // - m_itemMap
+        if (key == "Vertex0") {
+            QVariant vertexVar = value;
+            if (!vertexVar.canConvert<Vertex>())
+                FATAL_VAR(vertexVar);
+            Vertex vertex = vertexVar.value<Vertex>();
+
+            Manager::getIns().itemMapFind(uuid)->editVertex(0,vertex.point,vertex.angle);
+        }
+        if (key == "Vertex1") {
+            QVariant vertexVar = value;
+            if (!vertexVar.canConvert<Vertex>())
+                FATAL_VAR(vertexVar);
+            Vertex vertex = vertexVar.value<Vertex>();
+
+            Manager::getIns().itemMapFind(uuid)->editVertex(1,vertex.point,vertex.angle);
+        }
+
+        // - TreeViewModel中的节点
+        // - Scene
     };
 
     /// \brief getItem
