@@ -29,6 +29,14 @@ public:
     void setItemSelectable(UUID uuid,bool status);
     void setItemMovable(UUID uuid,bool status);
     void setItemRenderPen(UUID uuid,QPen pen);
+    void setItemPosition(UUID uuid,QPointF pos){
+        // - m_itemMap
+        // - m_propertyMap
+        Manager::getIns().propertyMapFind(uuid,PropertyIndex::Position) = pos;
+        // - TreeViewModel中的节点
+        // - Scene
+        Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
+    };
 
     /// \brief getItem
     /// \param index
@@ -46,7 +54,7 @@ public:
     /// \param UUID
     ///  \return 返回元素的引用；也就是可以直接修改propertymap里的值
     QVariant& propertyMapFind(UUID uuid, PropertyIndex index);
-    std::map<PropertyIndex,QVariant>& propertyMapFind(UUID uuid);
+    std::map<PropertyIndex,QVariant> propertyMapCopy(UUID uuid);
     void propertyMapInsert(UUID uuid, std::map<PropertyIndex,QVariant> map);
     void propertyMapErase(UUID uuid);
 

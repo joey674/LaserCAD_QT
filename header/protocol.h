@@ -88,13 +88,15 @@ enum PropertyIndex{
     Movable,
     Pen,
     Position,
+    CustomProperty
 };
 const std::map<PropertyIndex, QVariant> DefaultPropertyMap = {
     {PropertyIndex::Visible, QVariant(true)},
     {PropertyIndex::Selectable, QVariant(true)},
     {PropertyIndex::Movable,QVariant(true)},
     {PropertyIndex::Pen,DISPLAY_PEN},
-    {PropertyIndex::Position,QPointF{}}
+    {PropertyIndex::Position,QPointF{}},
+    {PropertyIndex::CustomProperty,QMap<QString,QVariant>{ { "width", 100 },{ "height", 200 }}},
 };
 
 /*****************************************************************************

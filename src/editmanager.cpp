@@ -150,7 +150,7 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
 {
     if (!item) return;
 
-    // 图形上直接编辑操作点；
+    // 图形上直接编辑操作点
     if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease)
     {
         double minDistance = 50;
@@ -176,11 +176,6 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
         this->currentEditPolylineVertexIndex = -1;
         this->currentEditItem =NULL;
     }
-
-
-    ///
-    TableModel* model = qobject_cast<TableModel*>(UiManager::getIns().UI()->tableView->model());
-    model->setCurrentUUID(item->getUUID());
 }
 
 EditManager &EditManager::getIns()

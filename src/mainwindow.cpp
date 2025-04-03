@@ -240,6 +240,21 @@ void MainWindow::initToolButton()
         "</body></html>"
         );
 
+    QToolButton *drawLineButton = UiManager::getIns().UI()->drawLineButton;
+    drawLineButton->setIcon(QIcon(":/button/drawLineButton.svg"));
+    drawLineButton->setIconSize(QSize(30, 30));
+    drawLineButton->setStyleSheet(buttonStyle);
+    drawLineButton->setCheckable(true);
+    drawLineButton->setAutoExclusive(false);
+    drawLineButton->setToolTip(
+        "<html><head/>"
+        "<body>"
+        "<p><span style=\" font-weight:700;\">直线工具</span></p>"
+        "<p>绘制直线</p>"
+        "</p><p>长按x/y锁定绘制方向</p></body></html>"
+        "</body></html>"
+        );
+
 
     QToolButton *drawArcButton = UiManager::getIns().UI()->drawArcButton;
     drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
@@ -412,6 +427,9 @@ void MainWindow::initTableViewModel() {
     auto *model = new TableModel(this);
 
     UiManager::getIns().UI()->tableView->setModel(model);
+    UiManager::getIns().UI()->tableView->verticalHeader()->setVisible(false);
+    UiManager::getIns().UI()->tableView->setAlternatingRowColors(true);
+    UiManager::getIns().UI()->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 }
 
 void MainWindow::test(){

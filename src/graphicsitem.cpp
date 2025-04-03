@@ -2,6 +2,8 @@
 #include "logger.h"
 #include "utils.hpp"
 #include "manager.h"
+#include "tablemodel.h"
+#include "uimanager.h"
 
 GraphicsItem::GraphicsItem()
 {
@@ -27,19 +29,28 @@ const QPen GraphicsItem::getPen()
 
 QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value)
 {
+    TableModel* model = qobject_cast<TableModel*>(UiManager::getIns().UI()->tableView->model());
+
     // 物体位置变换后的操作
     if (change == QGraphicsItem::ItemPositionHasChanged) {
         Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position) = this->getCenterPos();
         // DEBUG_MSG(Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position).toPointF());
+        model->update();
     }
 
     // 物体选中后的操作
     if (change == QGraphicsItem::ItemSelectedHasChanged) {
         bool selected = value.toBool();
-        if (selected)
+        if (selected){
             Manager::getIns().setItemRenderPen(this->getUUID(), EDIT_PEN);
-        else
+
+            model->clear();
+            model->setCurrentEditItem(this->getUUID());
+        }
+        else{
             Manager::getIns().setItemRenderPen(this->getUUID(),DISPLAY_PEN);
+            model->clear();
+        }
     }
 
     return QGraphicsItem::itemChange(change, value);

@@ -39,7 +39,7 @@ private: // 初始化组件
     void initLayerButton();
     void initStatusBar();
     void initTreeViewModel();
-    void initTableViewModel();;
+    void initTableViewModel();
     void test();
 
 protected: // 键盘输入重载

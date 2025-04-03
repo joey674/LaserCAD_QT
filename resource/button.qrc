@@ -16,5 +16,6 @@
         <file>centerButton.svg</file>
         <file>redoButton.svg</file>
         <file>undoButton.svg</file>
+        <file>drawLineButton.svg</file>
     </qresource>
 </RCC>

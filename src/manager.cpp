@@ -154,7 +154,7 @@ Manager &Manager::getIns()
      return it1->second;
  }
 
- std::map<PropertyIndex, QVariant>& Manager::propertyMapFind(UUID uuid)
+ std::map<PropertyIndex, QVariant> Manager::propertyMapCopy(UUID uuid)
  {
      auto it = m_propertyMap.find(uuid);
      if (it == m_propertyMap.end()) {
@@ -167,6 +167,10 @@ Manager &Manager::getIns()
 
      return it->second;
  }
+
+
+
+
 
  void Manager::propertyMapInsert(UUID uuid, std::map<PropertyIndex, QVariant> map)
  {

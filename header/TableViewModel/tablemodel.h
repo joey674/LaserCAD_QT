@@ -15,15 +15,42 @@ public:
     explicit TableModel(QObject *parent = nullptr)
         : QAbstractTableModel(parent) {}
 
-    void setCurrentUUID(const QString &uuid) {
-        m_currentUuid = uuid;
-        m_propertyMap = Manager::getIns().propertyMapFind(uuid);
+    void setCurrentEditItem(const QString &uuid) {
+        m_uuid = uuid;
         beginResetModel();
+        m_propertyList.clear();
+
+        if (!uuid.isEmpty()) {
+            const auto& map = Manager::getIns().propertyMapCopy(uuid);
+
+            for (const auto& [key, val] : map) {
+                QString keyName = QString::fromStdString(std::string(magic_enum::enum_name(key)));
+
+                if (val.type() == QVariant::Map) {
+                    QVariantMap subMap = val.toMap();
+                    for (auto it = subMap.begin(); it != subMap.end(); ++it) {
+                        m_propertyList.append({ keyName + "." + it.key(), it.value() });
+                    }
+                } else {
+                    m_propertyList.append({ keyName, val });
+                }
+            }
+        }
+
         endResetModel();
     }
+    /// 删除当前修改对象，且更新table
+    void clear();
+    /// 不删除当前修改对象，只更新table
+    void update();
 
     int rowCount(const QModelIndex &) const override {
-        return m_propertyMap.size();
+        if (this->m_uuid.isEmpty()){
+            return 0;
+        }
+        else{
+            return m_propertyList.size();
+        }
     }
 
     int columnCount(const QModelIndex &) const override {
@@ -34,75 +61,63 @@ public:
         if (role != Qt::DisplayRole && role != Qt::EditRole)
             return QVariant();
 
-        auto it = m_propertyMap.begin();
-        std::advance(it, index.row());
+        if (index.row() < 0 || index.row() >= m_propertyList.size())
+            return QVariant();
+
+        const auto& row = m_propertyList[index.row()];
+
         if (index.column() == 0)
-            return QString::fromStdString(std::string(magic_enum::enum_name(it->first)));
+            return row.first;
+
         if (index.column() == 1) {
-            const QVariant &value = it->second;
+            const QVariant &value = row.second;
+
             if (value.canConvert<QPointF>()) {
-                QPointF point = value.toPointF();
-                return QString("(%1, %2)").arg(point.x(), 0, 'f', 1).arg(point.y(), 0, 'f', 1);
+                return parsePointFToString(value.toPointF());
             }
+
             return value;
         }
+
         return QVariant();
     }
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const override {
-        if (role != Qt::DisplayRole) return QVariant();
-        return (section == 0) ? "Property" : "Value";
-    }
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-    Qt::ItemFlags flags(const QModelIndex &index) const override {
-        if (index.column() == 1)
-            return /*Qt::ItemIsSelectable |*/ Qt::ItemIsEditable | Qt::ItemIsEnabled;
-        return /*Qt::ItemIsSelectable |*/ Qt::ItemIsEnabled;
-    }
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
 
     bool setData(const QModelIndex &index, const QVariant &data, int role) override {
-        if (role == Qt::EditRole && index.column() == 1) {
-            auto it = m_propertyMap.begin();
-            std::advance(it, index.row());
+        if (role != Qt::EditRole || index.column() != 1)
+            return false;
 
-            PropertyIndex key = it->first;
-            QVariant value = data;
+        if (index.row() < 0 || index.row() >= m_propertyList.size())
+            return false;
 
-            ///
-            ///  写入类型为Position
-            ///
-            if (key == PropertyIndex::Position) {
-                // 从String转换成pointF
-                QString text = value.toString();
-                value = parseStringToPointF(text);
+        auto& row = m_propertyList[index.row()];
+        QString key = row.first;
+        QVariant value = data;
 
-                // 记得同步更新真实属性(通过manager)
-                Manager::getIns().itemMapFind(this->m_currentUuid)->setCenterPos(value.toPointF());
-            }
-            ///
-            /// 写入类型为Visible
-            ///
-            else if (key == PropertyIndex::Visible) {}
-            ///
-            /// 写入类型为Visible
-            ///
-            else if (key == PropertyIndex::Visible) {}
-
-
-
-            // 写回 Manager 中的数据
-            Manager::getIns().propertyMapFind(this->m_currentUuid,key) = value;
-
-            emit dataChanged(index, index);
-            return true;
+        // 解析 key（如 Position、CustomProperty.width）
+        if (key == "Position") {
+            value = parseStringToPointF(data.toString());
+            Manager::getIns().setItemPosition(m_uuid, value.toPointF());
         }
-        return false;
-    }
+        else if (key == "Visible") {
+            Manager::getIns().setItemVisible(m_uuid, value.toBool());
+        }
+        // 可以继续扩展其它类型，如 Selectable、Pen 等
+        // else if (key == "Selectable") { ... }
 
+        // 更新本地值
+        row.second = value;
+
+        emit dataChanged(index, index);
+        return true;
+    }
 private:
-    QString m_currentUuid;
-    std::map<PropertyIndex, QVariant> m_propertyMap;
+    QString m_uuid;
+    QList<std::pair<QString, QVariant>> m_propertyList;
 };
 
-
 #endif // TABLEMODEL_H
+
