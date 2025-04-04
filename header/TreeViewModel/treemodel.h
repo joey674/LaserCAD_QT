@@ -58,8 +58,8 @@ public:
     /// \brief getAllChildNodes 获取所有子节点
     std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const;;
 
-    void setNodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex, const QVariant &value);
-    QVariant nodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex);
+    void setNodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant &value);
+    QVariant nodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex);
 
     /// 外部强制视图刷新(暂时设置只刷新layer的选中以及visible)
     void update();

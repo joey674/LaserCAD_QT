@@ -175,6 +175,14 @@ void MainWindow::initDrawToolButton(){
     drawArcButton->setAutoExclusive(false);
     drawArcButton->setToolTip(drawArcButtonToolTip);
 
+    QToolButton *drawPointButton = UiManager::getIns().UI()->drawPointButton;
+    drawPointButton->setIcon(QIcon(":/button/drawPointButton.svg"));
+    drawPointButton->setIconSize(QSize(30, 30));
+    drawPointButton->setStyleSheet(buttonStyle);
+    drawPointButton->setCheckable(true);
+    drawPointButton->setAutoExclusive(false);
+    // drawArcButton->setToolTip(drawArcButtonToolTip);
+
 
     QToolButton *drawCircleButton = UiManager::getIns().UI()->drawCircleButton;
     drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
@@ -219,6 +227,7 @@ void MainWindow::initDrawToolButton(){
     connect(drawPolylineButton, &QToolButton::clicked, this, &MainWindow::onDrawPolylineButtonClicked);
     connect(drawLineButton, &QToolButton::clicked, this, &MainWindow::onDrawLineButtonClicked);
     connect(drawArcButton, &QToolButton::clicked, this, &MainWindow::onDrawArcButtonClicked);
+    connect(drawPointButton, &QToolButton::clicked, this, &MainWindow::onDrawPointButtonClicked);
     connect(drawCircleButton, &QToolButton::clicked, this, &MainWindow::onDrawCircleButtonClicked);
     connect(drawEllipseButton, &QToolButton::clicked, this, &MainWindow::onDrawEllipseButtonClicked);
     connect(drawRectButton, &QToolButton::clicked, this, &MainWindow::onDrawRectButtonClicked);
@@ -560,6 +569,12 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
         DrawManager::getIns().drawLine(pointCoordscene,event );
         break;
     }
+    case OperationEvent::DrawPoint:
+    {
+        DrawManager::getIns().drawPoint(pointCoordscene,event );
+        break;
+    }
+    //
     case OperationEvent::DrawSpiral:
     {
         DrawManager::getIns().drawSpiral(pointCoordscene,event );
@@ -849,6 +864,19 @@ void MainWindow::onDrawArcButtonClicked()
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawArc;
 }
 
+void MainWindow::onDrawPointButtonClicked()
+{
+    DrawManager::getIns().resetTmpItemStatus();
+
+    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
+
+    UiManager::getIns().setAllDrawButtonChecked(false);
+    UiManager::getIns().setAllToolButtonChecked(false);
+    UiManager::getIns().UI()->drawPointButton->setChecked(true);
+
+    SceneManager::getIns().currentOperationEvent = OperationEvent::DrawPoint;
+}
+
 void MainWindow::onDrawSpiralButtonClicked()
 {
     DrawManager::getIns().resetTmpItemStatus();
@@ -1091,7 +1119,7 @@ void MainWindow::onTreeViewModelDeleteNode()
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
     for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto uuid = model->getNode(nodeIndex)->property(NodePropertyIndex::UUID).toString();
+        auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
 
         Manager::getIns().deleteItem(uuid);
     }
@@ -1123,7 +1151,7 @@ void MainWindow::onTreeViewModelNodeClicked()
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
 
-    QString type = model->nodeProperty(node, NodePropertyIndex::Type).toString();
+    QString type = model->nodeProperty(node, TreeNodePropertyIndex::Type).toString();
 
     if (type == "Layer") {
         this->selectedLayerIndex = model->getNode(node)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
@@ -1132,12 +1160,12 @@ void MainWindow::onTreeViewModelNodeClicked()
     else if (type == "Group") {
         auto nodeGroup=model->getAllChildNodes(node);
         for (auto node: nodeGroup){
-            auto nodeUuid = node->property(NodePropertyIndex::UUID).toString();
+            auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
         }
     }
     else if(type == "Item"){
-        UUID uuid = model->nodeProperty(node, NodePropertyIndex::UUID).toString();
+        UUID uuid = model->nodeProperty(node, TreeNodePropertyIndex::UUID).toString();
         Manager::getIns().itemMapFind(uuid)->setSelected(true);
     }
 }
@@ -1167,7 +1195,7 @@ void MainWindow::onTreeViewModelAddGroup()
 
     // //在目标处创建group节点
     QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    // DEBUG_VAR(model->getNode(targetIndex)->property(NodePropertyIndex::Type));
+    // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
 
     if (!model->insertRows(targetIndex.row()+1,1, targetIndex.parent()))
         return;
@@ -1198,7 +1226,7 @@ void MainWindow::onTreeViewModelUpdateActions()
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
     for (const QModelIndex &nodeIndex : nodeIndexList) {
-        QString type = model->nodeProperty(nodeIndex, NodePropertyIndex::Type).toString();
+        QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
 
         if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
             this->addLayerAction->setEnabled(true);

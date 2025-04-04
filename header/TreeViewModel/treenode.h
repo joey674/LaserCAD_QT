@@ -20,7 +20,7 @@ public:
     int indexInParent() const;
 
     int propertyCount() const;
-    QVariant property(NodePropertyIndex index) const;
+    QVariant property(TreeNodePropertyIndex index) const;
     QVariant property(int  index) const;// 可能越界的版本;
 
     QVariantList propertyList() const;
@@ -28,7 +28,7 @@ private:
     bool insertChilds(int position, int count);// 只添加新默认节点
     bool removeChilds(int position, int count);
 
-    bool setProperty(NodePropertyIndex index, const QVariant &value);
+    bool setProperty(TreeNodePropertyIndex index, const QVariant &value);
     bool setProperty(int index, const QVariant &value);
     bool setPropertyList(const QVariantList &value);
 private:

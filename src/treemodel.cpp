@@ -15,7 +15,7 @@ TreeModel::TreeModel(const QString &modelName, QObject *parent)
     // m_rootItem = std::make_shared<TreeNode>(rootProperty);
 
     m_rootItem = std::make_shared<TreeNode>();
-    m_rootItem->setProperty(NodePropertyIndex::Name,modelName);
+    m_rootItem->setProperty(TreeNodePropertyIndex::Name,modelName);
 
     // setupExemplarModelData();
     setupDefaultModelData();
@@ -31,17 +31,17 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
     // 获取当前选中的图层
     int curlayer = SceneManager::getIns().getCurrentLayer();
     TreeNode *item = getNode(nodeIndex);
-    QString itemName = item->property(NodePropertyIndex::Name).toString();
-    QString itemType = item->property(NodePropertyIndex::Type).toString();
-    QString itemUUID = item->property(NodePropertyIndex::UUID).toString();
+    QString itemName = item->property(TreeNodePropertyIndex::Name).toString();
+    QString itemType = item->property(TreeNodePropertyIndex::Type).toString();
+    QString itemUUID = item->property(TreeNodePropertyIndex::UUID).toString();
 
     bool isVisible = Manager::getIns().propertyMapFind(itemUUID,PropertyIndex::Visible).toBool();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (itemType == "Layer" && !isVisible)
-            return (item->property(NodePropertyIndex::Name).toString() + "     " + "Hide");
+            return (item->property(TreeNodePropertyIndex::Name).toString() + "     " + "Hide");
         else
-            return item->property(NodePropertyIndex::Name);
+            return item->property(TreeNodePropertyIndex::Name);
     }
 
     if (role == Qt::ForegroundRole && itemName == ("Layer" + QString::number(curlayer))) {
@@ -64,7 +64,7 @@ bool TreeModel::setData(const QModelIndex &nodeIndex, const QVariant &name, int 
         return false;
 
     TreeNode *item = getNode(nodeIndex);
-    bool result = item->setProperty(NodePropertyIndex::Name, name);
+    bool result = item->setProperty(TreeNodePropertyIndex::Name, name);
 
     if (result)
         emit dataChanged(nodeIndex, nodeIndex, {Qt::DisplayRole, Qt::EditRole});
@@ -75,7 +75,7 @@ bool TreeModel::setData(const QModelIndex &nodeIndex, const QVariant &name, int 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const // 返回m_rootItem的名字
 {
     return (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-    ? m_rootItem->property(NodePropertyIndex::Name) : QVariant{};
+    ? m_rootItem->property(TreeNodePropertyIndex::Name) : QVariant{};
 }
 
 bool TreeModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -83,7 +83,7 @@ bool TreeModel::setHeaderData(int section, Qt::Orientation orientation, const QV
     if (role != Qt::EditRole || orientation != Qt::Horizontal)
         return false;
 
-    const bool result = m_rootItem->setProperty(NodePropertyIndex::Name, value);
+    const bool result = m_rootItem->setProperty(TreeNodePropertyIndex::Name, value);
 
     if (result)
         emit headerDataChanged(orientation, section, section);
@@ -169,21 +169,21 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 
     // 如果是Layer节点, 不允许拖拽移动和编辑,但是可以接受drop
     auto node = getNode(index);
-    if(node->property(NodePropertyIndex::Type) == QVariant("Layer"))
+    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Layer"))
         return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
 
     // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
-    if(node->property(NodePropertyIndex::Type) == QVariant("Item"))
+    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Item"))
         return Qt::ItemIsDragEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 
-    if(node->property(NodePropertyIndex::Type) == QVariant("Group"))
+    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Group"))
         return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 
     WARN_MSG("Unknown TreeNode");
     return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
-QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex)
+QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex)
 {
     auto node = getNode(nodeIndex);
     if (!node)
@@ -215,26 +215,26 @@ void TreeModel::setupExemplarModelData()
 {
     m_rootItem->insertChilds(m_rootItem->childCount(),1);
     auto layer1 =  m_rootItem->child(m_rootItem->childCount() - 1);
-    layer1->setProperty(NodePropertyIndex::Name, "Layer1");
-    layer1->setProperty(NodePropertyIndex::Type, "Layer");
+    layer1->setProperty(TreeNodePropertyIndex::Name, "Layer1");
+    layer1->setProperty(TreeNodePropertyIndex::Type, "Layer");
 
     m_rootItem->insertChilds(m_rootItem->childCount(),1);
     auto layer2 =  m_rootItem->child(m_rootItem->childCount() - 1);
-    layer2->setProperty(NodePropertyIndex::Name, "Layer2");
-    layer2->setProperty(NodePropertyIndex::Type, "Layer");
+    layer2->setProperty(TreeNodePropertyIndex::Name, "Layer2");
+    layer2->setProperty(TreeNodePropertyIndex::Type, "Layer");
 
     m_rootItem->insertChilds(m_rootItem->childCount(),1);
     auto layer3 =  m_rootItem->child(m_rootItem->childCount() - 1);
-    layer3->setProperty(NodePropertyIndex::Name, "Layer3");
-    layer3->setProperty(NodePropertyIndex::Type, "Layer");
+    layer3->setProperty(TreeNodePropertyIndex::Name, "Layer3");
+    layer3->setProperty(TreeNodePropertyIndex::Type, "Layer");
 
     for (int i=0;i<10;i++)
     {
         layer1->insertChilds(layer1->childCount(),1);
         auto item = layer1->child(layer1->childCount() - 1);
         QString name = "Item" + QString::number(i);
-        item->setProperty(NodePropertyIndex::Name,name);
-        item->setProperty(NodePropertyIndex::Type,"Item");
+        item->setProperty(TreeNodePropertyIndex::Name,name);
+        item->setProperty(TreeNodePropertyIndex::Type,"Item");
     }
 
     for (int i=0;i<10;i++)
@@ -242,16 +242,16 @@ void TreeModel::setupExemplarModelData()
         layer2->insertChilds(layer2->childCount(),1);
         auto group = layer2->child(layer2->childCount() - 1);
         QString name = "Group" + QString::number(i);
-        group->setProperty(NodePropertyIndex::Name,name);
-        group->setProperty(NodePropertyIndex::Type,"Group");
+        group->setProperty(TreeNodePropertyIndex::Name,name);
+        group->setProperty(TreeNodePropertyIndex::Type,"Group");
 
         for (int i=0;i<10;i++)
         {
             group->insertChilds(group->childCount(),1);
             auto item = group->child(group->childCount() - 1);
             QString name = "Item" + QString::number(i);
-            item->setProperty(NodePropertyIndex::Name,name);
-            item->setProperty(NodePropertyIndex::Type,"Item");
+            item->setProperty(TreeNodePropertyIndex::Name,name);
+            item->setProperty(TreeNodePropertyIndex::Type,"Item");
         }
     }
 }
@@ -546,7 +546,7 @@ std::vector<TreeNode *> TreeModel::getAllChildNodes(const QModelIndex &nodeIndex
     return children;
 }
 
-void TreeModel::setNodeProperty(const QModelIndex &nodeIndex, const NodePropertyIndex propertyIndex, const QVariant &value)
+void TreeModel::setNodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant &value)
 {
     auto node = getNode(nodeIndex);
     if (!node)

@@ -39,7 +39,7 @@ int TreeNode::propertyCount() const
     return int(m_propertyList.count());
 }
 
-QVariant TreeNode::property(NodePropertyIndex index) const
+QVariant TreeNode::property(TreeNodePropertyIndex index) const
 {
     auto idx = static_cast<int>(index);
         // WARN_VAR(idx);
@@ -82,7 +82,7 @@ bool TreeNode::removeChilds(int position, int count)
     return true;
 }
 
-bool TreeNode::setProperty(NodePropertyIndex index, const QVariant &value)
+bool TreeNode::setProperty(TreeNodePropertyIndex index, const QVariant &value)
 {
     auto idx = static_cast<int>(index);
     if (idx> 2){

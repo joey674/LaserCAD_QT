@@ -62,9 +62,9 @@ Manager &Manager::getIns()
         FATAL_MSG("insert  child fail");
 
     const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Name,name);
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::Type,"Item");
-    model->setNodeProperty(childNodeIndex,NodePropertyIndex::UUID,uuid);
+    model->setNodeProperty(childNodeIndex,TreeNodePropertyIndex::Name,name);
+    model->setNodeProperty(childNodeIndex,TreeNodePropertyIndex::Type,"Item");
+    model->setNodeProperty(childNodeIndex,TreeNodePropertyIndex::UUID,uuid);
 
     treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
                                                 QItemSelectionModel::ClearAndSelect);
@@ -78,9 +78,9 @@ Manager &Manager::getIns()
 
 
      auto item = std::make_shared<PolylineItem>();
-     model->setNodeProperty(position,NodePropertyIndex::Name,name);
-     model->setNodeProperty(position,NodePropertyIndex::Type,type);
-     model->setNodeProperty(position,NodePropertyIndex::UUID, item.get()->getUUID());
+     model->setNodeProperty(position,TreeNodePropertyIndex::Name,name);
+     model->setNodeProperty(position,TreeNodePropertyIndex::Type,type);
+     model->setNodeProperty(position,TreeNodePropertyIndex::UUID, item.get()->getUUID());
      // 插入ItemMap;
      itemMapInsert(item.get()->getUUID(),item);
 
@@ -225,13 +225,13 @@ Manager &Manager::getIns()
     // 通过遍历所有节点来找到对应节点
     auto allNodes = model->getAllChildNodes(QModelIndex());
     for (const auto& node : allNodes) {
-        if(uuid == node->property(NodePropertyIndex::UUID).toString()){
+        if(uuid == node->property(TreeNodePropertyIndex::UUID).toString()){
             // DEBUG_MSG("current delete uuid: " + uuid);
             //删除目标节点下所有子节点
             auto nodefamily = model->getAllChildNodes(model->getIndex(node));
             for (auto childNode: nodefamily)
             {
-                UUID childUuid = childNode->property(NodePropertyIndex::UUID).toString();
+                UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
                 // DEBUG_MSG("current delete childUuid: " + childUuid);
                 auto parentNodeIndex = model->getIndex(childNode->parent());
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
@@ -260,7 +260,7 @@ Manager &Manager::getIns()
      auto treeView = UiManager::getIns().UI()->treeView;
      TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
 
-     return model->getNode(index)->property(NodePropertyIndex::UUID).toString();
+     return model->getNode(index)->property(TreeNodePropertyIndex::UUID).toString();
  }
 
  QString Manager::getItem(QGraphicsItem *item)
@@ -285,13 +285,13 @@ Manager &Manager::getIns()
         }
         nodeIndex = model->index(layer-1,0,QModelIndex());
 
-        auto nodeUUID = model->getNode(nodeIndex)->property(NodePropertyIndex::UUID).toString();
+        auto nodeUUID = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
         itemsGroup.push_back(nodeUUID);
     }
 
     auto nodesGroup = model->getAllChildNodes(nodeIndex);
     for (const auto& node : nodesGroup) {
-        itemsGroup.push_back(node->property(NodePropertyIndex::UUID).toString());
+        itemsGroup.push_back(node->property(TreeNodePropertyIndex::UUID).toString());
     }
 
     return itemsGroup;

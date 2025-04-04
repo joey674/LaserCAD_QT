@@ -26,7 +26,7 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
                     PolylineItem *item = static_cast<PolylineItem*>(editItem);
                     auto allNodes = model->getAllChildNodes(QModelIndex());
                     for (auto node:allNodes){
-                        if(node->property(NodePropertyIndex::UUID) == item->getUUID()){
+                        if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()){
                             auto index = model->getIndex(node);
                             treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
                         }
@@ -44,7 +44,7 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
                 TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
                 auto allNodes = model->getAllChildNodes(QModelIndex());
                 for (auto node:allNodes){
-                    if(node->property(NodePropertyIndex::UUID) == item->getUUID()){
+                    if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()){
                         auto index = model->getIndex(node);
                         treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
                     }

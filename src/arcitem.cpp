@@ -144,12 +144,12 @@ void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
         if (this->m_offsetNum>0)
         {
             painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
+            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
         }
         else
         {
             painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, editPointSize.first, editPointSize.second);
+            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
         }
     }
 

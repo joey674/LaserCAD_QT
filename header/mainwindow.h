@@ -58,9 +58,10 @@ private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseWheelTriggered(QWheelEvent *);
 private slots: // 绘制工具按钮
     void onDrawLineButtonClicked();
-    void onDrawCircleButtonClicked();
     void onDrawPolylineButtonClicked();
     void onDrawArcButtonClicked();
+    void onDrawPointButtonClicked();;
+    void onDrawCircleButtonClicked();
     void onDrawSpiralButtonClicked();
     void onDrawRectButtonClicked();
     void onDrawPolygonButtonClicked();
