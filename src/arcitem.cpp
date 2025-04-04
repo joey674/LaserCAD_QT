@@ -7,36 +7,13 @@ ArcItem::ArcItem()
     // INFO_MSG("create ArcItem, uuid: "+this->getUUID());
 }
 
-void ArcItem::editVertex(const int index, const QPointF point, const double angle)
-{
-    if (index >1) return;
 
-    QPointF pos = point - this->scenePos();
-    this->m_vertexPair[index] = Vertex{pos,angle};
 
-    animate();
-}
 
-void ArcItem::setParallelOffset(const double offset, const double offsetNum)
-{
-    this->m_offset = offset;
-    this->m_offsetNum = offsetNum;
-    this->animate();
-}
 
-void ArcItem::setCenterPos(const QPointF point)
-{
-    DEBUG_MSG("use arc setCenterPos");
-    QPointF currentCenter = this->getCenterPos();
-    QPointF offset = point - currentCenter;
-    this->setPos(this->pos() + offset);
-    this->animate();
-}
 
-void ArcItem::rotate(const double angle)
-{
 
-}
+
 
 void ArcItem::updateParallelOffset()
 {

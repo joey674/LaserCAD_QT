@@ -12,12 +12,12 @@ class GraphicsItem: public QGraphicsItem
 {
 public:
     GraphicsItem();
+/// ********************
+/// \brief control
+/// 直接修改 控制对象
+/// 这里面所有函数结束都要调用animate
+/// ********************
 public:
-    /// ********************
-    /// \brief control
-    /// 直接修改 控制对象
-    /// 这里面所有函数结束都要调用animate
-    /// ********************
     /// \brief editVertex
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
     virtual void editVertex(const int index, const QPointF point, const double angle) = 0;
@@ -32,16 +32,18 @@ public:
     virtual void rotate(const double angle) = 0;
     /// \brief setPen
     /// \param
-    protected: friend class Manager;friend class DrawManager; void setPen(QPen setPen)
+    protected:
+    friend class Manager;friend class DrawManager;
+    void setPen(QPen setPen)
     {
         this->m_pen = setPen;
         this->animate();
     };
+/// ********************
+/// \brief update
+/// 更新函数 不能主动调用update；都在animate中调用
+/// ********************
 public:
-    /// ********************
-    /// \brief update
-    /// 更新函数 不能主动调用update；都在animate中调用
-    /// ********************
     virtual void updateParallelOffset() = 0;
     virtual void updatePaintItem() = 0;
     virtual void animate()
@@ -56,11 +58,11 @@ public:
 
         update();
     };
+/// ********************
+/// \brief get info
+/// 只获取信息
+/// ********************
 public:
-    /// ********************
-    /// \brief get info
-    /// 只获取信息
-    /// ********************
     virtual double getParallelOffset() = 0;
     virtual double getParallelOffsetNum() = 0;
     /// \brief getCenterPos
@@ -75,11 +77,15 @@ public:
     virtual QString getName();
     const QString getUUID();
     const QPen getPen();
+/// ********************
+/// \brief overload
+/// 重载基于QGraphicsitem的一些性质
+/// ********************
 public:
-    /// \brief reload
-    /// 重载QGraphicsItem类的成员函数
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
-
+/// ********************
+/// private variable
+/// /// ********************
 private:
     QString m_uuid;
     QPen m_pen = DISPLAY_PEN;

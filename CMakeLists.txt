@@ -50,10 +50,13 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/MagicEnum/magic_enum_utility.hpp
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
-        header/GraphicsView/graphicsitem.h                      src/graphicsitem.cpp
+        header/GraphicsView/graphicsmath.h                    src/graphicsmath.cpp
+        header/GraphicsView/graphicsitem.h                     src/graphicsitem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
-        header/GraphicsView/arcitem.h                                 src/arcitem.cpp
-        header/GraphicsView/graphicsmath.h                     src/graphicsmath.cpp
+        header/GraphicsView/arcitem.h                                src/arcitem.cpp
+        header/GraphicsView/lineitem.h                                src/lineitem.cpp
+        header/GraphicsView/pointitem.h                             src/pointitem.cpp
+        header/GraphicsView/circleitem.h                            src/circleitem.cpp
         # TreeViewModel
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
@@ -69,16 +72,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Ui/uimanager.h                                                   src/uimanager.cpp
         header/Ui//css.h
         # Keyboard
-        header/Keyboard/keyboardmanager.h                   src/keyboardmanager.cpp
+        header/Keyboard/keyboardmanager.h                     src/keyboardmanager.cpp
         # Scene
-        header/Scene/scenemanager.h                                 src/scenemanager.cpp
-        header/Scene/drawmanager.h                                   src/drawmanager.cpp
+        header/Scene/scenemanager.h                                  src/scenemanager.cpp
+        header/Scene/drawmanager.h                                    src/drawmanager.cpp
         header/Scene/editmanager.h                                      src/editmanager.cpp
         # main
-        header/manager.h                                                            src/manager.cpp
+        header/manager.h                                                           src/manager.cpp
         header/protocol.h
-        header/GraphicsView/lineitem.h header/GraphicsView/lineitem.cpp
-        header/GraphicsView/pointitem.h header/GraphicsView/pointitem.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

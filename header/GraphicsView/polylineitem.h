@@ -9,9 +9,12 @@ class PolylineItem: public GraphicsItem
 {
 public:
     PolylineItem();
-    /// \brief control
-    /// 直接修改 控制对象
-    /// 这里面所有函数结束都要调用animate
+/// ********************
+/// \brief control
+/// 直接修改 控制对象
+/// 这里面所有函数结束都要调用animate
+/// ********************
+public:
     void addVertex(const QPointF point, const double angle);
     void editVertex(const int index, const QPointF point, const double angle) override;
     void deleteVetex(const int index);
@@ -36,13 +39,19 @@ public:
         this->animate();
     };
     void rotate(const double angle) override;
-    /// \brief update
-    /// 更新函数 不能主动调用update；都在animate中调用
+/// ********************
+/// \brief update
+/// 更新函数 不能主动调用update；都在animate中调用
+/// ********************
+public:
     void updateParallelOffset() override;
     void updatePaintItem() override;
     void animate() override;
-    /// \brief get info
-    /// 只获取信息
+/// ********************
+/// \brief get info
+/// 只获取信息
+/// ********************
+public:
     double getParallelOffset() override;
     double getParallelOffsetNum() override;
     Vertex getVertex(const int index) override;
@@ -71,12 +80,18 @@ public:
     }
     QString getName() override;
     double getVertexCount();
-    /// \brief reload
-    /// 重载QGraphicsItem类的成员函数
+/// ********************
+/// \brief overload
+/// 重载基于QGraphicsitem的一些性质
+/// ********************
+public:
     enum { Type = ItemTypeId::Polyline };
     int type() const override;
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+/// ********************
+/// private variable
+/// ********************
 private:
     ///
     std::vector<Vertex> m_vertexList;
