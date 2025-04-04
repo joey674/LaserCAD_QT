@@ -3,7 +3,6 @@
 
 #include "protocol.h"
 #include "graphicsitem.h"
-#include "logger.h"
 
 class LineItem: public GraphicsItem
 {
@@ -12,22 +11,23 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void editVertex(const int index, const QPointF point, const double angle = 0) override
+    bool editVertex(const int index, const QPointF point, const double angle = 0) override
     {
-        if (index >1) return;
+        if (index >1) return false;
 
         QPointF pos = point - this->scenePos();
         this->m_vertexPair[index].point = pos;
 
         animate();
+        return true;
     }
-    void setParallelOffset(const double offset, const double offsetNum) override;
-    void setCenterPos(const QPointF point) override;
-    void rotate(const double angle) override;// TODO
+    bool setParallelOffset(const double offset, const double offsetNum) override;
+    bool setCenterPos(const QPointF point) override;
+    bool rotate(const double angle) override;// TODO
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
-    void updateParallelOffset() override;// TODO
-    void updatePaintItem() override
+    bool updateParallelOffset() override;// TODO
+    bool updatePaintItem() override
     {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->m_paintItem = nullptr;
@@ -39,6 +39,7 @@ public:
             QLineF(v1, v2)
             );
         this->m_paintItem->setPen(this->getPen());
+        return true;
     }
     /// \brief get info
     /// 只获取信息

@@ -1,31 +1,31 @@
 #include "lineitem.h"
-#include "logger.h"
 
 LineItem::LineItem() {}
 
 
 
-void LineItem::setParallelOffset(const double offset, const double offsetNum)
+bool LineItem::setParallelOffset(const double offset, const double offsetNum)
 {
     this->m_offset = offset;
     this->m_offsetNum = offsetNum;
     this->animate();
+    return true;
 }
 
-void LineItem::setCenterPos(const QPointF point)
+bool LineItem::setCenterPos(const QPointF point)
 {
     QPointF currentCenter = this->getCenterPos();
     QPointF offset = point - currentCenter;
     this->setPos(this->pos() + offset);
     this->animate();
+    return true;
 }
 
-void LineItem::rotate(const double angle)
+bool LineItem::rotate(const double angle)
 {
-
 }
 
-void LineItem::updateParallelOffset()
+bool LineItem::updateParallelOffset()
 {
     // if (this->m_offset == 0) return;
     // this->m_offsetItemList.clear();

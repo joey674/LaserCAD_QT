@@ -15,7 +15,7 @@ ArcItem::ArcItem()
 
 
 
-void ArcItem::updateParallelOffset()
+bool ArcItem::updateParallelOffset()
 {
     // if (this->m_offset == 0) return;
     // this->m_offsetItemList.clear();
@@ -54,9 +54,10 @@ void ArcItem::updateParallelOffset()
     //         this->m_offsetItemList.push_back(std::move(item));
     //     }
     // }
+    return true;
 }
 
-void ArcItem::updatePaintItem()
+bool ArcItem::updatePaintItem()
 {
     // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
     this->m_paintItem = nullptr;

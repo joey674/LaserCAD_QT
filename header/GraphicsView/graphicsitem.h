@@ -20,33 +20,34 @@ public:
 public:
     /// \brief editVertex
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
-    virtual void editVertex(const int index, const QPointF point, const double angle) = 0;
+    virtual bool editVertex(const int index, const QPointF point, const double angle) = 0;
     /// \brief setParallelOffset
     /// \param offset
-    virtual void setParallelOffset(const double offset, const double offsetNum) = 0;
+    virtual bool setParallelOffset(const double offset, const double offsetNum) = 0;
     /// \brief setCenterPos
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
-    virtual void setCenterPos(const QPointF point) = 0;
+    virtual bool setCenterPos(const QPointF point) = 0;
     /// \brief rotate
     /// \param angle
-    virtual void rotate(const double angle) = 0;
+    virtual bool rotate(const double angle) = 0;
     /// \brief setPen
     /// \param
     protected:
     friend class Manager;friend class DrawManager;
-    void setPen(QPen setPen)
+    bool setPen(QPen setPen)
     {
         this->m_pen = setPen;
         this->animate();
+        return true;
     };
 /// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
 public:
-    virtual void updateParallelOffset() = 0;
-    virtual void updatePaintItem() = 0;
-    virtual void animate()
+    virtual bool updateParallelOffset() = 0;
+    virtual bool updatePaintItem() = 0;
+    virtual bool animate()
     {
         prepareGeometryChange();
 
@@ -57,6 +58,7 @@ public:
         this->updateParallelOffset();
 
         update();
+        return true;
     };
 /// ********************
 /// \brief get info

@@ -15,11 +15,11 @@ public:
 /// 这里面所有函数结束都要调用animate
 /// ********************
 public:
-    void addVertex(const QPointF point, const double angle);
-    void editVertex(const int index, const QPointF point, const double angle) override;
-    void deleteVetex(const int index);
-    void setParallelOffset(const double offset, const double offsetNum) override;
-    void setCenterPos(const QPointF point) override
+    bool addVertex(const QPointF point, const double angle);
+    bool editVertex(const int index, const QPointF point, const double angle) override;
+    bool deleteVetex(const int index);
+    bool setParallelOffset(const double offset, const double offsetNum) override;
+    bool setCenterPos(const QPointF point) override
     {
         DEBUG_MSG("use polyline setCenterPos" );
         QPointF currentCenter = this->getCenterPos();
@@ -38,15 +38,15 @@ public:
         this->setPos(this->pos() + offset);
         this->animate();
     };
-    void rotate(const double angle) override;
+    bool rotate(const double angle) override;
 /// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
 public:
-    void updateParallelOffset() override;
-    void updatePaintItem() override;
-    void animate() override;
+    bool updateParallelOffset() override;
+    bool updatePaintItem() override;
+    bool animate() override;
 /// ********************
 /// \brief get info
 /// 只获取信息

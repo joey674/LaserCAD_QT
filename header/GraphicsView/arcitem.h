@@ -3,7 +3,6 @@
 
 #include "protocol.h"
 #include "graphicsitem.h"
-#include "graphicsmath.h"
 #include "logger.h"
 
 class ArcItem: public GraphicsItem
@@ -26,49 +25,48 @@ public:
 /// 这里面所有函数结束都要调用animate
 /// ********************
 public:
-    void editVertex(const int index, const QPointF point, const double angle) override
+    bool editVertex(const int index, const QPointF point, const double angle) override
     {
-        if (index >1 || angle >= 360 || angle <0) {
+        if (index >1 || angle >= 360 || angle <=-360) {
             WARN_VAR(index);
             WARN_VAR(angle);
-            return;
+            return false;
         }
-        if (index == 1 && angle == 0){
-            WARN_VAR(index);
-            WARN_VAR(angle);
-            return;
-        }
+
 
         QPointF pos = point - this->scenePos();
         this->m_vertexPair[index] = Vertex{pos,angle};
 
         animate();
+        return true;
     }
-    void setParallelOffset(const double offset, const double offsetNum) override
+    bool setParallelOffset(const double offset, const double offsetNum) override
     {
         this->m_offset = offset;
         this->m_offsetNum = offsetNum;
         this->animate();
+        return true;
     }
-    void setCenterPos(const QPointF point) override
+    bool setCenterPos(const QPointF point) override
     {
         DEBUG_MSG("use arc setCenterPos");
         QPointF currentCenter = this->getCenterPos();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
+        return true;
     }
-    void rotate(const double angle) override
+    bool rotate(const double angle) override
     {
-
+        return true;
     }
 /// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
 public:
-    void updateParallelOffset() override;
-    void updatePaintItem() override;
+    bool updateParallelOffset() override;
+    bool updatePaintItem() override;
 /// ********************
 /// \brief get info
 /// 只获取信息

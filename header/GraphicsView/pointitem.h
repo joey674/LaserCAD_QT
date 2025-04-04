@@ -12,34 +12,42 @@ public:
     /// \brief control
     /// 直接修改 控制对象
     /// 这里面所有函数结束都要调用animate
-    void editVertex(const int index, const QPointF point, const double angle = 0) override
+    bool editVertex(const int index, const QPointF point, const double angle = 0) override
     {
         if (index >=1){
             WARN_MSG("index can only be 0 for point");
-            return;
+            return false;
         }
 
         QPointF pos = point - this->scenePos();
         this->m_vertex.point = pos;
         animate();
+        return true;
     }
-    void setParallelOffset(const double offset, const double offsetNum) override // TODO
-    {}
-    void setCenterPos(const QPointF point) override
+    bool setParallelOffset(const double offset, const double offsetNum) override // TODO
+    {
+        return true;
+    }
+    bool setCenterPos(const QPointF point) override
     {
         DEBUG_MSG("use point setCenterPos");
         QPointF currentCenter = this->getCenterPos();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
+        return true;
     }
-    void rotate(const double angle) override // TODO
-    {}
+    bool rotate(const double angle) override // TODO
+    {
+        return true;
+    }
     /// \brief update
     /// 更新函数 不能主动调用update；都在animate中调用
-    void updateParallelOffset() override// TODO
-    {}
-    void updatePaintItem() override
+    bool updateParallelOffset() override// TODO
+    {
+        return true;
+    }
+    bool updatePaintItem() override
     {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->m_paintItem = nullptr;
@@ -52,6 +60,7 @@ public:
                                         GeneralPointSize.second *2));
         this->m_paintItem->setBrush(QBrush(Qt::red));
         this->m_paintItem->setPen(this->getPen());
+        return true;
     }
     /// \brief get info
     /// 只获取信息

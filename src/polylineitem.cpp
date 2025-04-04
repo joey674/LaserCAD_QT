@@ -9,46 +9,50 @@ PolylineItem::PolylineItem()
     // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
-void PolylineItem::addVertex(const QPointF point, const double angle)
+bool PolylineItem::addVertex(const QPointF point, const double angle)
 {
     Vertex newVertex = {point,angle};
     m_vertexList.push_back(newVertex);
 
     animate();
+    return true;
 }
 
-void PolylineItem::editVertex(const int index, const QPointF point, const double angle)
+bool PolylineItem::editVertex(const int index, const QPointF point, const double angle)
 {
     QPointF pos = point - this->scenePos();
     m_vertexList[index] = Vertex{pos,angle};
 
     animate();
+    return true;
 }
 
-void PolylineItem::deleteVetex(const int index)
+bool PolylineItem::deleteVetex(const int index)
 {
     m_vertexList.erase(m_vertexList.begin() +index);
 
     animate();
+    return true;
 }
 
-void PolylineItem::setParallelOffset(const double offset, const double offsetNum)
+bool PolylineItem::setParallelOffset(const double offset, const double offsetNum)
 {
     this->m_offset = offset;
     this->m_offsetNum = offsetNum;
     if (offsetNum < 0)
         FATAL_MSG("offset num must be positive");
     this->animate();
+    return true;
 }
 
-void PolylineItem::rotate(const double angle)
+bool PolylineItem::rotate(const double angle)
 {
 
 }
 
-void PolylineItem::updateParallelOffset()
+bool PolylineItem::updateParallelOffset()
 {
-    if (this->m_offset == 0) return;
+    if (this->m_offset == 0) return true;
     this->m_offsetItemList.clear();
     DEBUG_MSG("");
     DEBUG_MSG("update parallel offset");
@@ -119,9 +123,10 @@ void PolylineItem::updateParallelOffset()
             this->m_offsetItemList.push_back(std::move(item));
         }
     }
+    return true;
 }
 
-void PolylineItem::updatePaintItem()
+bool PolylineItem::updatePaintItem()
 {
     // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
     m_paintItemList.clear();
@@ -147,13 +152,14 @@ void PolylineItem::updatePaintItem()
             m_paintItemList.push_back(std::move(pathItem));
         }
     }
+    return true;
 }
 
-void PolylineItem::animate()
+bool PolylineItem::animate()
 {
     prepareGeometryChange();
 
-    if (m_vertexList.size()<2) return;
+    if (m_vertexList.size()<2) return false;
 
     // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
     this->updatePaintItem();
@@ -162,6 +168,7 @@ void PolylineItem::animate()
     this->updateParallelOffset();
 
     update();
+    return true;
 }
 
 
