@@ -28,6 +28,7 @@ private: // 初始化组件
     QAction* addLayerAction;
     QAction* addGroupAction;
     QAction* deleteNodeAction;
+    QAction* copyNodeAction;
     QAction* setLayerVisibleAction;
     QAction* setLayerUnvisibleAction;
     int selectedLayerIndex;
@@ -81,6 +82,7 @@ private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelAddLayer();
     void onTreeViewModelAddGroup();
     void onTreeViewModelDeleteNode();
+    void onTreeViewModelCopyNode();;
     void onTreeViewModelSetLayerVisible();
     void onTreeViewModelSetLayerUnvisible();
     void onTreeViewModelNodeClicked();

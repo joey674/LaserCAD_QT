@@ -1,0 +1,304 @@
+#!/usr/bin/env lua
+
+-- Based on the generator script written by Paul Ouellette for highlight:
+-- https://gitlab.com/saalen/highlight/-/merge_requests/137
+
+local argparse = require "argparse"
+
+local parser = argparse "astyle"
+   :add_help(false)
+
+parser:argument "file"
+   :args "*"
+
+parser:option "--style"
+   :description "Set a formatting and indenting style"
+   :choices {"allman", "java", "kr", "stroustrup", "whitesmith", "vtk", "ratliff", "gnu", "linux", "horstmann", "1tbs", "google", "mozilla", "webkit", "pico", "lisp"}
+
+parser:option "--indent"
+   :description "Set indentation option"
+   :choices {"spaces", "tab", "force-tab", "force-tab-x"}
+
+parser:flag "--attach-namespaces"
+   :description "Attach braces to a namespace statement"
+
+parser:flag "--attach-classes"
+   :description "Attach braces to a class statement"
+
+parser:flag "--attach-inlines"
+   :description "Attach braces to class inline function definitions"
+
+parser:flag "--attach-extern-c"
+   :description "Attach braces to an extern C statement"
+
+parser:flag "--attach-closing-while"
+   :description "Attach closing while of do-while to the closing brace"
+
+parser:flag "--indent-classes"
+   :description "Indent 'class' blocks so that the entire block is indented"
+
+parser:flag "--indent-modifiers"
+   :description "Indent 'class' access modifiers, 'public:', 'protected:' or 'private:', one half indent."
+
+parser:flag "--indent-switches"
+   :description "Indent 'switch' blocks, so that the inner 'case XXX:'  headers are indented in relation to the switch block"
+
+parser:flag "--indent-cases"
+   :description "Indent case blocks from the 'case XXX:' headers"
+
+parser:flag "--indent-namespaces"
+   :description "Indent the contents of namespace blocks"
+
+parser:flag "--indent-after-parens"
+   :description "Indent, instead of align, continuation lines following lines that contain an opening paren '(' or an assignment '='"
+
+parser:option "--indent-continuation"
+   :description "Indent continuation lines an additional indents"
+   :choices {"0", "1", "2", "3", "4"}
+
+parser:flag "--indent-labels"
+   :description "Indent labels so that they appear one indent less than the current indentation level, rather than being flushed completely to the left"
+
+parser:flag "--indent-preproc-block"
+   :description "Indent preprocessor blocks at brace level 0. Without this option the preprocessor block is not indented"
+
+parser:flag "--indent-preproc-cond"
+   :description "Indent preprocessor conditional statements #if/#else/#endif to the same level as the source code"
+
+parser:flag "--indent-preproc-define"
+   :description "Indent multi-line preprocessor #define statements"
+
+parser:flag "--indent-col1-comments"
+   :description "Indent line comments that start in column one"
+
+parser:option "--min-conditional-indent"
+   :description "Indent a minimal # spaces in a continuous conditional belonging to a conditional header"
+   :choices {"0", "1", "2", "3"}
+
+parser:option "--max-continuation-indent"
+   :description "Indent a maximal # spaces in a continuation line, relative to the previous line"
+
+parser:option "--break-blocks"
+   :description "Insert empty lines around unrelated blocks, labels, classes, ..."
+   :args "?"
+   :choices {"all"}
+
+parser:flag "--pad-oper"
+   :description "Insert space padding around operators"
+
+parser:flag "--pad-comma"
+   :description "Insert space padding after commas"
+
+parser:flag "--pad-negation"
+   :description "Insert space padding after negations"
+
+parser:flag "--pad-include"
+   :description "Insert space padding after include directives"
+
+parser:flag "--pad-paren"
+   :description "Insert space padding around parenthesis on both the outside and the inside"
+
+parser:flag "--pad-paren-out"
+   :description "Insert space padding around parenthesis on the outside only"
+
+parser:flag "--pad-first-paren-out"
+   :description "Insert space padding around first parenthesis in a series on the outside only"
+
+parser:flag "--pad-paren-in"
+   :description "Insert space padding around parenthesis on the inside only"
+
+parser:flag "--pad-header"
+   :description "Insert space padding after paren headers (e.g. 'if', 'for'...)"
+
+parser:flag "--unpad-paren"
+   :description "Remove unnecessary space padding around parenthesis"
+
+parser:flag "--pad-brackets"
+   :description "Insert space padding around square brackets on both the outside and the inside."
+
+parser:flag "--pad-brackets-in"
+   :description "Insert space padding around square brackets on the inside only."
+
+parser:flag "--pad-brackets-out"
+   :description "Insert space padding around square brackets on the outside only."
+
+parser:flag "--unpad-brackets"
+   :description "Remove unnecessary space padding around square brackets (experimental)."
+
+parser:flag "--delete-empty-lines"
+   :description "Delete empty lines within a function or method"
+
+parser:flag "--fill-empty-lines"
+   :description "Fill empty lines with the white space of their previous lines"
+
+parser:option "--align-pointer"
+   :description "Attach a pointer or reference operator (*, &, or ^) to either the operator type (left), middle, or operator name (right)"
+   :choices {"type", "middle", "name"}
+
+parser:option "--align-reference"
+   :description "Attach a reference operator (&) to either the operator type (left), middle, or operator name (right). If not set, follow pointer alignment"
+   :choices {"none", "type", "middle", "name"}
+
+parser:flag "--break-closing-braces"
+   :description "Break braces before closing headers (e.g. 'else', 'catch', ...)"
+
+parser:flag "--break-elseifs"
+   :description "Break 'else if()' statements into two different lines"
+
+parser:flag "--break-one-line-headers"
+   :description "Break one line headers (e.g. 'if', 'while', 'else', ...) from a statement residing on the same line"
+
+parser:flag "--add-braces"
+   :description "Add braces to unbraced one line conditional statements"
+
+parser:flag "--add-one-line-braces"
+   :description "Add one line braces to unbraced one line conditional statements"
+
+parser:flag "--remove-braces"
+   :description "Remove braces from a braced one line conditional statements"
+
+parser:flag "--break-return-type"
+   :description "Break the return type from the function name definitions"
+
+parser:flag "--attach-return-type-decl"
+   :description "Break the return type from the function name declarations"
+
+parser:flag "--keep-one-line-blocks"
+   :description "Don't break blocks residing completely on one line"
+
+parser:flag "--keep-one-line-statements"
+   :description "Don't break lines containing multiple statements into multiple single-statement lines"
+
+parser:flag "--convert-tabs"
+   :description "Convert tabs to the appropriate number of spaces"
+
+parser:flag "--close-templates"
+   :description "Close ending angle brackets on template definitions"
+
+parser:flag "--remove-comment-prefix"
+   :description "Remove the leading '*' prefix on multi-line comments and indent the comment text one indent"
+
+parser:option "--max-code-length"
+   :description "Break the line if it exceeds more than # characters"
+
+parser:flag "--break-after-logical"
+   :description "After break line using --max-code-length, place logical conditional last on the previous line"
+
+parser:option "mode"
+   :description "Set input syntax mode"
+   :choices {"c", "java", "cs", "objc", "js"}
+
+parser:flag "--pad-method-prefix"
+   :description "Insert space padding after the '-' or '+' Objective-C method prefix"
+
+parser:flag "--unpad-method-prefix"
+   :description "Remove all space padding after the '-' or '+' Objective-C method prefix"
+
+parser:flag "--pad-return-type"
+   :description "Insert space padding after the Objective-C return type"
+
+parser:flag "--unpad-return-type"
+   :description "Remove all space padding after the Objective-C return type"
+
+parser:flag "--pad-param-type"
+   :description "Insert space padding after the Objective-C param type"
+
+parser:flag "--unpad-param-type"
+   :description "Remove all space padding after the Objective-C param type"
+
+parser:flag "--align-method-colon"
+   :description "Align the colons in an Objective-C method definition."
+
+parser:option "--pad-method-colon"
+   :description "Add or remove space padding before or after the colons in an Objective-C method call"
+   :choices {"none", "all", "after", "before"}
+
+parser:option "--suffix"
+   :description "Append the suffix #### instead of '.orig' to original filename or do not retain a backup of the original file if set to none"
+
+parser:flag "--recursive"
+   :description "Process subdirectories recursively"
+
+parser:flag "--dry-run"
+   :description "Perform a trial run with no changes made to check for formatting"
+
+parser:option "--exclude"
+   :description "Specify a file or directory #### to be excluded from processing"
+
+parser:flag "--ignore-exclude-errors"
+   :description "Allow processing to continue if there are errors in the --exclude options. It will display the unmatched excludes"
+
+parser:flag "--ignore-exclude-errors-x"
+   :description "Allow processing to continue if there are errors in the --exclude options. It will NOT display the unmatched excludes"
+
+parser:flag "--errors-to-stdout"
+   :description "Print errors and help information to standard-output rather than to standard-error"
+
+parser:flag "--preserve-date"
+   :description "Preserve the original file's date and time modified"
+
+parser:flag "--verbose"
+   :description "Extra informational messages will be displayed"
+
+parser:flag "--formatted"
+   :description "Display only the files that have been formatted"
+
+parser:flag "--quiet"
+   :description "Suppress all output except error messages"
+
+parser:option "--lineend"
+   :description "Force use of the specified line end style"
+   :choices {"windows", "linux", "macold"}
+
+parser:option "--options"
+   :description "Specify a default option file to read and use."
+
+parser:option "--project"
+   :description "Specify a project option file to read and use"
+
+parser:flag "--ascii"
+   :description "The displayed output will be ASCII characters only"
+
+parser:flag "--version"
+   :description "Print version number"
+
+parser:flag "--help"
+   :description "Print help message"
+
+parser:flag "--html"
+   :description "Open the HTML help file astyle.html in the default browser"
+
+parser:option "--stdin"
+   :description "Use the file path as input to single file formatting"
+
+parser:option "--stdout"
+   :description "Use the file path as output from single file formatting"
+
+parser:option "--squeeze-lines"
+   :description "Remove superfluous empty lines exceeding the given number"
+
+parser:flag "--squeeze-ws"
+   :description "Remove superfluous whitespace"
+
+parser:flag "--preserve-ws"
+   :description "Preserve whitespace near comma operators if squeeze-ws is not set"
+
+parser:flag "--indent-lambda"
+   :description "Indent C++ lambda functions (experimental, broken for complex fct bodies)"
+
+parser:flag "--accept-empty-list"
+   :description "With wildcard or -R: Do not report an empty input file list as error"
+
+local p = argparse "gen-completions"
+p:argument "shell"
+   :choices {"bash", "zsh", "fish"}
+
+local shell = p:parse().shell
+
+if shell == "bash" then
+   io.write(parser:get_bash_complete())
+elseif shell == "zsh" then
+   io.write(parser:get_zsh_complete())
+else
+   io.write(parser:get_fish_complete())
+end

@@ -1,0 +1,285 @@
+
+body { margin: 2em; background-color: white; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; }
+
+h1 { color: RoyalBlue; font-style: italic; margin-top: 2em;  }
+h2 { color: RoyalBlue; font-size: larger; margin-top: 2em;  }
+h3 { color: RoyalBlue; margin-top: 2em;  }
+h4 { color: RoyalBlue; margin-top: 1em; }
+h5 { text-transform: uppercase }
+
+p { line-height: 1.4em;}
+
+a.contents:link, a.contents:visited { color: RoyalBlue; text-decoration: none; }
+a.contents:hover  { color: red; text-decoration: none; }
+a:link, a:visited { color: RoyalBlue; text-decoration: underline; }
+a:hover { color: red; text-decoration: underline; }
+
+img { border: none; }
+
+pre { color: RoyalBlue; font-family: 'Courier New', Courier, monospace; background-color: #fffdda; padding: 1em;}
+
+/*- the following styles are for the 'top' button
+    the corresponding javascript is in the html document from
+    https://www.w3schools.com/howto/tryit.asp?filename=tryhow_js_scroll_to_top
+*/
+#topBtn {
+    display: none;          /* Hidden by default */
+    position: fixed;        /* Fixed/sticky position */
+    bottom: 105px;           /* Place the button from the bottom */
+    right: 5px;            /* Place the button from the right */
+    z-index: 99;            /* Make sure it does not overlap */
+    border: none;           /* Remove borders */
+    outline: none;          /* Remove outline */
+    background-color: RoyalBlue; /* Set a background color */
+    color: white;         /* Text color */
+    cursor: pointer;        /* Add a mouse pointer on hover */
+    padding: 10px;          /* Some padding */
+    margin: 10px;
+}
+
+#topBtn:hover {
+    background-color: cornflowerblue; /* Set a darker background on hover */
+}
+
+#slogan {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 200;
+    position: fixed;        /* Fixed/sticky position */
+    bottom: 45px;           /* Place the button from the bottom */
+    right: 10px;            /* Place the button from the right */
+    z-index: 99;            /* Make sure it does not overlap */
+    color: royalblue;         /* Text color */
+    font-size: 40pt;
+    opacity: 0.5;
+}
+
+/******************************** Layout ********************************/
+
+/* applying a natural box layout model to all elements */
+html {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+  }
+  *, *:before, *:after {
+	-webkit-box-sizing: inherit;
+	-moz-box-sizing: inherit;
+	box-sizing: inherit;
+  }
+
+  /******************************** Nav Menu *****************************/
+
+  /* This is the very basic steps of creating a horizontal menu */
+
+  /* Reset from the regular list definitions above */
+  .menu, .menu ul, .menu ul li, .menu ul li a,
+  .menu ul ul, .menu ul ul li, .menu ul ul li a {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	line-height: 1;
+  }
+
+  /* Clearfix needed only in case of floating the LI, but not when using the inline method.
+  .menu:after, .menu > ul:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+  }
+  */
+
+  /* list-style-type: none to remove the bullets.
+  text-align: center in combination with LI set to inline is centering the whole menu, great.
+  If inline cannot be used due to the white-space problem, check this method for absolute centering:
+  http://www.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/ */
+  .menu ul {
+	  list-style-type: none;
+	  text-align: center;
+      top:35px;
+  }
+
+  /* position: relative is needed for the position: absolute of submenu to refer to its parent element.
+  LI needs to be set to inline to go into horizontal.
+  The only disadvantage compared to float:left is a mysterious 4px gap between the elements -
+  on how to remove it see https://css-tricks.com/fighting-the-space-between-inline-block-elements/
+  text-align: center makes the A links centered inside their LI containers, only makes sense if A links have a fixed width */
+  .menu ul li {
+	  position: relative;
+	  display: inline;
+	  text-align: center;
+      font-size: small;
+  }
+
+  /* text-decoration: none is needed to remove the underlining of links.
+  display: inline-block is needed to apply a fixed width or padding to this otherwise inline element of A. */
+  .menu ul li a {
+	  text-decoration: none;
+	  display: inline-block;
+	  width: 200px;
+	  padding: 20px;
+	  background: RoyalBlue;
+	  color: white;
+  }
+
+  /* Declaration of hover, focus and active state - can be done separately of course if desired */
+  .menu ul li a:hover, .menu ul li a:focus, .menu ul li a:active  {
+	  color: yellow;
+	  background: CornflowerBlue;
+  }
+
+  /* Styling of the arrow that indicates a submenu and which by default is way too big. */
+  .menu-arrow {
+	  font-size: 10px;
+  }
+
+
+  /******* Here starts the submenu section. *******/
+  /* First, the submenu is positioned in relation to the LI of parent absolutely.
+  To not be visible, there are three options: left-9999px, display: none or opactity.
+  I have chosen opacity because it allows smooth blending in while not having any disadvantages.
+  Using this method instead of display:none screenreaders will still be able to see the whole menu.
+  Yet on veeery large sites this might lead to an information overflow and display:none here and display:initial on the next item might be preferable:
+  http://manwithnoblog.com/2009/12/06/the-case-for-the-use-of-display-none/ */
+  .menu ul ul {
+	  position: absolute;
+	  left:0;
+	  opacity: 0;
+  }
+
+  /* When the parent LI is hovered, submenu is made visible. */
+  .menu ul li:hover ul {
+	  opacity: 1;
+  }
+
+  /* The LI of the submenu are set back to block, so they are aligned vertically again.
+  Also text-align is set back to left, because centered entries don't look good in the submenu.*/
+  .menu ul ul li {
+	  display: block;
+	  text-align: left;
+  }
+
+  /* Styling of the submenu entries.
+  Width: 100% is needed here so the border goes to the end of the LI which is giving the width based on the longest entry.
+  Min-width is set to have a more consistent appearance if some submenu items would otherwise be very short.
+  White-space is set to nowrap so they stay in one line.
+  Border bottom is simply a nice thing in a submenu :) */
+  .menu ul ul li a {
+	  width: 100%;
+	  min-width:200px;
+	  padding: 10px;
+	  white-space: nowrap;
+	  border-top: 1px solid white;
+	  color: white;
+	  background: green;
+
+  }
+
+  /* Declaration of hover, focus and active state - can be done separately of course if desired */
+  .menu ul ul li a:hover, .menu ul ul li a:focus, .menu ul ul li a:active  {
+	  color: yellow;
+	  background: rgb(95, 177, 95);
+  }
+
+
+  /******* Goodies *******/
+  /* Applying smooth transitions on color changes and opacity fade in of dropdown menu.
+  As of June 2015 and according to caniuse.com, this two should be enough, since anyhow no harm will be done in older browsers that simply loose the smoothness but not functionality. */
+  .menu ul li a, .menu ul ul li, .menu ul li:hover, .menu ul ul {
+	  -webkit-transition: all .4s ease-in-out;
+	  transition: all .4s ease-in-out;
+  }
+
+  /* Styles and hides the responsive button.
+  This is a pure CSS solution for the moment, using an invisible checkbox as toggle element. */
+  .responsive-button {
+	  padding: 20px;
+	  color: white;
+	  font-weight: bold;
+	  background: RoyalBlue;
+	  border-bottom: 1px solid white;
+	  text-align: center;
+	  display: none;
+	  cursor: pointer;
+  }
+
+  /* Permanently hides the checkbox that helps us as a menu toogle element */
+  input[id=responsive-button] {
+	  display: none;
+  }
+
+  /* Shows menu when invisible checkbox is checked */
+  input[id=responsive-button]:checked ~ .menu {
+	  display: block;
+  }
+
+
+  /******* Responsiveness *******/
+  /* This is the very basic one-step solution without any intermediary stages.
+  The menu is directly collapsing at a certain breakpoint that needs to be set according to the width of the respective menu.
+  For later WordPress use, meaning dynamic content, we need to expand this solution.
+  */
+  @media screen and (max-width : 780px){
+
+  /* Shows the responsive button */
+  .responsive-button {
+	  display: block;
+  }
+
+  .menu {
+	  display: none;
+  }
+
+  /* Reset menu items position to stack up vertically.
+  Adding a bottom line for better separation. */
+  .menu ul li {
+	  display: block;
+	  border-bottom: 1px solid white;
+  }
+
+  /* Making all items full width */
+  .menu ul li, .menu ul li a {
+	  width: 100%;
+  }
+
+  /* Reset to position: relative is needed so the submenu is opening inside the element flow, not covering the following parent menu items.
+  This is why hiding them can not be done with the left:-9999px method, and also opacity doesn't work here because it leaves an empty space between the parent items.
+  So for the moment it seems that responsive dropdown menus can not be accomplished accessible using CSS only. */
+  .menu ul ul {
+	  position: relative;
+	  display: none;
+  }
+
+  /* Showing the submenu */
+  .menu ul li:hover ul {
+	  display: block;
+  }
+
+  /* text-align is now set to center, because left entries don't look good in a responsive submenu. */
+  .menu ul ul li {
+	  text-align: center;
+  }
+
+  .menu ul {
+    top:initial;
+  }
+
+#slogan {
+  bottom: 48px;           /* Place the button from the bottom */
+  right: 15px;
+  font-size: 20pt;
+  opacity: 0.5;
+}
+
+#topBtn {
+  bottom: 5px;           /* Place the button from the bottom */
+  left: 10px;            /* Place the button from the right */
+}
+
+body {
+  margin: 1em;
+}
+
+}

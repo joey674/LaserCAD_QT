@@ -25,11 +25,12 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event)
 {
     if (!this->tmpPolyline && event == MouseEvent::LeftPress)
     {
-        // 设置其他元素不可动不可选中
+        // 设置其他元素不可动不可选中 颜色为display
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpPolyline = std::make_shared<PolylineItem>();
@@ -74,11 +75,12 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
 {
     if (!this->tmpArc && event == MouseEvent::LeftPress)
     {
-        // 设置其他元素不可动不可选中
+        // 设置其他元素不可动不可选中 颜色为display
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpArc = std::make_shared<ArcItem>();
@@ -120,11 +122,12 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event)
 void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event)
 {
     if (!this->tmpLine && event == MouseEvent::LeftPress) {
-        // 设置其他元素不可动不可选中
+        // 设置其他元素不可动不可选中 颜色为display
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpLine = std::make_shared<LineItem>();
@@ -154,11 +157,12 @@ void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event)
 void DrawManager::drawPoint(QPointF pointCoordscene, MouseEvent event)
 {
     if (!this->tmpPoint && event == MouseEvent::LeftPress) {
-        // 设置其他元素不可动不可选中
+        // 设置其他元素不可动不可选中 颜色为display
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item,false);
             Manager::getIns().setItemMovable(item,false);
+            Manager::getIns().setItemRenderPen(item,DISPLAY_PEN);
         }
 
         this->tmpPoint = std::make_shared<PointItem>();

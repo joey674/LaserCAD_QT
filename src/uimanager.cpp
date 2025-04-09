@@ -9,6 +9,7 @@ UiManager &UiManager::getIns()
 
 void UiManager::setAllDrawButtonChecked(bool isChecked)
 {
+    ui->drawPointButton->setChecked(isChecked);
     ui->drawLineButton->setChecked(isChecked);
     ui->drawArcButton->setChecked(isChecked);
     ui->drawCircleButton->setChecked(isChecked);

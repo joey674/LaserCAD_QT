@@ -32,24 +32,31 @@ Manager &Manager::getIns()
     // 插入propertyMap
     auto map = DefaultPropertyMap;
     map[PropertyIndex::Position] = ptr->getCenterPos();
-    if (type == ItemTypeId::Arc){
+    switch (type) {
+    case ItemTypeId::Arc: {
         auto customs = DefaultCustomPropertyArc;
         customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
         customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
         map[PropertyIndex::CustomProperty] = customs;
+        break;
     }
-    if (type == ItemTypeId::Line){
+    case ItemTypeId::Line: {
         auto customs = DefaultCustomPropertyLine;
         customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
         customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
         map[PropertyIndex::CustomProperty] = customs;
+        break;
     }
-    if (type == ItemTypeId::Polyline){
+    case ItemTypeId::Polyline: {
+        break;
+    }
+    default:
+        break;
+    }
 
-    }
 
     propertyMapInsert(uuid,map);
-    INFO_MSG("item add: " + ptr->getUUID() + propertyMapFind(ptr->getUUID(),PropertyIndex::Visible).toString());
+    INFO_MSG("item add: " + ptr->getUUID());
 
     // 插入TreeViewModel 注意 这个要最后做 不然会报bug
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -87,7 +94,7 @@ Manager &Manager::getIns()
      // 插入propertyMap
      auto map = DefaultPropertyMap;
      propertyMapInsert(item->getUUID(),map);
-     INFO_MSG("item add: " + item->getUUID() + propertyMapFind(item->getUUID(),PropertyIndex::Visible).toString());
+     INFO_MSG("item add: " + item->getUUID());
  }
 
  void Manager::setItemVisible(UUID uuid, bool status)

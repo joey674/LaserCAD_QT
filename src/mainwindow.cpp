@@ -449,6 +449,22 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
         )
     );
 
+    // 禁止鼠标左右键同时拖拽
+    if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true)
+    {
+        DrawManager::getIns().resetTmpItemStatus();
+        EditManager::getIns().currentEditItem = NULL;
+        auto allItems = Manager::getIns().getItemsByLayer(0);
+        SceneManager::getIns().scene->clearSelection();
+        // 打断一下拖拽过程
+        for (const auto& item : allItems) {
+            Manager::getIns().setItemMovable(item,false);
+            QTimer::singleShot(10, [item]() {
+                Manager::getIns().setItemMovable(item,true);
+            });
+        }
+    }
+
     // 非拖拽行为
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false)
     {
@@ -1093,18 +1109,21 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
     this->addLayerAction = new QAction("Add Layer", &contextMenu);
     this->addGroupAction = new QAction("Add Group", &contextMenu);
     this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
+    this->copyNodeAction = new QAction("Copy Node", &contextMenu);
     this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
     this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
 
     contextMenu.addAction(this->addLayerAction);
     contextMenu.addAction(this->addGroupAction);
     contextMenu.addAction(this->deleteNodeAction);
+    contextMenu.addAction(this->copyNodeAction);
     contextMenu.addAction(this->setLayerVisibleAction);
     contextMenu.addAction(this->setLayerUnvisibleAction);
 
     connect(this->addLayerAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddLayer);
     connect(this->addGroupAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddGroup);
     connect(this->deleteNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelDeleteNode);
+    connect(this->copyNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelCopyNode);
     connect(this->setLayerVisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerVisible);
     connect(this->setLayerUnvisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerUnvisible);
 
@@ -1114,7 +1133,6 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
 
 void MainWindow::onTreeViewModelDeleteNode()
 {
-
     TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
 
@@ -1122,6 +1140,19 @@ void MainWindow::onTreeViewModelDeleteNode()
         auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
 
         Manager::getIns().deleteItem(uuid);
+    }
+
+    onTreeViewModelUpdateActions();
+}
+
+void MainWindow::onTreeViewModelCopyNode(){
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
+
+        Manager::getIns().copyItem(uuid);
     }
 
     onTreeViewModelUpdateActions();
@@ -1234,6 +1265,7 @@ void MainWindow::onTreeViewModelUpdateActions()
             this->setLayerUnvisibleAction->setEnabled(true);
             this->addGroupAction->setEnabled(false);
             this->deleteNodeAction->setEnabled(false);
+            this->copyNodeAction->setEnabled(false);
 
             this->selectedLayerIndex = model->getNode(nodeIndex)->indexInParent() + 1;
             SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
@@ -1244,6 +1276,7 @@ void MainWindow::onTreeViewModelUpdateActions()
             this->setLayerUnvisibleAction->setEnabled(false);
             this->addGroupAction->setEnabled(true);
             this->deleteNodeAction->setEnabled(true);
+            this->copyNodeAction->setEnabled(true);
             return;
         }
     }
@@ -1278,16 +1311,28 @@ void MainWindow::on_drawTestLineButton_clicked()
     /// test template
     ///
     // /*
+    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
+    if (selectedItems.empty())
+        return;
+    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
+    {
+        QGraphicsItem* graphicsItem = *it;
+        ArcItem* arcPtr = dynamic_cast<ArcItem*>(graphicsItem);
+        auto arc = arcPtr->copy();
+        SceneManager::getIns().scene->addItem(arc.get());
+        Manager::getIns().addItem(arc);
+    }
     // */
 
     ///
     /// test template
     ///
     // /*
-    // this->tmpPolyline = std::make_shared<PolylineItem>();
-    // this->tmpPolyline->setLayer(SceneManager::getIns().currentLayer);
-    // SceneManager::getIns().scene->addItem(this->tmpPolyline.get());
-    // SceneManager::getIns().scene->removeItem(this->tmpPolyline.get());
+    // std::shared_ptr<ArcItem> item = std::make_shared<ArcItem>();
+    // Manager::getIns().addItem(item);
+
+    // auto item1 = item->copy();
+
     // */
 
 

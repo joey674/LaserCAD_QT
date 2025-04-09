@@ -15,27 +15,25 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
     treeView->selectionModel()->clearSelection();
 
-    // 只处理颜色显示；
+    // 多选对象时只在treeview中选中对象
     if (SceneManager::getIns().scene->selectedItems().size()>=1) {
         for (const auto& editItem: SceneManager::getIns().scene->selectedItems()){
             switch (editItem->type())
             {
-             case PolylineItem::Type:
-                 {
-                    // 在treeview中选中对象
-                    PolylineItem *item = static_cast<PolylineItem*>(editItem);
-                    auto allNodes = model->getAllChildNodes(QModelIndex());
-                    for (auto node:allNodes){
-                        if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()){
-                            auto index = model->getIndex(node);
-                            treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                        }
+             case ItemTypeId::Polyline:{
+                // 在treeview中选中对象
+                PolylineItem *item = static_cast<PolylineItem*>(editItem);
+                auto allNodes = model->getAllChildNodes(QModelIndex());
+                for (auto node:allNodes){
+                    if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()){
+                        auto index = model->getIndex(node);
+                        treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
                     }
-
-                    break;
                 }
-            case ArcItem::Type:
-            {
+
+                break;
+            }
+            case ItemTypeId::Arc:{
                 ArcItem *item = static_cast<ArcItem*>(editItem);
                 // item->setPen(EDIT_PEN);
 
@@ -51,6 +49,23 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
                 }
                 break;
             }
+            case ItemTypeId::Line:{
+                LineItem *item = static_cast<LineItem*>(editItem);
+                // item->setPen(EDIT_PEN);
+
+                // 在treeview中选中对象
+                auto treeView = UiManager::getIns().UI()->treeView;
+                TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+                auto allNodes = model->getAllChildNodes(QModelIndex());
+                for (auto node:allNodes){
+                    if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()){
+                        auto index = model->getIndex(node);
+                        treeView->selectionModel()->select(index ,QItemSelectionModel::Select | QItemSelectionModel::Rows);
+                    }
+                }
+                break;
+            }
+            // TODO
             };
         }
     }
@@ -60,18 +75,20 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event)
         this->currentEditItem = SceneManager::getIns().scene->selectedItems()[0];
         switch (this->currentEditItem->type())
         {
-        case PolylineItem::Type:
-        {
+        case ItemTypeId::Polyline:{
             PolylineItem *item = static_cast<PolylineItem*>(this->currentEditItem);
             this->editPolyline(pointCoordscene,item,event);
             break;
         }
-        case ArcItem::Type:
-        {
+        case ItemTypeId::Arc:{
             ArcItem *item = static_cast<ArcItem*>(this->currentEditItem);
             this->editArc(pointCoordscene,item,event);
             break;
         }
+        case ItemTypeId::Line:{
+            break;
+        }
+        // TODO
         };
     }
 }

@@ -11,6 +11,9 @@
 #include <vector>
 #include <unordered_map>
 #include "logger.h"
+#include "arcitem.h"
+#include "lineitem.h"
+#include "scenemanager.h"
 
 
 class Manager
@@ -19,18 +22,52 @@ private:
     std::unordered_map<UUID,std::shared_ptr<GraphicsItem>> m_itemMap;
     std::unordered_map<UUID,std::map<PropertyIndex,QVariant>> m_propertyMap;
 public:
-    /// \brief addItem 将graphicitem添加到 1. m_itemMap  2. TreeViewModel ;暂时不考虑3. Scene
+    /// \brief addItem 添加graphicitem
+    /// 到 1. m_itemMap; 2. TreeViewModel; 3. Scene(不在此处主动添加); 4.propertyMap
     void addItem(std::shared_ptr<GraphicsItem> ptr);
-    /// \brief addItem 将非graphicitem(包括layer node physicItem)添加到 1. m_itemMap  2. TreeViewModel ;
+    /// \brief addItem 添加非graphicitem(包括layer node physicItem)
+    /// 到 1. m_itemMap; 2. TreeViewModel;3. Scene(不添加非graphics到scene里); 4.propertyMap
     void addItem(QModelIndex position, QString name, QString type);
-    /// \brief deleteItem 将graphicitem删除 1. m_itemMap  2. TreeViewModel ; 自动包含3. Scene
+    /// \brief deleteItem 删除item
+    /// 1. m_itemMap; 2. TreeViewModel; 3. Scene(自动删除,不在此处主动删除)
     void deleteItem(UUID uuid);
+    /// \brief copyItem 复制graphicitem 1. m_itemMap; 2. TreeViewModel; 3. Scene; 4.propertyMap
+    void copyItem(UUID uuid)
+    {
+        auto item = itemMapFind(uuid);
+        auto type = item->type();
+
+        switch (type) {
+        case ItemTypeId::Arc: {
+            auto  arc = (dynamic_cast<ArcItem*>(item.get()))->copy();
+            SceneManager::getIns().scene->addItem(arc.get());
+            this->addItem(arc);
+            setItemSelectable(arc->getUUID(),true);
+            setItemMovable(arc->getUUID(),true);
+            break;
+        }
+        case ItemTypeId::Line: {
+            auto  line = (dynamic_cast<LineItem*>(item.get()))->copy();
+            SceneManager::getIns().scene->addItem(line.get());
+            this->addItem(line);
+            setItemSelectable(line->getUUID(),true);
+            setItemMovable(line->getUUID(),true);
+            break;
+        }
+        case ItemTypeId::Polyline: {
+            break;
+        }
+        default:
+            break;
+        }
+    };// TODO
     /// \brief setItem property
     void setItemVisible(UUID uuid,bool status);
     void setItemSelectable(UUID uuid,bool status);
     void setItemMovable(UUID uuid,bool status);
     void setItemRenderPen(UUID uuid,QPen pen);
-    void setItemPosition(UUID uuid,QPointF pos){
+    void setItemPosition(UUID uuid,QPointF pos)
+    {
         // - m_itemMap
         // - m_propertyMap
         Manager::getIns().propertyMapFind(uuid,PropertyIndex::Position) = pos;
@@ -38,7 +75,6 @@ public:
         // - Scene
         Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
     };
-
     void setItemCustomProperty(UUID uuid,QString key, QVariant value){
         // - m_propertyMap
         auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::CustomProperty);
@@ -70,14 +106,13 @@ public:
         // - TreeViewModel中的节点
         // - Scene
     };
-
     /// \brief getItem
     /// \param index
     UUID getItem(QModelIndex index);
     UUID getItem(QGraphicsItem* item);
     /// \brief  getItemsByLayer 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
     std::vector<UUID> getItemsByLayer(int layer);
-
+public:
     /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
     /// \param UUID
     std::shared_ptr<GraphicsItem> itemMapFind(UUID uuid);
@@ -90,7 +125,6 @@ public:
     std::map<PropertyIndex,QVariant> propertyMapCopy(UUID uuid);
     void propertyMapInsert(UUID uuid, std::map<PropertyIndex,QVariant> map);
     void propertyMapErase(UUID uuid);
-
     /// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
     void setVisibleSync();
 

@@ -125,11 +125,18 @@ public:
         }
         else if (key == "Vertex0") {
             value.setValue(parseStringToVertex(data.toString()));
+            // 更新自定property
             Manager::getIns().setItemCustomProperty(m_uuid,"Vertex0",value);
+            // 还影响到了pos,所以也要更新
+            auto pos = Manager::getIns().itemMapFind(m_uuid)->getCenterPos();
+            Manager::getIns().propertyMapFind(m_uuid,PropertyIndex::Position) = pos;
         }
         else if (key == "Vertex1") {
             value.setValue(parseStringToVertex(data.toString()));
             Manager::getIns().setItemCustomProperty(m_uuid,"Vertex1",value);
+            // 还影响到了pos,所以也要更新
+            auto pos = Manager::getIns().itemMapFind(m_uuid)->getCenterPos();
+            Manager::getIns().propertyMapFind(m_uuid,PropertyIndex::Position) = pos;
         }
 
         // // 更新本地值
