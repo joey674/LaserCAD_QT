@@ -2,8 +2,7 @@
 #define POLYLINEITEM_H
 
 #include "graphicsitem.h"
-#include "graphicsmath.h"
-#include "manager.h"
+#include "utils.hpp"
 #include "logger.h"
 
 class PolylineItem: public GraphicsItem {

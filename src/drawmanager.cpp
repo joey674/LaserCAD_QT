@@ -3,7 +3,7 @@
 #include "scenemanager.h"
 #include "keyboardmanager.h"
 #include "protocol.h"
-#include "graphicsmath.h"
+#include "utils.hpp"
 
 
 DrawManager DrawManager::ins;

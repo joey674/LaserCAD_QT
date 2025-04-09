@@ -1,8 +1,8 @@
 #include "polylineitem.h"
 #include "logger.h"
-#include "CavalierContours/polyline.hpp"
-#include "CavalierContours/polylineoffset.hpp"
-#include "graphicsmath.h"
+#include <polyline.hpp>
+#include <polylineoffset.hpp>
+#include "utils.hpp"
 
 PolylineItem::PolylineItem() {
     // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
@@ -86,18 +86,21 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     QStyleOptionGraphicsItem optionx(* option);
     optionx.state &= ~QStyle::State_Selected;
     // 绘制线段
+    // for (auto& item : this->m_paintItemList) {
+    //     item->paint(painter, &optionx, widget);
+    // }
     for (auto& item : this->m_paintItemList) {
-        item->paint(painter, &optionx, widget);
+        item->paint(painter, option, widget);
     }
     // 绘制拖拽原点
     painter->setPen(Qt::NoPen);
     for (const auto &vertex : m_vertexList) {
         if (this->m_offsetNum > 0) {
             painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
+            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {
             painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
+            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         }
     }
     // 绘制offset

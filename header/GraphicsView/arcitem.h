@@ -3,7 +3,7 @@
 
 #include "protocol.h"
 #include "graphicsitem.h"
-#include "graphicsmath.h"
+#include "utils.hpp"
 #include "logger.h"
 
 class ArcItem: public GraphicsItem {
@@ -30,15 +30,10 @@ public:
         // 更新出来paintitem和offsetitem
         this->animate();
     }
-
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < ArcItem > (ArcItem(*this));
     }
-/// ********************
-/// \brief control
-/// 直接修改 控制对象
-/// 这里面所有函数结束都要调用animate
-/// ********************
+
 public:
     bool editVertex(const int index, const QPointF point, const double angle) override {
         if (index > 1 || angle >= 360 || angle <= -360) {
@@ -68,10 +63,6 @@ public:
     bool rotate(const double angle) override { //TODO
         return true;
     }
-/// ********************
-/// \brief update
-/// 更新函数 不能主动调用update；都在animate中调用
-/// ********************
 public:
     bool updateParallelOffset() override {
         // if (this->m_offset == 0) return;
@@ -118,10 +109,6 @@ public:
         this->m_paintItem->setPen(this->getPen());
         return true;
     }
-/// ********************
-/// \brief get info
-/// 只获取信息
-/// ********************
 public:
     double getParallelOffset() const override {
         return this->m_offset;

@@ -16,7 +16,7 @@
 // #include "utils.h"
 #include "logger.h"
 // #include "titlebar.h"
-#include "CavalierContours/polyline.hpp"
+#include <polyline.hpp>
 #include "manager.h"
 #include "treemodel.h"
 #include "keyboardmanager.h"
@@ -31,13 +31,11 @@
 /// \brief MainWindow::MainWindow
 /// \param parent
 ///
-MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
-{
-    auto ui = std::make_shared<Ui::MainWindow>();
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
+    auto ui = std::make_shared < Ui::MainWindow > ();
     ui->setupUi(this);
     UiManager::getIns().setUI(std::move(ui));
     showMaximized();
-
     initTitleBar();
     initGraphicsView();
     initDrawToolButton();
@@ -46,34 +44,29 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
     initTreeViewModel();
     initTableViewModel();
     initStatusBar();
+    initTabWidget();
     test();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     // 不用delete,由unique ptr管理内存
     // delete UiManager::getIns().UI();
 }
 
-void MainWindow::initTitleBar()
-{
+void MainWindow::initTitleBar() {
     // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
     // setAttribute(Qt::WA_TranslucentBackground);
     // setAttribute(Qt::WA_DeleteOnClose);
-
     // this->titleBar = new TitleBar(this);
     // this->titleBar->move(0, 0);
-
     // connect(m_titleBar, SIGNAL(signalButtonMinClicked()), this, SLOT(onButtonMinClicked()));
     // connect(m_titleBar, SIGNAL(signalButtonRestoreClicked()), this, SLOT(onButtonRestoreClicked()));
     // connect(m_titleBar, SIGNAL(signalButtonMaxClicked()), this, SLOT(onButtonMaxClicked()));
     // connect(m_titleBar, SIGNAL(signalButtonCloseClicked()), this, SLOT(onButtonCloseClicked()));
-
 }
 
-void MainWindow::initGraphicsView()
-{
-    SceneManager::getIns().scene=new QGraphicsScene();
+void MainWindow::initGraphicsView() {
+    SceneManager::getIns().scene = new QGraphicsScene();
     UiManager::getIns().UI()->graphicsView->setScene(SceneManager::getIns().scene);
     UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
     UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
@@ -84,39 +77,34 @@ void MainWindow::initGraphicsView()
     UiManager::getIns().UI()->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     UiManager::getIns().UI()->graphicsView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
-
-    SceneManager::getIns().setSceneScale(0.1,0.1);
+    SceneManager::getIns().setSceneScale(0.1, 0.1);
     QTimer::singleShot(100, []() {
         SceneManager::getIns().setSceneScale(10, 10);
     });
-
-    QGraphicsLineItem *xAxis=new QGraphicsLineItem(-100,0,100,0);
-    QGraphicsLineItem *yAxis=new QGraphicsLineItem(0,-100,0,100);
+    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
+    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
     xAxis->setPen(AXIS_PEN);
-    xAxis->setPos(0,0);
+    xAxis->setPos(0, 0);
     yAxis->setPen(AXIS_PEN);
-    yAxis->setPos(0,0);
+    yAxis->setPos(0, 0);
     SceneManager::getIns().scene->addItem(xAxis);
     SceneManager::getIns().scene->addItem(yAxis);
-
-    QGraphicsLineItem *xArrowL=new QGraphicsLineItem(90,10,100,0);
-    QGraphicsLineItem *xArrowR=new QGraphicsLineItem(90,-10,100,0);
+    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(90, 10, 100, 0);
+    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(90, -10, 100, 0);
     xArrowL->setPen(AXIS_PEN);
     xArrowR->setPen(AXIS_PEN);
     SceneManager::getIns().scene->addItem(xArrowL);
     SceneManager::getIns().scene->addItem(xArrowR);
-
-    QGraphicsLineItem *yArrowL=new QGraphicsLineItem(10,90,0,100);
-    QGraphicsLineItem *yArrowR=new QGraphicsLineItem(-10,90,0,100);
+    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(10, 90, 0, 100);
+    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-10, 90, 0, 100);
     yArrowL->setPen(AXIS_PEN);
     yArrowR->setPen(AXIS_PEN);
     SceneManager::getIns().scene->addItem(yArrowL);
     SceneManager::getIns().scene->addItem(yArrowR);
-
-    QGraphicsLineItem *bound1=new QGraphicsLineItem(900,900,1000,1000);
-    QGraphicsLineItem *bound2=new QGraphicsLineItem(-1000,-1000,-900,-900);
-    QGraphicsLineItem *bound3=new QGraphicsLineItem(-900,900,-1000,1000);
-    QGraphicsLineItem *bound4=new QGraphicsLineItem(1000,-1000,900,-900);
+    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900, 900, 1000, 1000);
+    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000, -1000, -900, -900);
+    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900, 900, -1000, 1000);
+    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000, -1000, 900, -900);
     bound1->setPen(AXIS_PEN);
     bound2->setPen(AXIS_PEN);
     bound3->setPen(AXIS_PEN);
@@ -125,30 +113,27 @@ void MainWindow::initGraphicsView()
     SceneManager::getIns().scene->addItem(bound2);
     SceneManager::getIns().scene->addItem(bound3);
     SceneManager::getIns().scene->addItem(bound4);
-
-
     // connect
     // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseMoved(QPoint)),
-            this,SLOT(onGraphicsviewMouseMoved(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseLeftPressed(QPoint)),
-            this,SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseRightPressed(QPoint)),
-            this,SLOT(onGraphicsviewMouseRightPressed(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseLeftReleased(QPoint)),
-            this,SLOT(onGraphicsviewMouseLeftReleased(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseRightReleased(QPoint)),
-            this,SLOT(onGraphicsviewMouseRightReleased(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseDoubleClicked(QPoint)),
-            this,SLOT(onGraphicsviewMouseRightDoubleClicked(QPoint)));
-    connect(UiManager::getIns().UI()->graphicsView,SIGNAL(mouseWheelTriggered(QWheelEvent*)),
-            this,SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseMoved(QPoint)),
+            this, SLOT(onGraphicsviewMouseMoved(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseLeftPressed(QPoint)),
+            this, SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseRightPressed(QPoint)),
+            this, SLOT(onGraphicsviewMouseRightPressed(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseLeftReleased(QPoint)),
+            this, SLOT(onGraphicsviewMouseLeftReleased(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseRightReleased(QPoint)),
+            this, SLOT(onGraphicsviewMouseRightReleased(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseDoubleClicked(QPoint)),
+            this, SLOT(onGraphicsviewMouseRightDoubleClicked(QPoint)));
+    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseWheelTriggered(QWheelEvent*)),
+            this, SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
 
 
-void MainWindow::initDrawToolButton(){
+void MainWindow::initDrawToolButton() {
     QString buttonStyle = buttonStyle1;
-
     // 绘制工具
     QToolButton *drawPolylineButton = UiManager::getIns().UI()->drawPolylineButton;
     drawPolylineButton->setIcon(QIcon(":/button/drawPolylineButton.svg"));
@@ -157,7 +142,6 @@ void MainWindow::initDrawToolButton(){
     drawPolylineButton->setCheckable(true);
     drawPolylineButton->setAutoExclusive(false);
     drawPolylineButton->setToolTip(drawPolylineButtonToolTip);
-
     QToolButton *drawLineButton = UiManager::getIns().UI()->drawLineButton;
     drawLineButton->setIcon(QIcon(":/button/drawLineButton.svg"));
     drawLineButton->setIconSize(QSize(30, 30));
@@ -165,8 +149,6 @@ void MainWindow::initDrawToolButton(){
     drawLineButton->setCheckable(true);
     drawLineButton->setAutoExclusive(false);
     drawLineButton->setToolTip(drawLineButtonToolTip);
-
-
     QToolButton *drawArcButton = UiManager::getIns().UI()->drawArcButton;
     drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
     drawArcButton->setIconSize(QSize(30, 30));
@@ -174,7 +156,6 @@ void MainWindow::initDrawToolButton(){
     drawArcButton->setCheckable(true);
     drawArcButton->setAutoExclusive(false);
     drawArcButton->setToolTip(drawArcButtonToolTip);
-
     QToolButton *drawPointButton = UiManager::getIns().UI()->drawPointButton;
     drawPointButton->setIcon(QIcon(":/button/drawPointButton.svg"));
     drawPointButton->setIconSize(QSize(30, 30));
@@ -182,8 +163,6 @@ void MainWindow::initDrawToolButton(){
     drawPointButton->setCheckable(true);
     drawPointButton->setAutoExclusive(false);
     // drawArcButton->setToolTip(drawArcButtonToolTip);
-
-
     QToolButton *drawCircleButton = UiManager::getIns().UI()->drawCircleButton;
     drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
     drawCircleButton->setIconSize(QSize(30, 30));
@@ -191,7 +170,6 @@ void MainWindow::initDrawToolButton(){
     drawCircleButton->setCheckable(true);
     drawCircleButton->setAutoExclusive(false);
     drawCircleButton->setToolTip(drawCircleButtonToolTip);
-
     QToolButton *drawEllipseButton = UiManager::getIns().UI()->drawEllipseButton;
     drawEllipseButton->setIcon(QIcon(":/button/drawEllipseButton.svg"));
     drawEllipseButton->setIconSize(QSize(30, 30));
@@ -199,7 +177,6 @@ void MainWindow::initDrawToolButton(){
     drawEllipseButton->setCheckable(true);
     drawEllipseButton->setAutoExclusive(false);
     drawEllipseButton->setToolTip(drawEllipseButtonToolTip);
-
     QToolButton *drawRectButton = UiManager::getIns().UI()->drawRectButton;
     drawRectButton->setIcon(QIcon(":/button/drawRectButton.svg"));
     drawRectButton->setIconSize(QSize(30, 30));
@@ -207,7 +184,6 @@ void MainWindow::initDrawToolButton(){
     drawRectButton->setCheckable(true);
     drawRectButton->setAutoExclusive(false);
     drawRectButton->setToolTip(drawRectButtonToolTip);
-
     QToolButton *drawPolygonButton = UiManager::getIns().UI()->drawPolygonButton;
     drawPolygonButton->setIcon(QIcon(":/button/drawPolygonButton.svg"));
     drawPolygonButton->setIconSize(QSize(30, 30));
@@ -215,7 +191,6 @@ void MainWindow::initDrawToolButton(){
     drawPolygonButton->setCheckable(true);
     drawPolygonButton->setAutoExclusive(false);
     drawPolygonButton->setToolTip(drawPolygonButtonToolTip);
-
     QToolButton *drawSpiralButton = UiManager::getIns().UI()->drawSpiralButton;
     drawSpiralButton->setIcon(QIcon(":/button/drawSpiralButton.svg"));
     drawSpiralButton->setIconSize(QSize(30, 30));
@@ -223,7 +198,6 @@ void MainWindow::initDrawToolButton(){
     drawSpiralButton->setCheckable(true);
     drawSpiralButton->setAutoExclusive(false);
     drawSpiralButton->setToolTip(drawSpiralButtonToolTip);
-
     connect(drawPolylineButton, &QToolButton::clicked, this, &MainWindow::onDrawPolylineButtonClicked);
     connect(drawLineButton, &QToolButton::clicked, this, &MainWindow::onDrawLineButtonClicked);
     connect(drawArcButton, &QToolButton::clicked, this, &MainWindow::onDrawArcButtonClicked);
@@ -236,10 +210,8 @@ void MainWindow::initDrawToolButton(){
 }
 
 
-void MainWindow::initEditToolButton()
-{
+void MainWindow::initEditToolButton() {
     QString buttonStyle = buttonStyle1;
-
     QToolButton *dragsceneButton = UiManager::getIns().UI()->dragSceneButton;
     dragsceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
     dragsceneButton->setIconSize(QSize(30, 30));
@@ -247,7 +219,6 @@ void MainWindow::initEditToolButton()
     dragsceneButton->setCheckable(true);
     dragsceneButton->setAutoExclusive(false);
     dragsceneButton->setToolTip("拖动画布；左键拖拽");
-
     QToolButton *resetButton = UiManager::getIns().UI()->editButton;
     resetButton->setIcon(QIcon(":/button/resetButton.svg"));
     resetButton->setIconSize(QSize(30, 30));
@@ -255,7 +226,6 @@ void MainWindow::initEditToolButton()
     resetButton->setCheckable(true);
     resetButton->setAutoExclusive(false);
     resetButton->setToolTip("移动对象");
-
     QToolButton *rotateButton = UiManager::getIns().UI()->rotateButton;
     rotateButton->setIcon(QIcon(":/button/rotateButton.svg"));
     rotateButton->setIconSize(QSize(30, 30));
@@ -263,7 +233,6 @@ void MainWindow::initEditToolButton()
     rotateButton->setCheckable(true);
     rotateButton->setAutoExclusive(false);
     rotateButton->setToolTip("旋转对象");
-
     QToolButton *deleteButton = UiManager::getIns().UI()->deleteButton;
     deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
     deleteButton->setIconSize(QSize(30, 30));
@@ -271,7 +240,6 @@ void MainWindow::initEditToolButton()
     deleteButton->setCheckable(true);
     deleteButton->setAutoExclusive(false);
     deleteButton->setToolTip("删除对象");
-
     QToolButton *drawTestLineButton = UiManager::getIns().UI()->drawTestLineButton;
     drawTestLineButton->setIcon(QIcon(":/button/drawTestLineButton.svg"));
     drawTestLineButton->setIconSize(QSize(30, 30));
@@ -279,7 +247,6 @@ void MainWindow::initEditToolButton()
     drawTestLineButton->setCheckable(true);
     drawTestLineButton->setAutoExclusive(false);
     drawTestLineButton->setToolTip("测试按钮");
-
     QToolButton *createOffsetButton = UiManager::getIns().UI()->createOffsetButton;
     createOffsetButton->setIcon(QIcon(":/button/createOffsetButton.svg"));
     createOffsetButton->setIconSize(QSize(30, 30));
@@ -287,7 +254,6 @@ void MainWindow::initEditToolButton()
     createOffsetButton->setCheckable(true);
     createOffsetButton->setAutoExclusive(false);
     createOffsetButton->setToolTip("添加填充/offset");
-
     QToolButton *centerButton = UiManager::getIns().UI()->centerButton;
     centerButton->setIcon(QIcon(":/button/centerButton.svg"));
     centerButton->setIconSize(QSize(30, 30));
@@ -295,7 +261,6 @@ void MainWindow::initEditToolButton()
     centerButton->setCheckable(true);
     centerButton->setAutoExclusive(false);
     centerButton->setToolTip("移动对象到中心点");
-
     QToolButton *redoButton = UiManager::getIns().UI()->redoButton;
     redoButton->setIcon(QIcon(":/button/redoButton.svg"));
     redoButton->setIconSize(QSize(30, 30));
@@ -303,7 +268,6 @@ void MainWindow::initEditToolButton()
     redoButton->setCheckable(true);
     redoButton->setAutoExclusive(false);
     redoButton->setToolTip("移动对象到中心点");
-
     QToolButton *undoButton = UiManager::getIns().UI()->undoButton;
     undoButton->setIcon(QIcon(":/button/undoButton.svg"));
     undoButton->setIconSize(QSize(30, 30));
@@ -311,28 +275,20 @@ void MainWindow::initEditToolButton()
     undoButton->setCheckable(true);
     undoButton->setAutoExclusive(false);
     undoButton->setToolTip("移动对象到中心点");
-
-
-
-
 }
 
 
 
-void MainWindow::initLayerButton()
-{
+void MainWindow::initLayerButton() {
     // QLayout *graphicsViewLayout = UiManager::getIns().UI()->mainLayout->findChild<QLayout*>("graphicsViewLayout");
     // QLayout *layerButtonLayout = graphicsViewLayout->findChild<QLayout*>("layerButtonLayout");
     // if (!layerButtonLayout)
     //     FATAL_MSG("layerButtonLayout can not be init");
-
     // // layout style
     // layerButtonLayout->setAlignment(Qt::AlignLeft);
     // layerButtonLayout->setSpacing(0);
-
     // //button style
     // auto buttonStyle = buttonStyle1;
-
     // //button
     // QPushButton *layer1Button = new QPushButton("layer 1");
     // layer1Button->setStyleSheet(buttonStyle);
@@ -340,13 +296,11 @@ void MainWindow::initLayerButton()
     // QPushButton *addLayerButton = new QPushButton("add Layer");
     // addLayerButton->setStyleSheet(buttonStyle);
     // addLayerButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
     // //
     // layerButtonLayout->addWidget(layer1Button);
     // layerButtonLayout->addWidget(addLayerButton);
     // connect(layer1Button, &QPushButton::clicked, this, [=]() {MainWindow::onLayerButtonClicked(1);} );
     // connect(addLayerButton, &QPushButton::clicked, this, &MainWindow::onAddLayerButtonClicked);
-
     // // 初始化layer1选中 并存在layerbuttons里
     // layer1Button->setCheckable(true);
     // layer1Button->setChecked(true);
@@ -355,8 +309,7 @@ void MainWindow::initLayerButton()
     // this->layerButtons.append(layer1Button);
 }
 
-void MainWindow::initStatusBar()
-{
+void MainWindow::initStatusBar() {
     this->labelMouseCoordinate = new QLabel("coordinate: ");
     this->labelMouseCoordinate->setMinimumWidth(150);
     UiManager::getIns().UI()->statusBar->addWidget(this->labelMouseCoordinate);
@@ -364,37 +317,31 @@ void MainWindow::initStatusBar()
 
 
 
-void MainWindow::initTreeViewModel()
-{
+void MainWindow::initTreeViewModel() {
     ///
     /// \brief model
     ///
-    auto *model = new TreeModel("testTreeViewModel", this);
-
+    auto *model = new TreeModel("TreeViewModel", this);
     UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
     UiManager::getIns().UI()->treeView->setModel(model);
     UiManager::getIns().UI()->treeView->bindModel();
     UiManager::getIns().UI()->treeView->expandAll();
-
     UiManager::getIns().UI()->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
     UiManager::getIns().UI()->treeView->setDragEnabled(true);
     UiManager::getIns().UI()->treeView->setAcceptDrops(true);
     UiManager::getIns().UI()->treeView->setDropIndicatorShown(true);
     UiManager::getIns().UI()->treeView->setDragDropMode(QAbstractItemView::InternalMove);
-
     ///
     ///  contextmenu
     ///
     UiManager::getIns().UI()->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(UiManager::getIns().UI()->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
-
     // click
     connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onTreeViewModelNodeClicked);
 }
 
 void MainWindow::initTableViewModel() {
     auto *model = new TableModel(this);
-
     UiManager::getIns().UI()->tableView->setModel(model);
     UiManager::getIns().UI()->tableView->verticalHeader()->setVisible(false);
     UiManager::getIns().UI()->tableView->setAlternatingRowColors(true);
@@ -403,30 +350,30 @@ void MainWindow::initTableViewModel() {
     UiManager::getIns().UI()->tableView->setColumnWidth(1, 149);
 }
 
-void MainWindow::test()
-{
+void MainWindow::initTabWidget() {
+    UiManager::getIns().UI()->tabWidget->clearAllTabs();
+}
+
+void MainWindow::test() {
 }
 
 ///
 /// \brief MainWindow::keyPressEvent
 /// \param event
 ///
-void MainWindow::keyPressEvent(QKeyEvent * event)
-{
+void MainWindow::keyPressEvent(QKeyEvent * event) {
     KeyboardManager::getIns().onMainWindowKeyPressEvent(event);
-     QMainWindow::keyPressEvent(event);
+    QMainWindow::keyPressEvent(event);
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent * event)
-{
+void MainWindow::keyReleaseEvent(QKeyEvent * event) {
     KeyboardManager::getIns().onMainWindowKeyReleaseEvent(event);
-     QMainWindow::keyReleaseEvent(event);
+    QMainWindow::keyReleaseEvent(event);
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event)
-{
+void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);  // 调用基类实现（可选）
-    SceneManager::getIns().setSceneScale(0.1,0.1);
+    SceneManager::getIns().setSceneScale(0.1, 0.1);
     QTimer::singleShot(10, []() {
         SceneManager::getIns().setSceneScale(10, 10);
     });
@@ -435,11 +382,9 @@ void MainWindow::resizeEvent(QResizeEvent *event)
 ///
 /// \brief MainWindow::on_graphicsview_mouse_move_triggered
 ///
-void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
-{
+void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     auto event = MouseEvent::MouseMove;
-
     // 显示坐标在statusbar里
     this->labelMouseCoordinate->setText(
         QString::asprintf(
@@ -448,380 +393,298 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView)
             pointCoordscene.y()
         )
     );
-
     // 禁止鼠标左右键同时拖拽
-    if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true)
-    {
+    if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
         DrawManager::getIns().resetTmpItemStatus();
         EditManager::getIns().currentEditItem = NULL;
         auto allItems = Manager::getIns().getItemsByLayer(0);
         SceneManager::getIns().scene->clearSelection();
         // 打断一下拖拽过程
         for (const auto& item : allItems) {
-            Manager::getIns().setItemMovable(item,false);
+            Manager::getIns().setItemMovable(item, false);
             QTimer::singleShot(10, [item]() {
-                Manager::getIns().setItemMovable(item,true);
+                Manager::getIns().setItemMovable(item, true);
             });
         }
     }
-
     // 非拖拽行为
-    if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false)
-    {
-        switch (SceneManager::getIns().currentOperationEvent)
-        {
-            case OperationEvent::EditProperty:
-            {
-                EditManager::getIns().editItem(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawCircle:
-            {
-                DrawManager::getIns().drawCircle(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawPolyline:
-            {
-                DrawManager::getIns().drawPolyline(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawArc:
-            {
-                DrawManager::getIns().drawArc(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawLine:
-            {
-                DrawManager::getIns().drawLine(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawSpiral:
-            {
-                DrawManager::getIns().drawSpiral(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawRect:
-            {
-                DrawManager::getIns().drawRect(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawPolygon:
-            {
-                DrawManager::getIns().drawPolygon(pointCoordscene,event);
-                break;
-            }
-            case OperationEvent::DrawEllipse:
-            {
-                DrawManager::getIns().drawEllipse(pointCoordscene,event);
-                break;
-            }
-
+    if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
+        switch (SceneManager::getIns().currentOperationEvent) {
+            case OperationEvent::EditProperty: {
+                    EditManager::getIns().editItem(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawCircle: {
+                    DrawManager::getIns().drawCircle(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawPolyline: {
+                    DrawManager::getIns().drawPolyline(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawArc: {
+                    DrawManager::getIns().drawArc(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawLine: {
+                    DrawManager::getIns().drawLine(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawSpiral: {
+                    DrawManager::getIns().drawSpiral(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawRect: {
+                    DrawManager::getIns().drawRect(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawPolygon: {
+                    DrawManager::getIns().drawPolygon(pointCoordscene, event);
+                    break;
+                }
+            case OperationEvent::DrawEllipse: {
+                    DrawManager::getIns().drawEllipse(pointCoordscene, event);
+                    break;
+                }
             default:
-        {}
+                {}
         }
     }
     // 左键拖拽(尽量不要用 因为item的拖动也是左键拖拽 容易撞车造成bug)
-    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == false)
-    {
-        switch (SceneManager::getIns().currentOperationEvent)
-        {
-        case OperationEvent::DragScene:
-        {
-            SceneManager::getIns().dragScene(pointCoordView,event);
-            break;
-        }
-        default:
-        {}
+    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
+        switch (SceneManager::getIns().currentOperationEvent) {
+            case OperationEvent::DragScene: {
+                    SceneManager::getIns().dragScene(pointCoordView, event);
+                    break;
+                }
+            default:
+                {}
         }
     }
     // 右键拖拽
-    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == true)
-    {
-        switch (SceneManager::getIns().currentOperationEvent)
-        {
-        default:
-        {}
+    else if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
+        switch (SceneManager::getIns().currentOperationEvent) {
+            default:
+                {}
         }
     }
 }
 
-void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView)
-{
+void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView) {
     // INFO_MSG("LeftPress");
     KeyboardManager::getIns().IsMouseLeftButtonHold = true;
     auto event = MouseEvent::LeftPress;
-
-    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    switch (SceneManager::getIns().currentOperationEvent)
-    {
-    case OperationEvent::DragScene:
-    {
-        SceneManager::getIns().dragScene(pointCoordView, event);
-        break;
-    }
-    case OperationEvent:: EditProperty:
-    {
-        EditManager::getIns().editItem(pointCoordscene,event );
-        break;
-    }
-
-    case OperationEvent::DrawCircle:
-    {
-        DrawManager::getIns().drawCircle(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawPolyline:
-    {
-        DrawManager::getIns().drawPolyline(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawArc:
-    {
-        DrawManager::getIns().drawArc(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawLine:
-    {
-        DrawManager::getIns().drawLine(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawPoint:
-    {
-        DrawManager::getIns().drawPoint(pointCoordscene,event );
-        break;
-    }
-    //
-    case OperationEvent::DrawSpiral:
-    {
-        DrawManager::getIns().drawSpiral(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawRect:
-    {
-        DrawManager::getIns().drawRect(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawPolygon:
-    {
-        DrawManager::getIns().drawPolygon(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawEllipse:
-    {
-        DrawManager::getIns().drawEllipse(pointCoordscene,event );
-        break;
-    }
-    default:
-    {}
-    }
-}
-
-void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView)
-{
-    KeyboardManager::getIns().IsMouseRightButtonHold = true;
-    auto event = MouseEvent::RightPress;
-
-    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    switch (SceneManager::getIns().currentOperationEvent)
-    {
-        case OperationEvent::DragScene:
-        {
-            SceneManager::getIns().dragScene(pointCoordView, event);
-            break;
-        }
-        case OperationEvent:: EditProperty:
-        {
-            EditManager::getIns().editItem(pointCoordscene,event );
-            break;
-        }
-
-        case OperationEvent::DrawCircle:
-        {
-            DrawManager::getIns().drawCircle(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawPolyline:
-        {
-            DrawManager::getIns().drawPolyline(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawArc:
-        {
-            DrawManager::getIns().drawArc(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawLine:
-        {
-            DrawManager::getIns().drawLine(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawSpiral:
-        {
-            DrawManager::getIns().drawSpiral(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawRect:
-        {
-            DrawManager::getIns().drawRect(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawPolygon:
-        {
-            DrawManager::getIns().drawPolygon(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawEllipse:
-        {
-            DrawManager::getIns().drawEllipse(pointCoordscene,event );
-            break;
-        }
-    default:
-    {}
-    }
-}
-
-void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView)
-{
-    KeyboardManager::getIns().IsMouseLeftButtonHold = false;
-
-    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    auto event = MouseEvent::LeftRelease;
-
-    switch (SceneManager::getIns().currentOperationEvent)
-    {
-    case OperationEvent::DragScene:
-    {
-        SceneManager::getIns().dragScene(pointCoordView, event);
-        break;
-    }
-    case OperationEvent:: EditProperty:
-    {
-        EditManager::getIns().editItem(pointCoordscene,event );
-        break;
-    }
-
-    case OperationEvent::DrawCircle:
-    {
-        DrawManager::getIns().drawCircle(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawPolyline:
-    {
-        DrawManager::getIns().drawPolyline(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawArc:
-    {
-        DrawManager::getIns().drawArc(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawLine:
-    {
-        DrawManager::getIns().drawLine(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawSpiral:
-    {
-        DrawManager::getIns().drawSpiral(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawRect:
-    {
-        DrawManager::getIns().drawRect(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawPolygon:
-    {
-        DrawManager::getIns().drawPolygon(pointCoordscene,event );
-        break;
-    }
-    case OperationEvent::DrawEllipse:
-    {
-        DrawManager::getIns().drawEllipse(pointCoordscene,event );
-        break;
-    }
-    default:
-    {}
-    }
-}
-
-void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView)
-{
-    KeyboardManager::getIns().IsMouseRightButtonHold = false;
-    auto event = MouseEvent::RightRelease;
-
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     switch (SceneManager::getIns().currentOperationEvent) {
-        case OperationEvent::DragScene:
-        {
-            SceneManager::getIns().dragScene(pointCoordView, event);
-            break;
-        }
-        case OperationEvent:: EditProperty:
-        {
-            EditManager::getIns().editItem(pointCoordscene,event );
-            break;
-        }
-
-        case OperationEvent::DrawCircle:
-        {
-            DrawManager::getIns().drawCircle(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawPolyline:
-        {
-            DrawManager::getIns().drawPolyline(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawArc:
-        {
-            DrawManager::getIns().drawArc(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawLine:
-        {
-            DrawManager::getIns().drawLine(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawSpiral:
-        {
-            DrawManager::getIns().drawSpiral(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawRect:
-        {
-            DrawManager::getIns().drawRect(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawPolygon:
-        {
-            DrawManager::getIns().drawPolygon(pointCoordscene,event );
-            break;
-        }
-        case OperationEvent::DrawEllipse:
-        {
-            DrawManager::getIns().drawEllipse(pointCoordscene,event );
-            break;
-        }
-    default:
-        {}
+        case OperationEvent::DragScene: {
+                SceneManager::getIns().dragScene(pointCoordView, event);
+                break;
+            }
+        case OperationEvent:: EditProperty: {
+                EditManager::getIns().editItem(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawCircle: {
+                DrawManager::getIns().drawCircle(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolyline: {
+                DrawManager::getIns().drawPolyline(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawArc: {
+                DrawManager::getIns().drawArc(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawLine: {
+                DrawManager::getIns().drawLine(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPoint: {
+                DrawManager::getIns().drawPoint(pointCoordscene, event );
+                break;
+            }
+        //
+        case OperationEvent::DrawSpiral: {
+                DrawManager::getIns().drawSpiral(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawRect: {
+                DrawManager::getIns().drawRect(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolygon: {
+                DrawManager::getIns().drawPolygon(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawEllipse: {
+                DrawManager::getIns().drawEllipse(pointCoordscene, event );
+                break;
+            }
+        default:
+            {}
     }
-    }
+}
 
-void MainWindow::onGraphicsviewMouseRightDoubleClicked(QPoint pointCoordView)
-{
+void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView) {
+    KeyboardManager::getIns().IsMouseRightButtonHold = true;
+    auto event = MouseEvent::RightPress;
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
+    switch (SceneManager::getIns().currentOperationEvent) {
+        case OperationEvent::DragScene: {
+                SceneManager::getIns().dragScene(pointCoordView, event);
+                break;
+            }
+        case OperationEvent:: EditProperty: {
+                EditManager::getIns().editItem(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawCircle: {
+                DrawManager::getIns().drawCircle(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolyline: {
+                DrawManager::getIns().drawPolyline(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawArc: {
+                DrawManager::getIns().drawArc(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawLine: {
+                DrawManager::getIns().drawLine(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawSpiral: {
+                DrawManager::getIns().drawSpiral(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawRect: {
+                DrawManager::getIns().drawRect(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolygon: {
+                DrawManager::getIns().drawPolygon(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawEllipse: {
+                DrawManager::getIns().drawEllipse(pointCoordscene, event );
+                break;
+            }
+        default:
+            {}
+    }
+}
+
+void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView) {
+    KeyboardManager::getIns().IsMouseLeftButtonHold = false;
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
+    auto event = MouseEvent::LeftRelease;
+    switch (SceneManager::getIns().currentOperationEvent) {
+        case OperationEvent::DragScene: {
+                SceneManager::getIns().dragScene(pointCoordView, event);
+                break;
+            }
+        case OperationEvent:: EditProperty: {
+                EditManager::getIns().editItem(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawCircle: {
+                DrawManager::getIns().drawCircle(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolyline: {
+                DrawManager::getIns().drawPolyline(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawArc: {
+                DrawManager::getIns().drawArc(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawLine: {
+                DrawManager::getIns().drawLine(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawSpiral: {
+                DrawManager::getIns().drawSpiral(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawRect: {
+                DrawManager::getIns().drawRect(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolygon: {
+                DrawManager::getIns().drawPolygon(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawEllipse: {
+                DrawManager::getIns().drawEllipse(pointCoordscene, event );
+                break;
+            }
+        default:
+            {}
+    }
+}
+
+void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView) {
+    KeyboardManager::getIns().IsMouseRightButtonHold = false;
+    auto event = MouseEvent::RightRelease;
+    QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
+    switch (SceneManager::getIns().currentOperationEvent) {
+        case OperationEvent::DragScene: {
+                SceneManager::getIns().dragScene(pointCoordView, event);
+                break;
+            }
+        case OperationEvent:: EditProperty: {
+                EditManager::getIns().editItem(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawCircle: {
+                DrawManager::getIns().drawCircle(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolyline: {
+                DrawManager::getIns().drawPolyline(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawArc: {
+                DrawManager::getIns().drawArc(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawLine: {
+                DrawManager::getIns().drawLine(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawSpiral: {
+                DrawManager::getIns().drawSpiral(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawRect: {
+                DrawManager::getIns().drawRect(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawPolygon: {
+                DrawManager::getIns().drawPolygon(pointCoordscene, event );
+                break;
+            }
+        case OperationEvent::DrawEllipse: {
+                DrawManager::getIns().drawEllipse(pointCoordscene, event );
+                break;
+            }
+        default:
+            {}
+    }
+}
+
+void MainWindow::onGraphicsviewMouseRightDoubleClicked(QPoint pointCoordView) {
     UiManager::getIns().UI()->editButton->setChecked(true);
     this->on_editButton_clicked();
 }
 
-void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
-{
-    if (event->angleDelta().y() > 0)
-    {
+void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event) {
+    if (event->angleDelta().y() > 0) {
         SceneManager::getIns().setSceneScale(1.2, 1.2);
-    }
-    else
-    {
+    } else {
         SceneManager::getIns().setSceneScale(0.8, 0.8);
     }
 }
@@ -829,119 +692,84 @@ void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event)
 ///
 /// \brief MainWindow::onDrawLineButtonClicked
 ///
-void MainWindow::onDrawLineButtonClicked(){
+void MainWindow::onDrawLineButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawLineButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawLine;
 }
 
-void MainWindow::onDrawCircleButtonClicked()
-{
+void MainWindow::onDrawCircleButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawCircleButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawCircle;
 }
 
-void MainWindow::onDrawPolylineButtonClicked()
-{
+void MainWindow::onDrawPolylineButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawPolylineButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawPolyline;
 }
 
-void MainWindow::onDrawArcButtonClicked()
-{
+void MainWindow::onDrawArcButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawArcButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawArc;
 }
 
-void MainWindow::onDrawPointButtonClicked()
-{
+void MainWindow::onDrawPointButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawPointButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawPoint;
 }
 
-void MainWindow::onDrawSpiralButtonClicked()
-{
+void MainWindow::onDrawSpiralButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawSpiralButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawSpiral;
 }
 
-void MainWindow::onDrawRectButtonClicked()
-{
+void MainWindow::onDrawRectButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawRectButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawRect;
 }
 
-void MainWindow::onDrawPolygonButtonClicked()
-{
+void MainWindow::onDrawPolygonButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawPolygonButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawPolygon;
 }
 
-void MainWindow::onDrawEllipseButtonClicked()
-{ 
+void MainWindow::onDrawEllipseButtonClicked() {
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->drawEllipseButton->setChecked(true);
-
     SceneManager::getIns().currentOperationEvent = OperationEvent::DrawEllipse;
 }
 
@@ -949,147 +777,121 @@ void MainWindow::onDrawEllipseButtonClicked()
 ///
 ///  编辑工具
 ///
-void MainWindow::on_editButton_clicked()
-{
-     // tool status
+void MainWindow::on_editButton_clicked() {
+    // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::EditProperty;
     DrawManager::getIns().resetTmpItemStatus();
-   EditManager::getIns().currentEditItem = NULL;
-
+    EditManager::getIns().currentEditItem = NULL;
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-
     // button check
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
-
     // 设置当前图层内物体可动;所有物体颜色为黑;等等默认行为(都在setCurrentLayer里)
     SceneManager::getIns().setCurrentLayer(SceneManager::getIns().getCurrentLayer());
 }
 
-void MainWindow::on_dragSceneButton_clicked()
-{
+void MainWindow::on_dragSceneButton_clicked() {
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::DragScene;
     DrawManager::getIns().resetTmpItemStatus();
-
     // drag mode/所有物体设置不可动
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     auto allItems = Manager::getIns().getItemsByLayer(0);
-    for (auto item: allItems){
-        Manager::getIns().setItemMovable(item,false);
-        Manager::getIns().setItemSelectable(item,false);
+    for (auto item : allItems) {
+        Manager::getIns().setItemMovable(item, false);
+        Manager::getIns().setItemSelectable(item, false);
     }
-
     //button check
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->dragSceneButton->setChecked(true);
 }
 
-void MainWindow::on_rotateButton_clicked()
-{
+void MainWindow::on_rotateButton_clicked() {
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->rotateButton->setChecked(true);
-
-    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
-    if (selectedItems.empty())
+    QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
+    if (selectedItems.empty()) {
         return;
-    for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item)
-    {
-        auto angle =(*item)->rotation();
+    }
+    for (auto item = selectedItems.cbegin(); item != selectedItems.cend(); ++item) {
+        auto angle = (*item)->rotation();
         (*item)->setRotation(angle + 90);
     }
 }
 
-void MainWindow::on_centerButton_clicked()
-{
-     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
+void MainWindow::on_centerButton_clicked() {
+    SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->centerButton->setChecked(true);
-
-
-    if (!EditManager::getIns().currentEditItem) return;
-
-   EditManager::getIns().currentEditItem->setPos(QPointF(0,0) -EditManager::getIns().currentEditItem->scenePos());
+    if (!EditManager::getIns().currentEditItem) {
+        return;
+    }
+    EditManager::getIns().currentEditItem->setPos(QPointF(0, 0) - EditManager::getIns().currentEditItem->scenePos());
 }
 
-void MainWindow::on_createOffsetButton_clicked()
-{
-     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
+void MainWindow::on_createOffsetButton_clicked() {
+    SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
-
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->createOffsetButton->setChecked(true);
-
-
-    if (!EditManager::getIns().currentEditItem) return;
-
-    switch (EditManager::getIns().currentEditItem->type())
-    {
-    case PolylineItem::Type:
-    {
-        PolylineItem *polylineItem = static_cast<PolylineItem*>(EditManager::getIns().currentEditItem);
-
-        polylineItem->setParallelOffset(20,6);
-        break;
+    if (!EditManager::getIns().currentEditItem) {
+        return;
     }
-    case ArcItem::Type:
-    {
-        ArcItem *arcItem = static_cast<ArcItem*>(EditManager::getIns().currentEditItem);
-
-        arcItem->setParallelOffset(20,6);
-        break;
-    }
-    default:{}
+    switch (EditManager::getIns().currentEditItem->type()) {
+        case PolylineItem::Type: {
+                PolylineItem *polylineItem = static_cast < PolylineItem * > (EditManager::getIns().currentEditItem);
+                polylineItem->setParallelOffset(20, 6);
+                break;
+            }
+        case ArcItem::Type: {
+                ArcItem *arcItem = static_cast < ArcItem * > (EditManager::getIns().currentEditItem);
+                arcItem->setParallelOffset(20, 6);
+                break;
+            }
+        default:
+            {}
     }
 }
 
-void MainWindow::on_deleteButton_clicked()
-{
-     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
+void MainWindow::on_deleteButton_clicked() {
+    SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->deleteButton->setChecked(true);
-
-    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
-    if (selectedItems.empty())
+    QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
+    if (selectedItems.empty()) {
         return;
-    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
-    {
+    }
+    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it) {
         QGraphicsItem* graphicsItem = *it;
-        GraphicsItem* laserItem = dynamic_cast<GraphicsItem*>(graphicsItem);
-
+        GraphicsItem* laserItem = dynamic_cast < GraphicsItem * > (graphicsItem);
         // TODO 注意 这里不用删除scene; 会自动处理掉
         // SceneManager::getIns().scene ->removeItem(graphicsItem);
-        if(!laserItem)
+        if(!laserItem) {
             FATAL_MSG("fail pointer convertion");
+        }
         Manager::getIns().deleteItem(laserItem->getUUID());
     }
 }
 
-void MainWindow::on_undoButton_clicked()
-{
-
+void MainWindow::on_undoButton_clicked() {
 }
 
-void MainWindow::on_redoButton_clicked()
-{
+void MainWindow::on_redoButton_clicked() {
 }
 
 
@@ -1097,168 +899,134 @@ void MainWindow::on_redoButton_clicked()
 /// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
 /// \param pos
 ///
-void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos)
-{
+void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     // 获取鼠标点击的位置
     QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
-
+    }
     QMenu contextMenu(this);
-
     this->addLayerAction = new QAction("Add Layer", &contextMenu);
     this->addGroupAction = new QAction("Add Group", &contextMenu);
     this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
     this->copyNodeAction = new QAction("Copy Node", &contextMenu);
     this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
     this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
-
     contextMenu.addAction(this->addLayerAction);
     contextMenu.addAction(this->addGroupAction);
     contextMenu.addAction(this->deleteNodeAction);
     contextMenu.addAction(this->copyNodeAction);
     contextMenu.addAction(this->setLayerVisibleAction);
     contextMenu.addAction(this->setLayerUnvisibleAction);
-
-    connect(this->addLayerAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddLayer);
-    connect(this->addGroupAction, &QAction::triggered, this,&MainWindow::onTreeViewModelAddGroup);
-    connect(this->deleteNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelDeleteNode);
-    connect(this->copyNodeAction, &QAction::triggered, this,&MainWindow::onTreeViewModelCopyNode);
-    connect(this->setLayerVisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerVisible);
-    connect(this->setLayerUnvisibleAction, &QAction::triggered, this,&MainWindow::onTreeViewModelSetLayerUnvisible);
-
-     onTreeViewModelUpdateActions();
+    connect(this->addLayerAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddLayer);
+    connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
+    connect(this->deleteNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelDeleteNode);
+    connect(this->copyNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelCopyNode);
+    connect(this->setLayerVisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerVisible);
+    connect(this->setLayerUnvisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerUnvisible);
+    onTreeViewModelUpdateActions();
     contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
 
-void MainWindow::onTreeViewModelDeleteNode()
-{
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+void MainWindow::onTreeViewModelDeleteNode() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-
     for (const QModelIndex &nodeIndex : nodeIndexList) {
         auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
-
         Manager::getIns().deleteItem(uuid);
     }
-
     onTreeViewModelUpdateActions();
 }
 
-void MainWindow::onTreeViewModelCopyNode(){
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+void MainWindow::onTreeViewModelCopyNode() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-
     for (const QModelIndex &nodeIndex : nodeIndexList) {
         auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
-
         Manager::getIns().copyItem(uuid);
     }
-
     onTreeViewModelUpdateActions();
 }
 
-void MainWindow::onTreeViewModelSetLayerVisible()
-{
+void MainWindow::onTreeViewModelSetLayerVisible() {
     auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
-
     for (const auto& item : inLayerItems) {
-        Manager::getIns().setItemVisible(item,true);
+        Manager::getIns().setItemVisible(item, true);
     }
 }
 
-void MainWindow::onTreeViewModelSetLayerUnvisible()
-{
+void MainWindow::onTreeViewModelSetLayerUnvisible() {
     auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
     for (const auto& item : inLayerItems) {
-        Manager::getIns().setItemVisible(item,false);
+        Manager::getIns().setItemVisible(item, false);
     }
 }
 
-void MainWindow::onTreeViewModelNodeClicked()
-{
+void MainWindow::onTreeViewModelNodeClicked() {
     SceneManager::getIns().scene->clearSelection();
-
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-
     QString type = model->nodeProperty(node, TreeNodePropertyIndex::Type).toString();
-
     if (type == "Layer") {
         this->selectedLayerIndex = model->getNode(node)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
         SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
-    }
-    else if (type == "Group") {
-        auto nodeGroup=model->getAllChildNodes(node);
-        for (auto node: nodeGroup){
+    } else if (type == "Group") {
+        auto nodeGroup = model->getAllChildNodes(node);
+        for (auto node : nodeGroup) {
             auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
         }
-    }
-    else if(type == "Item"){
+    } else if(type == "Item") {
         UUID uuid = model->nodeProperty(node, TreeNodePropertyIndex::UUID).toString();
         Manager::getIns().itemMapFind(uuid)->setSelected(true);
     }
 }
 
-void MainWindow::onTreeViewModelAddLayer()
-{
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+void MainWindow::onTreeViewModelAddLayer() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     auto layerCount = model->rowCount(QModelIndex());
-
-    if (!model->insertRow(layerCount, QModelIndex()))
+    if (!model->insertRow(layerCount, QModelIndex())) {
         FATAL_MSG("fail insert layer");
-
-    const QModelIndex layerNodeIndex = model->index(layerCount, 0,QModelIndex());
+    }
+    const QModelIndex layerNodeIndex = model->index(layerCount, 0, QModelIndex());
     QString name = "Layer" + QString::number(layerCount + 1);
     QString type = "Layer";
-    Manager::getIns().addItem(layerNodeIndex,name,type);
+    Manager::getIns().addItem(layerNodeIndex, name, type);
     onTreeViewModelUpdateActions();
 }
 
-void MainWindow::onTreeViewModelAddGroup()
-{
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
-
+void MainWindow::onTreeViewModelAddGroup() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     // 提取选中的节点列表
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
     auto mimeList = model->mimeData(nodeIndexList);
-
     // //在目标处创建group节点
     QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
     // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
-
-    if (!model->insertRows(targetIndex.row()+1,1, targetIndex.parent()))
+    if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
         return;
-
+    }
     const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
     QString name = "Group";
     QString type = "Group";
-    Manager::getIns().addItem(groupIndex,name,type);
-
+    Manager::getIns().addItem(groupIndex, name, type);
     // 把节点列表移动到group节点下
-    model->dropMimeData(mimeList,Qt::MoveAction,0,0,groupIndex);
-
+    model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
     // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
     for (const QModelIndex &nodeIndex : nodeIndexList) {
         auto node = model->getNode(nodeIndex);
         auto parentNode = node->parent();
         auto parentNodeIndex = model->getIndex(parentNode);
-        model->removeRows(node->indexInParent(),1,parentNodeIndex);
+        model->removeRows(node->indexInParent(), 1, parentNodeIndex);
     }
-
-
     onTreeViewModelUpdateActions();
 }
 
-void MainWindow::onTreeViewModelUpdateActions()
-{
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+void MainWindow::onTreeViewModelUpdateActions() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-
     for (const QModelIndex &nodeIndex : nodeIndexList) {
         QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
-
         if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
             this->addLayerAction->setEnabled(true);
             this->setLayerVisibleAction->setEnabled(true);
@@ -1266,11 +1034,18 @@ void MainWindow::onTreeViewModelUpdateActions()
             this->addGroupAction->setEnabled(false);
             this->deleteNodeAction->setEnabled(false);
             this->copyNodeAction->setEnabled(false);
-
             this->selectedLayerIndex = model->getNode(nodeIndex)->indexInParent() + 1;
             SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
             return;
-        } else {
+        } else if (type == "Group") {
+            this->addLayerAction->setEnabled(false);
+            this->setLayerVisibleAction->setEnabled(false);
+            this->setLayerUnvisibleAction->setEnabled(false);
+            this->addGroupAction->setEnabled(true);
+            this->deleteNodeAction->setEnabled(true);
+            this->copyNodeAction->setEnabled(false);
+            return;
+        } else if (type == "Item") {
             this->addLayerAction->setEnabled(false);
             this->setLayerVisibleAction->setEnabled(false);
             this->setLayerUnvisibleAction->setEnabled(false);
@@ -1286,56 +1061,48 @@ void MainWindow::onTreeViewModelUpdateActions()
 ///
 /// test function
 ///
-void printResults(const std::vector<cavc::Polyline<double>>& results) {
-for (size_t i = 0; i < results.size(); ++i) {
-    const cavc::Polyline<double>& polyline = results[i];
-    qDebug() << "Polyline " << i << " (size = " << polyline.size() << "):\n";
-
-    for (size_t j = 0; j < polyline.size(); ++j) {
-        double x = polyline.vertexes()[j].x();
-        double y = polyline.vertexes()[j].y();
-        double bulge = polyline.vertexes()[j].bulge();
-        qDebug() << "  Vertex " << j << ": (" << x << ", " << y << "), bulge: " << bulge << "\n";
+void printResults(const std::vector < cavc::Polyline < double>>& results) {
+    for (size_t i = 0; i < results.size(); ++i) {
+        const cavc::Polyline < double > & polyline = results[i];
+        qDebug() << "Polyline " << i << " (size = " << polyline.size() << "):\n";
+        for (size_t j = 0; j < polyline.size(); ++j) {
+            double x = polyline.vertexes()[j].x();
+            double y = polyline.vertexes()[j].y();
+            double bulge = polyline.vertexes()[j].bulge();
+            qDebug() << "  Vertex " << j << ": (" << x << ", " << y << "), bulge: " << bulge << "\n";
+        }
+        qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
     }
-
-    qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
-}
 }
 
 static bool flag = false;
-void MainWindow::on_drawTestLineButton_clicked()
-{
+void MainWindow::on_drawTestLineButton_clicked() {
     qDebug() << "";
     qDebug() << "------test------";
     ///
     /// test template
     ///
     // /*
-    QList<QGraphicsItem*> selectedItems = SceneManager::getIns().scene->selectedItems();
-    if (selectedItems.empty())
+    QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
+    if (selectedItems.empty()) {
         return;
-    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it)
-    {
+    }
+    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it) {
         QGraphicsItem* graphicsItem = *it;
-        ArcItem* arcPtr = dynamic_cast<ArcItem*>(graphicsItem);
+        ArcItem* arcPtr = dynamic_cast < ArcItem * > (graphicsItem);
         auto arc = arcPtr->copy();
         SceneManager::getIns().scene->addItem(arc.get());
         Manager::getIns().addItem(arc);
     }
     // */
-
     ///
     /// test template
     ///
     // /*
     // std::shared_ptr<ArcItem> item = std::make_shared<ArcItem>();
     // Manager::getIns().addItem(item);
-
     // auto item1 = item->copy();
-
     // */
-
-
     ///
     /// uuid
     ///
@@ -1343,7 +1110,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     auto uid = GenerateUUID();
     DEBUG_VAR(uid);
     */
-
     ///
     /// cavc2
     ///
@@ -1364,7 +1130,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     getIntersectPoint(p1,p3,p1p3Angle,sweepAngle,p2);
     DEBUG_VAR(p2);
      */
-
     ///
     /// cavc
     ///
@@ -1398,7 +1163,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     DEBUG_VAR(angle);
 
     */
-
     ///
     /// polyline test
     ///
@@ -1412,7 +1176,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     // this->tmpPolyline->addVertex(QPointF(100,50),0);
     this->tmpPolyline->createParallelOffset(10,3);
     */
-
     ///
     /// arc
     ///
@@ -1452,7 +1215,7 @@ void MainWindow::on_drawTestLineButton_clicked()
     //  this->tmpArc->editVertex(0,QPointF{0,0},0);
     //  this->tmpArc->editVertex(1,QPointF{0,-100},0.5);
 
-*/
+    */
     ///
     /// CC  test
     ///
@@ -1468,7 +1231,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, 10.0);
     printResults(results);
     */
-
     ///
     ///
     ///
@@ -1479,7 +1241,6 @@ void MainWindow::on_drawTestLineButton_clicked()
 
     this->tmpPolygon->setTransformOriginPoint(QPointF(50,50));
     this->tmpPolygon->setRotation(180);*/
-
     ///
     /// rect test
     ///
@@ -1491,7 +1252,6 @@ void MainWindow::on_drawTestLineButton_clicked()
      QRectF newRect(this->tmpRect->rect().topLeft().x(),this->tmpRect->rect().topLeft().y(),100, 100);
     this->tmpRect->setRect(newRect);
     */
-
     ///
     /// variant test
     ///
@@ -1503,7 +1263,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     this->tmpVariantLine->setLine(QPointF(0,20),true,VariantLineItem::LineType::Arc);
 
      this->tmpVariantLine->setLine(QPointF(10,20),true,VariantLineItem::LineType::Arc);*/
-
     ///
     /// arc test
     ///
@@ -1536,7 +1295,6 @@ void MainWindow::on_drawTestLineButton_clicked()
     path1.arcMoveTo(newRect, angle);
     path1.arcTo(newRect, angle, 180);
     this->tmpArc->setPath(path1);*/
-
     ///
     /// polyline test
     ///

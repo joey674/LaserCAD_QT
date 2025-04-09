@@ -126,17 +126,18 @@ void LineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     QStyleOptionGraphicsItem optionx(* option);
     optionx.state &= ~QStyle::State_Selected;
     // 绘制线段
-    this->m_paintItem->paint(painter, &optionx, widget);
+    // this->m_paintItem->paint(painter, &optionx, widget);
+    this->m_paintItem->paint(painter, option, widget);
     // 绘制编辑原点
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::red);
     for (const auto &vertex : m_vertexPair) {
         if (this->m_offsetNum > 0) {
             painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
+            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {
             painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, GeneralPointSize.first, GeneralPointSize.second);
+            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         }
     }
     // 绘制offset

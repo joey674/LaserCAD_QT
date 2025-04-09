@@ -22,35 +22,36 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ## lib
         # cavaliercontours
         src/cavaliercontours.cpp
-        header/CavalierContours/intrcircle2circle2.hpp
-        header/CavalierContours/intrlineseg2circle2.hpp
-        header/CavalierContours/intrlineseg2lineseg2.hpp
-        header/CavalierContours/mathutils.hpp
-        header/CavalierContours/plinesegment.hpp
-        header/CavalierContours/polyline.hpp
-        header/CavalierContours/polylinecombine.hpp
-        header/CavalierContours/polylineintersects.hpp
-        header/CavalierContours/polylineoffset.hpp
-        header/CavalierContours/polylineoffsetislands.hpp
-        header/CavalierContours/staticspatialindex.hpp
-        header/CavalierContours/vector.hpp
-        header/CavalierContours/vector2.hpp
-        header/CavalierContours/cavaliercontours.h
+        lib/CavalierContours/intrcircle2circle2.hpp
+        lib/CavalierContours/intrlineseg2circle2.hpp
+        lib/CavalierContours/intrlineseg2lineseg2.hpp
+        lib/CavalierContours/mathutils.hpp
+        lib/CavalierContours/plinesegment.hpp
+        lib/CavalierContours/polyline.hpp
+        lib/CavalierContours/polylinecombine.hpp
+        lib/CavalierContours/polylineintersects.hpp
+        lib/CavalierContours/polylineoffset.hpp
+        lib/CavalierContours/polylineoffsetislands.hpp
+        lib/CavalierContours/staticspatialindex.hpp
+        lib/CavalierContours/vector.hpp
+        lib/CavalierContours/vector2.hpp
+        lib/CavalierContours/cavaliercontours.h
         # MagicEnum
-        header/MagicEnum/magic_enum.hpp
-        header/MagicEnum/magic_enum_all.hpp
-        header/MagicEnum/magic_enum_containers.hpp
-        header/MagicEnum/magic_enum_flags.hpp
-        header/MagicEnum/magic_enum_format.hpp
-        header/MagicEnum/magic_enum_fuse.hpp
-        header/MagicEnum/magic_enum_iostream.hpp
-        header/MagicEnum/magic_enum_switch.hpp
-        header/MagicEnum/magic_enum_utility.hpp
+        lib/MagicEnum/magic_enum.hpp
+        lib/MagicEnum/magic_enum_all.hpp
+        lib/MagicEnum/magic_enum_containers.hpp
+        lib/MagicEnum/magic_enum_flags.hpp
+        lib/MagicEnum/magic_enum_format.hpp
+        lib/MagicEnum/magic_enum_fuse.hpp
+        lib/MagicEnum/magic_enum_iostream.hpp
+        lib/MagicEnum/magic_enum_switch.hpp
+        lib/MagicEnum/magic_enum_utility.hpp
+        ## header
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
-        header/GraphicsView/graphicsmath.h                    src/graphicsmath.cpp
         header/GraphicsView/graphicsitem.h                     src/graphicsitem.cpp
         header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
         header/GraphicsView/arcitem.h                                src/arcitem.cpp
@@ -80,6 +81,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
+        header/tabwidget.h header/tabwidget.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -103,13 +105,16 @@ target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/CavalierContours)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Scene)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MagicEnum)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableViewModel)
+
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/MagicEnum)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
+
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

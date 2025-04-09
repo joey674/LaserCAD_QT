@@ -10,27 +10,28 @@
 
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui {
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private: // 初始化组件
     // titlebar
-    TitleBar* titleBar;
+    TitleBar *titleBar;
     // statusbar
-    QLabel* labelMouseCoordinate;
+    QLabel *labelMouseCoordinate;
     //
-    QAction* addLayerAction;
-    QAction* addGroupAction;
-    QAction* deleteNodeAction;
-    QAction* copyNodeAction;
-    QAction* setLayerVisibleAction;
-    QAction* setLayerUnvisibleAction;
+    QAction *addLayerAction;
+    QAction *addGroupAction;
+    QAction *deleteNodeAction;
+    QAction *copyNodeAction;
+    QAction *setLayerVisibleAction;
+    QAction *setLayerUnvisibleAction;
     int selectedLayerIndex;
 
     ///
@@ -42,6 +43,7 @@ private: // 初始化组件
     void initStatusBar();
     void initTreeViewModel();
     void initTableViewModel();
+    void initTabWidget();
     void test();
 
 protected: // 键盘输入重载
@@ -82,7 +84,7 @@ private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelAddLayer();
     void onTreeViewModelAddGroup();
     void onTreeViewModelDeleteNode();
-    void onTreeViewModelCopyNode();;
+    void onTreeViewModelCopyNode();
     void onTreeViewModelSetLayerVisible();
     void onTreeViewModelSetLayerUnvisible();
     void onTreeViewModelNodeClicked();

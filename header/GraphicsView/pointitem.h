@@ -53,14 +53,21 @@ public:
         return true;
     }
     bool updatePaintItem() override {
+        // 这里判断是不是为编辑模式 如果是的话就画一个大一点的圆
+        auto pointSize = DisplayPointSize;
+        if (m_isEditMode) {
+            pointSize = EditPointSize;
+        }
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->m_paintItem = nullptr;
         this->m_paintItem = std::make_shared < QGraphicsEllipseItem > ();
+        double rx = pointSize.first;
+        double ry = pointSize.second;
         this->m_paintItem->setRect(QRectF(
-                                       m_vertex.point.x() - GeneralPointSize.first,
-                                       m_vertex.point.y() - GeneralPointSize.second,
-                                       GeneralPointSize.first * 2,
-                                       GeneralPointSize.second * 2));
+                                       m_vertex.point.x() - rx,
+                                       m_vertex.point.y() - ry,
+                                       rx * 2,
+                                       ry * 2));
         this->m_paintItem->setBrush(QBrush(Qt::red));
         this->m_paintItem->setPen(this->getPen());
         return true;
@@ -125,9 +132,25 @@ public:
             item->paint(painter, &optionx, widget);
         }
     }
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override {
+        // 先执行父类
+        QVariant result = GraphicsItem::itemChange(change, value);
+        // 再执行自己的重载
+        if (change == QGraphicsItem::ItemSelectedHasChanged) {
+            bool selected = value.toBool();
+            if (selected) {
+                m_isEditMode = true;
+            } else {
+                m_isEditMode = false;
+            }
+            animate ();
+        }
+        return result;
+    }
 private:
     ///
     Vertex m_vertex = Vertex{QPointF{0, 0}, 0};
+    bool m_isEditMode = false;
     std::shared_ptr < QGraphicsEllipseItem > m_paintItem;
     ///
     double m_offset  = 0;
