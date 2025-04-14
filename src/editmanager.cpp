@@ -15,7 +15,7 @@ EditManager EditManager::ins;
 /// \param pointCoordscene
 /// \param event
 ///
-void EditManager::editItem(QPointF pointCoordscene, MouseEvent event) {
+void EditManager::editItemInScene(QPointF pointCoordscene, MouseEvent event) {
     if (this->currentEditItem) {
         // 处理scene中编辑
         switch (this->currentEditItem->type()) {
@@ -125,7 +125,6 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
         // 注意这里输入的是绝对坐标 所以要减去相对坐标！
     } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::LeftRelease) {
         this->currentEditPolylineVertexIndex = -1;
-        this->currentEditItem = NULL;
     }
 }
 
@@ -167,8 +166,8 @@ void EditManager::onSceneSelectionChanged() {
     treeView->selectionModel()->clearSelection();
     if (SceneManager::getIns().scene->selectedItems().size() >= 1) {
         auto editItemGroup = SceneManager::getIns().scene->selectedItems();
-        for (const auto &editItem : editItemGroup) {
-            GraphicsItem *item = static_cast < GraphicsItem * > (editItem);
+        for (const auto &edititem : editItemGroup) {
+            GraphicsItem *item = static_cast < GraphicsItem * > (edititem);
             auto allNodes = model->getAllChildNodes(QModelIndex());
             for (auto node : allNodes) {
                 if (node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {

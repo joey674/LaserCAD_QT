@@ -416,7 +416,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
         switch (SceneManager::getIns().currentOperationEvent) {
             case OperationEvent::EditProperty: {
-                    EditManager::getIns().editItem(pointCoordscene, event);
+                    EditManager::getIns().editItemInScene(pointCoordscene, event);
                     break;
                 }
             case OperationEvent::DrawCircle: {
@@ -486,7 +486,7 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItem(pointCoordscene, event );
+                EditManager::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -541,7 +541,7 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItem(pointCoordscene, event );
+                EditManager::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -591,7 +591,7 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItem(pointCoordscene, event );
+                EditManager::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -641,7 +641,7 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItem(pointCoordscene, event );
+                EditManager::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {

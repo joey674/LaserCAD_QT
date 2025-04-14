@@ -121,6 +121,7 @@ public:
                     // DEBUG_VAR(bulge);
                 }
             }
+            // input.isClosed() = false;
             input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
@@ -201,10 +202,6 @@ private:
     double m_offset  = 0;
     uint m_offsetNum = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
-
-
-
-
 };
 
 

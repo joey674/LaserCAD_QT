@@ -101,13 +101,13 @@ public:
         // 输入字段
         QFormLayout* formLayout = new QFormLayout();
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
-        spacingSpin->setRange(0, 9999);
+        spacingSpin->setRange(-9999, 9999);
         spacingSpin->setValue(10.0);
         QSpinBox* countSpin = new QSpinBox();
         countSpin->setRange(1, 999);
         countSpin->setValue(3);
         QPushButton* confirmBtn = new QPushButton("Confirm");
-        formLayout->addRow("Offset Spacing:", spacingSpin);
+        formLayout->addRow("Offset:", spacingSpin);
         formLayout->addRow("Offset Count:", countSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);

@@ -1,112 +1,167 @@
 #ifndef CIRCLEITEM_H
 #define CIRCLEITEM_H
 
-// #include "protocol.h"
-// #include "graphicsitem.h"
-// #include "logger.h"
+#include "protocol.h"
+#include "graphicsitem.h"
+#include "logger.h"
+#include "polylineitem.h"
 
-// class CircleItem: public GraphicsItem {
-// public:
-//     CircleItem();
-//     /// \brief control
-//     /// 直接修改 控制对象
-//     /// 这里面所有函数结束都要调用animate
-//     void editVertex(const int index, const QPointF point, const double angle = 0) override {
-//         if (index >= 1) {
-//             WARN_MSG("index can only be 0 for point");
-//             return;
-//         }
-//         QPointF pos = point - this->scenePos();
-//         this->m_vertex.point = pos;
-//         animate();
-//     }
-//     void setParallelOffset(const double offset, const double offsetNum) override // TODO
-//     {}
-//     void setCenterPos(const QPointF point) override {
-//         DEBUG_MSG("use point setCenterPos");
-//         QPointF currentCenter = this->getCenterPos();
-//         QPointF offset = point - currentCenter;
-//         this->setPos(this->pos() + offset);
-//         this->animate();
-//     }
-//     void rotate(const double angle) override // TODO
-//     {}
-//     /// \brief update
-//     /// 更新函数 不能主动调用update；都在animate中调用
-//     void updateParallelOffset() override// TODO
-//     {}
-//     void updatePaintItem() override {
-//         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
-//         this->m_paintItem = nullptr;
-//     }
-//     /// \brief get info
-//     /// 只获取信息
-//     double getParallelOffset()override {
-//         return this->m_offset;
-//     }
-//     double getParallelOffsetNum()override {
-//         return this->m_offsetNum;
-//     }
-//     Vertex getVertex(const int index)override {
-//         if (index > 0) {
-//             WARN_MSG("false index:only 0 for point");
-//         }
-//         return m_vertex;
-//     }
-//     QPointF getVertexPos(const int index)override {
-//         if (index > 1) {
-//             WARN_MSG("false index:only 0");
-//         }
-//         QPointF point = m_vertex.point;
-//         QPointF pos = point + this->scenePos();
-//         return pos;
-//     }
-//     QPointF getCenterPos() override {
-//         auto center = QPointF{};
-//         center = m_vertex.point;
-//         auto posOffset = this->pos();
-//         return center + posOffset;
-//     }
-//     QString getName() override {
-//         return "PointItem";
-//     }
-//     /// \brief reload
-//     enum { Type = ItemTypeId::Point };
-//     int type() const override {
-//         return Type;
-//     }
-//     QRectF boundingRect() const override {
-//         if (!this->m_paintItem) {
-//             return QRectF();
-//         }
-//         QRectF newRect = m_paintItem->boundingRect();
-//         // newRect = newRect.adjusted(
-//         //     -abs(this->m_offset)*this->m_offsetNum - 1,
-//         //     -abs(this->m_offset)*this->m_offsetNum - 1,
-//         //     abs(this->m_offset)*this->m_offsetNum + 1,
-//         //     abs(this->m_offset)*this->m_offsetNum + 1);
-//         return newRect;
-//     }
-//     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override {
-//         Q_UNUSED(widget);
-//         // 设置option删去offset线段的选框
-//         QStyleOptionGraphicsItem optionx(* option);
-//         optionx.state &= ~QStyle::State_Selected;
-//         // 绘制线段
-//         this->m_paintItem->paint(painter, &optionx, widget);
-//         // 绘制offset
-//         for (auto& item : this->m_offsetItemList) {
-//             item->paint(painter, &optionx, widget);
-//         }
-//     }
-// private:
-//     ///
-//     std::array < Vertex, 2 > m_vertexPair = {Vertex{QPointF{0, 0}, 0}, Vertex{QPointF{0, 0}, 0}};
-//     std::shared_ptr < QGraphicsEllipseItem > m_paintItem;
-//     ///
-//     double m_offset  = 0;
-//     int m_offsetNum = 1;
-//     std::vector < std::shared_ptr < CircleItem>> m_offsetItemList;
-// };
+class CircleItem : public GraphicsItem {
+public:
+    CircleItem();
+    CircleItem(const CircleItem& other):
+        m_center(other.m_center),
+        m_radius(other.m_radius),
+        m_offset(other.m_offset),
+        m_offsetNum(other.m_offsetNum) {
+        // 更新出来paintitem和offsetitem
+        this->animate();
+    }
+    std::shared_ptr < GraphicsItem > copy() const  override {
+        return std::make_shared < CircleItem > (CircleItem(*this));
+    }
+
+public:
+    /// 编辑圆心以及半径
+    bool editVertex(const int index, const QPointF point, const double angle = 0) override {
+        if (index > 1) {
+            WARN_VAR(index);
+            return false;
+        }
+        QPointF pos = point - this->scenePos();
+        this->m_center = Vertex{pos, 0};
+        animate();
+        return true;
+    }
+    bool editRadius(const double radius) {
+        if (radius < 0) {
+            return false;
+        }
+        this->m_radius = radius;
+        animate();
+        return true;
+    }
+    bool setParallelOffset(const double offset, const double offsetNum) override {
+        this->m_offset = offset;
+        this->m_offsetNum = offsetNum;
+        this->animate();
+        return true;
+    }
+    bool setCenterPos(const QPointF point) override {
+        DEBUG_MSG("use circle setCenterPos");
+        QPointF currentCenter = this->getCenterPos();
+        QPointF offset = point - currentCenter;
+        this->setPos(this->pos() + offset);
+        this->animate();
+        return true;
+    }
+    bool rotate(const double angle) override {
+        //TODO
+        return true;
+    }
+
+public:
+    bool updateParallelOffset() override {
+        if (this->m_offset == 0 || this->m_offsetNum == 0) {
+            return true;
+        }
+        this->m_offsetItemList.clear();
+        DEBUG_MSG("");
+        DEBUG_MSG("update parallel offset");
+        double inputOuputSign = -1;
+        for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+            // 输入cavc库
+            cavc::Polyline < double > input;
+            auto p1 = m_center.point - QPointF{this->m_radius, 0};
+            auto p2 = m_center.point + QPointF{this->m_radius, 0};
+            input.addVertex(p1.x(), p1.y(),  1);
+            input.addVertex(p2.x(), p2.y(), -1);
+            input.addVertex(p1.x(), p1.y(), 0);
+            input.isClosed() = true;
+            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
+                this->m_offset
+                * offsetIndex);
+            // 获取结果
+            for (const auto &polyline : results) {
+                auto item = std::make_shared < PolylineItem > ();
+                // item->LineType = LineType::offsetItem;
+                for (size_t i = 0; i < polyline.size(); ++i) {
+                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+                    auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
+                                    : polyline.vertexes()[polyline.size() - 1].bulge();
+                    double newAngle = 0;
+                    getAngleFromBulge(newBulge * inputOuputSign, newAngle);
+                    item->addVertex(newPoint, newAngle);
+                    // DEBUG_VAR(newPoint.x());
+                    // DEBUG_VAR(newPoint.y());
+                    // DEBUG_VAR(newBulge);
+                }
+                this->m_offsetItemList.push_back(std::move(item));
+            }
+        }
+        return true;
+    }
+    bool updatePaintItem() override {
+        // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
+        this->m_paintItem = nullptr;
+        this->m_paintItem = std::make_shared < QGraphicsEllipseItem > ();
+        QRectF rect(
+            m_center.point.x() - m_radius,
+            m_center.point.y() - m_radius,
+            m_radius * 2,
+            m_radius * 2
+        );
+        this->m_paintItem->setRect(rect);
+        this->m_paintItem->setPen(this->getPen());
+        return true;
+    }
+
+public:
+    double getParallelOffset() const override {
+        return this->m_offset;
+    }
+    double getParallelOffsetNum() const override {
+        return this->m_offsetNum;
+    }
+    Vertex getVertex(const int index = 0) const override {
+        if (index > 1) {
+            assert("false index:only 0");
+        }
+        return m_center;
+    }
+    QPointF getVertexPos(const int index) const override {
+        if (index > 1) {
+            assert("false index:only 0,1");
+        }
+        QPointF point = m_center.point;
+        QPointF pos = point + this->scenePos();
+        return pos;
+    }
+    QPointF getCenterPos() const override {
+        auto posOffset = this->pos();
+        return this->m_center.point + posOffset;
+    }
+    QString getName() const override {
+        return "CircleItem";
+    }
+    /// ********************
+    /// \brief overload
+    /// 重载基于QGraphicsitem的一些性质
+    /// ********************
+public:
+    enum { Type = ItemTypeId::Circle };
+    int type() const override;
+    QRectF boundingRect() const override;
+    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
+private:
+    ///
+    Vertex m_center = Vertex{QPointF{0, 0}, 0};
+    double m_radius = 0;
+    std::shared_ptr < QGraphicsEllipseItem > m_paintItem;
+    ///
+    double m_offset  = 0;
+    int m_offsetNum = 0;
+    std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+};
 
 #endif // CIRCLEITEM_H

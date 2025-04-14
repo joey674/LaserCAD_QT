@@ -50,7 +50,7 @@ private:
     std::shared_ptr < QGraphicsLineItem > m_paintItem;
     ///
     double m_offset  = 0;
-    int m_offsetNum = 1;
+    int m_offsetNum = 0;
     std::vector < std::shared_ptr < LineItem>> m_offsetItemList;
 };
 
