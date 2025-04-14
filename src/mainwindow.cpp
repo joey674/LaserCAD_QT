@@ -82,6 +82,7 @@ void MainWindow::initGraphicsView() {
     UiManager::getIns().UI()->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     UiManager::getIns().UI()->graphicsView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneManager::getIns().setSceneScale(0.1, 0.1);
     QTimer::singleShot(100, []() {
         SceneManager::getIns().setSceneScale(10, 10);
@@ -213,7 +214,6 @@ void MainWindow::initDrawToolButton() {
     connect(drawPolygonButton, &QToolButton::clicked, this, &MainWindow::onDrawPolygonButtonClicked);
     connect(drawSpiralButton, &QToolButton::clicked, this, &MainWindow::onDrawSpiralButtonClicked);
 }
-
 
 void MainWindow::initEditToolButton() {
     QString buttonStyle = buttonStyle1;
@@ -698,6 +698,8 @@ void MainWindow::onGraphicsviewMouseWheelTriggered(QWheelEvent * event) {
 /// \brief MainWindow::onDrawLineButtonClicked
 ///
 void MainWindow::onDrawLineButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -707,6 +709,8 @@ void MainWindow::onDrawLineButtonClicked() {
 }
 
 void MainWindow::onDrawCircleButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -716,6 +720,8 @@ void MainWindow::onDrawCircleButtonClicked() {
 }
 
 void MainWindow::onDrawPolylineButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -725,6 +731,8 @@ void MainWindow::onDrawPolylineButtonClicked() {
 }
 
 void MainWindow::onDrawArcButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -734,6 +742,8 @@ void MainWindow::onDrawArcButtonClicked() {
 }
 
 void MainWindow::onDrawPointButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -743,6 +753,8 @@ void MainWindow::onDrawPointButtonClicked() {
 }
 
 void MainWindow::onDrawSpiralButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -752,6 +764,8 @@ void MainWindow::onDrawSpiralButtonClicked() {
 }
 
 void MainWindow::onDrawRectButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -761,6 +775,8 @@ void MainWindow::onDrawRectButtonClicked() {
 }
 
 void MainWindow::onDrawPolygonButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -770,6 +786,8 @@ void MainWindow::onDrawPolygonButtonClicked() {
 }
 
 void MainWindow::onDrawEllipseButtonClicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::CrossCursor);
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -783,6 +801,8 @@ void MainWindow::onDrawEllipseButtonClicked() {
 ///  编辑工具
 ///
 void MainWindow::on_editButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::EditProperty;
     DrawManager::getIns().resetTmpItemStatus();
@@ -798,6 +818,8 @@ void MainWindow::on_editButton_clicked() {
 }
 
 void MainWindow::on_dragSceneButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::OpenHandCursor);
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::DragScene;
     DrawManager::getIns().resetTmpItemStatus();
@@ -815,6 +837,8 @@ void MainWindow::on_dragSceneButton_clicked() {
 }
 
 void MainWindow::on_rotateButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -832,6 +856,8 @@ void MainWindow::on_rotateButton_clicked() {
 }
 
 void MainWindow::on_centerButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -841,10 +867,14 @@ void MainWindow::on_centerButton_clicked() {
     if (!EditManager::getIns().currentEditItem) {
         return;
     }
-    EditManager::getIns().currentEditItem->setPos(QPointF(0, 0) - EditManager::getIns().currentEditItem->scenePos());
+    //
+    GraphicsItem *item = static_cast < GraphicsItem * > (EditManager::getIns().currentEditItem);
+    item->setCenterPos(QPointF{0, 0});
 }
 
 void MainWindow::on_createOffsetButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
@@ -871,6 +901,8 @@ void MainWindow::on_createOffsetButton_clicked() {
 }
 
 void MainWindow::on_deleteButton_clicked() {
+    // 设置鼠标光标
+    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneManager::getIns().currentOperationEvent = OperationEvent::None;
     DrawManager::getIns().resetTmpItemStatus();
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);

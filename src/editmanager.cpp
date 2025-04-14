@@ -139,6 +139,7 @@ void EditManager::updateTabWidget() {
         return;
     }
     UiManager::getIns().UI()->tabWidget->addCopyTab();
+    UiManager::getIns().UI()->tabWidget->addOffsetTab();
 }
 
 void EditManager::updateTableViewModel() {

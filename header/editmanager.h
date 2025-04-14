@@ -28,7 +28,10 @@ public:
     void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);;
     void onTabWidgetCopyTabMatrixCopy(
         QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
-    ;
+    void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
+        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+        item->setParallelOffset(offset, offsetNum);
+    }
 
 private:
     static EditManager ins;

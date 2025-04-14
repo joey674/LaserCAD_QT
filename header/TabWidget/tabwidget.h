@@ -95,6 +95,30 @@ public:
         // 添加到 tab 中
         this->addTab(copyTab, "Copy");
     }
+    void addOffsetTab() {
+        QWidget* offsetTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(offsetTab);
+        // 输入字段
+        QFormLayout* formLayout = new QFormLayout();
+        QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
+        spacingSpin->setRange(0, 9999);
+        spacingSpin->setValue(10.0);
+        QSpinBox* countSpin = new QSpinBox();
+        countSpin->setRange(1, 999);
+        countSpin->setValue(3);
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        formLayout->addRow("Offset Spacing:", spacingSpin);
+        formLayout->addRow("Offset Count:", countSpin);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+        // connect 按钮
+        connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
+            double offset = spacingSpin->value();
+            int offsetNum = countSpin->value();
+            EditManager::getIns ().onTabWidgetOffsetTabParallelOffset(offset, offsetNum);
+        });
+        this->addTab(offsetTab, "Offset");
+    }
 
 };
 

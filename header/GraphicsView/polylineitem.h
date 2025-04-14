@@ -4,6 +4,7 @@
 #include "graphicsitem.h"
 #include "utils.hpp"
 #include "logger.h"
+#include <polylineoffset.hpp>
 
 class PolylineItem: public GraphicsItem {
 public:
@@ -83,66 +84,63 @@ public:
         if (m_vertexList.size() < 2) {
             return false;
         }
-        // if (this->m_offset == 0) return true;
-        // this->m_offsetItemList.clear();
-        // DEBUG_MSG("");
-        // DEBUG_MSG("update parallel offset");
-        // double inputOuputSign = -1;
-        // for (int offsetIndex = 1;offsetIndex <= this->m_offsetNum; offsetIndex++)
-        // {
-        //     // 输入cavc库
-        //     cavc::Polyline<double> input;
-        //     for (int i = 0; i < this->getVertexCount(); ++i)
-        //     {
-        //         auto p1 = m_vertexList[i].point;
-        //         auto p2 = m_vertexList[i+1].point;
-        //         auto angle = (i+1 <= this->getVertexCount())?
-        //                          m_vertexList[i+1].angle:0;
-        //         if (angle>180.01 || angle < -180.01)
-        //         {
-        //             auto sign = angle>0? 1:-1;
-        //             input.addVertex(p1.x(),p1.y(), sign*inputOuputSign);/*先走180度*/
-        //             QPointF intersectPoint = QPointF{};
-        //             double newAngle = 0;
-        //             double newBulge = 0;
-        //             getIntersectPoint(p1,p2,angle,180,intersectPoint);
-        //             newAngle = angle - sign*180;
-        //             getBulgeFromAngle(newAngle,newBulge);
-        //             input.addVertex(intersectPoint.x(),intersectPoint.y(), newBulge *inputOuputSign);
-        //             DEBUG_VAR(intersectPoint.x());
-        //             DEBUG_VAR(intersectPoint.y());
-        //             DEBUG_VAR(newAngle);
-        //         }else
-        //         {
-        //             double bulge = 0;
-        //             getBulgeFromAngle(angle,bulge);
-        //             input.addVertex(p1.x(),p1.y(), bulge *inputOuputSign);
-        //             // DEBUG_VAR(p1.x());
-        //             // DEBUG_VAR(p1.y());
-        //             // DEBUG_VAR(bulge);
-        //         }
-        //     }
-        //     input.isClosed() = false;
-        //     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
-        //     // 获取结果
-        //     for (const auto& polyline : results) {
-        //         auto item = std::make_shared<PolylineItem>();
-        //         // item->LineType = LineType::offsetItem;
-        //         for (size_t i = 0; i < polyline.size(); ++i)
-        //         {
-        //             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-        //             auto newBulge = (i > 0) ?  polyline.vertexes()[i-1].bulge()
-        //                                     :   polyline.vertexes()[polyline.size()-1].bulge();
-        //             double newAngle = 0;
-        //             getAngleFromBulge(newBulge *inputOuputSign,newAngle);
-        //             item->addVertex(newPoint,newAngle);
-        //             // DEBUG_VAR(newPoint.x());
-        //             // DEBUG_VAR(newPoint.y());
-        //             // DEBUG_VAR(newBulge);
-        //         }
-        //         this->m_offsetItemList.push_back(std::move(item));
-        //     }
-        // }
+        if (this->m_offset == 0) {
+            return true;
+        }
+        this->m_offsetItemList.clear();
+        DEBUG_MSG("");
+        DEBUG_MSG("update parallel offset");
+        double inputOuputSign = -1;
+        for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+            // 输入cavc库
+            cavc::Polyline < double > input;
+            for (int i = 0; i < this->getVertexCount(); ++i) {
+                auto p1 = m_vertexList[i].point;
+                auto p2 = m_vertexList[i + 1].point;
+                auto angle = (i + 1 <= this->getVertexCount()) ?
+                             m_vertexList[i + 1].angle : 0;
+                if (angle > 180.01 || angle < -180.01) {
+                    auto sign = angle > 0 ? 1 : -1;
+                    input.addVertex(p1.x(), p1.y(), sign * inputOuputSign); /*先走180度*/
+                    QPointF intersectPoint = QPointF{};
+                    double newAngle = 0;
+                    double newBulge = 0;
+                    getIntersectPoint(p1, p2, angle, 180, intersectPoint);
+                    newAngle = angle - sign * 180;
+                    getBulgeFromAngle(newAngle, newBulge);
+                    input.addVertex(intersectPoint.x(), intersectPoint.y(), newBulge * inputOuputSign);
+                    DEBUG_VAR(intersectPoint.x());
+                    DEBUG_VAR(intersectPoint.y());
+                    DEBUG_VAR(newAngle);
+                } else {
+                    double bulge = 0;
+                    getBulgeFromAngle(angle, bulge);
+                    input.addVertex(p1.x(), p1.y(), bulge * inputOuputSign);
+                    // DEBUG_VAR(p1.x());
+                    // DEBUG_VAR(p1.y());
+                    // DEBUG_VAR(bulge);
+                }
+            }
+            input.isClosed() = false;
+            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
+            // 获取结果
+            for (const auto& polyline : results) {
+                auto item = std::make_shared < PolylineItem > ();
+                // item->LineType = LineType::offsetItem;
+                for (size_t i = 0; i < polyline.size(); ++i) {
+                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+                    auto newBulge = (i > 0) ?  polyline.vertexes()[i - 1].bulge()
+                                    :   polyline.vertexes()[polyline.size() - 1].bulge();
+                    double newAngle = 0;
+                    getAngleFromBulge(newBulge * inputOuputSign, newAngle);
+                    item->addVertex(newPoint, newAngle);
+                    // DEBUG_VAR(newPoint.x());
+                    // DEBUG_VAR(newPoint.y());
+                    // DEBUG_VAR(newBulge);
+                }
+                this->m_offsetItemList.push_back(std::move(item));
+            }
+        }
         return true;
     }
     bool updatePaintItem() override {
