@@ -64,6 +64,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/TreeViewModel/treeview.h                            src/treeview.cpp
         # TableViewModel
         header/TableViewModel/tablemodel.h                     src/tablemodel.cpp
+        # TabWidget
+        header/TabWidget/tabwidget.h                                  src/tabwidget.cpp
         # Utils
         header/Utils/logger.h                                                      src/logger.cpp
         header/Utils/utils.hpp                                                     src/utils.cpp
@@ -77,11 +79,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # Scene
         header/Scene/scenemanager.h                                  src/scenemanager.cpp
         header/Scene/drawmanager.h                                    src/drawmanager.cpp
-        header/Scene/editmanager.h                                      src/editmanager.cpp
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
-        header/tabwidget.h header/tabwidget.cpp
+        header/editmanager.h                                                    src/editmanager.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -110,6 +111,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableViewModel)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidget)
 
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/MagicEnum)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)

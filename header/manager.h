@@ -33,47 +33,16 @@ public:
     /// 1. m_itemMap; 2. TreeViewModel; 3. Scene(自动删除,不在此处主动删除)
     void deleteItem(UUID uuid);
     /// \brief copyItem 复制graphicitem 1. m_itemMap; 2. TreeViewModel; 3. Scene; 4.propertyMap
-    void copyItem(UUID uuid) {
-        auto item = itemMapFind(uuid);
-        auto type = item->type();
-        switch (type) {
-            case ItemTypeId::Arc: {
-                    auto  arc = (dynamic_cast < ArcItem* > (item.get()))->copy();
-                    SceneManager::getIns().scene->addItem(arc.get());
-                    this->addItem(arc);
-                    setItemSelectable(arc->getUUID(), true);
-                    setItemMovable(arc->getUUID(), true);
-                    break;
-                }
-            case ItemTypeId::Line: {
-                    auto  line = (dynamic_cast < LineItem* > (item.get()))->copy();
-                    SceneManager::getIns().scene->addItem(line.get());
-                    this->addItem(line);
-                    setItemSelectable(line->getUUID(), true);
-                    setItemMovable(line->getUUID(), true);
-                    break;
-                }
-            case ItemTypeId::Point: {
-                    auto  point = (dynamic_cast < PointItem* > (item.get()))->copy();
-                    SceneManager::getIns().scene->addItem(point.get());
-                    this->addItem(point);
-                    setItemSelectable(point->getUUID(), true);
-                    setItemMovable(point->getUUID(), true);
-                    break;
-                }
-            case ItemTypeId::Polyline: {
-                    auto  pl = (dynamic_cast < PolylineItem* > (item.get()))->copy();
-                    SceneManager::getIns().scene->addItem(pl.get());
-                    this->addItem(pl);
-                    setItemSelectable(pl->getUUID(), true);
-                    setItemMovable(pl->getUUID(), true);
-                    break;
-                }
-            default:
-                break;
-        }
-    };// TODO
-    /// \brief setItem property
+    UUID copyItem(UUID uuid) {
+        auto itemptr = itemMapFind(uuid);
+        auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->copy();
+        SceneManager::getIns().scene->addItem(item.get());
+        this->addItem(item);
+        setItemSelectable(item->getUUID(), true);
+        setItemMovable(item->getUUID(), true);
+        return item->getUUID();
+    };
+/// \brief setItem property
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
     void setItemMovable(UUID uuid, bool status);
@@ -115,26 +84,26 @@ public:
         // - TreeViewModel中的节点
         // - Scene
     };
-    /// \brief getItem
-    /// \param index
+/// \brief getItem
+/// \param index
     UUID getItem(QModelIndex index);
     UUID getItem(QGraphicsItem* item);
-    /// \brief  getItemsByLayer 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+/// \brief  getItemsByLayer 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
     std::vector < UUID > getItemsByLayer(int layer);
 public:
-    /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
-    /// \param UUID
+/// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
+/// \param UUID
     std::shared_ptr < GraphicsItem > itemMapFind(UUID uuid);
     void itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr);
     void itemMapErase(UUID uuid);
-    /// \brief propertyMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
-    /// \param UUID
-    ///  \return 返回元素的引用；也就是可以直接修改propertymap里的值
+/// \brief propertyMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
+/// \param UUID
+///  \return 返回元素的引用；也就是可以直接修改propertymap里的值
     QVariant &propertyMapFind(UUID uuid, PropertyIndex index);
     std::map < PropertyIndex, QVariant > propertyMapCopy(UUID uuid);
     void propertyMapInsert(UUID uuid, std::map < PropertyIndex, QVariant > map);
     void propertyMapErase(UUID uuid);
-    /// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
+/// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
     void setVisibleSync();
 
 private:

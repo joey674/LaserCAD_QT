@@ -138,7 +138,7 @@ inline QPainterPath createArcPath(const QPointF &p1, const QPointF &p3, const do
 /// \return
 ///
 inline QPointF parseStringToPointF(const QString &text) {
-    static const QRegularExpression re(R"(\(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\))");
+    static const QRegularExpression re(R"(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*)");
     auto match = re.match(text);
     if (match.hasMatch()) {
         bool ok1, ok2;
@@ -153,12 +153,11 @@ inline QPointF parseStringToPointF(const QString &text) {
 }
 
 inline QString parsePointFToString(const QPointF &point) {
-    return QString("(%1, %2)").arg(point.x(), 0, 'f', 1).arg(point.y(), 0, 'f', 1);
+    return QString("%1, %2").arg(point.x(), 0, 'f', 1).arg(point.y(), 0, 'f', 1);
 }
 
 inline Vertex parseStringToVertex(const QString &text) {
-    // 预期格式：((x, y),angle)
-    static const QRegularExpression re(R"(\(\(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*\)\s*,\s*([-+]?\d*\.?\d+)\s*\))");
+    static const QRegularExpression re(R"(\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+)\s*)");
     auto match = re.match(text);
     if (match.hasMatch()) {
         bool ok1, ok2, ok3;
@@ -174,7 +173,8 @@ inline Vertex parseStringToVertex(const QString &text) {
 }
 
 inline QString parseVertexToString(const Vertex &vertex) {
-    return QString("((%1, %2),%3)").arg(vertex.point.x(), 0, 'f', 1).arg(vertex.point.y(), 0, 'f', 1).arg(vertex.angle, 0, 'f', 1);
+    return QString("%1, %2, %3").arg(vertex.point.x(), 0, 'f', 1).arg(vertex.point.y(), 0, 'f', 1).arg(vertex.angle, 0, 'f', 1);
 }
+
 
 #endif // UTILS_H

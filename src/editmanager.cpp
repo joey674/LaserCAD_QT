@@ -1,86 +1,23 @@
 #include "editmanager.h"
+#include "polylineitem.h"
+#include "arcitem.h"
+#include "protocol.h"
 #include "logger.h"
-#include "uimanager.h"
 #include "scenemanager.h"
 #include "treemodel.h"
-#include "pointitem.h"
-#include "lineitem.h"
+#include "uimanager.h"
+#include "tablemodel.h"
 
 EditManager EditManager::ins;
 
+///
+/// \brief EditManager::editItem
+/// \param pointCoordscene
+/// \param event
+///
 void EditManager::editItem(QPointF pointCoordscene, MouseEvent event) {
-    // 获取treemodel
-    auto treeView = UiManager::getIns().UI()->treeView;
-    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    treeView->selectionModel()->clearSelection();
-    // 多选对象时只在treeview中选中对象
-    if (SceneManager::getIns().scene->selectedItems().size() >= 1) {
-        for (const auto& editItem : SceneManager::getIns().scene->selectedItems()) {
-            switch (editItem->type()) {
-                case ItemTypeId::Polyline: {
-                        // 在treeview中选中对象
-                        PolylineItem *item = static_cast < PolylineItem * > (editItem);
-                        auto allNodes = model->getAllChildNodes(QModelIndex());
-                        for (auto node : allNodes) {
-                            if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {
-                                auto index = model->getIndex(node);
-                                treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                            }
-                        }
-                        break;
-                    }
-                case ItemTypeId::Arc: {
-                        ArcItem *item = static_cast < ArcItem * > (editItem);
-                        // item->setPen(EDIT_PEN);
-                        // 在treeview中选中对象
-                        auto treeView = UiManager::getIns().UI()->treeView;
-                        TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-                        auto allNodes = model->getAllChildNodes(QModelIndex());
-                        for (auto node : allNodes) {
-                            if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {
-                                auto index = model->getIndex(node);
-                                treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                            }
-                        }
-                        break;
-                    }
-                case ItemTypeId::Line: {
-                        LineItem *item = static_cast < LineItem * > (editItem);
-                        // item->setPen(EDIT_PEN);
-                        // 在treeview中选中对象
-                        auto treeView = UiManager::getIns().UI()->treeView;
-                        TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-                        auto allNodes = model->getAllChildNodes(QModelIndex());
-                        for (auto node : allNodes) {
-                            if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {
-                                auto index = model->getIndex(node);
-                                treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                            }
-                        }
-                        break;
-                    }
-                case ItemTypeId::Point: {
-                        PointItem* item = static_cast < PointItem * > (editItem);
-                        // item->setPen(EDIT_PEN);
-                        // 在treeview中选中对象
-                        auto treeView = UiManager::getIns().UI()->treeView;
-                        TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-                        auto allNodes = model->getAllChildNodes(QModelIndex());
-                        for (auto node : allNodes) {
-                            if(node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {
-                                auto index = model->getIndex(node);
-                                treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-                            }
-                        }
-                        break;
-                    }
-                    // TODO
-            };
-        }
-    }
-    // 当编辑单一对象时
-    if (SceneManager::getIns().scene->selectedItems().size() == 1) {
-        this->currentEditItem = SceneManager::getIns().scene->selectedItems()[0];
+    if (this->currentEditItem) {
+        // 处理scene中编辑
         switch (this->currentEditItem->type()) {
             case ItemTypeId::Polyline: {
                     PolylineItem *item = static_cast < PolylineItem * > (this->currentEditItem);
@@ -100,6 +37,12 @@ void EditManager::editItem(QPointF pointCoordscene, MouseEvent event) {
     }
 }
 
+///
+/// \brief EditManager::editArc
+/// \param pointCoordscene
+/// \param item
+/// \param event
+///
 void EditManager::editArc(QPointF pointCoordscene, ArcItem* item, MouseEvent event) {
     // if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease)
     // {
@@ -185,6 +128,113 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
         this->currentEditItem = NULL;
     }
 }
+
+///
+/// \brief EditManager::updateTabWidget
+///
+void EditManager::updateTabWidget() {
+    UiManager::getIns().UI()->tabWidget->clearAllTabs();
+    if (!this->currentEditItem) {
+        WARN_MSG("no current edititem");
+        return;
+    }
+    UiManager::getIns().UI()->tabWidget->addCopyTab();
+}
+
+void EditManager::updateTableViewModel() {
+    TableModel* model = qobject_cast < TableModel * > (
+                            UiManager::getIns().UI()->tableView->model());
+    model->clear();
+    if (!this->currentEditItem) {
+        WARN_MSG("no current edititem");
+        return;
+    }
+    GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+    model->setCurrentEditItem(item->getUUID());
+}
+
+void EditManager::onSceneSelectionChanged() {
+    // 只要不是1, 大于1或者为0都不设置当前editItem
+    if (SceneManager::getIns().scene->selectedItems().size() == 1) {
+        this->currentEditItem = SceneManager::getIns().scene->selectedItems().at(0);
+    } else {
+        this->currentEditItem = nullptr;
+    }
+    // 在treeview中选中对象
+    auto treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    treeView->selectionModel()->clearSelection();
+    if (SceneManager::getIns().scene->selectedItems().size() >= 1) {
+        auto editItemGroup = SceneManager::getIns().scene->selectedItems();
+        for (const auto &editItem : editItemGroup) {
+            GraphicsItem *item = static_cast < GraphicsItem * > (editItem);
+            auto allNodes = model->getAllChildNodes(QModelIndex());
+            for (auto node : allNodes) {
+                if (node->property(TreeNodePropertyIndex::UUID) == item->getUUID()) {
+                    auto index = model->getIndex(node);
+                    treeView->selectionModel()->select(index,
+                                                       QItemSelectionModel::Select
+                                                       | QItemSelectionModel::Rows);
+                }
+            }
+        }
+    }
+    //
+    // 更新tabwidget
+    updateTabWidget();
+    // 更新tablemodel
+    updateTableViewModel();
+}
+
+void EditManager::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
+    if (!this->currentEditItem ) {
+        return;
+    }
+    GraphicsItem* item = static_cast < GraphicsItem * > (this->currentEditItem);
+    QPointF unitOffset = dir * spacing;
+    for (int i = 1; i <= count; ++i) {
+        auto uuid = Manager::getIns().copyItem(item->getUUID());
+        auto copiedItem = Manager::getIns().itemMapFind(uuid);
+        if (!copiedItem) {
+            continue;
+        }
+        QPointF center = copiedItem->getCenterPos();
+        QPointF offset = unitOffset * i;
+        copiedItem->setCenterPos(center + offset);
+    }
+}
+
+void EditManager::onTabWidgetCopyTabMatrixCopy(
+    QPointF hVec, QPointF vVec,
+    double hSpacing, double vSpacing,
+    int hCount, int vCount) {
+    if (!this->currentEditItem) {
+        return;
+    }
+    GraphicsItem* item = static_cast < GraphicsItem * > (this->currentEditItem);
+    QPointF hOffset = hVec * hSpacing;
+    QPointF vOffset = vVec * vSpacing;
+    QPointF origin = item->getCenterPos();
+    // 外层纵向（v），内层横向（h）
+    for (int row = 0; row < vCount; ++row) {
+        for (int col = 0; col < hCount; ++col) {
+            // 不要复制原件自己（0,0）
+            if (row == 0 && col == 0) {
+                continue;
+            }
+            // 执行复制
+            auto uuid = Manager::getIns().copyItem(item->getUUID());
+            auto copiedItem = Manager::getIns().itemMapFind(uuid);
+            if (!copiedItem) {
+                continue;
+            }
+            // 设置新位置
+            QPointF offset = hOffset * col + vOffset * row;
+            copiedItem->setCenterPos(origin + offset);
+        }
+    }
+}
+
 
 EditManager &EditManager::getIns() {
     return ins;

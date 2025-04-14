@@ -45,6 +45,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initTableViewModel();
     initStatusBar();
     initTabWidget();
+    //
+    connect(SceneManager::getIns().scene, &QGraphicsScene::selectionChanged, [ = ]() {
+        EditManager::getIns().onSceneSelectionChanged();
+    });
+    //
     test();
 }
 
@@ -963,7 +968,9 @@ void MainWindow::onTreeViewModelSetLayerUnvisible() {
 }
 
 void MainWindow::onTreeViewModelNodeClicked() {
-    SceneManager::getIns().scene->clearSelection();
+    if (!KeyboardManager::getIns ().IsControlHold) {
+        SceneManager::getIns().scene->clearSelection();
+    }
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
     QString type = model->nodeProperty(node, TreeNodePropertyIndex::Type).toString();

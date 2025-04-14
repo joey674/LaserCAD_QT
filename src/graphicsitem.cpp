@@ -32,11 +32,8 @@ QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &val
         bool selected = value.toBool();
         if (selected) {
             Manager::getIns().setItemRenderPen(this->getUUID(), EDIT_PEN);
-            model->clear();
-            model->setCurrentEditItem(this->getUUID());
         } else {
             Manager::getIns().setItemRenderPen(this->getUUID(), DISPLAY_PEN);
-            model->clear();
         }
     }
     return QGraphicsItem::itemChange(change, value);

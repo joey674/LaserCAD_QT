@@ -4,9 +4,10 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <qgraphicsitem.h>
-#include "polylineitem.h"
-#include "arcitem.h"
 #include "protocol.h"
+#include "arcitem.h"
+#include "polylineitem.h"
+
 
 class EditManager {
 public:
@@ -19,6 +20,15 @@ public:
 public:
     void editPolyline(QPointF pointCoordscene, PolylineItem *, MouseEvent event);
     void editArc(QPointF pointCoordscene, ArcItem *, MouseEvent event);
+    void updateTabWidget();
+    void updateTableViewModel();
+/// 类似slot
+public:
+    void onSceneSelectionChanged();
+    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);;
+    void onTabWidgetCopyTabMatrixCopy(
+        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
+    ;
 
 private:
     static EditManager ins;
