@@ -1110,17 +1110,17 @@ void MainWindow::on_drawTestLineButton_clicked() {
     /// test template
     ///
     // /*
-    QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
-    if (selectedItems.empty()) {
-        return;
-    }
-    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it) {
-        QGraphicsItem* graphicsItem = *it;
-        ArcItem* arcPtr = dynamic_cast < ArcItem * > (graphicsItem);
-        auto arc = arcPtr->copy();
-        SceneManager::getIns().scene->addItem(arc.get());
-        Manager::getIns().addItem(arc);
-    }
+    // QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
+    // if (selectedItems.empty()) {
+    //     return;
+    // }
+    // for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it) {
+    //     QGraphicsItem* graphicsItem = *it;
+    //     ArcItem* arcPtr = dynamic_cast < ArcItem * > (graphicsItem);
+    //     auto arc = arcPtr->copy();
+    //     SceneManager::getIns().scene->addItem(arc.get());
+    //     Manager::getIns().addItem(arc);
+    // }
     // */
     ///
     /// test template

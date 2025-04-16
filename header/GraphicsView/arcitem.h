@@ -43,7 +43,7 @@ protected:
         return true;
     }
     bool setCenterPos(const QPointF point) override {
-        DEBUG_MSG("use arc setCenterPos");
+        // DEBUG_MSG("use arc setCenterPos");
         QPointF currentCenter = this->getCenterPos();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
