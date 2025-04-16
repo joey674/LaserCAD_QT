@@ -1,9 +1,5 @@
 #include "graphicsitem.h"
-#include "manager.h"
-#include "tablemodel.h"
-#include "uimanager.h"
-
-
+#include "editcontroller.h"
 
 QString GraphicsItem::getName()const {
     return "GraphicsItem";
@@ -18,25 +14,25 @@ const QPen GraphicsItem::getPen()const {
 }
 
 QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value) {
-    // 物体位置变换后的操作 (实时更新; 注意只有table可以实时更新, tab就不要一直更新了 不然很卡)
+
     if (change == QGraphicsItem::ItemPositionHasChanged) {
-        EditManager::getIns().updateTableViewModel();
-        Manager::getIns().setItemPosition (this->getUUID(), this->getCenterPos());
+        EditController::getIns().onGraphicsItemPositionHasChanged(this->getUUID());
     }
-    // 物体选中后的操作
+
     if (change == QGraphicsItem::ItemSelectedHasChanged) {
         bool selected = value.toBool();
-        if (selected) {
-            Manager::getIns().setItemRenderPen(this->getUUID(), EDIT_PEN);
-        } else {
-            Manager::getIns().setItemRenderPen(this->getUUID(), DISPLAY_PEN);
-        }
+        EditController::getIns().onGraphicsItemSelectedHasChanged(this->getUUID(),selected);
     }
     return QGraphicsItem::itemChange(change, value);
 }
 
 void GraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
-    EditManager::getIns().updateTabWidget();
     QGraphicsItem::mouseReleaseEvent(event);
+    EditController::getIns().onGraphicsItemMouseRelease(this->getUUID());
+}
+
+void GraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event){
+    QGraphicsItem::mousePressEvent(event);
+    EditController::getIns().onGraphicsItemMousePress(this->getUUID());
 }
 

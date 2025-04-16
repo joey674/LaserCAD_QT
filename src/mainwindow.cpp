@@ -22,7 +22,7 @@
 #include "keyboardmanager.h"
 #include "uimanager.h"
 #include "scenemanager.h"
-#include "editmanager.h"
+#include "editcontroller.h"
 #include "drawmanager.h"
 #include "tablemodel.h"
 
@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initTabWidget();
     //
     connect(SceneManager::getIns().scene, &QGraphicsScene::selectionChanged, [ = ]() {
-        EditManager::getIns().onSceneSelectionChanged();
+        EditController::getIns().onSceneSelectionChanged();
     });
     //
     test();
@@ -401,7 +401,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     // 禁止鼠标左右键同时拖拽
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
         DrawManager::getIns().resetTmpItemStatus();
-        EditManager::getIns().currentEditItem = NULL;
+        EditController::getIns().currentEditItem = NULL;
         auto allItems = Manager::getIns().getItemsByLayer(0);
         SceneManager::getIns().scene->clearSelection();
         // 打断一下拖拽过程
@@ -416,7 +416,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
         switch (SceneManager::getIns().currentOperationEvent) {
             case OperationEvent::EditProperty: {
-                    EditManager::getIns().editItemInScene(pointCoordscene, event);
+                    EditController::getIns().editItemInScene(pointCoordscene, event);
                     break;
                 }
             case OperationEvent::DrawCircle: {
@@ -486,7 +486,7 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItemInScene(pointCoordscene, event );
+                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -541,7 +541,7 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItemInScene(pointCoordscene, event );
+                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -591,7 +591,7 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItemInScene(pointCoordscene, event );
+                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -641,7 +641,7 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditManager::getIns().editItemInScene(pointCoordscene, event );
+                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -806,7 +806,7 @@ void MainWindow::on_editButton_clicked() {
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::EditProperty;
     DrawManager::getIns().resetTmpItemStatus();
-    EditManager::getIns().currentEditItem = NULL;
+    EditController::getIns().currentEditItem = NULL;
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
     // button check
@@ -864,11 +864,11 @@ void MainWindow::on_centerButton_clicked() {
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->centerButton->setChecked(true);
-    if (!EditManager::getIns().currentEditItem) {
+    if (!EditController::getIns().currentEditItem) {
         return;
     }
     //
-    GraphicsItem *item = static_cast < GraphicsItem * > (EditManager::getIns().currentEditItem);
+    GraphicsItem *item = static_cast < GraphicsItem * > (EditController::getIns().currentEditItem);
     Manager::getIns().setItemPosition(item->getUUID(), QPointF{0, 0});
 }
 
@@ -881,10 +881,10 @@ void MainWindow::on_createOffsetButton_clicked() {
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->createOffsetButton->setChecked(true);
-    if (!EditManager::getIns().currentEditItem) {
+    if (!EditController::getIns().currentEditItem) {
         return;
     }
-    auto item = static_cast < GraphicsItem * > (EditManager::getIns().currentEditItem);
+    auto item = static_cast < GraphicsItem * > (EditController::getIns().currentEditItem);
     Manager::getIns().setItemParallelOffset(item->getUUID(), 20, 6);
 }
 

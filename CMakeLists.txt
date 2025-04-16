@@ -82,7 +82,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
-        header/editmanager.h                                                    src/editmanager.cpp
+        header/editcontroller.h                                                    src/editcontroller.cpp
         header/GraphicsView/rectitem.h header/GraphicsView/rectitem.cpp
     )
 # Define target properties for Android with Qt 6 as:

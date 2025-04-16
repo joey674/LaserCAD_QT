@@ -10,7 +10,7 @@
 #include <QFormLayout>
 #include <QLineEdit>
 #include "utils.hpp"
-#include "editmanager.h"
+#include "editcontroller.h"
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -40,8 +40,10 @@ public:
         QLineEdit* directionVecEdit = new QLineEdit("1, 0");
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(0, 9999);
+        spacingSpin->setValue(100);
         QSpinBox* countSpin = new QSpinBox();
         countSpin->setRange(1, 9999);
+        spacingSpin->setValue(10);
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
         vectorLayout->addRow("Direction (x, y):", directionVecEdit);
         vectorLayout->addRow("Spacing:", spacingSpin);
@@ -52,7 +54,7 @@ public:
             QPointF dir = parseStringToPointF(directionVecEdit->text());
             double spacing = spacingSpin->value();
             int count = countSpin->value();
-            EditManager::getIns().onTabWidgetCopyTabVectorCopy(dir, spacing, count);
+            EditController::getIns().onTabWidgetCopyTabVectorCopy(dir, spacing, count);
         });
         // --- Matrix Copy Layout ---
         QWidget* matrixPage = new QWidget();
@@ -61,12 +63,16 @@ public:
         QLineEdit* verticalVecEdit = new QLineEdit("0, 1");
         QDoubleSpinBox* hSpacingSpin = new QDoubleSpinBox();
         hSpacingSpin->setRange(0, 9999);
+        hSpacingSpin->setValue(100);
         QDoubleSpinBox* vSpacingSpin = new QDoubleSpinBox();
         vSpacingSpin->setRange(0, 9999);
+        vSpacingSpin->setValue(100);
         QSpinBox* hCountSpin = new QSpinBox();
         hCountSpin->setRange(1, 9999);
+        hCountSpin->setValue(10);
         QSpinBox* vCountSpin = new QSpinBox();
         vCountSpin->setRange(1, 9999);
+        vCountSpin->setValue(10);
         QPushButton* matrixConfirmBtn = new QPushButton("Confirm");
         matrixLayout->addRow("Horizontal Vector:", horizontalVecEdit);
         matrixLayout->addRow("Vertical Vector:", verticalVecEdit);
@@ -83,7 +89,7 @@ public:
             double vSpacing = vSpacingSpin->value();
             int hCount = hCountSpin->value();
             int vCount = vCountSpin->value();
-            EditManager::getIns().onTabWidgetCopyTabMatrixCopy(
+            EditController::getIns().onTabWidgetCopyTabMatrixCopy(
                 hVec, vVec, hSpacing, vSpacing, hCount, vCount);
         });
         // 添加两个页面
@@ -115,7 +121,7 @@ public:
         connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
             double offset = spacingSpin->value();
             int offsetNum = countSpin->value();
-            EditManager::getIns ().onTabWidgetOffsetTabParallelOffset(offset, offsetNum);
+            EditController::getIns ().onTabWidgetOffsetTabParallelOffset(offset, offsetNum);
         });
         this->addTab(offsetTab, "Offset");
     }
@@ -152,7 +158,7 @@ public:
             QPointF start(startX->value(), startY->value());
             QPointF end(endX->value(), endY->value());
             double angle = angleSpin->value();
-            EditManager::getIns().onTabWidgetArcGeometryTab(start, end, angle);
+            EditController::getIns().onTabWidgetArcGeometryTab(start, end, angle);
         });
         this->addTab(arcTab, "Arc Geometry");
     }
@@ -171,7 +177,7 @@ public:
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, circleTab, [ = ]() {
             QPointF pt(centerX->value(), centerY->value());
-            EditManager::getIns().onTabWidgetCircleGeometryTab(pt);
+            EditController::getIns().onTabWidgetCircleGeometryTab(pt);
         });
         this->addTab(circleTab, "Circle Geometry");
     }
@@ -197,7 +203,7 @@ public:
         connect(confirmBtn, &QPushButton::clicked, lineTab, [ = ]() {
             QPointF v0(v0x->value(), v0y->value());
             QPointF v1(v1x->value(), v1y->value());
-            EditManager::getIns().onTabWidgetLineGeometryTab(v0, v1);
+            EditController::getIns().onTabWidgetLineGeometryTab(v0, v1);
         });
         this->addTab(lineTab, "Line Geometry");
     }
@@ -216,7 +222,7 @@ public:
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, pointTab, [ = ]() {
             QPointF pt(xSpin->value(), ySpin->value());
-            EditManager::getIns().onTabWidgetPointGeometryTab(pt);
+            EditController::getIns().onTabWidgetPointGeometryTab(pt);
         });
         this->addTab(pointTab, "Point Geometry");
     }

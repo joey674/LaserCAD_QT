@@ -166,7 +166,7 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
 }
 void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
     //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditManager::getIns().setItemsStatus(false,false,false,allItems);
+    //     EditController::getIns().setItemsStatus(false,false,false,allItems);
     //     /// TODO
     //     /// setLayer
     //     if (!this->tmpRect && event == MouseEvent::LeftRelease)
@@ -189,7 +189,7 @@ void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
 }
 void DrawManager::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
     //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditManager::getIns().setItemsStatus(false,true,true,allItems);
+    //     EditController::getIns().setItemsStatus(false,true,true,allItems);
     //     /* center：螺旋的中心点
     //     radius：螺旋的初始半径
     //     spacing：每圈的间距
@@ -241,7 +241,7 @@ void DrawManager::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
 }
 void DrawManager::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
     //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditManager::getIns().setItemsStatus(false,true,true,allItems);
+    //     EditController::getIns().setItemsStatus(false,true,true,allItems);
     //     /// TODO
     //     /// setLayer
     //     if (!this->tmpPolygon && event == MouseEvent::LeftRelease)
@@ -273,7 +273,7 @@ void DrawManager::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
 }
 void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     // auto allItems = Manager::getIns().getItemsByLayer(0);
-    // EditManager::getIns().setItemsStatus(false,true,true,allItems);
+    // EditController::getIns().setItemsStatus(false,true,true,allItems);
     // /// TODO
     // /// setLayer
     // if (!this->tmpEllipse && event == MouseEvent::LeftRelease)

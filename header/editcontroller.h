@@ -1,5 +1,5 @@
-#ifndef EDITMANAGER_H
-#define EDITMANAGER_H
+#ifndef EDITCONTROLLER_H
+#define EDITCONTROLLER_H
 
 #include <QMainWindow>
 #include <QGraphicsScene>
@@ -10,9 +10,9 @@
 #include "manager.h"
 
 
-class EditManager {
+class EditController {
 public:
-    QGraphicsItem *currentEditItem = NULL;
+    GraphicsItem *currentEditItem = NULL;
     /// \brief editItemInScene     所有编辑事件都会传入该函数
     /// \param pointCoordscene event 接收的是鼠标坐标事件
     void editItemInScene(QPointF pointCoordscene, MouseEvent event);
@@ -26,6 +26,7 @@ public:
 /// 类似slot
 public:
     void onSceneSelectionChanged();
+
     void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);
     void onTabWidgetCopyTabMatrixCopy(
         QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
@@ -76,14 +77,27 @@ public:
         Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex0", vertex0);
     }
 
+    /// \brief onGraphicsItemPositionHasChanged 物体位置变换后的操作
+    /// \param uuid
+    void onGraphicsItemPositionHasChanged(UUID uuid);
+    /// \brief onGraphicsItemSelectedHasChanged 物体选中后的操作
+    /// \param uuid
+    void onGraphicsItemSelectedHasChanged(UUID uuid,bool selected);
+    /// \brief onGraphicsItemMouseRelease
+    /// 物体上鼠标release事件
+    void onGraphicsItemMouseRelease(UUID uuid);
+    /// \brief onGraphicsItemMousePress
+    /// 物体上鼠标press事件
+    void  onGraphicsItemMousePress(UUID uuid);
+
 private:
-    static EditManager ins;
-    EditManager() {};
-    EditManager(const EditManager &);
-    ~EditManager() {};
-    EditManager &operator = (const EditManager &);
+    static EditController ins;
+    EditController() {};
+    EditController(const EditController &);
+    ~EditController() {};
+    EditController &operator = (const EditController &);
 public:
-    static EditManager &getIns();
+    static EditController &getIns();
 };
 
-#endif // EDITMANAGER_H
+#endif // EDITCONTROLLER_H

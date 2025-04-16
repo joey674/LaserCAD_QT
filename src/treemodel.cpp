@@ -529,6 +529,17 @@ QModelIndex TreeModel::getIndex(const TreeNode *node) const
     return createIndex(index, 0, node);
 }
 
+QModelIndex TreeModel::getIndex(const UUID uuid) const {
+    auto allNodes = this->getAllChildNodes(QModelIndex());
+    for (auto node : allNodes) {
+        if (node->property(TreeNodePropertyIndex::UUID) == uuid) {
+            auto index = this->getIndex(node);
+            return index;
+        }
+    }
+    return QModelIndex{};
+}
+
 std::vector<TreeNode *> TreeModel::getAllChildNodes(const QModelIndex &nodeIndex) const
 {
     std::vector<TreeNode*> children;
