@@ -33,6 +33,48 @@ public:
         GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
         Manager::getIns().setItemParallelOffset(item->getUUID(), offset, offsetNum);
     }
+    void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+        QVariant vertex0;
+        vertex0.setValue (Vertex{start, 0});
+        QVariant vertex1;
+        vertex1.setValue (Vertex{end, angle});
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex0", vertex0);
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex1", vertex1);
+    }
+    void onTabWidgetLineGeometryTab(QPointF start, QPointF end) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+        QVariant vertex0;
+        vertex0.setValue (Vertex{start, 0});
+        QVariant vertex1;
+        vertex1.setValue (Vertex{end, 0});
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex0", vertex0);
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex1", vertex1);
+    }
+    void onTabWidgetPointGeometryTab(QPointF start) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+        QVariant vertex0;
+        vertex0.setValue (Vertex{start, 0});
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex0", vertex0);
+    }
+    void onTabWidgetCircleGeometryTab(QPointF start) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
+        QVariant vertex0;
+        vertex0.setValue (Vertex{start, 0});
+        Manager::getIns().setItemCustomProperty(item->getUUID(), "Vertex0", vertex0);
+    }
 
 private:
     static EditManager ins;

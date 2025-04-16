@@ -109,9 +109,9 @@ inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap = {
     {PropertyIndex::Movable, QVariant(true)},
     {PropertyIndex::Pen, DISPLAY_PEN},
     {PropertyIndex::Position, QPointF{}},
-    {PropertyIndex::CustomProperty, QMap < QString, QVariant > ()},
     {PropertyIndex::ParallelOffset, 0},
     {PropertyIndex::ParallelOffsetNum, 0},
+    {PropertyIndex::CustomProperty, QMap < QString, QVariant > ()},
 };
 
 inline const QMap < QString, QVariant > DefaultCustomPropertyArc = QMap < QString, QVariant > {
@@ -122,7 +122,11 @@ inline const QMap < QString, QVariant > DefaultCustomPropertyLine = QMap < QStri
     { "Vertex0", QVariant::fromValue(Vertex{}) },
     { "Vertex1", QVariant::fromValue(Vertex{}) }
 };
-
+inline const QMap < QString, QVariant > DefaultCustomPropertyCircle = QMap < QString, QVariant > {
+    { "Radius", 0}
+};
+inline const QMap < QString, QVariant > DefaultCustomPropertyPoint = QMap < QString, QVariant > {
+};
 /*****************************************************************************
  * TreeViewModel
  * TreeNode

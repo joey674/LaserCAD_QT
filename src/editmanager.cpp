@@ -139,6 +139,25 @@ void EditManager::updateTabWidget() {
     }
     UiManager::getIns().UI()->tabWidget->addCopyTab();
     UiManager::getIns().UI()->tabWidget->addOffsetTab();
+    switch (this->currentEditItem->type()) {
+        case GraphicsItemType::Arc:
+            UiManager::getIns().UI()->tabWidget->addArcGeometryTab();
+            break;
+        case GraphicsItemType::Circle:
+            UiManager::getIns().UI()->tabWidget->addCircleGeometryTab();
+            break;
+        case GraphicsItemType::Line:
+            UiManager::getIns().UI()->tabWidget->addLineGeometryTab();
+            break;
+        case GraphicsItemType::Point:
+            UiManager::getIns().UI()->tabWidget->addPointGeometryTab();
+            break;
+        case GraphicsItemType::Polyline:
+            UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab();
+            break;
+        default:
+            break;
+    }
 }
 
 void EditManager::updateTableViewModel() {
@@ -165,7 +184,7 @@ void EditManager::onSceneSelectionChanged() {
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     treeView->selectionModel()->clearSelection();
     if (SceneManager::getIns().scene->selectedItems().size() >= 1) {
-        auto editItemGroup = SceneManager::getIns().scene->selectedItems();
+        const auto & editItemGroup = SceneManager::getIns().scene->selectedItems();
         for (const auto &edititem : editItemGroup) {
             GraphicsItem *item = static_cast < GraphicsItem * > (edititem);
             auto allNodes = model->getAllChildNodes(QModelIndex());
@@ -198,10 +217,8 @@ void EditManager::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int 
         if (!copiedItem) {
             continue;
         }
-        QPointF center = copiedItem->getCenterPos();
-        DEBUG_VAR(center);
         QPointF offset = unitOffset * i;
-        Manager::getIns().setItemPosition(copiedItem->getUUID(), center + offset);
+        Manager::getIns().setItemPosition(copiedItem->getUUID(),  item->getCenterPos() + offset);
     }
 }
 
@@ -235,6 +252,7 @@ void EditManager::onTabWidgetCopyTabMatrixCopy(
         }
     }
 }
+
 
 
 EditManager &EditManager::getIns() {

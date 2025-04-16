@@ -20,7 +20,9 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < CircleItem > (CircleItem(*this));
     }
-public:
+protected:
+    friend class Manager;
+    friend class DrawManager;
     /// 编辑圆心
     bool editVertex(const int index, const QPointF point, const double angle = 0) override {
         if (index > 1) {
@@ -74,10 +76,10 @@ protected:
             cavc::Polyline < double > input;
             auto p1 = m_center.point - QPointF{this->m_radius, 0};
             auto p2 = m_center.point + QPointF{this->m_radius, 0};
-            input.addVertex(p1.x(), p1.y(),  1);
-            input.addVertex(p2.x(), p2.y(), -1);
+            input.addVertex(p1.x(), p1.y(), 1);
+            input.addVertex(p2.x(), p2.y(), 1);
             input.addVertex(p1.x(), p1.y(), 0);
-            input.isClosed() = true;
+            input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
                 this->m_offset
                 * offsetIndex);

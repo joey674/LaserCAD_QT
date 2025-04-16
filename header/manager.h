@@ -15,6 +15,7 @@
 #include "lineitem.h"
 #include "pointitem.h"
 #include "polylineitem.h"
+#include "circleitem.h"
 #include "scenemanager.h"
 
 
@@ -89,6 +90,10 @@ public:
             }
             Vertex vertex = vertexVar.value < Vertex > ();
             Manager::getIns().itemMapFind(uuid)->editVertex(1, vertex.point, vertex.angle);
+        }
+        if (key == "Radius") {
+            auto item = (dynamic_cast < CircleItem * > (Manager::getIns().itemMapFind(uuid).get()));
+            item->editRadius(value.toDouble ());
         }
         // - TreeViewModel中的节点
         // - Scene

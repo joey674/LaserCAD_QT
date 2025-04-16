@@ -85,9 +85,9 @@ protected:
                 getBulgeFromAngle(newAngle, newBulge);
                 input.addVertex(intersectPoint.x(), intersectPoint.y(), newBulge * inputOuputSign);/*再走剩余的角度*/
                 input.addVertex(p2.x(), p2.y(), 0);/*再添加尾部节点*/
-                DEBUG_VAR(intersectPoint.x());
-                DEBUG_VAR(intersectPoint.y());
-                DEBUG_VAR(newAngle);
+                // DEBUG_VAR(intersectPoint.x());
+                // DEBUG_VAR(intersectPoint.y());
+                // DEBUG_VAR(newAngle);
             } else {
                 double bulge = 0;
                 getBulgeFromAngle(angle, bulge);

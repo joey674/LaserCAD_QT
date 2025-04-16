@@ -326,7 +326,7 @@ void MainWindow::initTreeViewModel() {
     ///
     /// \brief model
     ///
-    auto *model = new TreeModel("TreeViewModel", this);
+    auto *model = new TreeModel("Items Browser", this);
     UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
     UiManager::getIns().UI()->treeView->setModel(model);
     UiManager::getIns().UI()->treeView->bindModel();

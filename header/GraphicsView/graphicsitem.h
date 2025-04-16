@@ -22,6 +22,7 @@ public:
 /// 直接修改 控制对象
 /// 这里面所有函数结束都要调用animate
 /// 涉及到属性改变的,都在manager中使用; 不可直接调用
+/// 这里存的vertex以及获得的pos都是真实scene位置; 都已经经过变换, 不用再考虑锚点
 /// ********************
 protected:
     friend class Manager;
@@ -86,9 +87,10 @@ public:
 /// ********************
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 /// ********************
 /// private variable
-/// /// ********************
+/// ********************
 private:
     QString m_uuid;
     QPen m_pen = DISPLAY_PEN;

@@ -41,7 +41,7 @@ public:
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(0, 9999);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(1, 999);
+        countSpin->setRange(1, 9999);
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
         vectorLayout->addRow("Direction (x, y):", directionVecEdit);
         vectorLayout->addRow("Spacing:", spacingSpin);
@@ -64,9 +64,9 @@ public:
         QDoubleSpinBox* vSpacingSpin = new QDoubleSpinBox();
         vSpacingSpin->setRange(0, 9999);
         QSpinBox* hCountSpin = new QSpinBox();
-        hCountSpin->setRange(1, 999);
+        hCountSpin->setRange(1, 9999);
         QSpinBox* vCountSpin = new QSpinBox();
-        vCountSpin->setRange(1, 999);
+        vCountSpin->setRange(1, 9999);
         QPushButton* matrixConfirmBtn = new QPushButton("Confirm");
         matrixLayout->addRow("Horizontal Vector:", horizontalVecEdit);
         matrixLayout->addRow("Vertical Vector:", verticalVecEdit);
@@ -104,7 +104,7 @@ public:
         spacingSpin->setRange(-9999, 9999);
         spacingSpin->setValue(10.0);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(1, 999);
+        countSpin->setRange(1, 9999);
         countSpin->setValue(3);
         QPushButton* confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("Offset:", spacingSpin);
@@ -119,7 +119,109 @@ public:
         });
         this->addTab(offsetTab, "Offset");
     }
-
+    void addArcGeometryTab() {
+        QWidget* arcTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(arcTab);
+        QFormLayout* formLayout = new QFormLayout();
+        // 起点
+        QDoubleSpinBox* startX = new QDoubleSpinBox();
+        startX->setRange(-1e6, 1e6);
+        QDoubleSpinBox* startY = new QDoubleSpinBox();
+        startY->setRange(-1e6, 1e6);
+        // 终点
+        QDoubleSpinBox* endX = new QDoubleSpinBox();
+        endX->setRange(-1e6, 1e6);
+        QDoubleSpinBox* endY = new QDoubleSpinBox();
+        endY->setRange(-1e6, 1e6);
+        // angle
+        QDoubleSpinBox* angleSpin = new QDoubleSpinBox();
+        angleSpin->setRange(-360, 360);
+        angleSpin->setDecimals(5);
+        angleSpin->setValue(0.5);
+        // 按钮
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        // 添加到 form
+        formLayout->addRow("Start X:", startX);
+        formLayout->addRow("Start Y:", startY);
+        formLayout->addRow("End X:", endX);
+        formLayout->addRow("End Y:", endY);
+        formLayout->addRow("Angle:", angleSpin);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+        connect(confirmBtn, &QPushButton::clicked, arcTab, [ = ]() {
+            QPointF start(startX->value(), startY->value());
+            QPointF end(endX->value(), endY->value());
+            double angle = angleSpin->value();
+            EditManager::getIns().onTabWidgetArcGeometryTab(start, end, angle);
+        });
+        this->addTab(arcTab, "Arc Geometry");
+    }
+    void addCircleGeometryTab() {
+        QWidget* circleTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(circleTab);
+        QFormLayout* formLayout = new QFormLayout();
+        QDoubleSpinBox* centerX = new QDoubleSpinBox();
+        centerX->setRange(-1e6, 1e6);
+        QDoubleSpinBox* centerY = new QDoubleSpinBox();
+        centerY->setRange(-1e6, 1e6);
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        formLayout->addRow("Center X:", centerX);
+        formLayout->addRow("Center Y:", centerY);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+        connect(confirmBtn, &QPushButton::clicked, circleTab, [ = ]() {
+            QPointF pt(centerX->value(), centerY->value());
+            EditManager::getIns().onTabWidgetCircleGeometryTab(pt);
+        });
+        this->addTab(circleTab, "Circle Geometry");
+    }
+    void addLineGeometryTab() {
+        QWidget* lineTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(lineTab);
+        QFormLayout* formLayout = new QFormLayout();
+        QDoubleSpinBox* v0x = new QDoubleSpinBox();
+        v0x->setRange(-1e6, 1e6);
+        QDoubleSpinBox* v0y = new QDoubleSpinBox();
+        v0y->setRange(-1e6, 1e6);
+        QDoubleSpinBox* v1x = new QDoubleSpinBox();
+        v1x->setRange(-1e6, 1e6);
+        QDoubleSpinBox* v1y = new QDoubleSpinBox();
+        v1y->setRange(-1e6, 1e6);
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        formLayout->addRow("Vertex0 X:", v0x);
+        formLayout->addRow("Vertex0 Y:", v0y);
+        formLayout->addRow("Vertex1 X:", v1x);
+        formLayout->addRow("Vertex1 Y:", v1y);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+        connect(confirmBtn, &QPushButton::clicked, lineTab, [ = ]() {
+            QPointF v0(v0x->value(), v0y->value());
+            QPointF v1(v1x->value(), v1y->value());
+            EditManager::getIns().onTabWidgetLineGeometryTab(v0, v1);
+        });
+        this->addTab(lineTab, "Line Geometry");
+    }
+    void addPointGeometryTab() {
+        QWidget* pointTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(pointTab);
+        QFormLayout* formLayout = new QFormLayout();
+        QDoubleSpinBox* xSpin = new QDoubleSpinBox();
+        xSpin->setRange(-1e6, 1e6);
+        QDoubleSpinBox* ySpin = new QDoubleSpinBox();
+        ySpin->setRange(-1e6, 1e6);
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        formLayout->addRow("X:", xSpin);
+        formLayout->addRow("Y:", ySpin);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+        connect(confirmBtn, &QPushButton::clicked, pointTab, [ = ]() {
+            QPointF pt(xSpin->value(), ySpin->value());
+            EditManager::getIns().onTabWidgetPointGeometryTab(pt);
+        });
+        this->addTab(pointTab, "Point Geometry");
+    }
+    void addPolylineGeometryTab() {
+    }
 };
 
 #endif // TABWIDGET_H

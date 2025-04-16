@@ -20,13 +20,10 @@ const QPen GraphicsItem::getPen()const {
 }
 
 QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value) {
-    TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
-    // 物体位置变换后的操作
+    // 物体位置变换后的操作 (实时更新; 注意只有table可以实时更新, tab就不要一直更新了 不然很卡)
     if (change == QGraphicsItem::ItemPositionHasChanged) {
-        // Manager::getIns().propertyMapFind(this->getUUID(), PropertyIndex::Position) = this->getCenterPos();
-        // DEBUG_MSG(Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position).toPointF());
+        EditManager::getIns().updateTableViewModel();
         Manager::getIns().setItemPosition (this->getUUID(), this->getCenterPos());
-        model->update();
     }
     // 物体选中后的操作
     if (change == QGraphicsItem::ItemSelectedHasChanged) {
@@ -40,9 +37,7 @@ QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &val
     return QGraphicsItem::itemChange(change, value);
 }
 
-
-
-
-
-
-
+void GraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    EditManager::getIns().updateTabWidget();
+    QGraphicsItem::mouseReleaseEvent(event);
+}
