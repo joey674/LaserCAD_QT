@@ -122,7 +122,7 @@ public:
     void  onMainWindowKeyReleaseEvent(QKeyEvent * event) {
     }
     void  onTreeViewKeyPressEvent(QKeyEvent * event) {
-        DEBUG_MSG("TreeView KeyPress");
+        // DEBUG_MSG("TreeView KeyPress");
         switch(event->key()) {
             case Qt::Key_Control: {
                     KeyboardManager::getIns().IsControlHold = true;

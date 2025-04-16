@@ -17,6 +17,14 @@ public:
             FATAL_MSG("set model before bind");
         }
     }
+    void expandToIndex(const QModelIndex& index) {
+        QModelIndex parent = index.parent();
+        while (parent.isValid()) {
+            this->expand(parent);
+            parent = parent.parent();
+        }
+        this->scrollTo(index, QAbstractItemView::PositionAtCenter);
+    }
 
 protected:
     void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected) override;

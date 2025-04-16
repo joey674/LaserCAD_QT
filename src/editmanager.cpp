@@ -194,6 +194,7 @@ void EditManager::onSceneSelectionChanged() {
                     treeView->selectionModel()->select(index,
                                                        QItemSelectionModel::Select
                                                        | QItemSelectionModel::Rows);
+                    treeView->expandToIndex(index);
                 }
             }
         }

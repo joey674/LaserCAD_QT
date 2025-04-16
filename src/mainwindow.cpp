@@ -992,19 +992,19 @@ void MainWindow::onTreeViewModelNodeClicked() {
         SceneManager::getIns().scene->clearSelection();
     }
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    const auto node =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    QString type = model->nodeProperty(node, TreeNodePropertyIndex::Type).toString();
+    const auto curNode =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    QString type = model->nodeProperty(curNode, TreeNodePropertyIndex::Type).toString();
     if (type == "Layer") {
-        this->selectedLayerIndex = model->getNode(node)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
+        this->selectedLayerIndex = model->getNode(curNode)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
         SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
     } else if (type == "Group") {
-        auto nodeGroup = model->getAllChildNodes(node);
-        for (auto node : nodeGroup) {
-            auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
-            Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
-        }
+        auto nodeGroup = model->getAllChildNodes(curNode);
+        // for (auto node : nodeGroup) {
+        //     auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
+        //     Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
+        // }
     } else if(type == "Item") {
-        UUID uuid = model->nodeProperty(node, TreeNodePropertyIndex::UUID).toString();
+        UUID uuid = model->nodeProperty(curNode, TreeNodePropertyIndex::UUID).toString();
         Manager::getIns().itemMapFind(uuid)->setSelected(true);
     }
 }
