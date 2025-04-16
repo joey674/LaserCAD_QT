@@ -80,64 +80,15 @@ protected:
             return true;
         }
         this->m_offsetItemList.clear();
-        double inputOuputSign = -1;
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input;
-            for (int i = 0; i < this->getVertexCount(); ++i) {
-                auto p1 = m_vertexList[i].point;
-                auto p2 = m_vertexList[(i + 1) % this->getVertexCount()].point;
-                auto angle = m_vertexList[(i + 1) % this->getVertexCount()].angle;
-                // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
-                //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));
-                if (angle > 180.01 || angle < -180.01) {
-                    auto sign = angle > 0 ? 1 : -1;
-                    input.addVertex(p1.x(), p1.y(), sign * inputOuputSign); /*先走180度*/
-                    QPointF intersectPoint = QPointF{};
-                    double newAngle = 0;
-                    double newBulge = 0;
-                    getIntersectPoint(p1, p2, angle, 180, intersectPoint);
-                    newAngle = angle - sign * 180;
-                    getBulgeFromAngle(newAngle, newBulge);
-                    input.addVertex(intersectPoint.x(), intersectPoint.y(), newBulge * inputOuputSign);
-                    // DEBUG_VAR(intersectPoint.x());
-                    // DEBUG_VAR(intersectPoint.y());
-                    // DEBUG_VAR(newAngle);
-                } else {
-                    double bulge = 0;
-                    getBulgeFromAngle(angle, bulge);
-                    input.addVertex(p1.x(), p1.y(), bulge * inputOuputSign);
-                }
-            }
-            input.isClosed() = false;
-            ///********************************************
-            /// DEBUG
-            // for (std::size_t i = 0; i < input.size(); ++i) {
-            //     const auto& v = input[i];
-            //     double x = v.x ();
-            //     double y = v.y ();
-            //     double bulge = v.bulge();
-            //     DEBUG_VAR(QString("V%1: (%2, %3), bulge=%4")
-            //               .arg(i).arg(x).arg(y).arg(bulge));
-            // }
-            /// DEBUG
-            ///********************************************
+            auto input = this->getCavConForm();
+            // input.isClosed() = false;
+            input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
             for (const auto& polyline : results) {
-                auto item = std::make_shared < PolylineItem > ();
-                // item->LineType = LineType::offsetItem;
-                for (size_t i = 0; i < polyline.size(); ++i) {
-                    auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-                    auto newBulge = (i > 0) ?  polyline.vertexes()[i - 1].bulge()
-                                    :   polyline.vertexes()[polyline.size() - 1].bulge();
-                    double newAngle = 0;
-                    getAngleFromBulge(newBulge * inputOuputSign, newAngle);
-                    item->addVertex(newPoint, newAngle);
-                    DEBUG_VAR(newPoint.x());
-                    DEBUG_VAR(newPoint.y());
-                    DEBUG_VAR(newBulge);
-                }
+                auto item = FromCavConForm(polyline);
                 this->m_offsetItemList.push_back(std::move(item));
             }
         }
@@ -169,13 +120,78 @@ protected:
         return true;
     }
 public:
+    cavc::Polyline < double > getCavConForm() const override {
+        cavc::Polyline < double > input;
+        for (int i = 0; i < this->getVertexCount(); ++i) {
+            auto p1 = m_vertexList[i].point;
+            auto p2 = m_vertexList[(i + 1) % this->getVertexCount()].point;
+            auto angle = m_vertexList[(i + 1) % this->getVertexCount()].angle;
+            // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
+            //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));
+            if (angle > 180.01 || angle < -180.01) {
+                auto sign = angle > 0 ? 1 : -1;
+                input.addVertex(p1.x(), p1.y(), sign * (-1)); /*先走180度*/
+                QPointF intersectPoint = QPointF{};
+                double newAngle = 0;
+                double newBulge = 0;
+                getIntersectPoint(p1, p2, angle, 180, intersectPoint);
+                newAngle = angle - sign * 180;
+                getBulgeFromAngle(newAngle, newBulge);
+                input.addVertex(intersectPoint.x(), intersectPoint.y(), newBulge *  (-1));
+                // DEBUG_VAR(intersectPoint.x());
+                // DEBUG_VAR(intersectPoint.y());
+                // DEBUG_VAR(newAngle);
+            } else {
+                double bulge = 0;
+                getBulgeFromAngle(angle, bulge);
+                input.addVertex(p1.x(), p1.y(), bulge *  (-1));
+            }
+        }
+        ///********************************************
+        /// DEBUG
+        // for (std::size_t i = 0; i < input.size(); ++i) {
+        //     const auto& v = input[i];
+        //     double x = v.x ();
+        //     double y = v.y ();
+        //     double bulge = v.bulge();
+        //     DEBUG_VAR(QString("V%1: (%2, %3), bulge=%4")
+        //               .arg(i).arg(x).arg(y).arg(bulge));
+        // }
+        /// DEBUG
+        ///********************************************
+        return input;
+    }
+    std::shared_ptr < PolylineItem > FromCavConForm(cavc::Polyline < double > polyline) {
+        auto item = std::make_shared < PolylineItem > ();
+        // item->LineType = LineType::offsetItem;
+        for (size_t i = 0; i < polyline.size(); ++i) {
+            auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+            auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
+                            : polyline.vertexes()[polyline.size() - 1].bulge();
+            double newAngle = 0;
+            getAngleFromBulge(newBulge * (-1), newAngle);
+            item->addVertex(newPoint, newAngle);
+            // DEBUG_VAR(newPoint.x());
+            // DEBUG_VAR(newPoint.y());
+            // DEBUG_VAR(newBulge);
+        }
+        if (polyline.isClosed()) {
+            auto newPoint = QPointF(polyline.vertexes()[0].x(), polyline.vertexes()[0].y());
+            auto idx = polyline.size() - 1;
+            auto newBulge = polyline.vertexes()[idx].bulge();
+            double newAngle = 0;
+            getAngleFromBulge(newBulge * (-1), newAngle);
+            item->addVertex(newPoint, newAngle);
+        }
+        return item;
+    }
     double getParallelOffset() const override;
     double getParallelOffsetNum() const override;
     Vertex getVertex(const int index) const override;
     QPointF getVertexPos(const int index)const override;
     QPointF getCenterPos() const override;
     QString getName() const override;
-    uint getVertexCount();
+    uint getVertexCount() const;
 public:
     int type() const override {
         return GraphicsItemType::Polyline;

@@ -5,8 +5,6 @@
 
 
 
-
-
 QString GraphicsItem::getName()const {
     return "GraphicsItem";
 }

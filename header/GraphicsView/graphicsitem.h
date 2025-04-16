@@ -9,6 +9,7 @@
 #include "protocol.h"
 #include "logger.h"
 #include "utils.hpp"
+#include <polylineoffset.hpp>
 
 class GraphicsItem: public QGraphicsItem {
 public:
@@ -67,6 +68,12 @@ protected:
 /// 只获取信息
 /// ********************
 public:
+    /// \brief getParallelOffset
+    /// \return
+    virtual cavc::Polyline < double > getCavConForm() const {
+        cavc::Polyline < double > input;
+        return input;
+    };
     virtual double getParallelOffset() const = 0;
     virtual double getParallelOffsetNum() const = 0;
     /// \brief getCenterPos

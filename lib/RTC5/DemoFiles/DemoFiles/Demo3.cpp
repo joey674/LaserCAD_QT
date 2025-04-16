@@ -146,7 +146,6 @@ void __cdecl main( void*, void* )
             {
                 //  In this case load_program_file(0) would not work.
                 ErrorCode = n_load_program_file( DefaultCard, 0 ); //  current working path
-
             }
             else
             {
@@ -155,18 +154,15 @@ void __cdecl main( void*, void* )
                 return;
 
             }
-
             if ( ErrorCode )
             {
                 printf( "No access to card no. %d\n", DefaultCard );
                 terminateDLL();
                 return;
-
             }
             else
             {   //  n_load_program_file was successfull
                 (void) select_rtc( DefaultCard );
-
             }
 
         }
@@ -207,6 +203,7 @@ void __cdecl main( void*, void* )
     //  stop_execution might have created a RTC5_TIMEOUT error
     reset_error( -1 );    //  Clear all previous error codes
 
+    /// ***************************************draw
 	printf( "Archimedean spirals\n\n" );
 
     //  Configure list memory, default: config_list( 4000, 4000 ).

@@ -134,11 +134,9 @@ void EditManager::editPolyline(QPointF pointCoordscene, PolylineItem* item, Mous
 void EditManager::updateTabWidget() {
     UiManager::getIns().UI()->tabWidget->clearAllTabs();
     if (!this->currentEditItem) {
-        WARN_MSG("no current edititem");
+        // WARN_MSG("no current edititem");
         return;
     }
-    UiManager::getIns().UI()->tabWidget->addCopyTab();
-    UiManager::getIns().UI()->tabWidget->addOffsetTab();
     switch (this->currentEditItem->type()) {
         case GraphicsItemType::Arc:
             UiManager::getIns().UI()->tabWidget->addArcGeometryTab();
@@ -158,6 +156,8 @@ void EditManager::updateTabWidget() {
         default:
             break;
     }
+    UiManager::getIns().UI()->tabWidget->addCopyTab();
+    UiManager::getIns().UI()->tabWidget->addOffsetTab();
 }
 
 void EditManager::updateTableViewModel() {
@@ -165,7 +165,7 @@ void EditManager::updateTableViewModel() {
                             UiManager::getIns().UI()->tableView->model());
     model->clear();
     if (!this->currentEditItem) {
-        WARN_MSG("no current edititem");
+        // WARN_MSG("no current edititem");
         return;
     }
     GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
@@ -184,7 +184,8 @@ void EditManager::onSceneSelectionChanged() {
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     treeView->selectionModel()->clearSelection();
     if (SceneManager::getIns().scene->selectedItems().size() >= 1) {
-        const auto & editItemGroup = SceneManager::getIns().scene->selectedItems();
+        const auto &editItemGroup = SceneManager::getIns().scene->selectedItems();
+        int mark = 0;
         for (const auto &edititem : editItemGroup) {
             GraphicsItem *item = static_cast < GraphicsItem * > (edititem);
             auto allNodes = model->getAllChildNodes(QModelIndex());
@@ -194,7 +195,10 @@ void EditManager::onSceneSelectionChanged() {
                     treeView->selectionModel()->select(index,
                                                        QItemSelectionModel::Select
                                                        | QItemSelectionModel::Rows);
-                    treeView->expandToIndex(index);
+                    if (mark == 0) {
+                        treeView->expandToIndex(index);
+                        mark++;
+                    }
                 }
             }
         }

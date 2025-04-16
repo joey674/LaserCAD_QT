@@ -76,8 +76,8 @@ protected:
             cavc::Polyline < double > input;
             auto p1 = m_center.point - QPointF{this->m_radius, 0};
             auto p2 = m_center.point + QPointF{this->m_radius, 0};
-            input.addVertex(p1.x(), p1.y(), 1);
-            input.addVertex(p2.x(), p2.y(), 1);
+            input.addVertex(p1.x(), p1.y(), -1);
+            input.addVertex(p2.x(), p2.y(), -1);
             input.addVertex(p1.x(), p1.y(), 0);
             input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
@@ -94,9 +94,9 @@ protected:
                     double newAngle = 0;
                     getAngleFromBulge(newBulge * inputOuputSign, newAngle);
                     item->addVertex(newPoint, newAngle);
-                    // DEBUG_VAR(newPoint.x());
-                    // DEBUG_VAR(newPoint.y());
-                    // DEBUG_VAR(newBulge);
+                    DEBUG_VAR(newPoint.x());
+                    DEBUG_VAR(newPoint.y());
+                    DEBUG_VAR(newBulge);
                 }
                 this->m_offsetItemList.push_back(std::move(item));
             }

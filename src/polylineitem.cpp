@@ -50,7 +50,7 @@ QString PolylineItem::getName() const {
     return "PolylineItem";
 }
 
-uint PolylineItem::getVertexCount() {
+uint PolylineItem::getVertexCount() const {
     return m_vertexList.size();
 }
 
