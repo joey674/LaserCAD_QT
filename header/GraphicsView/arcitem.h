@@ -9,11 +9,6 @@
 #include "polylineitem.h"
 
 class ArcItem: public GraphicsItem {
-/// ********************
-/// 暂存一些计算变量
-/// 不属于状态，不参与实际更新
-/// 只用于在绘制时提供一些绘制信息
-/// ********************
 public:
     /// 绘制时记录当前第几次点击
     int operateIndex = 0;
@@ -33,8 +28,9 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < ArcItem > (ArcItem(*this));
     }
-
-public:
+protected:
+    friend class Manager;
+    friend class DrawManager;
     bool editVertex(const int index, const QPointF point, const double angle) override {
         if (index > 1 || angle >= 360 || angle <= -360) {
             WARN_VAR(index);
@@ -44,12 +40,6 @@ public:
         QPointF pos = point - this->scenePos();
         this->m_vertexPair[index] = Vertex{pos, angle};
         animate();
-        return true;
-    }
-    bool setParallelOffset(const double offset, const double offsetNum) override {
-        this->m_offset = offset;
-        this->m_offsetNum = offsetNum;
-        this->animate();
         return true;
     }
     bool setCenterPos(const QPointF point) override {
@@ -63,7 +53,13 @@ public:
     bool rotate(const double angle) override { //TODO
         return true;
     }
-public:
+    bool setParallelOffset(const double offset, const double offsetNum) override {
+        this->m_offset = offset;
+        this->m_offsetNum = offsetNum;
+        this->animate();
+        return true;
+    }
+protected:
     bool updateParallelOffset() override {
         if (this->m_offset == 0 || this->m_offsetNum == 0) {
             return true;
@@ -165,18 +161,14 @@ public:
     QString getName() const override {
         return "ArcItem";
     }
-/// ********************
-/// \brief overload
-/// 重载基于QGraphicsitem的一些性质
-/// ********************
-public:
-    enum { Type = ItemTypeId::Arc };
-    int type() const override;
+    int type() const override {
+        return GraphicsItemType::Arc;
+    }
+protected:
     QRectF boundingRect() const override;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-/// ********************
-/// private variable
-/// ********************
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
 private:
     ///
     std::array < Vertex, 2 > m_vertexPair = {Vertex{QPointF{0, 0}, 0}, Vertex{QPointF{0, 0}, 0}};

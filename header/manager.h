@@ -55,6 +55,15 @@ public:
         // - Scene
         Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
     };
+    void setItemParallelOffset(UUID uuid, double offset, double offsetNum) {
+        // - m_itemMap
+        // - m_propertyMap
+        Manager::getIns().propertyMapFind(uuid, PropertyIndex::ParallelOffset) = offset;
+        Manager::getIns().propertyMapFind(uuid, PropertyIndex::ParallelOffsetNum) = offsetNum;
+        // - TreeViewModel中的节点
+        // - Scene
+        Manager::getIns().itemMapFind(uuid)->setParallelOffset(offset, offsetNum);
+    };
     void setItemCustomProperty(UUID uuid, QString key, QVariant value) {
         // - m_propertyMap
         auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::CustomProperty);

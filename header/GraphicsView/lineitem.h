@@ -16,32 +16,31 @@ public:
         // 更新出来paintitem和offsetitem
         this->animate();
     }
-
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < LineItem > (LineItem(*this));
     }
-    /// \brief control
-    /// 直接修改 控制对象
-    /// 这里面所有函数结束都要调用animate
+protected:
+    friend class Manager;
+    friend class DrawManager;
     bool editVertex(const int index, const QPointF point, const double angle = 0) override;
     bool setParallelOffset(const double offset, const double offsetNum) override;
     bool setCenterPos(const QPointF point) override;
     bool rotate(const double angle) override;// TODO
-    /// \brief update
-    /// 更新函数 不能主动调用update；都在animate中调用
+protected:
     bool updateParallelOffset() override;// TODO
     bool updatePaintItem() override;
-    /// \brief get info
-    /// 只获取信息
+public:
     double getParallelOffset() const override;
     double getParallelOffsetNum() const override;
     Vertex getVertex(const int index)const override;
     QPointF getVertexPos(const int index)const override;
     QPointF getCenterPos() const override;
     QString getName() const override;
-    /// \brief reload
-    enum { Type = ItemTypeId::Line };
-    int type() const override;
+public:
+    int type() const override {
+        return GraphicsItemType::Line;
+    }
+protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 private:

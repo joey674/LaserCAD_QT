@@ -33,21 +33,21 @@ Manager &Manager::getIns()
     auto map = DefaultPropertyMap;
     map[PropertyIndex::Position] = ptr->getCenterPos();
     switch (type) {
-    case ItemTypeId::Arc: {
+    case GraphicsItemType::Arc: {
         auto customs = DefaultCustomPropertyArc;
         customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
         customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
         map[PropertyIndex::CustomProperty] = customs;
         break;
     }
-    case ItemTypeId::Line: {
+    case GraphicsItemType::Line: {
         auto customs = DefaultCustomPropertyLine;
         customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
         customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
         map[PropertyIndex::CustomProperty] = customs;
         break;
     }
-    case ItemTypeId::Polyline: {
+    case GraphicsItemType::Polyline: {
         break;
     }
     default:

@@ -869,7 +869,7 @@ void MainWindow::on_centerButton_clicked() {
     }
     //
     GraphicsItem *item = static_cast < GraphicsItem * > (EditManager::getIns().currentEditItem);
-    item->setCenterPos(QPointF{0, 0});
+    Manager::getIns().setItemPosition(item->getUUID(), QPointF{0, 0});
 }
 
 void MainWindow::on_createOffsetButton_clicked() {
@@ -884,20 +884,8 @@ void MainWindow::on_createOffsetButton_clicked() {
     if (!EditManager::getIns().currentEditItem) {
         return;
     }
-    switch (EditManager::getIns().currentEditItem->type()) {
-        case PolylineItem::Type: {
-                PolylineItem *polylineItem = static_cast < PolylineItem * > (EditManager::getIns().currentEditItem);
-                polylineItem->setParallelOffset(20, 6);
-                break;
-            }
-        case ArcItem::Type: {
-                ArcItem *arcItem = static_cast < ArcItem * > (EditManager::getIns().currentEditItem);
-                arcItem->setParallelOffset(20, 6);
-                break;
-            }
-        default:
-            {}
-    }
+    auto item = static_cast < GraphicsItem * > (EditManager::getIns().currentEditItem);
+    Manager::getIns().setItemParallelOffset(item->getUUID(), 20, 6);
 }
 
 void MainWindow::on_deleteButton_clicked() {

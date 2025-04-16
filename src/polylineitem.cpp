@@ -55,11 +55,6 @@ double PolylineItem::getVertexCount() {
 }
 
 
-
-int PolylineItem::type() const {
-    return Type;
-}
-
 QRectF PolylineItem::boundingRect() const {
     if (this->m_paintItemList.empty()) {
         return QRectF();

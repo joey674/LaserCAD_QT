@@ -8,7 +8,7 @@
 
 class CircleItem : public GraphicsItem {
 public:
-    CircleItem();
+    CircleItem() {};
     CircleItem(const CircleItem& other):
         m_center(other.m_center),
         m_radius(other.m_radius),
@@ -20,9 +20,8 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < CircleItem > (CircleItem(*this));
     }
-
 public:
-    /// 编辑圆心以及半径
+    /// 编辑圆心
     bool editVertex(const int index, const QPointF point, const double angle = 0) override {
         if (index > 1) {
             WARN_VAR(index);
@@ -33,6 +32,7 @@ public:
         animate();
         return true;
     }
+    /// 编辑半径
     bool editRadius(const double radius) {
         if (radius < 0) {
             return false;
@@ -48,7 +48,8 @@ public:
         return true;
     }
     bool setCenterPos(const QPointF point) override {
-        DEBUG_MSG("use circle setCenterPos");
+        // DEBUG_MSG("use circle setCenterPos");
+        // DEBUG_VAR(point);
         QPointF currentCenter = this->getCenterPos();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
@@ -59,8 +60,7 @@ public:
         //TODO
         return true;
     }
-
-public:
+protected:
     bool updateParallelOffset() override {
         if (this->m_offset == 0 || this->m_offsetNum == 0) {
             return true;
@@ -115,7 +115,6 @@ public:
         this->m_paintItem->setPen(this->getPen());
         return true;
     }
-
 public:
     double getParallelOffset() const override {
         return this->m_offset;
@@ -139,18 +138,18 @@ public:
     }
     QPointF getCenterPos() const override {
         auto posOffset = this->pos();
-        return this->m_center.point + posOffset;
+        auto centerPos = this->m_center.point + posOffset;
+        // DEBUG_VAR(centerPos);
+        return centerPos;
     }
     QString getName() const override {
         return "CircleItem";
     }
-    /// ********************
-    /// \brief overload
-    /// 重载基于QGraphicsitem的一些性质
-    /// ********************
 public:
-    enum { Type = ItemTypeId::Circle };
-    int type() const override;
+    int type() const override {
+        return GraphicsItemType::Circle;
+    }
+protected:
     QRectF boundingRect() const override;
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
 private:

@@ -32,10 +32,6 @@ void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     }
 }
 
-int ArcItem::type() const {
-    return Type;
-}
-
 QRectF ArcItem::boundingRect() const {
     if (!this->m_paintItem) {
         return QRectF();

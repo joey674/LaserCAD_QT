@@ -14,10 +14,6 @@ void CircleItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-int CircleItem::type() const {
-    return Type;
-}
-
 QRectF CircleItem::boundingRect() const {
     if (!this->m_paintItem) {
         return QRectF();

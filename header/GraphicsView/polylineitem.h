@@ -19,15 +19,10 @@ public:
         // 更新出来paintitem和offsetitem
         this->animate();
     }
-
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < PolylineItem > (PolylineItem(*this));
     }
-/// ********************
-/// \brief control
-/// 直接修改 控制对象
-/// 这里面所有函数结束都要调用animate
-/// ********************
+
 public:
     bool addVertex(const QPointF point, const double angle) {
         Vertex newVertex = {point, angle};
@@ -75,11 +70,7 @@ public:
     bool rotate(const double angle) override {
         return true;
     }
-/// ********************
-/// \brief update
-/// 更新函数 不能主动调用update；都在animate中调用
-/// ********************
-public:
+protected:
     bool updateParallelOffset() override {
         if (m_vertexList.size() < 2) {
             return false;
@@ -169,10 +160,6 @@ public:
         }
         return true;
     }
-/// ********************
-/// \brief get info
-/// 只获取信息
-/// ********************
 public:
     double getParallelOffset() const override;
     double getParallelOffsetNum() const override;
@@ -181,18 +168,16 @@ public:
     QPointF getCenterPos() const override;
     QString getName() const override;
     double getVertexCount();
-/// ********************
-/// \brief overload
-/// 重载基于QGraphicsitem的一些性质
-/// ********************
 public:
-    enum { Type = ItemTypeId::Polyline };
-    int type() const override;
+    int type() const override {
+        return GraphicsItemType::Polyline;
+    }
+
+public:
     QRectF boundingRect() const override;
-    void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override;
-/// ********************
-/// private variable
-/// ********************
+    void paint(QPainter* painter,
+               const QStyleOptionGraphicsItem* option,
+               QWidget* widget) override;
 private:
     ///
     std::vector < Vertex > m_vertexList;

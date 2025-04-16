@@ -46,7 +46,7 @@ enum LineType /*item内部使用 判断当前item是原生对象还是生成的�
     offsetItem,
 };
 
-enum ItemTypeId /* 只用于GraphicsItem重载type变量, 用于识别type 不参与实际使用 */
+enum GraphicsItemType /* 用于识别type */
 {
     Polyline = 6270,
     Arc = 6271,
@@ -99,6 +99,8 @@ enum PropertyIndex {
     Movable,
     Pen,
     Position,
+    ParallelOffset,
+    ParallelOffsetNum,
     CustomProperty
 };
 inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap = {
@@ -108,6 +110,8 @@ inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap = {
     {PropertyIndex::Pen, DISPLAY_PEN},
     {PropertyIndex::Position, QPointF{}},
     {PropertyIndex::CustomProperty, QMap < QString, QVariant > ()},
+    {PropertyIndex::ParallelOffset, 0},
+    {PropertyIndex::ParallelOffsetNum, 0},
 };
 
 inline const QMap < QString, QVariant > DefaultCustomPropertyArc = QMap < QString, QVariant > {

@@ -19,17 +19,17 @@ void EditManager::editItemInScene(QPointF pointCoordscene, MouseEvent event) {
     if (this->currentEditItem) {
         // 处理scene中编辑
         switch (this->currentEditItem->type()) {
-            case ItemTypeId::Polyline: {
+            case GraphicsItemType::Polyline: {
                     PolylineItem *item = static_cast < PolylineItem * > (this->currentEditItem);
                     this->editPolyline(pointCoordscene, item, event);
                     break;
                 }
-            case ItemTypeId::Arc: {
+            case GraphicsItemType::Arc: {
                     ArcItem *item = static_cast < ArcItem * > (this->currentEditItem);
                     this->editArc(pointCoordscene, item, event);
                     break;
                 }
-            case ItemTypeId::Line: {
+            case GraphicsItemType::Line: {
                     break;
                 }
                 // TODO
@@ -199,8 +199,9 @@ void EditManager::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int 
             continue;
         }
         QPointF center = copiedItem->getCenterPos();
+        DEBUG_VAR(center);
         QPointF offset = unitOffset * i;
-        copiedItem->setCenterPos(center + offset);
+        Manager::getIns().setItemPosition(copiedItem->getUUID(), center + offset);
     }
 }
 
@@ -230,7 +231,7 @@ void EditManager::onTabWidgetCopyTabMatrixCopy(
             }
             // 设置新位置
             QPointF offset = hOffset * col + vOffset * row;
-            copiedItem->setCenterPos(origin + offset);
+            Manager::getIns().setItemPosition(copiedItem->getUUID(), origin + offset);
         }
     }
 }

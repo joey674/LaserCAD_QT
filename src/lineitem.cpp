@@ -102,11 +102,6 @@ QString LineItem::getName()const {
 }
 
 
-
-int LineItem::type() const {
-    return Type;
-}
-
 QRectF LineItem::boundingRect() const {
     if (!this->m_paintItem) {
         return QRectF();

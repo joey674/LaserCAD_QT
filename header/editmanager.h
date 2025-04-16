@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "arcitem.h"
 #include "polylineitem.h"
+#include "manager.h"
 
 
 class EditManager {
@@ -25,12 +26,12 @@ public:
 /// 类似slot
 public:
     void onSceneSelectionChanged();
-    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);;
+    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);
     void onTabWidgetCopyTabMatrixCopy(
         QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
     void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
         GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
-        item->setParallelOffset(offset, offsetNum);
+        Manager::getIns().setItemParallelOffset(item->getUUID(), offset, offsetNum);
     }
 
 private:

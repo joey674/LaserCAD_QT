@@ -23,8 +23,9 @@ QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &val
     TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
     // 物体位置变换后的操作
     if (change == QGraphicsItem::ItemPositionHasChanged) {
-        Manager::getIns().propertyMapFind(this->getUUID(), PropertyIndex::Position) = this->getCenterPos();
+        // Manager::getIns().propertyMapFind(this->getUUID(), PropertyIndex::Position) = this->getCenterPos();
         // DEBUG_MSG(Manager::getIns().propertyMapFind(this->getUUID(),PropertyIndex::Position).toPointF());
+        Manager::getIns().setItemPosition (this->getUUID(), this->getCenterPos());
         model->update();
     }
     // 物体选中后的操作

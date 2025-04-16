@@ -21,35 +21,35 @@ public:
 /// \brief control
 /// 直接修改 控制对象
 /// 这里面所有函数结束都要调用animate
+/// 涉及到属性改变的,都在manager中使用; 不可直接调用
 /// ********************
-public:
+protected:
+    friend class Manager;
+    friend class DrawManager;
     /// \brief editVertex
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
     virtual bool editVertex(const int index, const QPointF point, const double angle) = 0;
-    /// \brief setParallelOffset
-    /// \param offset
-    virtual bool setParallelOffset(const double offset, const double offsetNum) = 0;
     /// \brief setCenterPos
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
     virtual bool setCenterPos(const QPointF point) = 0;
+    /// \brief setParallelOffset
+    /// \param offset
+    virtual bool setParallelOffset(const double offset, const double offsetNum) = 0;
     /// \brief rotate
     /// \param angle
     virtual bool rotate(const double angle) = 0;
     /// \brief setPen
     /// \param
-protected:
-    friend class Manager;
-    friend class DrawManager;
     bool setPen(QPen setPen) {
         this->m_pen = setPen;
         this->animate();
         return true;
     };
-    /// ********************
+/// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
-public:
+protected:
     virtual bool updateParallelOffset() = 0;
     virtual bool updatePaintItem() = 0;
     virtual bool animate() {
@@ -84,7 +84,7 @@ public:
 /// \brief overload
 /// 重载基于QGraphicsitem的一些性质
 /// ********************
-public:
+protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 /// ********************
 /// private variable
