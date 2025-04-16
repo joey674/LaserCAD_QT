@@ -8,6 +8,31 @@ PolylineItem::PolylineItem() {
     // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
+bool PolylineItem::updateParallelOffset() {
+    if (m_vertexList.size() < 2) {
+        return false;
+    }
+    if (this->m_offset == 0) {
+        return true;
+    }
+    this->m_offsetItemList.clear();
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+        // 输入cavc库
+        auto input = this->getCavConForm();
+        input.isClosed() = false;
+        // input.isClosed() = true;
+        std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
+            this->m_offset
+            * offsetIndex);
+        // 获取结果
+        for (const auto &polyline : results) {
+            auto item = FromCavConForm(polyline);
+            this->m_offsetItemList.push_back(std::move(item));
+        }
+    }
+    return true;
+}
+
 double PolylineItem::getParallelOffset()const {
     return this->m_offset;
 }
@@ -102,4 +127,29 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     for (auto& item : this->m_offsetItemList) {
         item->paint(painter, &optionx, widget);
     }
+}
+
+std::shared_ptr < PolylineItem > FromCavConForm(cavc::Polyline < double > polyline) {
+    auto item = std::make_shared < PolylineItem > ();
+    // item->LineType = LineType::offsetItem;
+    for (size_t i = 0; i < polyline.size(); ++i) {
+        auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+        auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
+                        : polyline.vertexes()[polyline.size() - 1].bulge();
+        double newAngle = 0;
+        getAngleFromBulge(newBulge * (-1), newAngle);
+        item->addVertex(newPoint, newAngle);
+        // DEBUG_VAR(newPoint.x());
+        // DEBUG_VAR(newPoint.y());
+        // DEBUG_VAR(newBulge);
+    }
+    if (polyline.isClosed()) {
+        auto newPoint = QPointF(polyline.vertexes()[0].x(), polyline.vertexes()[0].y());
+        auto idx = polyline.size() - 1;
+        auto newBulge = polyline.vertexes()[idx].bulge();
+        double newAngle = 0;
+        getAngleFromBulge(newBulge * (-1), newAngle);
+        item->addVertex(newPoint, newAngle);
+    }
+    return item;
 }

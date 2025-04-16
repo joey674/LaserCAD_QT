@@ -3,6 +3,7 @@
 
 #include "protocol.h"
 #include "graphicsitem.h"
+#include "polylineitem.h"
 
 class LineItem: public GraphicsItem {
 public:
@@ -30,6 +31,7 @@ protected:
     bool updateParallelOffset() override;// TODO
     bool updatePaintItem() override;
 public:
+    cavc::Polyline < double > getCavConForm() const override;
     double getParallelOffset() const override;
     double getParallelOffsetNum() const override;
     Vertex getVertex(const int index)const override;
@@ -50,7 +52,7 @@ private:
     ///
     double m_offset  = 0;
     int m_offsetNum = 0;
-    std::vector < std::shared_ptr < LineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 
 #endif // LINEITEM_H

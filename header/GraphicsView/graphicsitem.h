@@ -70,10 +70,7 @@ protected:
 public:
     /// \brief getParallelOffset
     /// \return
-    virtual cavc::Polyline < double > getCavConForm() const {
-        cavc::Polyline < double > input;
-        return input;
-    };
+    virtual cavc::Polyline < double > getCavConForm() const = 0;
     virtual double getParallelOffset() const = 0;
     virtual double getParallelOffsetNum() const = 0;
     /// \brief getCenterPos

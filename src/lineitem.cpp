@@ -34,37 +34,21 @@ bool LineItem::rotate(const double angle) {
 }
 
 bool LineItem::updateParallelOffset() {
-    // if (this->m_offset == 0) return;
-    // this->m_offsetItemList.clear();
-    // qDebug() << "update offset";
-    // for (int offsetIndex = 1;offsetIndex <= this->m_offsetNum; offsetIndex++)
-    // {
-    //     cavc::Polyline<double> input;
-    //     input.addVertex(
-    //         this->m_vertexPair[0].point.x(),
-    //         this->m_vertexPair[0].point.y(),
-    //             this->m_vertexPair[1].angle
-    //         );
-    //     input.addVertex(
-    //         this->m_vertexPair[1].point.x(),
-    //         this->m_vertexPair[1].point.y(),
-    //         this->m_vertexPair[0].angle
-    //         );
-    //     input.isClosed() = false;
-    //     std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
-    //     for (const auto& polyline : results) {
-    //         auto item = std::make_shared<ArcItem>();
-    //         item->LineType = LineType::offsetItem;
-    //         for (size_t i = 0; i < 2; ++i) {
-    //             auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-    //             auto newangle = (i > 0) ?  polyline.vertexes()[i-1].angle()
-    //                                     :   polyline.vertexes()[polyline.size()-1].angle();
-    //             // qDebug() << " add vertex " << i << ":" << newPoint << newangle ;
-    //             item->editVertex(i,newPoint,newangle);
-    //         }
-    //         this->m_offsetItemList.push_back(std::move(item));
-    //     }
-    // }
+    if (this->m_offset == 0 || this->m_offsetNum == 0) {
+        return true;
+    }
+    this->m_offsetItemList.clear();
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+        // 输入cavc库
+        cavc::Polyline < double > input = this->getCavConForm();
+        input.isClosed() = false;
+        std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
+        // 获取结果
+        for (const auto& polyline : results) {
+            auto item = FromCavConForm(polyline);
+            this->m_offsetItemList.push_back(std::move(item));
+        }
+    }
     return true;
 }
 
@@ -78,6 +62,16 @@ bool LineItem::updatePaintItem() {
                         );
     this->m_paintItem->setPen(this->getPen());
     return true;
+}
+
+cavc::Polyline < double > LineItem::getCavConForm() const {
+    // 输入cavc库
+    cavc::Polyline < double > input;
+    auto p1 = m_vertexPair[0].point;
+    auto p2 = m_vertexPair[1].point;
+    input.addVertex(p1.x(), p1.y(), 0);
+    input.addVertex(p2.x(), p2.y(), 0);
+    return input;
 }
 
 double LineItem::getParallelOffset()const {

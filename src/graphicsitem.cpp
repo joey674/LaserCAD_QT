@@ -39,3 +39,4 @@ void GraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     EditManager::getIns().updateTabWidget();
     QGraphicsItem::mouseReleaseEvent(event);
 }
+
