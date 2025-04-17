@@ -14,10 +14,10 @@ class EditController {
 /// \brief m_currentEditItem
 /// m_currentEditItemGroup
 public:
-    GraphicsItem *m_currentEditItem = NULL;
-    std::vector < GraphicsItem * > m_currentEditItemGroup = std::vector < GraphicsItem * > ();
-/// \brief editItemInScene     scene中的编辑事件会传入
-/// \param pointCoordscene event 接收的是鼠标坐标事件
+    std::vector<std::shared_ptr<GraphicsItem> > m_currentEditItemGroup
+        = std::vector<std::shared_ptr<GraphicsItem> >();
+    /// \brief editItemInScene     scene中的编辑事件会传入
+    /// \param pointCoordscene event 接收的是鼠标坐标事件
 public:
     void editItemInScene(QPointF pointCoordscene, MouseEvent event);
     int currentEditPolylineVertexIndex = -1;
@@ -32,71 +32,120 @@ public:
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget的回调
     void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->m_currentEditItem);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
         QPointF unitOffset = dir * spacing;
         for (int i = 1; i <= count; ++i) {
-            auto uuid = Manager::getIns().copyItem(item->getUUID());
+            auto uuid = Manager::getIns().copyItem(curEditItem->getUUID());
             auto copiedItem = Manager::getIns().itemMapFind(uuid);
             if (!copiedItem) {
                 continue;
             }
             QPointF offset = unitOffset * i;
-            // Manager::getIns().setItemPosition(copiedItem->getUUID(),  item->getCenterPos() + offset);
-            copiedItem->setCenterPos(item->getCenterPos() + offset);
+            copiedItem->setCenterPos(curEditItem->getCenterPos() + offset);
         }
     }
     void onTabWidgetCopyTabMatrixCopy(
-        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
+        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount)
+    {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        QPointF hOffset = hVec * hSpacing;
+        QPointF vOffset = vVec * vSpacing;
+        QPointF origin = curEditItem->getCenterPos();
+        for (int row = 0; row < vCount; ++row) {
+            for (int col = 0; col < hCount; ++col) {
+                if (row == 0 && col == 0) {
+                    continue;
+                }
+                auto uuid = Manager::getIns().copyItem(curEditItem->getUUID());
+                auto copiedItem = Manager::getIns().itemMapFind(uuid);
+                if (!copiedItem) {
+                    continue;
+                }
+                QPointF offset = hOffset * col + vOffset * row;
+                copiedItem->setCenterPos(origin + offset);
+            }
+        }
+    }
     void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->m_currentEditItem);
-        Manager::getIns().setItemParallelOffset(item->getUUID(), offset, offsetNum);
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        Manager::getIns().setItemParallelOffset(curEditItem->getUUID(), offset, offsetNum);
         this->updateTableViewModel();
     }
     void onTabWidgetMarkParamsTab(MarkParams params) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        this->m_currentEditItem->setMarkParams(params);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->setMarkParams(params);
         this->updateTableViewModel();
     }
     void onTabWidgetDelayParamsTab(DelayParams params) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        this->m_currentEditItem->setDelayParams(params);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->setDelayParams(params);
         this->updateTableViewModel();
     }
     void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        this->m_currentEditItem->editVertex(0, start, 0);
-        this->m_currentEditItem->editVertex(1, end, angle);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->editVertex(0, start, 0);
+        curEditItem->editVertex(1, end, angle);
         this->updateTableViewModel();
     }
     void onTabWidgetLineGeometryTab(QPointF start, QPointF end) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        this->m_currentEditItem->editVertex(0, start, 0);
-        this->m_currentEditItem->editVertex(1, end, 0);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->editVertex(0, start, 0);
+        curEditItem->editVertex(1, end, 0);
         this->updateTableViewModel();
     }
     void onTabWidgetPointGeometryTab(QPointF pos) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        this->m_currentEditItem->editVertex(0, pos, 0);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->editVertex(0, pos, 0);
         this->updateTableViewModel();
     }
     void onTabWidgetCircleGeometryTab(QPointF pos, double radius) {
-        if (!this->m_currentEditItem) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        CircleItem *item = static_cast < CircleItem * > (this->m_currentEditItem);
+        auto curEditItem = this->m_currentEditItemGroup[0];
+        //
+        CircleItem *item = static_cast<CircleItem *>(curEditItem.get());
         item->editVertex(0, pos, 0);
         item->editRadius (radius);
         this->updateTableViewModel();
@@ -107,7 +156,7 @@ public:
         }
         DEBUG_MSG(m_currentEditItemGroup.size());
         for (size_t i = 0; i < m_currentEditItemGroup.size(); ++i) {
-            GraphicsItem* item = m_currentEditItemGroup[i];
+            auto item = m_currentEditItemGroup[i];
             MarkParams mark = item->getMarkParams();
             DelayParams delay = item->getDelayParams();
             QPointF pos = item->getCenterPos ();
@@ -150,47 +199,35 @@ public:
         }
     }
 
-    /// \brief onSceneSelectionChanged
-    /// Scene的整体变动回调; 会执行一些需要全局状态管理的操作
-    void onSceneSelectionChanged() {
-        // 先全部重置
-        this->m_currentEditItem = nullptr;
-        this->m_currentEditItemGroup.clear();
-        auto selectedItems = SceneManager::getIns().scene->selectedItems();
-        // selectedItems个数为1时设置为当前编辑对象
-        if (selectedItems.size() == 1) {
-            auto qtItem = selectedItems.at(0);
-            this->m_currentEditItem = static_cast < GraphicsItem * > (qtItem);
-        } else if(selectedItems.size() > 1) {
-            for (int i = 0; i < selectedItems.size(); ++i) {
-                auto *qtItem  = selectedItems.at(i);
-                auto * item = static_cast < GraphicsItem * > (qtItem);
-                this->m_currentEditItemGroup.push_back(item);
-            }
-        }
-        // 更新tabwidget
-        updateTabWidget();
-        // 更新tablemodel
-        updateTableViewModel();
-    }
     /// \brief onTreeViewModelClicked
     /// \param index
-    void onTreeViewModelClicked(const QModelIndex & index);
+    void onTreeViewModelClicked(const QModelIndex &index) {}
+    /// \brief onTreeViewModelSelectionChanged
+    ///
+    /// TODO 重构 选中不是按照顺序
     void onTreeViewModelSelectionChanged(const QItemSelection &selected,
                                          const QItemSelection &deselected);
 
-    /// \brief onGraphicsItemPositionHasChanged 物体位置变换后的操作
-    /// \param uuid
-    void onGraphicsItemPositionHasChanged(UUID uuid);
-    /// \brief onGraphicsItemSelectedHasChanged 物体选中后的操作
-    /// \param uuid
+    /// \brief onSceneSelectionChanged
+    /// Scene的整体变动回调; 全局的管控
+    /// TODO 重构 选中不是按照顺序
+    void onSceneSelectionChanged() {}
+    /// \brief onGraphicsItemPositionHasChanged
+    /// 单个物体位置变换后的回调
+    void onGraphicsItemPositionHasChanged(UUID uuid) { this->updateTableViewModel(); }
+    /// \brief onGraphicsItemSelectedHasChanged
+    /// 单个物体选中状态变化的回调; selected状态可以重叠, 当tree中选中令scene中选中时, scene中的选中回调也会让tree选中; 但是不会触发selectedChanged;
     void onGraphicsItemSelectedHasChanged(UUID uuid, bool selected);
     /// \brief onGraphicsItemMouseRelease
-    /// 物体上鼠标release事件
-    void onGraphicsItemMouseRelease(UUID uuid);
+    /// 物体上鼠标release事件; 更新一次tabWidget(尽量不实时更新 减少开销)
+    void onGraphicsItemMouseRelease(UUID uuid)
+    {
+        // this->updateTableViewModel();
+        this->updateTabWidget();
+    }
     /// \brief onGraphicsItemMousePress
     /// 物体上鼠标press事件
-    void  onGraphicsItemMousePress(UUID uuid);
+    void onGraphicsItemMousePress(UUID uuid) {}
 
 private:
     static EditController ins;

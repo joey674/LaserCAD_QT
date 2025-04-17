@@ -412,7 +412,6 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     // 禁止鼠标左右键同时拖拽
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
         DrawManager::getIns().resetTmpItemStatus();
-        EditController::getIns().m_currentEditItem = NULL;
         EditController::getIns().m_currentEditItemGroup.clear ();
         auto allItems = Manager::getIns().getItemsByLayer(0);
         SceneManager::getIns().scene->clearSelection();
@@ -818,7 +817,6 @@ void MainWindow::on_editButton_clicked() {
     // tool status
     SceneManager::getIns().currentOperationEvent = OperationEvent::EditProperty;
     DrawManager::getIns().resetTmpItemStatus();
-    EditController::getIns().m_currentEditItem = NULL;
     EditController::getIns().m_currentEditItemGroup.clear();
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -877,29 +875,31 @@ void MainWindow::on_centerButton_clicked() {
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->centerButton->setChecked(true);
-    if (!EditController::getIns().m_currentEditItem) {
+    //
+    if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
         return;
     }
+    auto curEditItem = EditController::getIns().m_currentEditItemGroup[0];
     //
-    GraphicsItem *item = static_cast < GraphicsItem * > (EditController::getIns().m_currentEditItem);
-    // Manager::getIns().setItemPosition(item->getUUID(), QPointF{0, 0});
-    item->setCenterPos(QPointF{0, 0});
+    curEditItem->setCenterPos(QPointF{0, 0});
 }
 
 void MainWindow::on_createOffsetButton_clicked() {
-    // 设置鼠标光标
-    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
-    SceneManager::getIns().currentOperationEvent = OperationEvent::None;
-    DrawManager::getIns().resetTmpItemStatus();
-    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-    UiManager::getIns().setAllDrawButtonChecked(false);
-    UiManager::getIns().setAllToolButtonChecked(false);
-    UiManager::getIns().UI()->createOffsetButton->setChecked(true);
-    if (!EditController::getIns().m_currentEditItem) {
-        return;
-    }
-    auto item = static_cast < GraphicsItem * > (EditController::getIns().m_currentEditItem);
-    Manager::getIns().setItemParallelOffset(item->getUUID(), 20, 6);
+    // // 设置鼠标光标
+    // UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
+    // SceneManager::getIns().currentOperationEvent = OperationEvent::None;
+    // DrawManager::getIns().resetTmpItemStatus();
+    // UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
+    // UiManager::getIns().setAllDrawButtonChecked(false);
+    // UiManager::getIns().setAllToolButtonChecked(false);
+    // UiManager::getIns().UI()->createOffsetButton->setChecked(true);
+    // //
+    // if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
+    //     return;
+    // }
+    // auto curEditItem = EditController::getIns().m_currentEditItemGroup[0];
+    // //
+    // Manager::getIns().setItemParallelOffset(item->getUUID(), 20, 6);
 }
 
 void MainWindow::on_deleteButton_clicked() {
@@ -911,20 +911,19 @@ void MainWindow::on_deleteButton_clicked() {
     UiManager::getIns().setAllDrawButtonChecked(false);
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->deleteButton->setChecked(true);
-    QList < QGraphicsItem * > selectedItems = SceneManager::getIns().scene->selectedItems();
-    if (selectedItems.empty()) {
+    //
+    if (EditController::getIns().m_currentEditItemGroup.empty()) {
         return;
     }
-    for (auto it = selectedItems.cbegin(); it != selectedItems.cend(); ++it) {
-        QGraphicsItem* graphicsItem = *it;
-        GraphicsItem* laserItem = dynamic_cast < GraphicsItem * > (graphicsItem);
+    // 在manager中删除
+    for (auto it = EditController::getIns().m_currentEditItemGroup.cbegin();
+         it != EditController::getIns().m_currentEditItemGroup.cend();
+         ++it) {
         // TODO 注意 这里不用删除scene; 会自动处理掉
-        // SceneManager::getIns().scene ->removeItem(graphicsItem);
-        if(!laserItem) {
-            FATAL_MSG("fail pointer convertion");
-        }
-        Manager::getIns().deleteItem(laserItem->getUUID());
+        Manager::getIns().deleteItem((*it)->getUUID());
     }
+    // 清除editController中的编辑列表
+    EditController::getIns().m_currentEditItemGroup.clear();
 }
 
 void MainWindow::on_undoButton_clicked() {

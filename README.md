@@ -20,6 +20,7 @@ https://bo7zwj4hof.larksuite.com/docx/S4YudowaZowtVMxJ7Goua4irsJg?from=from_copy
 - color scheme: style/.xml
 - font: Arial Rounded MT
 - off (visualize indent)
+- preferences->C++->formattingMode=FullFormating&&format at save;
 
 ## 命名
 - 普通成员函数:          

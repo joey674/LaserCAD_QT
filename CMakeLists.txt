@@ -87,6 +87,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsView/ellipseitem.h header/GraphicsView/ellipseitem.cpp
         header/GraphicsView/spiralitem.h header/GraphicsView/spiralitem.cpp
         header/GraphicsView/polygonitem.h header/GraphicsView/polygonitem.cpp
+        style/format
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
