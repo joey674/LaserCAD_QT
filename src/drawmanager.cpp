@@ -152,7 +152,7 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         }
         this->tmpCircle = std::make_shared < CircleItem > ();
         this->tmpCircle->editVertex(0, pointCoordscene);
-        this->tmpCircle->setPen(QPen(Qt::black, 1));
+        this->tmpCircle->setPen(EDIT_PEN);
         /// TODO
         /// setLayer
         SceneManager::getIns().scene->addItem(this->tmpCircle.get());
@@ -165,28 +165,25 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         Manager::getIns().addItem(std::move(this->tmpCircle));
     }
 }
+
 void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
-    //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditController::getIns().setItemsStatus(false,false,false,allItems);
-    //     /// TODO
-    //     /// setLayer
-    //     if (!this->tmpRect && event == MouseEvent::LeftRelease)
-    //     {
-    //         this->tmpRect = std::make_shared<QGraphicsRectItem>(pointCoordscene.x(), pointCoordscene.y(),0,0);
-    //         this->tmpRect->setPen(QPen(Qt::black, 1));
-    //         SceneManager::getIns().scene->addItem(this->tmpRect.get());
-    //     }
-    //     else if  (this->tmpRect && event == MouseEvent::MouseMove)
-    //     {
-    //         qreal width = pointCoordscene.x() - this->tmpRect->rect().topLeft().x();
-    //         qreal height = pointCoordscene.y() - this->tmpRect->rect().topLeft().y();
-    //         QRectF newRect(this->tmpRect->rect().topLeft().x(),this->tmpRect->rect().topLeft().y(),width,height);
-    //         this->tmpRect->setRect(newRect);
-    //     }
-    //     else if (this->tmpRect && event == MouseEvent::LeftRelease) {
-    //         this->tmpRect->setTransformOriginPoint(this->tmpRect->rect().center());
-    //             // Manager::getIns().addItem(std::move(this->tmpRect));
-    //     }
+    if (!this->tmpRect && event == MouseEvent::LeftPress) {
+        auto allItems = Manager::getIns().getItemsByLayer(0);
+        for (const auto &item : allItems) {
+            Manager::getIns().setItemSelectable(item, false);
+            Manager::getIns().setItemMovable(item, false);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
+        }
+        this->tmpRect = std::make_shared < RectItem > ();
+        this->tmpRect->setPen(EDIT_PEN);
+        SceneManager::getIns().scene->addItem(this->tmpRect.get());
+        this->tmpRect->editVertex(0, pointCoordscene);
+        this->tmpRect->editVertex(1, pointCoordscene);
+    } else if  (this->tmpRect && event == MouseEvent::MouseMove) {
+        this->tmpRect->editVertex (1, pointCoordscene);
+    } else if (this->tmpRect && event == MouseEvent::LeftPress) {
+        Manager::getIns().addItem(std::move(this->tmpRect));
+    }
 }
 void DrawManager::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
     //     auto allItems = Manager::getIns().getItemsByLayer(0);

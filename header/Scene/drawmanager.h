@@ -9,6 +9,7 @@
 #include "lineitem.h"
 #include "pointitem.h"
 #include "circleitem.h"
+#include "rectitem.h"
 #include "protocol.h"
 
 
@@ -22,7 +23,7 @@ public:
     std::shared_ptr < LineItem > tmpLine;
     std::shared_ptr < PointItem > tmpPoint;
     std::shared_ptr < CircleItem > tmpCircle;
-    std::shared_ptr < QGraphicsRectItem > tmpRect;
+    std::shared_ptr < RectItem > tmpRect;
     std::shared_ptr < QGraphicsPathItem > tmpSpiral;
     std::shared_ptr < QGraphicsPolygonItem > tmpPolygon;
     std::shared_ptr < QGraphicsEllipseItem > tmpEllipse;

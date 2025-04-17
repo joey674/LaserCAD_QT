@@ -362,8 +362,8 @@ void MainWindow::initTableViewModel() {
     UiManager::getIns().UI()->tableView->verticalHeader()->setVisible(false);
     UiManager::getIns().UI()->tableView->setAlternatingRowColors(true);
     UiManager::getIns().UI()->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    UiManager::getIns().UI()->tableView->setColumnWidth(0, 195);
-    UiManager::getIns().UI()->tableView->setColumnWidth(1, 195);
+    UiManager::getIns().UI()->tableView->setColumnWidth(0, 190);
+    UiManager::getIns().UI()->tableView->setColumnWidth(1, 190);
 }
 
 void MainWindow::initTabWidget() {
