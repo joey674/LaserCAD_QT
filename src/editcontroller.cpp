@@ -186,6 +186,7 @@ void EditController::onSceneSelectionChanged() {
     }
     // 多选时
     else {
+        this->currentEditItem = nullptr;
     }
     // 更新tabwidget
     updateTabWidget();
@@ -243,6 +244,45 @@ void EditController::onTabWidgetCopyTabMatrixCopy(
     }
 }
 
+void EditController::onTreeViewModelClicked(const QModelIndex &index) {}
+
+void EditController::onTreeViewModelSelectionChanged(const QItemSelection &selected,
+        const QItemSelection &deselected) {
+    // 处理选中的节点
+    for (const QModelIndex &idx : selected.indexes()) {
+        TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+        QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
+        if (type == "Layer") {
+            SceneManager::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
+        } else if (type == "Group") {
+            auto nodeGroup = model->getAllChildNodes(idx);
+            for (auto node : nodeGroup) {
+                auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
+                Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
+            }
+        } else if(type == "Item") {
+            UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
+            Manager::getIns().itemMapFind(uuid)->setSelected(true);
+        }
+    }
+    // 处理取消选中的节点
+    for (const QModelIndex &idx : deselected.indexes()) {
+        TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+        QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
+        if (type == "Layer") {
+        } else if (type == "Group") {
+            auto nodeGroup = model->getAllChildNodes(idx);
+            for (auto node : nodeGroup) {
+                auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
+                Manager::getIns().itemMapFind(nodeUuid)->setSelected(false);
+            }
+        } else if(type == "Item") {
+            UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
+            Manager::getIns().itemMapFind(uuid)->setSelected(false);
+        }
+    }
+}
+
 void EditController::onGraphicsItemPositionHasChanged(UUID uuid) {
 }
 
@@ -250,14 +290,19 @@ void EditController::onGraphicsItemPositionHasChanged(UUID uuid) {
 /// \brief EditController::onGraphicsItemSelectedHasChanged
 /// \param uuid
 /// \param selected
-/// 只在取消选中时使用; 选中事件和点击事件独立,
-/// 在两个widget里都是点击触发两个widget内选中, 不是选中触发相互选中
 ///
 void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) {
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
-    if (!selected) {
+    // 设置显示
+    if (selected) {
+        Manager::getIns().itemMapFind(uuid)->setPen(EDIT_PEN);
+        // 设置treeview中选中
+        treeView->selectionModel()->select(index,
+                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        treeView->expandToIndex(index);
+    } else {
         // 设置显示
         Manager::getIns().itemMapFind(uuid)->setPen(DISPLAY_PEN);
         // 设置treeview中取消选中
@@ -272,18 +317,6 @@ void EditController::onGraphicsItemMouseRelease(UUID uuid) {
 }
 
 void EditController::onGraphicsItemMousePress(UUID uuid) {
-    // 还没添加进manager
-    if (!Manager::getIns().itemMapExist(uuid)) {
-        return;
-    }
-    auto treeView = UiManager::getIns().UI()->treeView;
-    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    QModelIndex index = model->getIndex(uuid);
-    // 设置显示
-    Manager::getIns().itemMapFind(uuid)->setPen(EDIT_PEN);
-    // 设置treeview中选中
-    treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-    treeView->expandToIndex(index);
 }
 
 EditController &EditController::getIns() {

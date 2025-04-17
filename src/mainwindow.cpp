@@ -326,23 +326,34 @@ void MainWindow::initTreeViewModel() {
     ///
     /// \brief model
     ///
-    auto *model = new TreeModel("Items Browser", this);
-    UiManager::getIns().UI()->treeView->setStyleSheet(treeViewModelStyle1);
-    UiManager::getIns().UI()->treeView->setModel(model);
-    UiManager::getIns().UI()->treeView->bindModel();
-    UiManager::getIns().UI()->treeView->expandAll();
-    UiManager::getIns().UI()->treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    UiManager::getIns().UI()->treeView->setDragEnabled(true);
-    UiManager::getIns().UI()->treeView->setAcceptDrops(true);
-    UiManager::getIns().UI()->treeView->setDropIndicatorShown(true);
-    UiManager::getIns().UI()->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+    auto* model = new TreeModel("Items Browser", this);
+    auto* view = UiManager::getIns().UI()->treeView;
+    view->setStyleSheet(treeViewModelStyle1);
+    view->setModel(model);
+    view->bindModel();
+    view->expandAll();
+    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    view->setDragEnabled(true);
+    view->setAcceptDrops(true);
+    view->setDropIndicatorShown(true);
+    view->setDragDropMode(QAbstractItemView::InternalMove);
     ///
     ///  contextmenu
     ///
-    UiManager::getIns().UI()->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(UiManager::getIns().UI()->treeView, &QWidget::customContextMenuRequested, this, &MainWindow::onTreeViewModelShowContextMenu);
-    // click
-    connect(UiManager::getIns().UI()->treeView, &QTreeView::clicked, this, &MainWindow::onTreeViewModelNodeClicked);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(view,
+            &QWidget::customContextMenuRequested,
+            this,
+            &MainWindow::onTreeViewModelShowContextMenu);
+    connect(view, &QTreeView::clicked, this, [ = ](const QModelIndex & index) {
+        EditController::getIns().onTreeViewModelClicked (index);
+    });
+    connect(view->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+    [ = ](const QItemSelection & selected, const QItemSelection & deselected) {
+        EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
+    });
 }
 
 void MainWindow::initTableViewModel() {
@@ -975,38 +986,16 @@ void MainWindow::onTreeViewModelCopyNode() {
 }
 
 void MainWindow::onTreeViewModelSetLayerVisible() {
-    auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
+    auto inLayerItems = Manager::getIns().getItemsByLayer(SceneManager::getIns().getCurrentLayer ());
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemVisible(item, true);
     }
 }
 
 void MainWindow::onTreeViewModelSetLayerUnvisible() {
-    auto inLayerItems = Manager::getIns().getItemsByLayer(this->selectedLayerIndex);
+    auto inLayerItems = Manager::getIns().getItemsByLayer(SceneManager::getIns().getCurrentLayer ());
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemVisible(item, false);
-    }
-}
-
-void MainWindow::onTreeViewModelNodeClicked() {
-    if (!KeyboardManager::getIns ().IsControlHold) {
-        SceneManager::getIns().scene->clearSelection();
-    }
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    const auto curNode =  UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    QString type = model->nodeProperty(curNode, TreeNodePropertyIndex::Type).toString();
-    if (type == "Layer") {
-        this->selectedLayerIndex = model->getNode(curNode)->indexInParent() + 1; // 左键点击和右键点击都要设置; 这两个不会同时触发
-        SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
-    } else if (type == "Group") {
-        auto nodeGroup = model->getAllChildNodes(curNode);
-        // for (auto node : nodeGroup) {
-        //     auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
-        //     Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
-        // }
-    } else if(type == "Item") {
-        UUID uuid = model->nodeProperty(curNode, TreeNodePropertyIndex::UUID).toString();
-        Manager::getIns().itemMapFind(uuid)->setSelected(true);
     }
 }
 
@@ -1062,8 +1051,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->addGroupAction->setEnabled(false);
             this->deleteNodeAction->setEnabled(false);
             this->copyNodeAction->setEnabled(false);
-            this->selectedLayerIndex = model->getNode(nodeIndex)->indexInParent() + 1;
-            SceneManager::getIns().setCurrentLayer(this->selectedLayerIndex);
+            SceneManager::getIns().setCurrentLayer (model->getNode(nodeIndex)->indexInParent() + 1);
             return;
         } else if (type == "Group") {
             this->addLayerAction->setEnabled(false);

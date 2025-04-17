@@ -81,6 +81,10 @@ public:
         item->editRadius (radius);
     }
 
+    void onTreeViewModelClicked(const QModelIndex & index);
+    void onTreeViewModelSelectionChanged(const QItemSelection &selected,
+                                         const QItemSelection &deselected);
+
     /// \brief onGraphicsItemPositionHasChanged 物体位置变换后的操作
     /// \param uuid
     void onGraphicsItemPositionHasChanged(UUID uuid);
