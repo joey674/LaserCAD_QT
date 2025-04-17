@@ -122,12 +122,12 @@ public:
     void  onMainWindowKeyReleaseEvent(QKeyEvent * event) {
     }
     void  onTreeViewKeyPressEvent(QKeyEvent * event) {
-        // DEBUG_MSG("TreeView KeyPress");
-        switch(event->key()) {
-            case Qt::Key_Shift: {
-                    KeyboardManager::getIns().IsShiftHold = true;
-                    break;
-                }
+        DEBUG_MSG("TreeView KeyPress");
+        switch (event->key()) {
+        case Qt::Key_Shift: {
+            KeyboardManager::getIns().IsShiftHold = true;
+            break;
+        }
             case Qt::Key_Control: {
                     KeyboardManager::getIns().IsControlHold = true;
                     break;
@@ -135,7 +135,7 @@ public:
             default: {
                     break;
                 }
-        }
+                }
     }
     void  onTreeViewKeyReleaseEvent(QKeyEvent * event) {
         switch(event->key()) {

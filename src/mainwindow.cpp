@@ -915,15 +915,23 @@ void MainWindow::on_deleteButton_clicked() {
     if (EditController::getIns().m_currentEditItemGroup.empty()) {
         return;
     }
-    // 在manager中删除
-    for (auto it = EditController::getIns().m_currentEditItemGroup.cbegin();
-         it != EditController::getIns().m_currentEditItemGroup.cend();
-         ++it) {
-        // TODO 注意 这里不用删除scene; 会自动处理掉
-        Manager::getIns().deleteItem((*it)->getUUID());
+    // 在manager中删除; 先安全只读,不动 item 对象,最后在一起删除; 这里不要边遍历边删
+    //  注意 这里不用删除scene; 会自动处理掉;
+    std::vector<QString> uuids;
+    for (const auto &item : EditController::getIns().m_currentEditItemGroup) {
+        uuids.push_back(item->getUUID());
     }
+    for (const auto &uuid : uuids) {
+        Manager::getIns().deleteItem(uuid);
+    }
+
     // 清除editController中的编辑列表
     EditController::getIns().m_currentEditItemGroup.clear();
+
+    // DEBUG
+    QGraphicsScene *scene = SceneManager::getIns().scene;
+    const auto &items = scene->items(); // 返回 QList<QGraphicsItem*>
+    qDebug() << "Scene has" << items.size() << "items:";
 }
 
 void MainWindow::on_undoButton_clicked() {

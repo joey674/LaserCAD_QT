@@ -217,7 +217,7 @@ void EditController::onTreeViewModelSelectionChanged(
         auto children = model->getAllChildNodes(groupIdx);
         for (TreeNode *node : children) {
             QString uuid = node->property(TreeNodePropertyIndex::UUID).toString();
-            DEBUG_VAR(uuid);
+            // DEBUG_VAR(uuid);
             if (itemUUIDs.contains(uuid)) {
                 conflictFound = true;
                 break;
@@ -300,11 +300,6 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected)
 /// \param uuid
 /// \param selected
 ///
-
-
-
-
-
 
 EditController &EditController::getIns() {
     return ins;

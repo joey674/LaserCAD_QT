@@ -11,23 +11,13 @@
 
 
 class EditController {
-/// \brief m_currentEditItem
-/// m_currentEditItemGroup
 public:
     std::vector<std::shared_ptr<GraphicsItem> > m_currentEditItemGroup
         = std::vector<std::shared_ptr<GraphicsItem> >();
-    /// \brief editItemInScene     scene中的编辑事件会传入
-    /// \param pointCoordscene event 接收的是鼠标坐标事件
-public:
-    void editItemInScene(QPointF pointCoordscene, MouseEvent event);
-    int currentEditPolylineVertexIndex = -1;
-    void editPolyline(QPointF pointCoordscene, PolylineItem *, MouseEvent event);
-    void editArc(QPointF pointCoordscene, ArcItem *, MouseEvent event);
 /// 更新对应的编辑Widget
 public:
     void updateTabWidget();
     void updateTableViewModel();
-/// 类似slot的回调
 public:
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget的回调
@@ -83,7 +73,7 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        Manager::getIns().setItemParallelOffset(curEditItem->getUUID(), offset, offsetNum);
+        curEditItem->setParallelOffset(offset, offsetNum);
         this->updateTableViewModel();
     }
     void onTabWidgetMarkParamsTab(MarkParams params) {
@@ -198,7 +188,6 @@ public:
             item->setCenterPos(pos);
         }
     }
-
     /// \brief onTreeViewModelClicked
     /// \param index
     void onTreeViewModelClicked(const QModelIndex &index) {}
@@ -207,7 +196,6 @@ public:
     /// TODO 重构 选中不是按照顺序
     void onTreeViewModelSelectionChanged(const QItemSelection &selected,
                                          const QItemSelection &deselected);
-
     /// \brief onSceneSelectionChanged
     /// Scene的整体变动回调; 全局的管控
     /// TODO 重构 选中不是按照顺序
@@ -228,6 +216,14 @@ public:
     /// \brief onGraphicsItemMousePress
     /// 物体上鼠标press事件
     void onGraphicsItemMousePress(UUID uuid) {}
+
+    /// \brief editItemInScene     scene中的编辑事件会传入
+    /// \param pointCoordscene event 接收的是鼠标坐标事件
+public:
+    void editItemInScene(QPointF pointCoordscene, MouseEvent event);
+    int currentEditPolylineVertexIndex = -1;
+    void editPolyline(QPointF pointCoordscene, PolylineItem *, MouseEvent event);
+    void editArc(QPointF pointCoordscene, ArcItem *, MouseEvent event);
 
 private:
     static EditController ins;

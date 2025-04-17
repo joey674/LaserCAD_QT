@@ -21,19 +21,16 @@
 
 class Manager {
 private:
-    std::unordered_map < UUID, std::shared_ptr < GraphicsItem>> m_itemMap;
-    std::unordered_map < UUID, std::map < PropertyIndex, QVariant>> m_propertyMap;
+    std::unordered_map<UUID, std::shared_ptr<GraphicsItem>> m_itemMap;
+
 public:
     /// \brief addItem 添加graphicitem
-    /// 到 1. m_itemMap; 2. TreeViewModel; 3. Scene(不在此处主动添加); 4.propertyMap
     void addItem(std::shared_ptr < GraphicsItem > ptr);
     /// \brief addItem 添加非graphicitem(包括layer node physicItem)
-    /// 到 1. m_itemMap; 2. TreeViewModel;3. Scene(不添加非graphics到scene里); 4.propertyMap
     void addItem(QModelIndex position, QString name, QString type);
     /// \brief deleteItem 删除item
-    /// 1. m_itemMap; 2. TreeViewModel; 3. Scene(自动删除,不在此处主动删除)
     void deleteItem(UUID uuid);
-    /// \brief copyItem 复制graphicitem 1. m_itemMap; 2. TreeViewModel; 3. Scene; 4.propertyMap
+    /// \brief copyItem 复制graphicitem
     UUID copyItem(UUID uuid) {
         auto itemptr = itemMapFind(uuid);
         auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->copy();
@@ -47,15 +44,6 @@ public:
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
     void setItemMovable(UUID uuid, bool status);
-    void setItemParallelOffset(UUID uuid, double offset, double offsetNum) {
-        // - m_itemMap
-        // - m_propertyMap
-        Manager::getIns().propertyMapFind(uuid, PropertyIndex::ParallelOffset) = offset;
-        Manager::getIns().propertyMapFind(uuid, PropertyIndex::ParallelOffsetNum) = offsetNum;
-        // - TreeViewModel中的节点
-        // - Scene
-        Manager::getIns().itemMapFind(uuid)->setParallelOffset(offset, offsetNum);
-    };
     /// \brief getItem
     /// \param index
     UUID getItem(QModelIndex index);
@@ -70,13 +58,6 @@ public:
     void itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr);
     void itemMapErase(UUID uuid);
     bool itemMapExist(UUID uuid);
-/// \brief propertyMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
-/// \param UUID
-///  \return 返回元素的引用；也就是可以直接修改propertymap里的值
-    QVariant &propertyMapFind(UUID uuid, PropertyIndex index);
-    std::map < PropertyIndex, QVariant > propertyMapCopy(UUID uuid);
-    void propertyMapInsert(UUID uuid, std::map < PropertyIndex, QVariant > map);
-    void propertyMapErase(UUID uuid);
 /// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
     void setVisibleSync();
 

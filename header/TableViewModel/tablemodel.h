@@ -4,7 +4,6 @@
 #include <QAbstractTableModel>
 #include <QRegularExpression>
 #include "manager.h"
-#include "magic_enum.hpp"
 #include "logger.h"
 #include "utils.hpp"
 
@@ -25,6 +24,8 @@ public:
         // 几何属性
         auto item = Manager::getIns().itemMapFind(this->m_uuid);
         m_propertyList.append({ "Position", item->getCenterPos() });
+        // OffsetParams
+
         // MarkParams
         const MarkParams& mark = item->getMarkParams();
         m_propertyList.append({ "MarkParams: markSpeed", mark.markSpeed });
@@ -42,12 +43,6 @@ public:
         m_propertyList.append({ "DelayParams: markDelay", delay.markDelay });
         m_propertyList.append({ "DelayParams: jumpDelay", delay.jumpDelay });
         m_propertyList.append({ "DelayParams: polygonDelay", delay.polygonDelay });
-        // 基础属性
-        const auto& map = Manager::getIns().propertyMapCopy(uuid);
-        for (const auto& [key, val] : map) {
-            QString keyName = QString::fromStdString(std::string(magic_enum::enum_name(key)));
-            this->m_propertyList.append({ keyName, val });
-        }
         endResetModel();
     }
 

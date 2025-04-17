@@ -35,7 +35,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const
     QString itemType = item->property(TreeNodePropertyIndex::Type).toString();
     QString itemUUID = item->property(TreeNodePropertyIndex::UUID).toString();
 
-    bool isVisible = Manager::getIns().propertyMapFind(itemUUID,PropertyIndex::Visible).toBool();
+    bool isVisible = Manager::getIns().itemMapFind(itemUUID)->isVisible();
 
     if (role == Qt::DisplayRole || role == Qt::EditRole) {
         if (itemType == "Layer" && !isVisible)

@@ -23,33 +23,7 @@ void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     QString uuid = ptr->getUUID();
     auto type = ptr->type();
     // 插入ItemMap
-    // DEBUG_VAR(ptr.get());
     itemMapInsert(uuid, ptr);
-    // 插入propertyMap
-    auto map = DefaultPropertyMap;
-    // map[PropertyIndex::Position] = ptr->getCenterPos();
-    // switch (type) {
-    //     case GraphicsItemType::Arc: {
-    //             auto customs = GeometryArc;
-    //             customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
-    //             customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
-    //             // map[PropertyIndex::Geometry] = customs;
-    //             break;
-    //         }
-    //     case GraphicsItemType::Line: {
-    //             auto customs = GeometryLline;
-    //             customs["Vertex0"] = QVariant::fromValue(ptr->getVertex(0));
-    //             customs["Vertex1"] = QVariant::fromValue(ptr->getVertex(1));
-    //             // map[PropertyIndex::Geometry] = customs;
-    //             break;
-    //         }
-    //     case GraphicsItemType::Polyline: {
-    //             break;
-    //         }
-    //     default:
-    //         break;
-    // }
-    propertyMapInsert(uuid, map);
     INFO_MSG("item add: " + ptr->getUUID());
     // 插入TreeViewModel 注意 这个要最后做 不然会报bug
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
@@ -78,47 +52,20 @@ void Manager::addItem(QModelIndex position, QString name, QString type) {
     model->setNodeProperty(position, TreeNodePropertyIndex::UUID, item.get()->getUUID());
     // 插入ItemMap;
     itemMapInsert(item.get()->getUUID(), item);
-    // 插入propertyMap
-    auto map = DefaultPropertyMap;
-    propertyMapInsert(item->getUUID(), map);
     INFO_MSG("item add: " + item->getUUID());
 }
 
 void Manager::setItemVisible(UUID uuid, bool status) {
-    // - m_itemMap
-    // - m_propertyMap
-    propertyMapFind(uuid, PropertyIndex::Visible) = status;
-    // - TreeViewModel中的节点
-    // - Scene
     itemMapFind(uuid)->setVisible(status);
 }
 
 void Manager::setItemSelectable(UUID uuid, bool status) {
-    // - m_itemMap
-    // - m_propertyMap
-    propertyMapFind(uuid, PropertyIndex::Selectable) = status;
-    // - TreeViewModel中的节点
-    // - Scene
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
 }
 
 void Manager::setItemMovable(UUID uuid, bool status) {
-    // - m_itemMap
-    // - m_propertyMap
-    propertyMapFind(uuid, PropertyIndex::Movable) = status;
-    // - TreeViewModel中的节点
-    // - Scene
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
 }
-
-// void Manager::setItemRenderPen(UUID uuid, QPen pen) {
-//     // - m_itemMap
-//     // - m_propertyMap
-//     // propertyMapFind(uuid, PropertyIndex::Pen) = pen;
-//     // - TreeViewModel中的节点
-//     // - Scene
-//     itemMapFind(uuid)->setPen(pen);
-// }
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     auto it = m_itemMap.find(uuid);
@@ -146,57 +93,15 @@ bool Manager::itemMapExist(UUID uuid) {
     return true;
 }
 
-QVariant &Manager::propertyMapFind(UUID uuid, PropertyIndex index) {
-    auto it = m_propertyMap.find(uuid);
-    if (it == m_propertyMap.end()) {
-        WARN_MSG("target uuid: " + uuid);
-        for (const auto& pair : m_propertyMap) {
-            WARN_MSG("in map: " + pair.first);
-        }
-        FATAL_MSG("fail to find item in this uuid");
-    }
-    auto& map = it->second;
-    auto it1 = map.find(index);
-    if (it1 == map.end()) {
-        WARN_VAR(index);
-        FATAL_MSG("fail to find property in this item");
-    }
-    return it1->second;
-}
-
-std::map < PropertyIndex, QVariant > Manager::propertyMapCopy(UUID uuid) {
-    auto it = m_propertyMap.find(uuid);
-    if (it == m_propertyMap.end()) {
-        WARN_MSG("target uuid: " + uuid);
-        for (const auto& pair : m_propertyMap) {
-            WARN_MSG("in map: " + pair.first);
-        }
-        FATAL_MSG("fail to find item in this uuid");
-    }
-    return it->second;
-}
-
-
-
-
-
-void Manager::propertyMapInsert(UUID uuid, std::map < PropertyIndex, QVariant > map) {
-    m_propertyMap.insert({uuid, map});
-}
-
-void Manager::propertyMapErase(UUID uuid) {
-    m_propertyMap.erase(uuid);
-}
-
 void Manager::setVisibleSync() {
     for (int layer = 1; layer <= SceneManager::getIns().layerCount(); ++layer) {
-        auto items = getItemsByLayer(layer);
-        bool isVisible = propertyMapFind(items[0], PropertyIndex::Visible).toBool();
+        auto uuids = getItemsByLayer(layer);
+        bool isVisible = this->itemMapFind(uuids[0])->isVisible();
         // DEBUG_VAR(layer);
         // DEBUG_VAR(isVisible);
-        for (const auto& item : items) {
+        for (const auto &uuid : uuids) {
             // DEBUG_VAR(item);
-            this->setItemVisible(item, isVisible);
+            this->setItemVisible(uuid, isVisible);
         }
     }
 }
@@ -223,7 +128,6 @@ void Manager::deleteItem(QString uuid) {
                     FATAL_MSG("fail to removeRow");
                 }
                 itemMapErase(childUuid);
-                propertyMapErase(childUuid);
             }
             // 删去在treeViewModel内的节点;
             auto parentNodeIndex = model->getIndex(node->parent());
@@ -232,7 +136,6 @@ void Manager::deleteItem(QString uuid) {
             }
             // 删去在itemmap中的节点
             itemMapErase(uuid);
-            propertyMapErase(uuid);
             break;
         }
     }
