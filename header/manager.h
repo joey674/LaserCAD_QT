@@ -47,7 +47,7 @@ public:
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
     void setItemMovable(UUID uuid, bool status);
-    void setItemRenderPen(UUID uuid, QPen pen);
+    // void setItemRenderPen(UUID uuid, QPen pen);
     // void setItemPosition(UUID uuid, QPointF pos) {
     //     // - m_itemMap
     //     // - m_propertyMap
@@ -111,6 +111,7 @@ public:
     std::shared_ptr < GraphicsItem > itemMapFind(UUID uuid);
     void itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr);
     void itemMapErase(UUID uuid);
+    bool itemMapExist(UUID uuid);
 /// \brief propertyMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
 /// \param UUID
 ///  \return 返回元素的引用；也就是可以直接修改propertymap里的值

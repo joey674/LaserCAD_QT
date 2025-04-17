@@ -242,25 +242,22 @@ void EditController::onTabWidgetCopyTabMatrixCopy(
 }
 
 void EditController::onGraphicsItemPositionHasChanged(UUID uuid) {
-    // auto item = Manager::getIns().itemMapFind(uuid);
-    // Manager::getIns().setItemPosition (uuid, item->getCenterPos());
-    this->updateTableViewModel();
-    this->updateTabWidget();
 }
 
+///
+/// \brief EditController::onGraphicsItemSelectedHasChanged
+/// \param uuid
+/// \param selected
+/// 只在取消选中时使用; 选中事件和点击事件独立,
+/// 在两个widget里都是点击触发两个widget内选中, 不是选中触发相互选中
+///
 void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) {
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
-    if (selected) {
+    if (!selected) {
         // 设置显示
-        Manager::getIns().setItemRenderPen(uuid, EDIT_PEN);
-        // 设置treeview中选中
-        treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
-        treeView->expandToIndex(index);
-    } else {
-        // 设置显示
-        Manager::getIns().setItemRenderPen(uuid, DISPLAY_PEN);
+        Manager::getIns().itemMapFind(uuid)->setPen(DISPLAY_PEN);
         // 设置treeview中取消选中
         treeView->selectionModel()->select(index, QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
         treeView->expandToIndex(index);
@@ -268,10 +265,23 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
 }
 
 void EditController::onGraphicsItemMouseRelease(UUID uuid) {
+    this->updateTableViewModel();
     this->updateTabWidget();
 }
 
 void EditController::onGraphicsItemMousePress(UUID uuid) {
+    // 还没添加进manager
+    if (!Manager::getIns().itemMapExist(uuid)) {
+        return;
+    }
+    auto treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    QModelIndex index = model->getIndex(uuid);
+    // 设置显示
+    Manager::getIns().itemMapFind(uuid)->setPen(EDIT_PEN);
+    // 设置treeview中选中
+    treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    treeView->expandToIndex(index);
 }
 
 EditController &EditController::getIns() {

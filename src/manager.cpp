@@ -111,14 +111,14 @@ void Manager::setItemMovable(UUID uuid, bool status) {
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
 }
 
-void Manager::setItemRenderPen(UUID uuid, QPen pen) {
-    // - m_itemMap
-    // - m_propertyMap
-    propertyMapFind(uuid, PropertyIndex::Pen) = pen;
-    // - TreeViewModel中的节点
-    // - Scene
-    itemMapFind(uuid)->setPen(pen);
-}
+// void Manager::setItemRenderPen(UUID uuid, QPen pen) {
+//     // - m_itemMap
+//     // - m_propertyMap
+//     // propertyMapFind(uuid, PropertyIndex::Pen) = pen;
+//     // - TreeViewModel中的节点
+//     // - Scene
+//     itemMapFind(uuid)->setPen(pen);
+// }
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     auto it = m_itemMap.find(uuid);
@@ -135,6 +135,15 @@ void Manager::itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr) {
 
 void Manager::itemMapErase(UUID uuid) {
     m_itemMap.erase(uuid);
+}
+
+bool Manager::itemMapExist(UUID uuid) {
+    auto it = m_itemMap.find(uuid);
+    if (it == m_itemMap.end()) {
+        WARN_VAR(uuid);
+        return false;
+    }
+    return true;
 }
 
 QVariant &Manager::propertyMapFind(UUID uuid, PropertyIndex index) {

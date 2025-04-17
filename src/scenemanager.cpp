@@ -24,7 +24,7 @@ void SceneManager::setCurrentLayer(int layer) {
     for (const auto& item : allItems) {
         Manager::getIns().setItemSelectable(item, false);
         Manager::getIns().setItemMovable(item, false);
-        Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+        Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
     }
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemSelectable(item, true);

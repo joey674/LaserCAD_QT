@@ -28,7 +28,7 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().setItemMovable(item, false);
-            Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpPolyline = std::make_shared < PolylineItem > ();
         this->tmpPolyline->setPen(EDIT_PEN);
@@ -67,7 +67,7 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event) {
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().setItemMovable(item, false);
-            Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpArc = std::make_shared < ArcItem > ();
         this->tmpArc->setPen(EDIT_PEN);
@@ -101,7 +101,7 @@ void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event) {
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().setItemMovable(item, false);
-            Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpLine = std::make_shared < LineItem > ();
         this->tmpLine->setPen(EDIT_PEN);
@@ -131,7 +131,7 @@ void DrawManager::drawPoint(QPointF pointCoordscene, MouseEvent event) {
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().setItemMovable(item, false);
-            Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpPoint = std::make_shared < PointItem > ();
         this->tmpPoint->setPen(EDIT_PEN);
@@ -148,7 +148,7 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().setItemMovable(item, false);
-            Manager::getIns().setItemRenderPen(item, DISPLAY_PEN);
+            Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpCircle = std::make_shared < CircleItem > ();
         this->tmpCircle->editVertex(0, pointCoordscene);
