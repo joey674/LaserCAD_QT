@@ -17,16 +17,16 @@ EditController EditController::ins;
 /// \param event
 ///
 void EditController::editItemInScene(QPointF pointCoordscene, MouseEvent event) {
-    if (this->currentEditItem) {
+    if (this->m_currentEditItem) {
         // 处理scene中编辑
-        switch (this->currentEditItem->type()) {
+        switch (this->m_currentEditItem->type()) {
             case GraphicsItemType::Polyline: {
-                    PolylineItem *item = static_cast < PolylineItem * > (this->currentEditItem);
+                    PolylineItem *item = static_cast < PolylineItem * > (this->m_currentEditItem);
                     this->editPolyline(pointCoordscene, item, event);
                     break;
                 }
             case GraphicsItemType::Arc: {
-                    ArcItem *item = static_cast < ArcItem * > (this->currentEditItem);
+                    ArcItem *item = static_cast < ArcItem * > (this->m_currentEditItem);
                     this->editArc(pointCoordscene, item, event);
                     break;
                 }
@@ -135,91 +135,60 @@ void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, M
 void EditController::updateTabWidget() {
     TabWidget* tabWidget = UiManager::getIns().UI()->tabWidget;
     tabWidget ->clearAllTabs();
-    if (!this->currentEditItem) {
-        // WARN_MSG("no current edititem");
+    if (this->m_currentEditItem) {
+        switch (this->m_currentEditItem->type()) {
+            case GraphicsItemType::Arc:
+                UiManager::getIns().UI()->tabWidget->addArcGeometryTab(this->m_currentEditItem->getUUID ());
+                break;
+            case GraphicsItemType::Circle:
+                UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(this->m_currentEditItem->getUUID ());
+                break;
+            case GraphicsItemType::Line:
+                UiManager::getIns().UI()->tabWidget->addLineGeometryTab(this->m_currentEditItem->getUUID ());
+                break;
+            case GraphicsItemType::Point:
+                UiManager::getIns().UI()->tabWidget->addPointGeometryTab(this->m_currentEditItem->getUUID ());
+                break;
+            case GraphicsItemType::Polyline:
+                UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(this->m_currentEditItem->getUUID ());
+                break;
+            default:
+                break;
+        }
+        UiManager::getIns().UI()->tabWidget->addCopyTab(this->m_currentEditItem->getUUID ());
+        UiManager::getIns().UI()->tabWidget->addOffsetTab(this->m_currentEditItem->getUUID ());
+        UiManager::getIns().UI()->tabWidget->addMarkParamsTab (this->m_currentEditItem->getUUID ());
+        UiManager::getIns().UI()->tabWidget->addDelayParamsTab (this->m_currentEditItem->getUUID ());
         return;
     }
-    switch (this->currentEditItem->type()) {
-        case GraphicsItemType::Arc:
-            UiManager::getIns().UI()->tabWidget->addArcGeometryTab(this->currentEditItem->getUUID ());
-            break;
-        case GraphicsItemType::Circle:
-            UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(this->currentEditItem->getUUID ());
-            break;
-        case GraphicsItemType::Line:
-            UiManager::getIns().UI()->tabWidget->addLineGeometryTab(this->currentEditItem->getUUID ());
-            break;
-        case GraphicsItemType::Point:
-            UiManager::getIns().UI()->tabWidget->addPointGeometryTab(this->currentEditItem->getUUID ());
-            break;
-        case GraphicsItemType::Polyline:
-            UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(this->currentEditItem->getUUID ());
-            break;
-        default:
-            break;
+    //
+    else if (!this->m_currentEditItemGroup.empty ()) {
+        UiManager::getIns().UI()->tabWidget->addMutiItemsEditTab(std::vector < UUID > ());
     }
-    UiManager::getIns().UI()->tabWidget->addCopyTab(this->currentEditItem->getUUID ());
-    UiManager::getIns().UI()->tabWidget->addOffsetTab(this->currentEditItem->getUUID ());
-    UiManager::getIns().UI()->tabWidget->addMarkParamsTab (this->currentEditItem->getUUID ());
-    UiManager::getIns().UI()->tabWidget->addDelayParamsTab (this->currentEditItem->getUUID ());
 }
 
 void EditController::updateTableViewModel() {
     TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
     model->clear();
-    if (!this->currentEditItem) {
+    if (!this->m_currentEditItem) {
         // WARN_MSG("no current edititem");
         return;
     }
-    model->setCurrentEditItem(this->currentEditItem->getUUID());
+    model->setCurrentDisplayItem(this->m_currentEditItem->getUUID());
 }
 
-void EditController::onSceneSelectionChanged() {
-    // selectedItems个数为1时设置为当前编辑对象
-    if (SceneManager::getIns().scene->selectedItems().size() == 1) {
-        auto qtItem = SceneManager::getIns().scene->selectedItems().at(0);
-        this->currentEditItem = static_cast < GraphicsItem * > (qtItem);
-    }
-    // selectedItems没有时设为空指针
-    else if (SceneManager::getIns().scene->selectedItems().isEmpty()) {
-        this->currentEditItem = nullptr;
-    }
-    // 多选时
-    else {
-        this->currentEditItem = nullptr;
-    }
-    // 更新tabwidget
-    updateTabWidget();
-    // 更新tablemodel
-    updateTableViewModel();
-}
 
-void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
-    if (!this->currentEditItem ) {
-        return;
-    }
-    GraphicsItem* item = static_cast < GraphicsItem * > (this->currentEditItem);
-    QPointF unitOffset = dir * spacing;
-    for (int i = 1; i <= count; ++i) {
-        auto uuid = Manager::getIns().copyItem(item->getUUID());
-        auto copiedItem = Manager::getIns().itemMapFind(uuid);
-        if (!copiedItem) {
-            continue;
-        }
-        QPointF offset = unitOffset * i;
-        // Manager::getIns().setItemPosition(copiedItem->getUUID(),  item->getCenterPos() + offset);
-        copiedItem->setCenterPos(item->getCenterPos() + offset);
-    }
-}
+
+
 
 void EditController::onTabWidgetCopyTabMatrixCopy(
     QPointF hVec, QPointF vVec,
     double hSpacing, double vSpacing,
     int hCount, int vCount) {
-    if (!this->currentEditItem) {
+    if (!this->m_currentEditItem) {
         return;
     }
-    GraphicsItem* item = static_cast < GraphicsItem * > (this->currentEditItem);
+    GraphicsItem* item = static_cast < GraphicsItem * > (this->m_currentEditItem);
     QPointF hOffset = hVec * hSpacing;
     QPointF vOffset = vVec * vSpacing;
     QPointF origin = item->getCenterPos();
@@ -246,37 +215,70 @@ void EditController::onTabWidgetCopyTabMatrixCopy(
 
 void EditController::onTreeViewModelClicked(const QModelIndex &index) {}
 
-void EditController::onTreeViewModelSelectionChanged(const QItemSelection &selected,
-        const QItemSelection &deselected) {
-    // 处理选中的节点
+void EditController::onTreeViewModelSelectionChanged(
+    const QItemSelection &selected,
+    const QItemSelection &deselected) {
+    auto treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    // 分类出来(注意这里用的是所有选中, selected只是新选中的信号量 不是所有选中目标)
+    QSet < QModelIndex > groupIndexes;
+    QSet < QString > itemUUIDs;
+    auto selectedIndexes = treeView->selectionModel()->selectedIndexes();
+    for (const QModelIndex &idx : selectedIndexes) {
+        if (idx.column() != 0) {
+            continue;
+        }
+        QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
+        if (type == "Group") {
+            groupIndexes.insert(idx);
+        } else if (type == "Item") {
+            itemUUIDs.insert(model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString());
+        }
+    }
+    // DEBUG_VAR(groupIndexes);
+    // DEBUG_VAR(itemUUIDs);
+    // 检查 group 的子节点中是否有选中项
+    bool conflictFound = false;
+    for (const QModelIndex &groupIdx : groupIndexes) {
+        auto children = model->getAllChildNodes(groupIdx);
+        for (TreeNode *node : children) {
+            QString uuid = node->property(TreeNodePropertyIndex::UUID).toString();
+            DEBUG_VAR(uuid);
+            if (itemUUIDs.contains(uuid)) {
+                conflictFound = true;
+                break;
+            }
+        }
+        if (conflictFound) {
+            break;
+        }
+    }
+    // 如果有就清空选中
+    if (conflictFound) {
+        treeView->selectionModel()->clearSelection();
+        WARN_MSG("cant select group and its son node at the same time; will clear selection");
+        return;
+    }
+    // 处理select对象
     for (const QModelIndex &idx : selected.indexes()) {
-        TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+        if (idx.column() != 0) {
+            continue;
+        }
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         if (type == "Layer") {
             SceneManager::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
-        } else if (type == "Group") {
-            auto nodeGroup = model->getAllChildNodes(idx);
-            for (auto node : nodeGroup) {
-                auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
-                Manager::getIns().itemMapFind(nodeUuid)->setSelected(true);
-            }
-        } else if(type == "Item") {
+        } else if (type == "Item") {
             UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(uuid)->setSelected(true);
         }
     }
-    // 处理取消选中的节点
+    // 处理deselect对象
     for (const QModelIndex &idx : deselected.indexes()) {
-        TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+        if (idx.column() != 0) {
+            continue;
+        }
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
-        if (type == "Layer") {
-        } else if (type == "Group") {
-            auto nodeGroup = model->getAllChildNodes(idx);
-            for (auto node : nodeGroup) {
-                auto nodeUuid = node->property(TreeNodePropertyIndex::UUID).toString();
-                Manager::getIns().itemMapFind(nodeUuid)->setSelected(false);
-            }
-        } else if(type == "Item") {
+        if (type == "Item") {
             UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(uuid)->setSelected(false);
         }
@@ -284,6 +286,7 @@ void EditController::onTreeViewModelSelectionChanged(const QItemSelection &selec
 }
 
 void EditController::onGraphicsItemPositionHasChanged(UUID uuid) {
+    this->updateTableViewModel();
 }
 
 ///
@@ -312,7 +315,7 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
 }
 
 void EditController::onGraphicsItemMouseRelease(UUID uuid) {
-    this->updateTableViewModel();
+    // this->updateTableViewModel();
     this->updateTabWidget();
 }
 

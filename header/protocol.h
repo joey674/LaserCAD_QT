@@ -96,13 +96,50 @@ using UUID = QString;
 struct MarkParams {
     double markSpeed = 1000;
     double jumpSpeed = 3000;
-    int  frequency = 100000;
+    int frequency = 100000;
     int repetTime = 1;
     double power = 0;
     double pulseWidth = 2;
     int wobelAml = 0;
     int wobelFreq = 100;
+
+    bool set(const QString& key, const QVariant& val) {
+        if (key == "markSpeed" || key == "MarkParams: markSpeed")        {
+            markSpeed = val.toDouble();
+            return true;
+        }
+        if (key == "jumpSpeed" || key == "MarkParams: jumpSpeed")        {
+            jumpSpeed = val.toDouble();
+            return true;
+        }
+        if (key == "frequency" || key == "MarkParams: frequency")        {
+            frequency = val.toInt();
+            return true;
+        }
+        if (key == "repetTime" || key == "MarkParams: repetTime")        {
+            repetTime = val.toInt();
+            return true;
+        }
+        if (key == "power" || key == "MarkParams: power")            {
+            power = val.toDouble();
+            return true;
+        }
+        if (key == "pulseWidth" || key == "MarkParams: pulseWidth")       {
+            pulseWidth = val.toDouble();
+            return true;
+        }
+        if (key == "wobelAml" || key == "MarkParams: wobelAml")         {
+            wobelAml = val.toInt();
+            return true;
+        }
+        if (key == "wobelFreq" || key == "MarkParams: wobelFreq")        {
+            wobelFreq = val.toInt();
+            return true;
+        }
+        return false;
+    }
 };
+
 Q_DECLARE_METATYPE(MarkParams);
 
 struct DelayParams {
@@ -111,7 +148,32 @@ struct DelayParams {
     int markDelay = 10;
     int jumpDelay = 20;
     int polygonDelay = 0;
+
+    bool set(const QString& key, const QVariant& val) {
+        if (key == "startDelay" || key == "DelayParams: startDelay")     {
+            startDelay = val.toInt();
+            return true;
+        }
+        if (key == "endDelay" || key == "DelayParams: endDelay")       {
+            endDelay = val.toInt();
+            return true;
+        }
+        if (key == "markDelay" || key == "DelayParams: markDelay")      {
+            markDelay = val.toInt();
+            return true;
+        }
+        if (key == "jumpDelay" || key == "DelayParams: jumpDelay")      {
+            jumpDelay = val.toInt();
+            return true;
+        }
+        if (key == "polygonDelay" || key == "DelayParams: polygonDelay")   {
+            polygonDelay = val.toInt();
+            return true;
+        }
+        return false;
+    }
 };
+
 Q_DECLARE_METATYPE(DelayParams);
 
 enum PropertyIndex {
@@ -164,4 +226,12 @@ enum class TreeNodePropertyIndex : int {
     UUID = 2,        // QString
 };
 
+/*****************************************************************************
+ * Tab与EditController通信
+ *****************************************************************************/
+struct MultiEditParam {
+    QString fieldName;
+    QVariant baseValue;
+    QVariant deltaValue;
+};
 #endif // PROTOCOL_H

@@ -14,26 +14,44 @@ public:
     explicit TableModel(QObject *parent = nullptr)
         : QAbstractTableModel(parent) {}
 
-    void setCurrentEditItem(const QString &uuid) {
-        m_uuid = uuid;
+    void setCurrentDisplayItem(const QString &uuid) {
         beginResetModel();
-        m_propertyList.clear();
-        if (!uuid.isEmpty()) {
-            const auto& map = Manager::getIns().propertyMapCopy(uuid);
-            for (const auto& [key, val] : map) {
-                QString keyName = QString::fromStdString(std::string(magic_enum::enum_name(key)));
-                if (val.typeId() == QVariant::Map) {
-                    QVariantMap subMap = val.toMap();
-                    for (auto it = subMap.begin(); it != subMap.end(); ++it) {
-                        m_propertyList.append({ it.key(), it.value() });
-                    }
-                } else {
-                    m_propertyList.append({ keyName, val });
-                }
-            }
+        this->m_propertyList.clear();
+        if (uuid.isEmpty()) {
+            endResetModel();
+            return;
+        }
+        this->m_uuid = uuid;
+        // 几何属性
+        auto item = Manager::getIns().itemMapFind(this->m_uuid);
+        m_propertyList.append({ "Position", item->getCenterPos() });
+        // MarkParams
+        const MarkParams& mark = item->getMarkParams();
+        m_propertyList.append({ "MarkParams: markSpeed", mark.markSpeed });
+        m_propertyList.append({ "MarkParams: jumpSpeed", mark.jumpSpeed });
+        m_propertyList.append({ "MarkParams: frequency", mark.frequency });
+        m_propertyList.append({ "MarkParams: repetTime", mark.repetTime });
+        m_propertyList.append({ "MarkParams: power", mark.power });
+        m_propertyList.append({ "MarkParams: pulseWidth", mark.pulseWidth });
+        m_propertyList.append({ "MarkParams: wobelAml", mark.wobelAml });
+        m_propertyList.append({ "MarkParams: wobelFreq", mark.wobelFreq });
+        // DelayParams
+        const DelayParams& delay = item->getDelayParams();
+        m_propertyList.append({ "DelayParams: startDelay", delay.startDelay });
+        m_propertyList.append({ "DelayParams: endDelay", delay.endDelay });
+        m_propertyList.append({ "DelayParams: markDelay", delay.markDelay });
+        m_propertyList.append({ "DelayParams: jumpDelay", delay.jumpDelay });
+        m_propertyList.append({ "DelayParams: polygonDelay", delay.polygonDelay });
+        // 基础属性
+        const auto& map = Manager::getIns().propertyMapCopy(uuid);
+        for (const auto& [key, val] : map) {
+            QString keyName = QString::fromStdString(std::string(magic_enum::enum_name(key)));
+            this->m_propertyList.append({ keyName, val });
         }
         endResetModel();
     }
+
+
     /// 删除当前修改对象，且更新table
     void clear();
     /// 不删除当前修改对象，只更新table

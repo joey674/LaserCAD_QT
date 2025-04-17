@@ -57,7 +57,7 @@ public:
         this->delayParams = params;
         return true;
     }
-/// ********************
+    /// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************

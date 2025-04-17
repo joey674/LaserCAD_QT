@@ -9,8 +9,10 @@
 #include <QPushButton>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QCheckBox>
 #include "utils.hpp"
 #include "editcontroller.h"
+#include "protocol.h"
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -252,7 +254,6 @@ public:
         this->addTab(delayTab, "DelayParams");
     }
 
-
     void addArcGeometryTab(const UUID uuid) {
         // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();
         auto item = Manager::getIns().itemMapFind(uuid);
@@ -302,7 +303,7 @@ public:
             }
             EditController::getIns().onTabWidgetArcGeometryTab(start, end, angle);
         });
-        this->addTab(arcTab, "Arc Geometry");
+        this->addTab(arcTab, "Geometry");
     }
     void addCircleGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
@@ -339,7 +340,7 @@ public:
             double radius = radiusSpin->value();
             EditController::getIns().onTabWidgetCircleGeometryTab(center, radius);
         });
-        this->addTab(circleTab, "Circle Geometry");
+        this->addTab(circleTab, "Geometry");
     }
     void addLineGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
@@ -373,7 +374,7 @@ public:
             QPointF v1(v1x->value(), v1y->value());
             EditController::getIns().onTabWidgetLineGeometryTab(v0, v1);
         });
-        this->addTab(lineTab, "Line Geometry");
+        this->addTab(lineTab, "Geometry");
     }
     void addPointGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
@@ -397,9 +398,79 @@ public:
             QPointF pt(xSpin->value(), ySpin->value());
             EditController::getIns().onTabWidgetPointGeometryTab(pt);
         });
-        this->addTab(pointTab, "Point Geometry");
+        this->addTab(pointTab, "Geometry");
     }
     void addPolylineGeometryTab(const UUID uuid) {
+    }
+
+    void addMutiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
+        QWidget* tab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(tab);
+        QFormLayout* formLayout = new QFormLayout();
+        struct FieldWidgets {
+            QCheckBox *enableCheck;
+            QDoubleSpinBox *valueSpin;
+            QDoubleSpinBox *deltaSpin;
+        };
+        QMap < QString, FieldWidgets > fields;
+        auto addField = [&](const QString & name, double defaultValue = 0.0) {
+            QCheckBox* check = new QCheckBox(name);
+            QDoubleSpinBox* valueSpin = new QDoubleSpinBox();
+            QDoubleSpinBox* deltaSpin = new QDoubleSpinBox();
+            valueSpin->setRange(-999999, 999999);
+            valueSpin->setDecimals(3);
+            deltaSpin->setRange(-999999, 999999);
+            deltaSpin->setDecimals(3);
+            valueSpin->setEnabled(false);
+            deltaSpin->setEnabled(false);
+            connect(check, &QCheckBox::toggled, valueSpin, &QDoubleSpinBox::setEnabled);
+            connect(check, &QCheckBox::toggled, deltaSpin, &QDoubleSpinBox::setEnabled);
+            QHBoxLayout* hLayout = new QHBoxLayout();
+            hLayout->addWidget(valueSpin);
+            hLayout->addWidget(new QLabel("+"));
+            hLayout->addWidget(deltaSpin);
+            formLayout->addRow(check, hLayout);
+            fields[name] = FieldWidgets{check, valueSpin, deltaSpin};
+        };
+        // 添加字段
+        addField("Position.x");
+        addField("Position.y");
+        addField("MarkParams: markSpeed", 0);
+        addField("MarkParams: jumpSpeed", 0);
+        addField("MarkParams: frequency", 0);
+        addField("MarkParams: repetTime", 0);
+        addField("MarkParams: power", 0);
+        addField("MarkParams: pulseWidth", 0);
+        addField("MarkParams: wobelAml", 0);
+        addField("MarkParams: wobelFreq", 0);
+        addField("DelayParams: startDelay", 0);
+        addField("DelayParams: endDelay", 0);
+        addField("DelayParams: markDelay", 0);
+        addField("DelayParams: jumpDelay", 0);
+        addField("DelayParams: polygonDelay", 0);
+        mainLayout->addLayout(formLayout);
+        // 按钮应用
+        QPushButton* ConfirmBtn = new QPushButton("Confirm");
+        mainLayout->addWidget(ConfirmBtn);
+        //
+        connect(ConfirmBtn, &QPushButton::clicked, tab, [ = ]() {
+            std::vector < MultiEditParam > result;
+            for (auto it = fields.begin(); it != fields.end(); ++it) {
+                const QString& key = it.key();
+                const FieldWidgets& w = it.value();
+                if (!w.enableCheck->isChecked()) {
+                    continue;
+                }
+                MultiEditParam param;
+                param.fieldName = key;
+                param.baseValue = w.valueSpin->value();
+                param.deltaValue = w.deltaSpin->value();
+                result.push_back (param);
+            }
+            EditController::getIns().onTabWidgetMutiEditTab (result);
+        });
+        //
+        this->addTab(tab, "Multi Edit");
     }
 
 };
