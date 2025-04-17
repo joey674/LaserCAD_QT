@@ -869,7 +869,8 @@ void MainWindow::on_centerButton_clicked() {
     }
     //
     GraphicsItem *item = static_cast < GraphicsItem * > (EditController::getIns().currentEditItem);
-    Manager::getIns().setItemPosition(item->getUUID(), QPointF{0, 0});
+    // Manager::getIns().setItemPosition(item->getUUID(), QPointF{0, 0});
+    item->setCenterPos(QPointF{0, 0});
 }
 
 void MainWindow::on_createOffsetButton_clicked() {

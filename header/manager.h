@@ -43,19 +43,19 @@ public:
         setItemMovable(item->getUUID(), true);
         return item->getUUID();
     };
-/// \brief setItem property
+    /// \brief setItem property
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
     void setItemMovable(UUID uuid, bool status);
     void setItemRenderPen(UUID uuid, QPen pen);
-    void setItemPosition(UUID uuid, QPointF pos) {
-        // - m_itemMap
-        // - m_propertyMap
-        Manager::getIns().propertyMapFind(uuid, PropertyIndex::Position) = pos;
-        // - TreeViewModel中的节点
-        // - Scene
-        Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
-    };
+    // void setItemPosition(UUID uuid, QPointF pos) {
+    //     // - m_itemMap
+    //     // - m_propertyMap
+    //     Manager::getIns().propertyMapFind(uuid, PropertyIndex::Position) = pos;
+    //     // - TreeViewModel中的节点
+    //     // - Scene
+    //     Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
+    // };
     void setItemParallelOffset(UUID uuid, double offset, double offsetNum) {
         // - m_itemMap
         // - m_propertyMap
@@ -65,15 +65,15 @@ public:
         // - Scene
         Manager::getIns().itemMapFind(uuid)->setParallelOffset(offset, offsetNum);
     };
-    void setItemCustomProperty(UUID uuid, QString key, QVariant value) {
+    void setItemGeometry(UUID uuid, QString key, QVariant value) {
         // - m_propertyMap
-        auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::CustomProperty);
-        QVariantMap map = variant.toMap();
-        map[key] = value;
-        variant = map;
-        // DEBUG_VAR(key);
-        // DEBUG_VAR(value);
-        DEBUG_VAR(Manager::getIns().propertyMapFind(uuid, PropertyIndex::CustomProperty).toMap()[key]);
+        // auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry);
+        // QVariantMap map = variant.toMap();
+        // map[key] = value;
+        // variant = map;
+        // // DEBUG_VAR(key);
+        // // DEBUG_VAR(value);
+        // DEBUG_VAR(Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap()[key]);
         // - m_itemMap
         if (key == "Vertex0") {
             QVariant vertexVar = value;
@@ -98,11 +98,12 @@ public:
         // - TreeViewModel中的节点
         // - Scene
     };
-/// \brief getItem
-/// \param index
+    /// \brief getItem
+    /// \param index
     UUID getItem(QModelIndex index);
     UUID getItem(QGraphicsItem* item);
-/// \brief  getItemsByLayer 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
+    /// \brief  getItemsByLayer
+    /// 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
     std::vector < UUID > getItemsByLayer(int layer);
 public:
 /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久

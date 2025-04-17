@@ -93,40 +93,67 @@ const QPen AXIS_PEN = []() {
  *****************************************************************************/
 using UUID = QString;
 
+struct MarkParams {
+    double markSpeed = 1000;
+    double jumpSpeed = 3000;
+    int frequency = 100000;
+    int repetTime = 1;
+    double power = 0;
+    double pulseWidth = 2;
+    int wobelAml = 0;
+    int wobelFreq = 100;
+};
+Q_DECLARE_METATYPE(MarkParams);
+
+struct DelayParams {
+    int startDelay = 100;
+    int endDelay = 120;
+    int markDelay = 10;
+    int jumpDelay = 20;
+    int polygonDelay = 0;
+};
+Q_DECLARE_METATYPE(DelayParams);
+
 enum PropertyIndex {
     Visible,
     Selectable,
     Movable,
     Pen,
-    Position,
+    // Position,
     ParallelOffset,
     ParallelOffsetNum,
-    CustomProperty
+    // Geometry,
+    Mark,
+    Delay,
 };
-inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap = {
-    {PropertyIndex::Visible, QVariant(true)},
+
+inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap
+= {{PropertyIndex::Visible, QVariant(true)},
     {PropertyIndex::Selectable, QVariant(true)},
     {PropertyIndex::Movable, QVariant(true)},
     {PropertyIndex::Pen, DISPLAY_PEN},
-    {PropertyIndex::Position, QPointF{}},
+    // {PropertyIndex::Position, QPointF{}},
     {PropertyIndex::ParallelOffset, 0},
     {PropertyIndex::ParallelOffsetNum, 0},
-    {PropertyIndex::CustomProperty, QMap < QString, QVariant > ()},
+    // {PropertyIndex::Geometry, QMap < QString, QVariant > ()},
+    {PropertyIndex::Mark, QVariant::fromValue (MarkParams{})},
+    {PropertyIndex::Delay, QVariant::fromValue (DelayParams{})},
 };
+/// 暂时不用 先用item自己的get函数就行, 不然要实时更新太麻烦了 到时候再封装manager就行
+// inline const QMap < QString, QVariant > GeometryArc = QMap < QString, QVariant > {
+//     { "Vertex0", QVariant::fromValue(Vertex{}) },
+//     { "Vertex1", QVariant::fromValue(Vertex{}) }
+// };
+// inline const QMap < QString, QVariant > GeometryLline = QMap < QString, QVariant > {
+//     { "Vertex0", QVariant::fromValue(Vertex{}) },
+//     { "Vertex1", QVariant::fromValue(Vertex{}) }
+// };
+// inline const QMap < QString, QVariant > GeometryCircle = QMap < QString, QVariant > {
+//     { "Radius", 0}
+// };
+// inline const QMap < QString, QVariant > GeometryPoint = QMap < QString, QVariant > {
+// };
 
-inline const QMap < QString, QVariant > DefaultCustomPropertyArc = QMap < QString, QVariant > {
-    { "Vertex0", QVariant::fromValue(Vertex{}) },
-    { "Vertex1", QVariant::fromValue(Vertex{}) }
-};
-inline const QMap < QString, QVariant > DefaultCustomPropertyLine = QMap < QString, QVariant > {
-    { "Vertex0", QVariant::fromValue(Vertex{}) },
-    { "Vertex1", QVariant::fromValue(Vertex{}) }
-};
-inline const QMap < QString, QVariant > DefaultCustomPropertyCircle = QMap < QString, QVariant > {
-    { "Radius", 0}
-};
-inline const QMap < QString, QVariant > DefaultCustomPropertyPoint = QMap < QString, QVariant > {
-};
 /*****************************************************************************
  * TreeViewModel
  * TreeNode

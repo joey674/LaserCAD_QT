@@ -141,25 +141,25 @@ void EditController::updateTabWidget() {
     }
     switch (this->currentEditItem->type()) {
         case GraphicsItemType::Arc:
-            UiManager::getIns().UI()->tabWidget->addArcGeometryTab();
+            UiManager::getIns().UI()->tabWidget->addArcGeometryTab(this->currentEditItem->getUUID ());
             break;
         case GraphicsItemType::Circle:
-            UiManager::getIns().UI()->tabWidget->addCircleGeometryTab();
+            UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(this->currentEditItem->getUUID ());
             break;
         case GraphicsItemType::Line:
-            UiManager::getIns().UI()->tabWidget->addLineGeometryTab();
+            UiManager::getIns().UI()->tabWidget->addLineGeometryTab(this->currentEditItem->getUUID ());
             break;
         case GraphicsItemType::Point:
-            UiManager::getIns().UI()->tabWidget->addPointGeometryTab();
+            UiManager::getIns().UI()->tabWidget->addPointGeometryTab(this->currentEditItem->getUUID ());
             break;
         case GraphicsItemType::Polyline:
-            UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab();
+            UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(this->currentEditItem->getUUID ());
             break;
         default:
             break;
     }
-    UiManager::getIns().UI()->tabWidget->addCopyTab();
-    UiManager::getIns().UI()->tabWidget->addOffsetTab();
+    UiManager::getIns().UI()->tabWidget->addCopyTab(this->currentEditItem->getUUID ());
+    UiManager::getIns().UI()->tabWidget->addOffsetTab(this->currentEditItem->getUUID ());
 }
 
 void EditController::updateTableViewModel() {
@@ -185,7 +185,6 @@ void EditController::onSceneSelectionChanged() {
     // 多选时
     else {
     }
-
     // 更新tabwidget
     updateTabWidget();
     // 更新tablemodel
@@ -205,7 +204,8 @@ void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, i
             continue;
         }
         QPointF offset = unitOffset * i;
-        Manager::getIns().setItemPosition(copiedItem->getUUID(),  item->getCenterPos() + offset);
+        // Manager::getIns().setItemPosition(copiedItem->getUUID(),  item->getCenterPos() + offset);
+        copiedItem->setCenterPos(item->getCenterPos() + offset);
     }
 }
 
@@ -235,43 +235,43 @@ void EditController::onTabWidgetCopyTabMatrixCopy(
             }
             // 设置新位置
             QPointF offset = hOffset * col + vOffset * row;
-            Manager::getIns().setItemPosition(copiedItem->getUUID(), origin + offset);
+            // Manager::getIns().setItemPosition(copiedItem->getUUID(), origin + offset);
+            copiedItem->setCenterPos(origin + offset);
         }
     }
 }
 
-void EditController::onGraphicsItemPositionHasChanged(UUID uuid){
+void EditController::onGraphicsItemPositionHasChanged(UUID uuid) {
+    // auto item = Manager::getIns().itemMapFind(uuid);
+    // Manager::getIns().setItemPosition (uuid, item->getCenterPos());
     this->updateTableViewModel();
-    auto item = Manager::getIns().itemMapFind(uuid);
-    Manager::getIns().setItemPosition (uuid, item->getCenterPos());
+    this->updateTabWidget();
 }
 
-void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected){
+void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) {
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    QModelIndex index=model->getIndex(uuid);
-
+    QModelIndex index = model->getIndex(uuid);
     if (selected) {
         // 设置显示
         Manager::getIns().setItemRenderPen(uuid, EDIT_PEN);
         // 设置treeview中选中
-        treeView->selectionModel()->select(index,QItemSelectionModel::Select | QItemSelectionModel::Rows);
+        treeView->selectionModel()->select(index, QItemSelectionModel::Select | QItemSelectionModel::Rows);
         treeView->expandToIndex(index);
     } else {
         // 设置显示
         Manager::getIns().setItemRenderPen(uuid, DISPLAY_PEN);
         // 设置treeview中取消选中
-        treeView->selectionModel()->select(index,QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
+        treeView->selectionModel()->select(index, QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
         treeView->expandToIndex(index);
     }
 }
 
-void EditController::onGraphicsItemMouseRelease(UUID uuid){
-    EditController::getIns().updateTabWidget();
+void EditController::onGraphicsItemMouseRelease(UUID uuid) {
+    this->updateTabWidget();
 }
 
-void EditController::onGraphicsItemMousePress(UUID uuid){
-
+void EditController::onGraphicsItemMousePress(UUID uuid) {
 }
 
 EditController &EditController::getIns() {

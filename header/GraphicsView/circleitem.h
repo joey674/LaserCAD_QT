@@ -20,9 +20,7 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < CircleItem > (CircleItem(*this));
     }
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     /// 编辑圆心
     bool editVertex(const int index, const QPointF point, const double angle = 0) override {
         if (index > 1) {
@@ -118,7 +116,7 @@ public:
     }
     QPointF getVertexPos(const int index) const override {
         if (index > 1) {
-            assert("false index:only 0,1");
+            assert("false index:only 0");
         }
         QPointF point = m_center.point;
         QPointF pos = point + this->scenePos();
@@ -132,6 +130,9 @@ public:
     }
     QString getName() const override {
         return "CircleItem";
+    }
+    double getRadius() {
+        return this->m_radius;
     }
 public:
     int type() const override {

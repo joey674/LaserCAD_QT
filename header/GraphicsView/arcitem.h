@@ -28,9 +28,7 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < ArcItem > (ArcItem(*this));
     }
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     bool editVertex(const int index, const QPointF point, const double angle) override {
         if (index > 1 || angle >= 360 || angle <= -360) {
             WARN_VAR(index);

@@ -20,9 +20,7 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < LineItem > (LineItem(*this));
     }
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     bool editVertex(const int index, const QPointF point, const double angle = 0) override;
     bool setParallelOffset(const double offset, const double offsetNum) override;
     bool setCenterPos(const QPointF point) override;

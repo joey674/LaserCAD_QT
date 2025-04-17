@@ -18,6 +18,7 @@ void DrawManager::resetTmpItemStatus() {
     this->tmpSpiral = NULL;
     this->tmpPolygon = NULL;
     this->tmpEllipse = NULL;
+    this->tmpLine = NULL;
 }
 
 void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event) {

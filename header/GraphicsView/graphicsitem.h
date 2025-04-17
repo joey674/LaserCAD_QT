@@ -22,12 +22,9 @@ public:
 /// \brief control
 /// 直接修改 控制对象
 /// 这里面所有函数结束都要调用animate
-/// 涉及到属性改变的,都在manager中使用; 不可直接调用
 /// 这里存的vertex以及获得的pos都是真实scene位置; 都已经经过变换, 不用再考虑锚点
 /// ********************
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     /// \brief editVertex
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置
     virtual bool editVertex(const int index, const QPointF point, const double angle) = 0;

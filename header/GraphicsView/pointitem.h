@@ -19,9 +19,7 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < PointItem > (PointItem(*this));
     }
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     bool editVertex(const int index, const QPointF point, const double angle = 0) override {
         if (index >= 1) {
             WARN_MSG("index can only be 0 for point");

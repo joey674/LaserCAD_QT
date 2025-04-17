@@ -20,9 +20,7 @@ public:
     std::shared_ptr < GraphicsItem > copy() const  override {
         return std::make_shared < RectItem > (RectItem(*this));
     }
-protected:
-    friend class Manager;
-    friend class DrawManager;
+public:
     /// 编辑vertex; 0是左上坐标,1是右下坐标
     bool editVertex(const int index, const QPointF point, const double angle = 0) override {
         if (index > 1) {
