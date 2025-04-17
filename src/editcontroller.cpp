@@ -160,6 +160,8 @@ void EditController::updateTabWidget() {
     }
     UiManager::getIns().UI()->tabWidget->addCopyTab(this->currentEditItem->getUUID ());
     UiManager::getIns().UI()->tabWidget->addOffsetTab(this->currentEditItem->getUUID ());
+    UiManager::getIns().UI()->tabWidget->addMarkParamsTab (this->currentEditItem->getUUID ());
+    UiManager::getIns().UI()->tabWidget->addDelayParamsTab (this->currentEditItem->getUUID ());
 }
 
 void EditController::updateTableViewModel() {

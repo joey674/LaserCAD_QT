@@ -7,7 +7,6 @@
 #include <QDebug.h>
 #include <QStyleOptionGraphicsItem>
 #include "protocol.h"
-#include "logger.h"
 #include "utils.hpp"
 #include <polylineoffset.hpp>
 
@@ -16,6 +15,12 @@ public:
     GraphicsItem() {
         this->m_uuid = GenerateUUID();
         this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
+    }
+    GraphicsItem(const GraphicsItem &other) {
+        this->m_uuid = GenerateUUID();
+        this->setFlags(other.flags());
+        this->markParams = other.markParams;
+        this->delayParams = other.delayParams;
     }
     virtual std::shared_ptr < GraphicsItem > copy() const = 0;
 /// ********************
@@ -44,6 +49,14 @@ public:
         this->animate();
         return true;
     };
+    bool setMarkParams(const MarkParams params) {
+        this->markParams = params;
+        return true;
+    }
+    bool setDelayParams(const DelayParams params) {
+        this->delayParams = params;
+        return true;
+    }
 /// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
@@ -69,7 +82,7 @@ public:
     /// \return
     virtual cavc::Polyline < double > getCavConForm() const = 0;
     virtual double getParallelOffset() const = 0;
-    virtual double getParallelOffsetNum() const = 0;
+    virtual double getParallelOffsetCount() const = 0;
     /// \brief getCenterPos
     /// \return 这里返回的point是vertex相对锚点的位置； 物体移动时，该点不变；
     virtual Vertex getVertex(const int index) const = 0;
@@ -82,6 +95,12 @@ public:
     virtual QString getName() const;
     const QString getUUID() const;
     const QPen getPen() const;
+    const MarkParams getMarkParams() const {
+        return this->markParams;
+    }
+    const DelayParams getDelayParams() const {
+        return this->delayParams;
+    }
 /// ********************
 /// \brief overload
 /// 重载基于QGraphicsitem的一些性质
@@ -96,6 +115,8 @@ protected:
 private:
     QString m_uuid;
     QPen m_pen = DISPLAY_PEN;
+    MarkParams markParams;
+    DelayParams delayParams;
 };
 
 #endif // GRAPHICSITEM_H

@@ -8,10 +8,10 @@
 class PointItem: public GraphicsItem {
 public:
     PointItem();
-    PointItem(const PointItem& other):
+    PointItem(const PointItem& other): GraphicsItem(other),
         m_vertex(other.m_vertex),
         m_offset(other.m_offset),
-        m_offsetNum(other.m_offsetNum) {
+        m_offsetCount(other.m_offsetCount) {
         m_vertex.point = other.getVertexPos(0);
         // 更新出来paintitem和offsetitem
         this->animate();
@@ -75,8 +75,8 @@ public:
     double getParallelOffset() const override {
         return this->m_offset;
     }
-    double getParallelOffsetNum() const override {
-        return this->m_offsetNum;
+    double getParallelOffsetCount() const override {
+        return this->m_offsetCount;
     }
     Vertex getVertex(const int index) const override {
         if (index > 0) {
@@ -112,10 +112,10 @@ protected:
         }
         QRectF newRect = m_paintItem->boundingRect();
         // newRect = newRect.adjusted(
-        //     -abs(this->m_offset)*this->m_offsetNum - 1,
-        //     -abs(this->m_offset)*this->m_offsetNum - 1,
-        //     abs(this->m_offset)*this->m_offsetNum + 1,
-        //     abs(this->m_offset)*this->m_offsetNum + 1);
+        //     -abs(this->m_offset)*this->m_offsetCount - 1,
+        //     -abs(this->m_offset)*this->m_offsetCount - 1,
+        //     abs(this->m_offset)*this->m_offsetCount + 1,
+        //     abs(this->m_offset)*this->m_offsetCount + 1);
         return newRect;
     }
     void paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) override {
@@ -152,7 +152,7 @@ private:
     std::shared_ptr < QGraphicsEllipseItem > m_paintItem;
     ///
     double m_offset  = 0;
-    int m_offsetNum = 0;
+    int m_offsetCount = 0;
     std::vector < std::shared_ptr < PointItem>> m_offsetItemList;
 };
 

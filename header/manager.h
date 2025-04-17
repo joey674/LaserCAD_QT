@@ -47,15 +47,6 @@ public:
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
     void setItemMovable(UUID uuid, bool status);
-    // void setItemRenderPen(UUID uuid, QPen pen);
-    // void setItemPosition(UUID uuid, QPointF pos) {
-    //     // - m_itemMap
-    //     // - m_propertyMap
-    //     Manager::getIns().propertyMapFind(uuid, PropertyIndex::Position) = pos;
-    //     // - TreeViewModel中的节点
-    //     // - Scene
-    //     Manager::getIns().itemMapFind(uuid)->setCenterPos(pos);
-    // };
     void setItemParallelOffset(UUID uuid, double offset, double offsetNum) {
         // - m_itemMap
         // - m_propertyMap
@@ -64,39 +55,6 @@ public:
         // - TreeViewModel中的节点
         // - Scene
         Manager::getIns().itemMapFind(uuid)->setParallelOffset(offset, offsetNum);
-    };
-    void setItemGeometry(UUID uuid, QString key, QVariant value) {
-        // - m_propertyMap
-        // auto& variant = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry);
-        // QVariantMap map = variant.toMap();
-        // map[key] = value;
-        // variant = map;
-        // // DEBUG_VAR(key);
-        // // DEBUG_VAR(value);
-        // DEBUG_VAR(Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap()[key]);
-        // - m_itemMap
-        if (key == "Vertex0") {
-            QVariant vertexVar = value;
-            if (!vertexVar.canConvert < Vertex > ()) {
-                FATAL_VAR(vertexVar);
-            }
-            Vertex vertex = vertexVar.value < Vertex > ();
-            Manager::getIns().itemMapFind(uuid)->editVertex(0, vertex.point, vertex.angle);
-        }
-        if (key == "Vertex1") {
-            QVariant vertexVar = value;
-            if (!vertexVar.canConvert < Vertex > ()) {
-                FATAL_VAR(vertexVar);
-            }
-            Vertex vertex = vertexVar.value < Vertex > ();
-            Manager::getIns().itemMapFind(uuid)->editVertex(1, vertex.point, vertex.angle);
-        }
-        if (key == "Radius") {
-            auto item = (dynamic_cast < CircleItem * > (Manager::getIns().itemMapFind(uuid).get()));
-            item->editRadius(value.toDouble ());
-        }
-        // - TreeViewModel中的节点
-        // - Scene
     };
     /// \brief getItem
     /// \param index

@@ -18,7 +18,7 @@ void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::red);
     for (const auto &vertex : m_vertexPair) {
-        if (this->m_offsetNum > 0) {
+        if (this->m_offsetCount > 0) {
             painter->setBrush(Qt::red);
             painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {
@@ -38,10 +38,10 @@ QRectF ArcItem::boundingRect() const {
     }
     QRectF newRect = m_paintItem->boundingRect();
     newRect = newRect.adjusted(
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1);
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1);
     return newRect;
 }
 

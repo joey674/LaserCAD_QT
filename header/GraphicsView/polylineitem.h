@@ -10,10 +10,10 @@
 class PolylineItem: public GraphicsItem {
 public:
     PolylineItem();
-    PolylineItem(const PolylineItem& other):
+    PolylineItem(const PolylineItem& other): GraphicsItem(other),
         m_vertexList(other.m_vertexList),
         m_offset(other.m_offset),
-        m_offsetNum(other.m_offsetNum) {
+        m_offsetCount(other.m_offsetCount) {
         for (int i = 0; i < this->getVertexCount(); ++i) {
             m_vertexList[i].point = other.getVertexPos(i);
         }
@@ -44,7 +44,7 @@ public:
     }
     bool setParallelOffset(const double offset, const double offsetNum) override {
         this->m_offset = offset;
-        this->m_offsetNum = offsetNum;
+        this->m_offsetCount = offsetNum;
         if (offsetNum < 0) {
             FATAL_MSG("offset num must be positive");
         }
@@ -141,7 +141,7 @@ public:
         return input;
     }
     double getParallelOffset() const override;
-    double getParallelOffsetNum() const override;
+    double getParallelOffsetCount() const override;
     Vertex getVertex(const int index) const override;
     QPointF getVertexPos(const int index)const override;
     QPointF getCenterPos() const override;
@@ -164,7 +164,7 @@ private:
     ///
     /// \brief m_offset
     double m_offset  = 0;
-    uint m_offsetNum = 0;
+    uint m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 

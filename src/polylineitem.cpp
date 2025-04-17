@@ -16,7 +16,7 @@ bool PolylineItem::updateParallelOffset() {
         return true;
     }
     this->m_offsetItemList.clear();
-    for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavConForm();
         input.isClosed() = false;
@@ -37,8 +37,8 @@ double PolylineItem::getParallelOffset()const {
     return this->m_offset;
 }
 
-double PolylineItem::getParallelOffsetNum()const {
-    return  this->m_offsetNum;
+double PolylineItem::getParallelOffsetCount()const {
+    return  this->m_offsetCount;
 }
 
 Vertex PolylineItem::getVertex(const int index) const {
@@ -93,10 +93,10 @@ QRectF PolylineItem::boundingRect() const {
         newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
     }
     newRect = newRect.adjusted(
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1);
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1);
     return newRect;
 }
 
@@ -115,7 +115,7 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     // 绘制拖拽原点
     painter->setPen(Qt::NoPen);
     for (const auto &vertex : m_vertexList) {
-        if (this->m_offsetNum > 0) {
+        if (this->m_offsetCount > 0) {
             painter->setBrush(Qt::red);
             painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {

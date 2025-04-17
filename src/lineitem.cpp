@@ -16,7 +16,7 @@ bool LineItem::editVertex(const int index, const QPointF point, const double ang
 
 bool LineItem::setParallelOffset(const double offset, const double offsetNum) {
     this->m_offset = offset;
-    this->m_offsetNum = offsetNum;
+    this->m_offsetCount = offsetNum;
     this->animate();
     return true;
 }
@@ -34,11 +34,11 @@ bool LineItem::rotate(const double angle) {
 }
 
 bool LineItem::updateParallelOffset() {
-    if (this->m_offset == 0 || this->m_offsetNum == 0) {
+    if (this->m_offset == 0 || this->m_offsetCount == 0) {
         return true;
     }
     this->m_offsetItemList.clear();
-    for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
         // 输入cavc库
         cavc::Polyline < double > input = this->getCavConForm();
         input.isClosed() = false;
@@ -78,8 +78,8 @@ double LineItem::getParallelOffset()const {
     return this->m_offset;
 }
 
-double LineItem::getParallelOffsetNum()const {
-    return this->m_offsetNum;
+double LineItem::getParallelOffsetCount()const {
+    return this->m_offsetCount;
 }
 
 Vertex LineItem::getVertex(const int index)const {
@@ -102,10 +102,10 @@ QRectF LineItem::boundingRect() const {
     }
     QRectF newRect = m_paintItem->boundingRect();
     newRect = newRect.adjusted(
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1);
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1);
     return newRect;
 }
 
@@ -121,7 +121,7 @@ void LineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::red);
     for (const auto &vertex : m_vertexPair) {
-        if (this->m_offsetNum > 0) {
+        if (this->m_offsetCount > 0) {
             painter->setBrush(Qt::red);
             painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {

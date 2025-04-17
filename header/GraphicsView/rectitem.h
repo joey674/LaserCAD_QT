@@ -9,9 +9,9 @@
 class RectItem : public GraphicsItem {
 public:
     RectItem() {};
-    RectItem(const RectItem& other):
+    RectItem(const RectItem& other): GraphicsItem(other),
         m_offset(other.m_offset),
-        m_offsetNum(other.m_offsetNum) {
+        m_offsetCount(other.m_offsetCount) {
         m_vertexPair[0].point = other.getVertexPos(0);
         m_vertexPair[1].point = other.getVertexPos(1);
         // 更新出来paintitem和offsetitem
@@ -33,7 +33,7 @@ public:
     }
     bool setParallelOffset(const double offset, const double offsetNum) override {
         this->m_offset = offset;
-        this->m_offsetNum = offsetNum;
+        this->m_offsetCount = offsetNum;
         this->animate();
         return true;
     }
@@ -50,11 +50,11 @@ public:
     }
 protected:
     bool updateParallelOffset() override {
-        if (this->m_offset == 0 || this->m_offsetNum == 0) {
+        if (this->m_offset == 0 || this->m_offsetCount == 0) {
             return true;
         }
         this->m_offsetItemList.clear();
-        for (int offsetIndex = 1; offsetIndex <= this->m_offsetNum; offsetIndex++) {
+        for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
             cavc::Polyline < double > input = this->getCavConForm ();
             input.isClosed() = true;
@@ -99,8 +99,8 @@ public:
     double getParallelOffset() const override {
         return this->m_offset;
     }
-    double getParallelOffsetNum() const override {
-        return this->m_offsetNum;
+    double getParallelOffsetCount() const override {
+        return this->m_offsetCount;
     }
     Vertex getVertex(const int index = 0) const override {
         if (index > 1) {
@@ -138,7 +138,7 @@ private:
     std::shared_ptr < QGraphicsRectItem > m_paintItem;
     ///
     double m_offset  = 0;
-    int m_offsetNum = 0;
+    int m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 #endif // RECTITEM_H

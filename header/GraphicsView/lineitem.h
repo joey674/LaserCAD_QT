@@ -8,10 +8,10 @@
 class LineItem: public GraphicsItem {
 public:
     LineItem();
-    LineItem(const LineItem &other)
-        : m_vertexPair(other.m_vertexPair)
+    LineItem(const LineItem &other): GraphicsItem(other),
+        m_vertexPair(other.m_vertexPair)
         , m_offset(other.m_offset)
-        , m_offsetNum(other.m_offsetNum) {
+        , m_offsetCount(other.m_offsetCount) {
         m_vertexPair[0].point = other.getVertexPos(0);
         m_vertexPair[1].point = other.getVertexPos(1);
         // 更新出来paintitem和offsetitem
@@ -31,7 +31,7 @@ protected:
 public:
     cavc::Polyline < double > getCavConForm() const override;
     double getParallelOffset() const override;
-    double getParallelOffsetNum() const override;
+    double getParallelOffsetCount() const override;
     Vertex getVertex(const int index)const override;
     QPointF getVertexPos(const int index)const override;
     QPointF getCenterPos() const override;
@@ -49,7 +49,7 @@ private:
     std::shared_ptr < QGraphicsLineItem > m_paintItem;
     ///
     double m_offset  = 0;
-    int m_offsetNum = 0;
+    int m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 

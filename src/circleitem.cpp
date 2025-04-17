@@ -20,9 +20,9 @@ QRectF CircleItem::boundingRect() const {
     }
     QRectF newRect = m_paintItem->boundingRect();
     newRect = newRect.adjusted(
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  -abs(this->m_offset) * this->m_offsetNum - 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1,
-                  abs(this->m_offset) * this->m_offsetNum + 1);
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  -abs(this->m_offset) * this->m_offsetCount - 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1,
+                  abs(this->m_offset) * this->m_offsetCount + 1);
     return newRect;
 }

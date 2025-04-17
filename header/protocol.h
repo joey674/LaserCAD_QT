@@ -96,7 +96,7 @@ using UUID = QString;
 struct MarkParams {
     double markSpeed = 1000;
     double jumpSpeed = 3000;
-    int frequency = 100000;
+    int  frequency = 100000;
     int repetTime = 1;
     double power = 0;
     double pulseWidth = 2;

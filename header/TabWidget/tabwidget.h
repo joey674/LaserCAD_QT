@@ -102,16 +102,24 @@ public:
         this->addTab(copyTab, "Copy");
     }
     void addOffsetTab(const UUID uuid) {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        auto offset = item->getParallelOffset();
+        auto offsetCount = item->getParallelOffsetCount();
+        if (offset == 0 && offsetCount == 0) {
+            offset = 10;
+            offsetCount = 3;
+        }
+        //
         QWidget* offsetTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(offsetTab);
         // 输入字段
         QFormLayout* formLayout = new QFormLayout();
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(-9999, 9999);
-        spacingSpin->setValue(10.0);
+        spacingSpin->setValue(offset);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(1, 9999);
-        countSpin->setValue(3);
+        countSpin->setRange(0, 9999);
+        countSpin->setValue(offsetCount);
         QPushButton* confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("Offset:", spacingSpin);
         formLayout->addRow("Offset Count:", countSpin);
@@ -125,40 +133,40 @@ public:
         });
         this->addTab(offsetTab, "Offset");
     }
-    void addMarkTab(const UUID uuid) {
+    void addMarkParamsTab(const UUID uuid) {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        auto params = item->getMarkParams();
+        //
         QWidget* markTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(markTab);
         // 表单布局
         QFormLayout* formLayout = new QFormLayout();
         QDoubleSpinBox* markSpeedSpin = new QDoubleSpinBox();
         markSpeedSpin->setRange(0, 100000);
-        markSpeedSpin->setValue(1000.0);
+        markSpeedSpin->setValue(params.markSpeed);
         QDoubleSpinBox* jumpSpeedSpin = new QDoubleSpinBox();
         jumpSpeedSpin->setRange(0, 100000);
-        jumpSpeedSpin->setValue(3000.0);
+        jumpSpeedSpin->setValue(params.jumpSpeed);
         QSpinBox* frequencySpin = new QSpinBox();
         frequencySpin->setRange(0, 1000000);
-        frequencySpin->setValue(100000);
+        frequencySpin->setValue(params.frequency);
         QSpinBox* wobelAmlSpin = new QSpinBox();
         wobelAmlSpin->setRange(0, 100000);
-        wobelAmlSpin->setValue(0);
+        wobelAmlSpin->setValue(params.wobelAml);
         QSpinBox* repetTimeSpin = new QSpinBox();
         repetTimeSpin->setRange(1, 1000);
-        repetTimeSpin->setValue(1);
+        repetTimeSpin->setValue(params.repetTime);
         QDoubleSpinBox* powerSpin = new QDoubleSpinBox();
         powerSpin->setRange(0, 100);
         powerSpin->setDecimals(2);
-        powerSpin->setValue(0.0);
+        powerSpin->setValue(params.power);
         QDoubleSpinBox* pulseWidthSpin = new QDoubleSpinBox();
         pulseWidthSpin->setRange(0, 1000);
         pulseWidthSpin->setDecimals(2);
-        pulseWidthSpin->setValue(2.0);
-        QSpinBox* freqSpin = new QSpinBox();
-        freqSpin->setRange(0, 100000);
-        freqSpin->setValue(100);
-        // QCheckBox* vectorDependentCheck = new QCheckBox("Vector Dependent:");
-        // QComboBox* vectorCombo = new QComboBox();  // 可添加项
-        // QLineEdit* vectorLineEdit = new QLineEdit("-2147483");
+        pulseWidthSpin->setValue(params.pulseWidth);
+        QSpinBox* wobelFreqSpin = new QSpinBox();
+        wobelFreqSpin->setRange(0, 100000);
+        wobelFreqSpin->setValue(params.wobelFreq);
         // Confirm 按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
         // 添加到表单布局
@@ -169,36 +177,81 @@ public:
         formLayout->addRow("Repet Time:", repetTimeSpin);
         formLayout->addRow("Power:", powerSpin);
         formLayout->addRow("Pulse Width:", pulseWidthSpin);
-        formLayout->addRow("Freq:", freqSpin);
-        // formLayout->addRow(vectorDependentCheck);
+        formLayout->addRow("Wobel Freq:", wobelFreqSpin);
         // vector dependent 区域横排
         QHBoxLayout* vectorLayout = new QHBoxLayout();
-        // vectorLayout->addWidget(vectorCombo);
-        // vectorLayout->addWidget(vectorLineEdit);
         formLayout->addRow("", vectorLayout);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         // 点击事件绑定
         connect(confirmBtn, &QPushButton::clicked, markTab, [ = ]() {
-            // 示例调用（根据你的接口调整）
-            EditController::getIns().onTabWidgetMarkTab(
-                // markSpeedSpin->value(),
-                // jumpSpeedSpin->value(),
-                // frequencySpin->value(),
-                // wobelAmlSpin->value(),
-                // repetTimeSpin->value(),
-                // powerSpin->value(),
-                // pulseWidthSpin->value(),
-                // freqSpin->value(),
-                // // vectorDependentCheck->isChecked(),
-                // // vectorCombo->currentText(),
-                // // vectorLineEdit->text().toInt()
-            );
+            MarkParams params = MarkParams{
+                markSpeedSpin->value(),
+                jumpSpeedSpin->value(),
+                frequencySpin->value(),
+                repetTimeSpin->value(),
+                powerSpin->value(),
+                pulseWidthSpin->value(),
+                wobelAmlSpin->value(),
+                wobelFreqSpin->value(),
+            };
+            EditController::getIns().onTabWidgetMarkParamsTab(params);
         });
-        this->addTab(markTab, "Mark");
+        this->addTab(markTab, "MarkParams");
+    }
+    void addDelayParamsTab(const UUID uuid) {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        auto params = item->getDelayParams();
+        //
+        QWidget* delayTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(delayTab);
+        QGridLayout* gridLayout = new QGridLayout();
+        // 左列
+        QSpinBox* startDelaySpin = new QSpinBox();
+        startDelaySpin->setRange(0, 1000000);
+        startDelaySpin->setValue(params.startDelay);
+        gridLayout->addWidget(new QLabel("Start Delay:"), 0, 0);
+        gridLayout->addWidget(startDelaySpin, 0, 1);
+        QSpinBox* endDelaySpin = new QSpinBox();
+        endDelaySpin->setRange(0, 1000000);
+        endDelaySpin->setValue(params.endDelay);
+        gridLayout->addWidget(new QLabel("End Delay:"), 1, 0);
+        gridLayout->addWidget(endDelaySpin, 1, 1);
+        QSpinBox* polygonDelaySpin = new QSpinBox();
+        polygonDelaySpin->setRange(0, 1000000);
+        polygonDelaySpin->setValue(params.polygonDelay);
+        gridLayout->addWidget(new QLabel("Polygo Delay:"), 2, 0);
+        gridLayout->addWidget(polygonDelaySpin, 2, 1);
+        // 右列
+        QSpinBox* markDelaySpin = new QSpinBox();
+        markDelaySpin->setRange(0, 1000000);
+        markDelaySpin->setValue(params.markDelay);
+        gridLayout->addWidget(new QLabel("Mark Delay:"), 0, 2);
+        gridLayout->addWidget(markDelaySpin, 0, 3);
+        QSpinBox* jumpDelaySpin = new QSpinBox();
+        jumpDelaySpin->setRange(0, 1000000);
+        jumpDelaySpin->setValue(params.jumpDelay);
+        gridLayout->addWidget(new QLabel("Jump Delay:"), 1, 2);
+        gridLayout->addWidget(jumpDelaySpin, 1, 3);
+        // 添加布局
+        mainLayout->addLayout(gridLayout);
+        // 确认按钮
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        mainLayout->addWidget(confirmBtn);
+        // 点击事件绑定
+        connect(confirmBtn, &QPushButton::clicked, delayTab, [ = ]() {
+            DelayParams params = DelayParams{
+                startDelaySpin->value(),
+                endDelaySpin->value(),
+                polygonDelaySpin->value(),
+                markDelaySpin->value(),
+                jumpDelaySpin->value()
+            };
+            EditController::getIns().onTabWidgetDelayParamsTab(params);
+        });
+        this->addTab(delayTab, "DelayParams");
     }
 
-    void addDelayTab(const UUID uuid) {}
 
     void addArcGeometryTab(const UUID uuid) {
         // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();

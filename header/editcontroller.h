@@ -40,51 +40,45 @@ public:
         GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
         Manager::getIns().setItemParallelOffset(item->getUUID(), offset, offsetNum);
     }
-    void onTabWidgetMarkTab() {
+    void onTabWidgetMarkParamsTab(MarkParams params) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        this->currentEditItem->setMarkParams(params);
     }
-    void onTabWidgetDelayTab() {}
+    void onTabWidgetDelayParamsTab(DelayParams params) {
+        if (!this->currentEditItem) {
+            return;
+        }
+        this->currentEditItem->setDelayParams(params);
+    }
     void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle) {
         if (!this->currentEditItem) {
             return;
         }
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
-        QVariant vertex0;
-        vertex0.setValue (Vertex{start, 0});
-        QVariant vertex1;
-        vertex1.setValue (Vertex{end, angle});
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex0", vertex0);
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex1", vertex1);
+        this->currentEditItem->editVertex(0, start, 0);
+        this->currentEditItem->editVertex(1, end, angle);
     }
     void onTabWidgetLineGeometryTab(QPointF start, QPointF end) {
         if (!this->currentEditItem) {
             return;
         }
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
-        QVariant vertex0;
-        vertex0.setValue (Vertex{start, 0});
-        QVariant vertex1;
-        vertex1.setValue (Vertex{end, 0});
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex0", vertex0);
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex1", vertex1);
+        this->currentEditItem->editVertex(0, start, 0);
+        this->currentEditItem->editVertex(1, end, 0);
     }
-    void onTabWidgetPointGeometryTab(QPointF start) {
+    void onTabWidgetPointGeometryTab(QPointF pos) {
         if (!this->currentEditItem) {
             return;
         }
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
-        QVariant vertex0;
-        vertex0.setValue (Vertex{start, 0});
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex0", vertex0);
+        this->currentEditItem->editVertex(0, pos, 0);
     }
     void onTabWidgetCircleGeometryTab(QPointF pos, double radius) {
         if (!this->currentEditItem) {
             return;
         }
-        GraphicsItem *item = static_cast < GraphicsItem * > (this->currentEditItem);
-        QVariant vertex0;
-        vertex0.setValue (Vertex{pos, 0});
-        Manager::getIns().setItemGeometry(item->getUUID(), "Vertex0", vertex0);
-        Manager::getIns().setItemGeometry(item->getUUID(), "Radius", radius);
+        CircleItem *item = static_cast < CircleItem * > (this->currentEditItem);
+        item->editVertex(0, pos, 0);
+        item->editRadius (radius);
     }
 
     /// \brief onGraphicsItemPositionHasChanged 物体位置变换后的操作
