@@ -102,10 +102,11 @@ public:
     cavc::Polyline<double> getCavcForm() const override
     {
         cavc::Polyline < double > input;
-        for (int i = 0; i < this->getVertexCount(); ++i) {
+        int count = this->getVertexCount();
+        for (int i = 0; i < count; ++i) {
             auto p1 = m_vertexList[i].point;
-            auto p2 = m_vertexList[(i + 1) % this->getVertexCount()].point;
-            auto angle = m_vertexList[(i + 1) % this->getVertexCount()].angle;
+            auto p2 = m_vertexList[(i + 1) % count].point;
+            auto angle = m_vertexList[(i + 1) % count].angle;
             // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
             //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));
             if (angle > 180.01 || angle < -180.01) {
@@ -125,6 +126,15 @@ public:
                 double bulge = 0;
                 getBulgeFromAngle(angle, bulge);
                 input.addVertex(p1.x(), p1.y(), bulge *  (-1));
+            }
+        }
+        // 输出的结果我们的格式是没有ClosedForm的, 不会和cavc一样,设置isClosed的时候使用闭合bulge连接第一个点,而是默认全是开放的;
+        // 如果直接输入我们自己的格式时, 最后一个点和第一个点一致说明闭合, 但是cavc会自动闭合这连个点, 就会认为这里时零向量报错;
+        // 所以这里需要转换一下, 如果最后一个点和第一个点是一致的, 就说明这个图形是封闭的, 就把最后一个点删了
+        if (this->m_vertexList[0].point == this->m_vertexList[count - 1].point) {
+            auto &verts = input.vertexes();
+            if (!verts.empty()) {
+                verts.pop_back(); // 删除最后一个点
             }
         }
         ///********************************************

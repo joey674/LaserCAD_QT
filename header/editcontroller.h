@@ -145,7 +145,28 @@ public:
         item->editRadius (radius);
         this->updateTableViewModel();
     }
-    void onTabWidgetPolylineGeometryTab() {}
+    void onTabWidgetPolylineGeometryTab(std::vector<Vertex> vertices)
+    {
+        // 只处理单个对象
+        if (this->m_currentEditItemGroup.size() != 1) {
+            WARN_MSG("Polyline edit only supports single selection.");
+            return;
+        }
+
+        auto curEditItemPtr = this->m_currentEditItemGroup[0];
+        auto curEditItem = static_cast<PolylineItem *>(curEditItemPtr.get());
+
+        // 顶点数量不匹配时，重建顶点数据
+        for (size_t i = 0; i < vertices.size(); ++i) {
+            curEditItem->editVertex(static_cast<uint>(i), vertices[i].point, vertices[i].angle);
+        }
+
+        this->updateTableViewModel();
+    }
+
+    void onTabWidgetRectGeometryTab() {}
+    void onTabWidgetEclipseGeometryTab() {}
+
     /// \brief onTabWidgetMultiEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
     void onTabWidgetMultiEditTab(std::vector<MultiEditParam> params)
@@ -198,7 +219,7 @@ public:
         }
     }
     /// \brief onTabWidgetMultiCombineTab
-    /// 开放线段
+    /// 组合线段??
     void onTabWidgetMultiCombineTab() {}
 
     /// \brief onTreeViewModelClicked

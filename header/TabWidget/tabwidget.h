@@ -1,31 +1,34 @@
 #ifndef TABWIDGET_H
 #define TABWIDGET_H
 
-#include <QTabWidget>
-#include <QComboBox>
-#include <QLabel>
-#include <QStackedWidget>
-#include <QDoubleSpinBox>
-#include <QPushButton>
-#include <QFormLayout>
-#include <QLineEdit>
 #include <QCheckBox>
-#include "utils.hpp"
+#include <QComboBox>
+#include <QDoubleSpinBox>
+#include <QFormLayout>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QScrollArea>
+#include <QStackedWidget>
+#include <QTabWidget>
 #include "editcontroller.h"
 #include "protocol.h"
+#include "utils.hpp"
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
 public:
     explicit TabWidget(QWidget *parent = nullptr) {};
 
-    void clearAllTabs() {
+    void clearAllTabs()
+    {
         while (count() > 0) {
             removeTab(0);
         }
     }
 
-    void addCopyTab(const UUID uuid) {
+    void addCopyTab(const UUID uuid)
+    {
         QWidget* copyTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(copyTab);
         // 1. 复制方式选择
@@ -103,7 +106,9 @@ public:
         // 添加到 tab 中
         this->addTab(copyTab, "Copy");
     }
-    void addOffsetTab(const UUID uuid) {
+
+    void addOffsetTab(const UUID uuid)
+    {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto offset = item->getParallelOffset();
         auto offsetCount = item->getParallelOffsetCount();
@@ -254,7 +259,8 @@ public:
         this->addTab(delayTab, "DelayParams");
     }
 
-    void addArcGeometryTab(const UUID uuid) {
+    void addArcGeometryTab(const UUID uuid)
+    {
         // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();
         auto item = Manager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexPos(0);
@@ -400,10 +406,116 @@ public:
         });
         this->addTab(pointTab, "Geometry");
     }
-    void addPolylineGeometryTab(const UUID uuid) {
+    void addPolylineGeometryTab(const UUID uuid)
+    {
+        auto itemPtr = Manager::getIns().itemMapFind(uuid);
+        auto item = static_cast<PolylineItem *>(itemPtr.get());
+        uint count = item->getVertexCount();
+
+        // 创建 scroll 区域
+        QScrollArea *scrollArea = new QScrollArea();
+        QWidget *innerWidget = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(innerWidget);
+
+        // 存储每个 vertex 的输入组件
+        struct VertexInput
+        {
+            QDoubleSpinBox *x;
+            QDoubleSpinBox *y;
+            QDoubleSpinBox *angle;
+        };
+        QVector<VertexInput> vertexInputs;
+
+        for (uint i = 0; i < count; ++i) {
+            QPointF pos = item->getVertexPos(i);
+            double angle = item->getVertex(i).angle;
+
+            QDoubleSpinBox *vx = new QDoubleSpinBox();
+            vx->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+                              "0; height: 0;  }");
+            QDoubleSpinBox *vy = new QDoubleSpinBox();
+            vy->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+                              "0; height: 0;  }");
+            QDoubleSpinBox *va = new QDoubleSpinBox();
+            va->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+                              "0; height: 0;  }");
+
+            vx->setRange(-1e6, 1e6);
+            vy->setRange(-1e6, 1e6);
+            va->setRange(-360, 360);
+            vx->setDecimals(3);
+            vy->setDecimals(3);
+            va->setDecimals(2);
+            vx->setValue(pos.x());
+            vy->setValue(pos.y());
+            va->setValue(i == 0 ? 0.0 : angle); // 第一个点 angle 固定为 0
+            if (i == 0)
+                va->setEnabled(false); // 不让编辑
+
+            // 横向布局: "Vertex i: X [ ] Y [ ] Angle [ ]"
+            QHBoxLayout *lineLayout = new QHBoxLayout();
+
+            QLabel *label = new QLabel(QString("Vertex %1:").arg(i));
+            label->setMinimumWidth(60);
+
+            QLabel *xLabel = new QLabel("X:");
+            QLabel *yLabel = new QLabel("Y:");
+            QLabel *aLabel = new QLabel("Angle:");
+
+            xLabel->setMinimumWidth(10);
+            yLabel->setMinimumWidth(10);
+            aLabel->setMinimumWidth(50);
+
+            vx->setFixedWidth(60);
+            vy->setFixedWidth(60);
+            va->setFixedWidth(60);
+
+            lineLayout->addWidget(label);
+            lineLayout->addWidget(xLabel);
+            lineLayout->addWidget(vx);
+            lineLayout->addWidget(yLabel);
+            lineLayout->addWidget(vy);
+            lineLayout->addWidget(aLabel);
+            lineLayout->addWidget(va);
+            lineLayout->addStretch();
+
+            mainLayout->addLayout(lineLayout);
+            vertexInputs.append(VertexInput{vx, vy, va});
+        }
+
+        // Confirm 按钮
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+        confirmBtn->setFixedWidth(100);
+        confirmBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        mainLayout->addWidget(confirmBtn, 0, Qt::AlignCenter);
+
+        // 设置 scroll 区域
+        scrollArea->setWidget(innerWidget);
+        scrollArea->setWidgetResizable(true);
+
+        // 加入 tab
+        QWidget *tab = new QWidget();
+        QVBoxLayout *layout = new QVBoxLayout(tab);
+        layout->addWidget(scrollArea);
+
+        // 点击事件
+        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
+            std::vector<Vertex> result;
+            for (int i = 0; i < vertexInputs.size(); ++i) {
+                const auto &w = vertexInputs[i];
+                Vertex v;
+                v.point = QPointF(w.x->value(), w.y->value());
+                v.angle = (i == 0 ? 0.0 : w.angle->value());
+                result.push_back(v);
+            }
+            EditController::getIns().onTabWidgetPolylineGeometryTab(result);
+        });
+
+        this->addTab(tab, "Geometry");
     }
 
-    void addMutiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
+    void addMutiItemsEditTab(const std::vector<UUID> & /*uuids*/)
+    {
         QWidget* tab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(tab);
         QFormLayout* formLayout = new QFormLayout();
@@ -483,7 +595,6 @@ public:
         //
         this->addTab(tab, "Multi Edit");
     }
-
 };
 
 #endif // TABWIDGET_H
