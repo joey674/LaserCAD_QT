@@ -413,25 +413,36 @@ public:
             QDoubleSpinBox *deltaSpin;
         };
         QMap < QString, FieldWidgets > fields;
-        auto addField = [&](const QString & name, double defaultValue = 0.0) {
-            QCheckBox* check = new QCheckBox(name);
-            QDoubleSpinBox* valueSpin = new QDoubleSpinBox();
-            QDoubleSpinBox* deltaSpin = new QDoubleSpinBox();
+        auto addField = [&](const QString &name, double defaultValue = 0.0) {
+            QCheckBox *check = new QCheckBox(name);
+            QDoubleSpinBox *valueSpin = new QDoubleSpinBox();
+            QDoubleSpinBox *deltaSpin = new QDoubleSpinBox();
+            // 设置范围/精度
             valueSpin->setRange(-999999, 999999);
             valueSpin->setDecimals(3);
             deltaSpin->setRange(-999999, 999999);
             deltaSpin->setDecimals(3);
+            // 设置默认值
+            valueSpin->setValue(defaultValue);
+            deltaSpin->setValue(0);
+            // 禁用状态跟随勾选
             valueSpin->setEnabled(false);
             deltaSpin->setEnabled(false);
             connect(check, &QCheckBox::toggled, valueSpin, &QDoubleSpinBox::setEnabled);
             connect(check, &QCheckBox::toggled, deltaSpin, &QDoubleSpinBox::setEnabled);
-            QHBoxLayout* hLayout = new QHBoxLayout();
+            //
+            check->setMinimumWidth(180);
+            valueSpin->setFixedWidth(80);
+            deltaSpin->setFixedWidth(80);
+            // 组装 layout
+            QHBoxLayout *hLayout = new QHBoxLayout();
             hLayout->addWidget(valueSpin);
             hLayout->addWidget(new QLabel("+"));
             hLayout->addWidget(deltaSpin);
             formLayout->addRow(check, hLayout);
             fields[name] = FieldWidgets{check, valueSpin, deltaSpin};
         };
+
         // 添加字段
         addField("Position.x");
         addField("Position.y");
@@ -467,7 +478,7 @@ public:
                 param.deltaValue = w.deltaSpin->value();
                 result.push_back (param);
             }
-            EditController::getIns().onTabWidgetMutiEditTab (result);
+            EditController::getIns().onTabWidgetMultiEditTab (result);
         });
         //
         this->addTab(tab, "Multi Edit");

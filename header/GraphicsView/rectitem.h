@@ -56,12 +56,12 @@ protected:
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavConForm ();
+            cavc::Polyline < double > input = this->getCavcForm ();
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
             for (const auto &polyline : results) {
-                auto item = FromCavConForm(polyline);
+                auto item = FromCavcForm(polyline);
                 this->m_offsetItemList.push_back(std::move(item));
             }
         }
@@ -81,7 +81,7 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavConForm() const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
         // 获取矩形
         QPointF topLeft = m_vertexPair[0].point;

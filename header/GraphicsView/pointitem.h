@@ -69,7 +69,7 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavConForm() const override {
+    cavc::Polyline < double > getCavcForm() const override {
         return cavc::Polyline < double > ();
     }
     double getParallelOffset() const override {

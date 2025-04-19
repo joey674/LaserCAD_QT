@@ -20,8 +20,9 @@ public:
     void updateTableViewModel();
 public:
     /// \brief onTabWidgetCopyTabVectorCopy
-    /// tabWidget的回调
-    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
+    /// tabWidget单个对象编辑的回调;
+    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count)
+    {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -66,7 +67,8 @@ public:
             }
         }
     }
-    void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
+    void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum)
+    {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -96,7 +98,10 @@ public:
         curEditItem->setDelayParams(params);
         this->updateTableViewModel();
     }
-    void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle) {
+    /// \brief onTabWidgetArcGeometryTab
+    /// \param start
+    void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle)
+    {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -140,7 +145,11 @@ public:
         item->editRadius (radius);
         this->updateTableViewModel();
     }
-    void onTabWidgetMutiEditTab(std::vector < MultiEditParam > params) {
+    void onTabWidgetPolylineGeometryTab() {}
+    /// \brief onTabWidgetMultiEditTab
+    /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
+    void onTabWidgetMultiEditTab(std::vector<MultiEditParam> params)
+    {
         if (this->m_currentEditItemGroup.empty()) {
             return;
         }
@@ -188,18 +197,22 @@ public:
             item->setCenterPos(pos);
         }
     }
+    /// \brief onTabWidgetMultiCombineTab
+    /// 开放线段
+    void onTabWidgetMultiCombineTab() {}
+
     /// \brief onTreeViewModelClicked
-    /// \param index
+    /// treeView中node点击回调
     void onTreeViewModelClicked(const QModelIndex &index) {}
     /// \brief onTreeViewModelSelectionChanged
-    ///
-    /// TODO 重构 选中不是按照顺序
+    ///  这里的selection不用考虑,因为选中对应graphicsItem的时候, graphicsItem的选中回调会自己排序编辑队列
     void onTreeViewModelSelectionChanged(const QItemSelection &selected,
                                          const QItemSelection &deselected);
+
     /// \brief onSceneSelectionChanged
     /// Scene的整体变动回调; 全局的管控
-    /// TODO 重构 选中不是按照顺序
     void onSceneSelectionChanged() {}
+
     /// \brief onGraphicsItemPositionHasChanged
     /// 单个物体位置变换后的回调
     void onGraphicsItemPositionHasChanged(UUID uuid) { this->updateTableViewModel(); }
@@ -217,9 +230,9 @@ public:
     /// 物体上鼠标press事件
     void onGraphicsItemMousePress(UUID uuid) {}
 
+public:
     /// \brief editItemInScene     scene中的编辑事件会传入
     /// \param pointCoordscene event 接收的是鼠标坐标事件
-public:
     void editItemInScene(QPointF pointCoordscene, MouseEvent event);
     int currentEditPolylineVertexIndex = -1;
     void editPolyline(QPointF pointCoordscene, PolylineItem *, MouseEvent event);

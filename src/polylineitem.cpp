@@ -18,7 +18,7 @@ bool PolylineItem::updateParallelOffset() {
     this->m_offsetItemList.clear();
     for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
         // 输入cavc库
-        auto input = this->getCavConForm();
+        auto input = this->getCavcForm();
         input.isClosed() = false;
         // input.isClosed() = true;
         std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
@@ -26,7 +26,7 @@ bool PolylineItem::updateParallelOffset() {
             * offsetIndex);
         // 获取结果
         for (const auto &polyline : results) {
-            auto item = FromCavConForm(polyline);
+            auto item = FromCavcForm(polyline);
             this->m_offsetItemList.push_back(std::move(item));
         }
     }
@@ -127,29 +127,4 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     for (auto& item : this->m_offsetItemList) {
         item->paint(painter, &optionx, widget);
     }
-}
-
-std::shared_ptr < PolylineItem > FromCavConForm(cavc::Polyline < double > polyline) {
-    auto item = std::make_shared < PolylineItem > ();
-    // item->LineType = LineType::offsetItem;
-    for (size_t i = 0; i < polyline.size(); ++i) {
-        auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
-        auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
-                        : polyline.vertexes()[polyline.size() - 1].bulge();
-        double newAngle = 0;
-        getAngleFromBulge(newBulge * (-1), newAngle);
-        item->addVertex(newPoint, newAngle);
-        // DEBUG_VAR(newPoint.x());
-        // DEBUG_VAR(newPoint.y());
-        // DEBUG_VAR(newBulge);
-    }
-    if (polyline.isClosed()) {
-        auto newPoint = QPointF(polyline.vertexes()[0].x(), polyline.vertexes()[0].y());
-        auto idx = polyline.size() - 1;
-        auto newBulge = polyline.vertexes()[idx].bulge();
-        double newAngle = 0;
-        getAngleFromBulge(newBulge * (-1), newAngle);
-        item->addVertex(newPoint, newAngle);
-    }
-    return item;
 }

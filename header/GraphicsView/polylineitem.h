@@ -2,8 +2,8 @@
 #define POLYLINEITEM_H
 
 #include "graphicsitem.h"
-#include "utils.hpp"
 #include "logger.h"
+#include "utils.hpp"
 #include <polylineoffset.hpp>
 #include <vector.hpp>
 
@@ -99,7 +99,8 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavConForm() const override {
+    cavc::Polyline<double> getCavcForm() const override
+    {
         cavc::Polyline < double > input;
         for (int i = 0; i < this->getVertexCount(); ++i) {
             auto p1 = m_vertexList[i].point;
@@ -168,6 +169,27 @@ private:
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 
-std::shared_ptr < PolylineItem > FromCavConForm(cavc::Polyline < double > polyline);
+inline std::shared_ptr<PolylineItem> FromCavcForm(cavc::Polyline<double> polyline)
+{
+    auto item = std::make_shared<PolylineItem>();
+    // item->LineType = LineType::offsetItem;
+    for (size_t i = 0; i < polyline.size(); ++i) {
+        auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
+        auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
+                                : polyline.vertexes()[polyline.size() - 1].bulge();
+        double newAngle = 0;
+        getAngleFromBulge(newBulge * (-1), newAngle);
+        item->addVertex(newPoint, newAngle);
+    }
+    if (polyline.isClosed()) {
+        auto newPoint = QPointF(polyline.vertexes()[0].x(), polyline.vertexes()[0].y());
+        auto idx = polyline.size() - 1;
+        auto newBulge = polyline.vertexes()[idx].bulge();
+        double newAngle = 0;
+        getAngleFromBulge(newBulge * (-1), newAngle);
+        item->addVertex(newPoint, newAngle);
+    }
+    return item;
+}
 
 #endif // POLYLINEITEM_H

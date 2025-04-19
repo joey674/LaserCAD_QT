@@ -1,14 +1,14 @@
 #ifndef GRAPHICSITEM_H
 #define GRAPHICSITEM_H
 
-#include <qgraphicsitem.h>
-#include <qgraphicsscene.h>
-#include <QPainter>
 #include <QDebug.h>
+#include <QPainter>
 #include <QStyleOptionGraphicsItem>
 #include "protocol.h"
 #include "utils.hpp"
 #include <polylineoffset.hpp>
+#include <qgraphicsitem.h>
+#include <qgraphicsscene.h>
 
 class GraphicsItem: public QGraphicsItem {
 public:
@@ -80,7 +80,7 @@ protected:
 public:
     /// \brief getParallelOffset
     /// \return
-    virtual cavc::Polyline < double > getCavConForm() const = 0;
+    virtual cavc::Polyline<double> getCavcForm() const = 0;
     virtual double getParallelOffset() const = 0;
     virtual double getParallelOffsetCount() const = 0;
     /// \brief getCenterPos

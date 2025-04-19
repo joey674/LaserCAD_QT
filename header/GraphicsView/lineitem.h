@@ -29,7 +29,7 @@ protected:
     bool updateParallelOffset() override;// TODO
     bool updatePaintItem() override;
 public:
-    cavc::Polyline < double > getCavConForm() const override;
+    cavc::Polyline < double > getCavcForm() const override;
     double getParallelOffset() const override;
     double getParallelOffsetCount() const override;
     Vertex getVertex(const int index)const override;

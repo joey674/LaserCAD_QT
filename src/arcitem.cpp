@@ -1,8 +1,8 @@
 #include "arcitem.h"
 #include "logger.h"
 
-
-ArcItem::ArcItem() {
+ArcItem::ArcItem()
+{
     // INFO_MSG("create ArcItem, uuid: "+this->getUUID());
 }
 

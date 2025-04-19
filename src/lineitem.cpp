@@ -40,12 +40,12 @@ bool LineItem::updateParallelOffset() {
     this->m_offsetItemList.clear();
     for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
         // 输入cavc库
-        cavc::Polyline < double > input = this->getCavConForm();
+        cavc::Polyline < double > input = this->getCavcForm();
         input.isClosed() = false;
         std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
         // 获取结果
         for (const auto& polyline : results) {
-            auto item = FromCavConForm(polyline);
+            auto item = FromCavcForm(polyline);
             this->m_offsetItemList.push_back(std::move(item));
         }
     }
@@ -64,7 +64,7 @@ bool LineItem::updatePaintItem() {
     return true;
 }
 
-cavc::Polyline < double > LineItem::getCavConForm() const {
+cavc::Polyline < double > LineItem::getCavcForm() const {
     // 输入cavc库
     cavc::Polyline < double > input;
     auto p1 = m_vertexPair[0].point;

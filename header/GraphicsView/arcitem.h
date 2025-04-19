@@ -1,12 +1,12 @@
 #ifndef ARCITEM_H
 #define ARCITEM_H
 
-#include "protocol.h"
 #include "graphicsitem.h"
-#include "utils.hpp"
 #include "logger.h"
-#include <polylineoffset.hpp>
 #include "polylineitem.h"
+#include "protocol.h"
+#include "utils.hpp"
+#include <polylineoffset.hpp>
 
 class ArcItem: public GraphicsItem {
 public:
@@ -65,12 +65,12 @@ protected:
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavConForm();
+            cavc::Polyline < double > input = this->getCavcForm();
             input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
             for (const auto& polyline : results) {
-                auto item = FromCavConForm(polyline);
+                auto item = FromCavcForm(polyline);
                 this->m_offsetItemList.push_back(std::move(item));
             }
         }
@@ -88,7 +88,7 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavConForm() const override {
+    cavc::Polyline < double > getCavcForm() const override {
         // 输入cavc库
         cavc::Polyline < double > input;
         auto p1 = m_vertexPair[0].point;
