@@ -243,14 +243,11 @@ public:
         cavc::CombineResult<double> result = cavc::combinePolylines(cavcA, cavcB, mode);
 
         for (const auto &pline : result.remaining) {
-            QString debugStr = "Polyline:\n";
-            auto &vertexes = pline.vertexes();
-            for (std::size_t i = 0; i < pline.size(); ++i) {
-                auto v = vertexes[i];
-                DEBUG_MSG("vertex" + QString::number(i));
-                DEBUG_MSG(v.x());
-                DEBUG_MSG(v.y());
-            }
+            auto item = FromCavcForm(pline);
+            SceneManager::getIns().scene->addItem(item.get());
+            Manager::getIns().addItem(item);
+            Manager::getIns().setItemSelectable(item->getUUID(), true);
+            Manager::getIns().setItemMovable(item->getUUID(), true);
         }
     }
 

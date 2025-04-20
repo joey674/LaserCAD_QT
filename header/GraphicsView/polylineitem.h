@@ -106,9 +106,9 @@ public:
         cavc::Polyline < double > input;
         int count = this->getVertexCount();
         for (int i = 0; i < count; ++i) {
-            auto p1 = m_vertexList[i].point;
-            auto p2 = m_vertexList[(i + 1) % count].point;
-            auto angle = m_vertexList[(i + 1) % count].angle;
+            auto p1 = this->getVertex(i).point;
+            auto p2 = this->getVertex((i + 1) % count).point;
+            auto angle = this->getVertex((i + 1) % count).angle;
             // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
             //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));
             if (angle > 180.01 || angle < -180.01) {
