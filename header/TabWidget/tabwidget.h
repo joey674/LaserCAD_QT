@@ -14,6 +14,7 @@
 #include "editcontroller.h"
 #include "protocol.h"
 #include "utils.hpp"
+#include <polylinecombine.hpp>
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -514,7 +515,7 @@ public:
         this->addTab(tab, "Geometry");
     }
 
-    void addMutiItemsEditTab(const std::vector<UUID> & /*uuids*/)
+    void addMultiItemsEditTab(const std::vector<UUID> & /*uuids*/)
     {
         QWidget* tab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(tab);
@@ -590,10 +591,44 @@ public:
                 param.deltaValue = w.deltaSpin->value();
                 result.push_back (param);
             }
-            EditController::getIns().onTabWidgetMultiEditTab (result);
+            EditController::getIns().onTabWidgetMultiItemsEditTab(result);
         });
         //
         this->addTab(tab, "Multi Edit");
+    }
+    void addDuoItemsBoolOpTab(const std::vector<UUID> &uuids)
+    {
+        if (uuids.size() != 2)
+            return;
+
+        // 创建 UI
+        QWidget *tab = new QWidget();
+        QVBoxLayout *layout = new QVBoxLayout(tab);
+
+        QLabel *label = new QLabel("Select Boolean Operation:");
+        QComboBox *combo = new QComboBox();
+        combo->addItem("Union",
+                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Union)));
+        combo->addItem("Exclude",
+                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Exclude)));
+        combo->addItem("Intersect",
+                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Intersect)));
+        combo->addItem("XOR", QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::XOR)));
+
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+
+        layout->addWidget(label);
+        layout->addWidget(combo);
+        layout->addWidget(confirmBtn, 0, Qt::AlignCenter);
+
+        // 仅传出选择项和 uuid
+        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
+            int opIndex = combo->currentData().toInt();
+            cavc::PlineCombineMode mode = static_cast<cavc::PlineCombineMode>(opIndex);
+            EditController::getIns().onTabWidgetDuoItemsBoolOpTab(mode);
+        });
+
+        this->addTab(tab, "Boolean Op");
     }
 };
 

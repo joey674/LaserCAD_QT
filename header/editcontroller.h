@@ -1,16 +1,17 @@
 #ifndef EDITCONTROLLER_H
 #define EDITCONTROLLER_H
 
-#include <QMainWindow>
 #include <QGraphicsScene>
-#include <qgraphicsitem.h>
-#include "protocol.h"
+#include <QMainWindow>
 #include "arcitem.h"
-#include "polylineitem.h"
 #include "manager.h"
+#include "polylineitem.h"
+#include "protocol.h"
+#include <polylinecombine.hpp>
+#include <qgraphicsitem.h>
 
-
-class EditController {
+class EditController
+{
 public:
     std::vector<std::shared_ptr<GraphicsItem> > m_currentEditItemGroup
         = std::vector<std::shared_ptr<GraphicsItem> >();
@@ -167,9 +168,9 @@ public:
     void onTabWidgetRectGeometryTab() {}
     void onTabWidgetEclipseGeometryTab() {}
 
-    /// \brief onTabWidgetMultiEditTab
+    /// \brief onTabWidgetMultiItemsEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
-    void onTabWidgetMultiEditTab(std::vector<MultiEditParam> params)
+    void onTabWidgetMultiItemsEditTab(std::vector<MultiEditParam> params)
     {
         if (this->m_currentEditItemGroup.empty()) {
             return;
@@ -219,8 +220,39 @@ public:
         }
     }
     /// \brief onTabWidgetMultiCombineTab
-    /// 组合线段??
-    void onTabWidgetMultiCombineTab() {}
+    /// 把两个闭合曲线做boolan Operation
+    void onTabWidgetDuoItemsBoolOpTab(cavc::PlineCombineMode mode)
+    {
+        if (this->m_currentEditItemGroup.size() != 2) {
+            WARN_MSG("Boolean operation requires exactly two selected items.");
+            return;
+        }
+
+        // 获取两个 polyline item
+        auto aPtr = this->m_currentEditItemGroup[0];
+        auto bPtr = this->m_currentEditItemGroup[1];
+        auto aItem = dynamic_cast<PolylineItem *>(aPtr.get());
+        auto bItem = dynamic_cast<PolylineItem *>(bPtr.get());
+
+        // 转换为 cavc polyline
+        auto cavcA = aItem->getCavcForm();
+        cavcA.isClosed() = true;
+        auto cavcB = bItem->getCavcForm();
+        cavcB.isClosed() = true;
+        // 执行布尔操作
+        cavc::CombineResult<double> result = cavc::combinePolylines(cavcA, cavcB, mode);
+
+        for (const auto &pline : result.remaining) {
+            QString debugStr = "Polyline:\n";
+            auto &vertexes = pline.vertexes();
+            for (std::size_t i = 0; i < pline.size(); ++i) {
+                auto v = vertexes[i];
+                DEBUG_MSG("vertex" + QString::number(i));
+                DEBUG_MSG(v.x());
+                DEBUG_MSG(v.y());
+            }
+        }
+    }
 
     /// \brief onTreeViewModelClicked
     /// treeView中node点击回调

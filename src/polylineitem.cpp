@@ -41,9 +41,16 @@ double PolylineItem::getParallelOffsetCount()const {
     return  this->m_offsetCount;
 }
 
-Vertex PolylineItem::getVertex(const int index) const {
-    return  m_vertexList[index];
+Vertex PolylineItem::getVertex(const int index) const
+{
+    return m_vertexList[index];
 }
+// Vertex PolylineItem::getVertex(const int index) const
+// {
+//     QPointF point = m_vertexList[index].point;
+//     QPointF pos = point + this->scenePos();
+//     return Vertex{pos, m_vertexList[index].angle};
+// }
 
 QPointF PolylineItem::getVertexPos(const int index)const {
     QPointF point = m_vertexList[index].point;

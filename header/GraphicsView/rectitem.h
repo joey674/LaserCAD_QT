@@ -83,17 +83,17 @@ protected:
 public:
     cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
-        // 获取矩形
-        QPointF topLeft = m_vertexPair[0].point;
-        QPointF bottomRight = m_vertexPair[1].point;
-        QRectF rect(topLeft, bottomRight);
-        rect = rect.normalized();
-        // 按顺时针方向添加四个点
-        input.addVertex(rect.left(), rect.top(), -1);
-        input.addVertex(rect.right(), rect.top(), -1);
-        input.addVertex(rect.right(), rect.bottom(), -1);
-        input.addVertex(rect.left(), rect.bottom(), -1);
-        input.isClosed() = true;
+        // // 获取矩形
+        // QPointF topLeft = m_vertexPair[0].point;
+        // QPointF bottomRight = m_vertexPair[1].point;
+        // QRectF rect(topLeft, bottomRight);
+        // rect = rect.normalized();
+        // // 按顺时针方向添加四个点
+        // input.addVertex(rect.left(), rect.top(), -1);
+        // input.addVertex(rect.right(), rect.top(), -1);
+        // input.addVertex(rect.right(), rect.bottom(), -1);
+        // input.addVertex(rect.left(), rect.bottom(), -1);
+        // input.isClosed() = true;
         return input;
     }
     double getParallelOffset() const override {

@@ -49,64 +49,6 @@ void EditController::editItemInScene(QPointF pointCoordscene, MouseEvent event) 
 /// \param event
 ///
 void EditController::editArc(QPointF pointCoordscene, ArcItem* item, MouseEvent event) {
-    // if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease)
-    // {
-    //     INFO_MSG("edit arc");
-    //     DEBUG_VAR(item->getCenterPos());
-    //     DEBUG_VAR(item->pos());
-    //     // 把对象的属性映射到属性修改面板
-    //     // 清除table
-    //     UiManager::getIns().UI()->propertyTableWidget->clearContents();
-    //     UiManager::getIns().UI()->propertyTableWidget->setRowCount(0);
-    //     // 先blocksignal,不然会频繁触发修改属性table的回调
-    //     UiManager::getIns().UI()->propertyTableWidget->blockSignals(true);
-    //     // 映射属性
-    //     int row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     QTableWidgetItem *propertyName =nullptr;
-    //     QTableWidgetItem *propertyValue = nullptr;
-    //     auto posOffset = item->pos();
-    //     row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
-    //     propertyName = new QTableWidgetItem("startPoint.x");
-    //     propertyValue = new QTableWidgetItem(QString::number(item->getVertex(0).point.x()+posOffset.x()));
-    //     propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
-    //     propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
-    //     row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
-    //     propertyName = new QTableWidgetItem("startPoint.y");
-    //     propertyValue = new QTableWidgetItem(QString::number(item->getVertex(0).point.y()+posOffset.y()));
-    //     propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
-    //     propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
-    //     row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
-    //     propertyName = new QTableWidgetItem("endPoint.x");
-    //     propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).point.x()+posOffset.x()));
-    //     propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
-    //     propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
-    //     row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
-    //     propertyName = new QTableWidgetItem("endPoint.y");
-    //     propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).point.y()+posOffset.y()));
-    //     propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
-    //     propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
-    //     row = UiManager::getIns().UI()->propertyTableWidget->rowCount();
-    //     UiManager::getIns().UI()->propertyTableWidget->insertRow(row);
-    //     propertyName = new QTableWidgetItem("angle");
-    //     propertyValue = new QTableWidgetItem(QString::number(item->getVertex(1).angle));
-    //     propertyName->setFlags(propertyName->flags() & ~Qt::ItemIsEditable);
-    //     propertyValue->setFlags(propertyValue->flags() | Qt::ItemIsEditable);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 0, propertyName);
-    //     UiManager::getIns().UI()->propertyTableWidget->setItem(row, 1, propertyValue);
-    //     UiManager::getIns().UI()->propertyTableWidget->blockSignals(false);
-    // }
 }
 
 void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, MouseEvent event) {
@@ -171,7 +113,12 @@ void EditController::updateTabWidget() {
         UiManager::getIns().UI()->tabWidget->addDelayParamsTab(curEditItem->getUUID());
         return;
     } else { // 多个编辑对象
-        UiManager::getIns().UI()->tabWidget->addMutiItemsEditTab(std::vector < UUID > ());
+        auto uuids = std::vector<UUID>();
+        for (auto item : this->m_currentEditItemGroup) {
+            uuids.push_back(item->getUUID());
+        }
+        UiManager::getIns().UI()->tabWidget->addMultiItemsEditTab(uuids);
+        UiManager::getIns().UI()->tabWidget->addDuoItemsBoolOpTab(uuids);
     }
 }
 
