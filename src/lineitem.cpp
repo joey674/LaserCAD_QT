@@ -2,41 +2,6 @@
 
 LineItem::LineItem() {}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-cavc::Polyline < double > LineItem::getCavcForm() const {
-    // 输入cavc库
-    cavc::Polyline < double > input;
-    auto p1 = m_vertexPair[0].point;
-    auto p2 = m_vertexPair[1].point;
-    input.addVertex(p1.x(), p1.y(), 0);
-    input.addVertex(p2.x(), p2.y(), 0);
-    return input;
-}
-
-
-
-
-
-
-
-
-
-
-
-
 QRectF LineItem::boundingRect() const {
     if (!this->m_paintItem) {
         return QRectF();

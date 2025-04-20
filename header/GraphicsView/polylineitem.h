@@ -11,7 +11,6 @@ class PolylineItem: public GraphicsItem {
 public:
     PolylineItem();
     PolylineItem(const PolylineItem& other): GraphicsItem(other),
-        m_vertexList(other.m_vertexList),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
         for (int i = 0; i < this->getVertexCount(); ++i) {
@@ -101,14 +100,20 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline<double> getCavcForm() const override
+    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
     {
         cavc::Polyline < double > input;
         int count = this->getVertexCount();
         for (int i = 0; i < count; ++i) {
-            auto p1 = this->getVertex(i).point;
-            auto p2 = this->getVertex((i + 1) % count).point;
-            auto angle = this->getVertex((i + 1) % count).angle;
+            QPointF p1, p2;
+            if (inSceneCoord) {
+                p1 = this->getVertex(i).point;
+                p2 = this->getVertex((i + 1) % count).point;
+            } else {
+                p1 = this->m_vertexList[i].point;
+                p2 = this->m_vertexList[(i + 1) % count].point;
+            }
+            auto angle = this->m_vertexList[(i + 1) % count].angle;
             // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
             //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));
             if (angle > 180.01 || angle < -180.01) {

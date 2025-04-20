@@ -62,9 +62,16 @@ public:
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
 protected:
+    /// \brief updateParallelOffset
+    /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
     virtual bool updateParallelOffset() = 0;
+    /// \brief updatePaintItem
+    /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
     virtual bool updatePaintItem() = 0;
-    virtual bool animate() {
+    /// \brief animate
+    /// \return
+    virtual bool animate()
+    {
         prepareGeometryChange();
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->updatePaintItem();
@@ -80,7 +87,7 @@ protected:
 public:
     /// \brief getParallelOffset
     /// \return
-    virtual cavc::Polyline<double> getCavcForm() const = 0;
+    virtual cavc::Polyline<double> getCavcForm(bool inSceneCoord) const = 0;
     virtual double getParallelOffset() const = 0;
     virtual double getParallelOffsetCount() const = 0;
     /// \brief getVertex

@@ -71,7 +71,8 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavcForm() const override {
+    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
+    {
         return cavc::Polyline < double > ();
     }
     double getParallelOffset() const override {

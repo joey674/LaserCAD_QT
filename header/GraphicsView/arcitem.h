@@ -66,7 +66,7 @@ protected:
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm();
+            cavc::Polyline<double> input = this->getCavcForm(false);
             input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
@@ -89,11 +89,19 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline < double > getCavcForm() const override {
+    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
+    {
         // 输入cavc库
         cavc::Polyline < double > input;
-        auto p1 = m_vertexPair[0].point;
-        auto p2 = m_vertexPair[1].point;
+        QPointF p1, p2;
+        if (inSceneCoord) {
+            p1 = this->getVertex(0).point;
+            p2 = this->getVertex(1).point;
+        } else {
+            p1 = m_vertexPair[0].point;
+            p2 = m_vertexPair[1].point;
+        }
+
         auto angle = m_vertexPair[1].angle;
         if (angle > 180.01 || angle < -180.01) {
             auto sign = angle > 0 ? 1 : -1;

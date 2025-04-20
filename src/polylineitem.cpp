@@ -18,7 +18,7 @@ bool PolylineItem::updateParallelOffset() {
     this->m_offsetItemList.clear();
     for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
         // 输入cavc库
-        auto input = this->getCavcForm();
+        auto input = this->getCavcForm(false);
         input.isClosed() = false;
         // input.isClosed() = true;
         std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,

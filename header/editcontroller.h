@@ -231,13 +231,13 @@ public:
         // 获取两个 polyline item
         auto aPtr = this->m_currentEditItemGroup[0];
         auto bPtr = this->m_currentEditItemGroup[1];
-        auto aItem = dynamic_cast<PolylineItem *>(aPtr.get());
-        auto bItem = dynamic_cast<PolylineItem *>(bPtr.get());
+        auto aItem = dynamic_cast<GraphicsItem *>(aPtr.get());
+        auto bItem = dynamic_cast<GraphicsItem *>(bPtr.get());
 
         // 转换为 cavc polyline
-        auto cavcA = aItem->getCavcForm();
+        auto cavcA = aItem->getCavcForm(true);
         cavcA.isClosed() = true;
-        auto cavcB = bItem->getCavcForm();
+        auto cavcB = bItem->getCavcForm(true);
         cavcB.isClosed() = true;
         // 执行布尔操作
         cavc::CombineResult<double> result = cavc::combinePolylines(cavcA, cavcB, mode);
