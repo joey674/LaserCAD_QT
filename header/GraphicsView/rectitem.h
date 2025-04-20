@@ -12,8 +12,8 @@ public:
     RectItem(const RectItem& other): GraphicsItem(other),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
-        m_vertexPair[0].point = other.getVertexPos(0);
-        m_vertexPair[1].point = other.getVertexPos(1);
+        m_vertexPair[0] = other.getVertex(0);
+        m_vertexPair[1] = other.getVertex(1);
         // 更新出来paintitem和offsetitem
         this->animate();
     }
@@ -22,12 +22,13 @@ public:
     }
 public:
     /// 编辑vertex; 0是左上坐标,1是右下坐标
-    bool editVertex(const int index, const QPointF point, const double angle = 0) override {
+    bool setVertex(const int index, const Vertex vertex) override
+    {
         if (index > 1) {
             return false;
         }
-        QPointF pos = point - this->scenePos();
-        this->m_vertexPair[index].point = pos;
+        this->m_vertexPair[index].point = vertex.point - this->scenePos();
+        this->m_vertexPair[index].angle = vertex.angle;
         animate();
         return true;
     }
@@ -37,8 +38,9 @@ public:
         this->animate();
         return true;
     }
-    bool setCenterPos(const QPointF point) override {
-        QPointF currentCenter = this->getCenterPos();
+    bool setCenter(const QPointF point) override
+    {
+        QPointF currentCenter = this->getCenter();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -102,21 +104,18 @@ public:
     double getParallelOffsetCount() const override {
         return this->m_offsetCount;
     }
-    Vertex getVertex(const int index = 0) const override {
-        if (index > 1) {
-            assert("false index:only 0,1");
-        }
-        return m_vertexPair[index];
-    }
-    QPointF getVertexPos(const int index) const override {
+    Vertex getVertex(const int index) const override
+    {
         if (index > 1) {
             assert("false index:only 0,1");
         }
         QPointF point = m_vertexPair[index].point;
+        double angle = m_vertexPair[index].angle;
         QPointF pos = point + this->scenePos();
-        return pos;
+        return Vertex{pos, angle};
     }
-    QPointF getCenterPos() const override {
+    QPointF getCenter() const override
+    {
         auto center = QPointF{};
         center = (m_vertexPair[0].point + m_vertexPair[1].point) / 2;
         auto posOffset = this->pos();

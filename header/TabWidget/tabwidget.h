@@ -264,8 +264,8 @@ public:
     {
         // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertexPos(0);
-        QPointF v1 = item->getVertexPos(1);
+        QPointF v0 = item->getVertex(0).point;
+        QPointF v1 = item->getVertex(1).point;
         double angle = item->getVertex(1).angle;
         //
         QWidget* arcTab = new QWidget();
@@ -315,7 +315,7 @@ public:
     void addCircleGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < CircleItem * > (itemptr.get());
-        QPointF center = item->getVertexPos(0);
+        QPointF center = item->getVertex(0).point;
         double radius = item->getRadius();
         //
         QWidget* circleTab = new QWidget();
@@ -351,8 +351,8 @@ public:
     }
     void addLineGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertexPos(0);
-        QPointF v1 = item->getVertexPos(1);
+        QPointF v0 = item->getVertex(0).point;
+        QPointF v1 = item->getVertex(1).point;
         //
         QWidget* lineTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(lineTab);
@@ -385,7 +385,7 @@ public:
     }
     void addPointGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertexPos(0);
+        QPointF v0 = item->getVertex(0).point;
         //
         QWidget* pointTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(pointTab);
@@ -428,7 +428,7 @@ public:
         QVector<VertexInput> vertexInputs;
 
         for (uint i = 0; i < count; ++i) {
-            QPointF pos = item->getVertexPos(i);
+            QPointF pos = item->getVertex(i).point;
             double angle = item->getVertex(i).angle;
 
             QDoubleSpinBox *vx = new QDoubleSpinBox();

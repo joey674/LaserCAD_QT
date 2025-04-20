@@ -38,7 +38,7 @@ public:
                 continue;
             }
             QPointF offset = unitOffset * i;
-            copiedItem->setCenterPos(curEditItem->getCenterPos() + offset);
+            copiedItem->setCenter(curEditItem->getCenter() + offset);
         }
     }
     void onTabWidgetCopyTabMatrixCopy(
@@ -52,7 +52,7 @@ public:
         //
         QPointF hOffset = hVec * hSpacing;
         QPointF vOffset = vVec * vSpacing;
-        QPointF origin = curEditItem->getCenterPos();
+        QPointF origin = curEditItem->getCenter();
         for (int row = 0; row < vCount; ++row) {
             for (int col = 0; col < hCount; ++col) {
                 if (row == 0 && col == 0) {
@@ -64,7 +64,7 @@ public:
                     continue;
                 }
                 QPointF offset = hOffset * col + vOffset * row;
-                copiedItem->setCenterPos(origin + offset);
+                copiedItem->setCenter(origin + offset);
             }
         }
     }
@@ -109,8 +109,8 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->editVertex(0, start, 0);
-        curEditItem->editVertex(1, end, angle);
+        curEditItem->setVertex(0, Vertex{start, 0});
+        curEditItem->setVertex(1, Vertex{end, angle});
         this->updateTableViewModel();
     }
     void onTabWidgetLineGeometryTab(QPointF start, QPointF end) {
@@ -120,8 +120,8 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->editVertex(0, start, 0);
-        curEditItem->editVertex(1, end, 0);
+        curEditItem->setVertex(0, Vertex{start, 0});
+        curEditItem->setVertex(1, Vertex{end, 0});
         this->updateTableViewModel();
     }
     void onTabWidgetPointGeometryTab(QPointF pos) {
@@ -131,7 +131,7 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->editVertex(0, pos, 0);
+        curEditItem->setVertex(0, Vertex{pos, 0});
         this->updateTableViewModel();
     }
     void onTabWidgetCircleGeometryTab(QPointF pos, double radius) {
@@ -142,7 +142,7 @@ public:
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
         CircleItem *item = static_cast<CircleItem *>(curEditItem.get());
-        item->editVertex(0, pos, 0);
+        item->setVertex(0, Vertex{pos, 0});
         item->editRadius (radius);
         this->updateTableViewModel();
     }
@@ -159,7 +159,7 @@ public:
 
         // 顶点数量不匹配时，重建顶点数据
         for (size_t i = 0; i < vertices.size(); ++i) {
-            curEditItem->editVertex(static_cast<uint>(i), vertices[i].point, vertices[i].angle);
+            curEditItem->setVertex(static_cast<uint>(i), vertices[i]);
         }
 
         this->updateTableViewModel();
@@ -180,7 +180,7 @@ public:
             auto item = m_currentEditItemGroup[i];
             MarkParams mark = item->getMarkParams();
             DelayParams delay = item->getDelayParams();
-            QPointF pos = item->getCenterPos ();
+            QPointF pos = item->getCenter();
             for (const MultiEditParam& param : params) {
                 QVariant val = param.baseValue;
                 QVariant delta = param.deltaValue;
@@ -216,7 +216,7 @@ public:
             item->setMarkParams(mark);
             item->setDelayParams(delay);
             DEBUG_VAR(pos);
-            item->setCenterPos(pos);
+            item->setCenter(pos);
         }
     }
     /// \brief onTabWidgetMultiCombineTab

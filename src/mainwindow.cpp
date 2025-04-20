@@ -881,7 +881,7 @@ void MainWindow::on_centerButton_clicked() {
     }
     auto curEditItem = EditController::getIns().m_currentEditItemGroup[0];
     //
-    curEditItem->setCenterPos(QPointF{0, 0});
+    curEditItem->setCenter(QPointF{0, 0});
 }
 
 void MainWindow::on_createOffsetButton_clicked() {
@@ -1219,8 +1219,8 @@ void MainWindow::on_drawTestLineButton_clicked() {
 
     this->tmpArc = std::make_shared<ArcItem>();
     scene->addItem(this->tmpArc.get());
-    this->tmpArc->editVertex(0,p1,0);
-    this->tmpArc->editVertex(1,p3,angle);
+    this->tmpArc->setVertex(0,p1,0);
+    this->tmpArc->setVertex(1,p3,angle);
     DEBUG_VAR(center);
 
     double  radius1 = 0;
@@ -1230,18 +1230,18 @@ void MainWindow::on_drawTestLineButton_clicked() {
 
     // this->tmpArc = std::make_shared<ArcItem>();
     // scene->addItem( this->tmpArc.get());
-    // this->tmpArc->editVertex(0,QPointF{0,0},0);
-    //  this->tmpArc->editVertex(1,QPointF{-100,0},0.5);
+    // this->tmpArc->setVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->setVertex(1,QPointF{-100,0},0.5);
 
     //  this->tmpArc = std::make_shared<ArcItem>();
     // scene->addItem( this->tmpArc.get());
-    // this->tmpArc->editVertex(0,QPointF{0,0},0);
-    //  this->tmpArc->editVertex(1,QPointF{0,100},1.5);
+    // this->tmpArc->setVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->setVertex(1,QPointF{0,100},1.5);
 
     //  this->tmpArc = std::make_shared<ArcItem>();
     // scene->addItem( this->tmpArc.get());
-    //  this->tmpArc->editVertex(0,QPointF{0,0},0);
-    //  this->tmpArc->editVertex(1,QPointF{0,-100},0.5);
+    //  this->tmpArc->setVertex(0,QPointF{0,0},0);
+    //  this->tmpArc->setVertex(1,QPointF{0,-100},0.5);
 
     */
     ///

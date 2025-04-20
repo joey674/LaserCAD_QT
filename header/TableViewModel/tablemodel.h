@@ -23,7 +23,7 @@ public:
         this->m_uuid = uuid;
         // 几何属性
         auto item = Manager::getIns().itemMapFind(this->m_uuid);
-        m_propertyList.append({ "Position", item->getCenterPos() });
+        m_propertyList.append({"Position", item->getCenter()});
         // OffsetParams
 
         // MarkParams
@@ -84,13 +84,12 @@ public:
                 return parsePointFToString(value.toPointF());
             }
             if (value.canConvert < Vertex > ()) {
-                // 注意 这里显示为Scene内坐标
                 if (key == "Vertex0") {
-                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexPos(0);
+                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertex(0).point;
                     auto ang = value.value < Vertex > ().angle;
                     return parseVertexToString(Vertex{pos, ang});
                 } else if (key == "Vertex1") {
-                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexPos(1);
+                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertex(1).point;
                     auto ang = value.value < Vertex > ().angle;
                     return parseVertexToString(Vertex{pos, ang});
                 }
@@ -116,25 +115,6 @@ public:
         auto& row = m_propertyList[index.row()];
         QString key = row.first;
         QVariant value = data;
-        // 解析 key(不写的就代表不处理)
-        // if (key == "Position") {
-        //     value = parseStringToPointF(data.toString());
-        //     Manager::getIns().setItemPosition(m_uuid, value.toPointF());
-        // }
-        // if (key == "Vertex0") {
-        //     value.setValue(parseStringToVertex(data.toString()));
-        //     // 更新自定property
-        //     Manager::getIns().setItemGeometry(m_uuid, "Vertex0", value);
-        //     // 还影响到了pos,所以也要更新
-        //     auto pos = Manager::getIns().itemMapFind(m_uuid)->getCenterPos();
-        //     Manager::getIns().propertyMapFind(m_uuid, PropertyIndex::Position) = pos;
-        // } else if (key == "Vertex1") {
-        //     value.setValue(parseStringToVertex(data.toString()));
-        //     Manager::getIns().setItemGeometry(m_uuid, "Vertex1", value);
-        //     // 还影响到了pos,所以也要更新
-        //     auto pos = Manager::getIns().itemMapFind(m_uuid)->getCenterPos();
-        //     Manager::getIns().propertyMapFind(m_uuid, PropertyIndex::Position) = pos;
-        // }
         // // 更新本地值
         row.second = value;
         emit dataChanged(index, index);

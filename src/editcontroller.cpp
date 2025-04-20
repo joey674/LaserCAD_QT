@@ -59,7 +59,7 @@ void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, M
     if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease) {
         double minDistance = 50;
         for (int i = 0; i < item->getVertexCount(); ++i) {
-            double distance = QLineF(pointCoordscene, item->getVertexPos(i)).length();
+            double distance = QLineF(pointCoordscene, item->getVertex(i).point).length();
             if (distance <= 10.0 && distance < minDistance) {
                 minDistance = distance;
                 this->currentEditPolylineVertexIndex = i;
@@ -68,7 +68,7 @@ void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, M
         }
     } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::MouseMove) {
         double angle = item->getVertex(this->currentEditPolylineVertexIndex).angle;
-        item->editVertex(this->currentEditPolylineVertexIndex, pointCoordscene, angle);
+        item->setVertex(this->currentEditPolylineVertexIndex, Vertex{pointCoordscene, angle});
         // 注意这里输入的是绝对坐标 所以要减去相对坐标！
     } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::LeftRelease) {
         this->currentEditPolylineVertexIndex = -1;

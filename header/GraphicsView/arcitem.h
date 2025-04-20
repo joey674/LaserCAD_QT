@@ -20,8 +20,8 @@ public:
         m_vertexPair(other.m_vertexPair),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
-        m_vertexPair[0].point = other.getVertexPos(0);
-        m_vertexPair[1].point = other.getVertexPos(1);
+        m_vertexPair[0].point = other.getVertex(0).point;
+        m_vertexPair[1].point = other.getVertex(1).point;
         // 更新出来paintitem和offsetitem
         this->animate();
     }
@@ -29,20 +29,21 @@ public:
         return std::make_shared < ArcItem > (ArcItem(*this));
     }
 public:
-    bool editVertex(const int index, const QPointF point, const double angle) override {
-        if (index > 1 || angle >= 360 || angle <= -360) {
+    bool setVertex(const int index, const Vertex vertex) override
+    {
+        if (index > 1 || vertex.angle >= 360 || vertex.angle <= -360) {
             WARN_VAR(index);
-            WARN_VAR(angle);
             return false;
         }
-        QPointF pos = point - this->scenePos();
-        this->m_vertexPair[index] = Vertex{pos, angle};
+        QPointF pos = vertex.point - this->scenePos();
+        this->m_vertexPair[index] = Vertex{pos, vertex.angle};
         animate();
         return true;
     }
-    bool setCenterPos(const QPointF point) override {
-        // DEBUG_MSG("use arc setCenterPos");
-        QPointF currentCenter = this->getCenterPos();
+    bool setCenter(const QPointF point) override
+    {
+        // DEBUG_MSG("use arc setCenter");
+        QPointF currentCenter = this->getCenter();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -127,21 +128,18 @@ public:
     double getParallelOffsetCount() const override {
         return this->m_offsetCount;
     }
-    Vertex getVertex(const int index) const override {
-        if (index > 1) {
-            assert("false index:only 0,1");
-        }
-        return m_vertexPair[index];
-    }
-    QPointF getVertexPos(const int index) const override {
+    Vertex getVertex(const int index) const override
+    {
         if (index > 1) {
             assert("false index:only 0,1");
         }
         QPointF point = m_vertexPair[index].point;
+        double angle = m_vertexPair[index].angle;
         QPointF pos = point + this->scenePos();
-        return pos;
+        return Vertex{pos, angle};
     }
-    QPointF getCenterPos() const override {
+    QPointF getCenter() const override
+    {
         auto center = QPointF{};
         double radius = 0;
         getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point, this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);

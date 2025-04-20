@@ -30,12 +30,12 @@ public:
 /// 这里存的vertex以及获得的pos都是真实scene位置; 都已经经过变换, 不用再考虑锚点
 /// ********************
 public:
-    /// \brief editVertex
-    /// \param point 这里输入的是scene真实位置；不考虑锚点位置
-    virtual bool editVertex(const int index, const QPointF point, const double angle) = 0;
-    /// \brief setCenterPos
-    /// \param point 这里输入的是scene真实位置；不考虑锚点位置
-    virtual bool setCenterPos(const QPointF point) = 0;
+    /// \brief setVertex
+    /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
+    virtual bool setVertex(const int index, const Vertex vertex) = 0;
+    /// \brief setCenter
+    /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
+    virtual bool setCenter(const QPointF point) = 0;
     /// \brief setParallelOffset
     /// \param offset
     virtual bool setParallelOffset(const double offset, const double offsetNum) = 0;
@@ -83,15 +83,12 @@ public:
     virtual cavc::Polyline<double> getCavcForm() const = 0;
     virtual double getParallelOffset() const = 0;
     virtual double getParallelOffsetCount() const = 0;
-    /// \brief getCenterPos
-    /// \return 这里返回的point是vertex相对锚点的位置； 物体移动时，该点不变；
+    /// \brief getVertex
+    /// \return 这里返回的是在scene中vertex的真实位置;不考虑锚点位置;禁止直接修改vertex
     virtual Vertex getVertex(const int index) const = 0;
-    /// \brief getCenterPos
-    /// \return 这里返回的是在scene中vertex的真实位置；不考虑锚点位置
-    virtual QPointF getVertexPos(const int index) const = 0;
-    /// \brief getCenterPos
-    /// \return 这里返回的是scene真实位置；不考虑锚点位置
-    virtual QPointF getCenterPos() const = 0;
+    /// \brief getCenter
+    /// \return 这里返回的是scene真实位置;不考虑锚点位置;禁止直接修改vertex
+    virtual QPointF getCenter() const = 0;
     virtual QString getName() const;
     const QString getUUID() const;
     const QPen getPen() const;

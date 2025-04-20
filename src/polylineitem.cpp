@@ -43,22 +43,13 @@ double PolylineItem::getParallelOffsetCount()const {
 
 Vertex PolylineItem::getVertex(const int index) const
 {
-    return m_vertexList[index];
-}
-// Vertex PolylineItem::getVertex(const int index) const
-// {
-//     QPointF point = m_vertexList[index].point;
-//     QPointF pos = point + this->scenePos();
-//     return Vertex{pos, m_vertexList[index].angle};
-// }
-
-QPointF PolylineItem::getVertexPos(const int index)const {
     QPointF point = m_vertexList[index].point;
     QPointF pos = point + this->scenePos();
-    return  pos;
+    return Vertex{pos, m_vertexList[index].angle};
 }
 
-QPointF PolylineItem::getCenterPos() const {
+QPointF PolylineItem::getCenter() const
+{
     if (m_vertexList.empty()) {
         return QPointF(0, 0);
     }
@@ -75,8 +66,6 @@ QPointF PolylineItem::getCenterPos() const {
     QPointF pos = QPointF((maxX + minX) / 2, (maxY + minY) / 2);
     return pos;
 }
-
-
 
 QString PolylineItem::getName() const {
     return "PolylineItem";

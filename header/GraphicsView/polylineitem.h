@@ -15,7 +15,7 @@ public:
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
         for (int i = 0; i < this->getVertexCount(); ++i) {
-            m_vertexList[i].point = other.getVertexPos(i);
+            m_vertexList[i] = other.getVertex(i);
         }
         // 更新出来paintitem和offsetitem
         this->animate();
@@ -31,9 +31,10 @@ public:
         animate();
         return true;
     }
-    bool editVertex(const int index, const QPointF point, const double angle) override {
-        QPointF pos = point - this->scenePos();
-        m_vertexList[index] = Vertex{pos, angle};
+    bool setVertex(const int index, const Vertex vertex) override
+    {
+        QPointF pos = vertex.point - this->scenePos();
+        m_vertexList[index] = Vertex{pos, vertex.angle};
         animate();
         return true;
     }
@@ -51,9 +52,10 @@ public:
         this->animate();
         return true;
     }
-    bool setCenterPos(const QPointF point) override {
-        DEBUG_MSG("use polyline setCenterPos" );
-        QPointF currentCenter = this->getCenterPos();
+    bool setCenter(const QPointF point) override
+    {
+        DEBUG_MSG("use polyline setCenter");
+        QPointF currentCenter = this->getCenter();
         QPointF offset = point - currentCenter;
         DEBUG_VAR(point);
         QString msg = QString("curCenter: (%1, %2), offset: (%3, %4), this->pos: (%5, %6)")
@@ -154,8 +156,7 @@ public:
     double getParallelOffset() const override;
     double getParallelOffsetCount() const override;
     Vertex getVertex(const int index) const override;
-    QPointF getVertexPos(const int index)const override;
-    QPointF getCenterPos() const override;
+    QPointF getCenter() const override;
     QString getName() const override;
     uint getVertexCount() const;
 public:

@@ -22,12 +22,13 @@ public:
     }
 public:
     /// 编辑圆心
-    bool editVertex(const int index, const QPointF point, const double angle = 0) override {
+    bool setVertex(const int index, const Vertex vertex) override
+    {
         if (index > 1) {
             WARN_VAR(index);
             return false;
         }
-        QPointF pos = point - this->scenePos();
+        QPointF pos = vertex.point - this->scenePos();
         this->m_center = Vertex{pos, 0};
         animate();
         return true;
@@ -47,10 +48,11 @@ public:
         this->animate();
         return true;
     }
-    bool setCenterPos(const QPointF point) override {
-        // DEBUG_MSG("use circle setCenterPos");
+    bool setCenter(const QPointF point) override
+    {
+        // DEBUG_MSG("use circle setCenter");
         // DEBUG_VAR(point);
-        QPointF currentCenter = this->getCenterPos();
+        QPointF currentCenter = this->getCenter();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -108,21 +110,18 @@ public:
     double getParallelOffsetCount() const override {
         return this->m_offsetCount;
     }
-    Vertex getVertex(const int index = 0) const override {
-        if (index > 1) {
-            assert("false index:only 0");
-        }
-        return m_center;
-    }
-    QPointF getVertexPos(const int index) const override {
+    Vertex getVertex(const int index = 0) const override
+    {
         if (index > 1) {
             assert("false index:only 0");
         }
         QPointF point = m_center.point;
+        double angle = m_center.angle;
         QPointF pos = point + this->scenePos();
-        return pos;
+        return Vertex{pos, angle};
     }
-    QPointF getCenterPos() const override {
+    QPointF getCenter() const override
+    {
         auto posOffset = this->pos();
         auto centerPos = this->m_center.point + posOffset;
         // DEBUG_VAR(centerPos);

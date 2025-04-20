@@ -40,17 +40,19 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
         if (!KeyboardManager::getIns().IsControlHold) { // 绘制line
             QPointF lastPoint = this->tmpPolyline->getVertex(index - 1).point;
             if (KeyboardManager::getIns().IsXHold) {
-                this->tmpPolyline->editVertex(index, QPointF(pointCoordscene.x(), lastPoint.y()), 0);
+                this->tmpPolyline->setVertex(index,
+                                             Vertex{QPointF(pointCoordscene.x(), lastPoint.y()), 0});
             } else if (KeyboardManager::getIns().IsYHold) {
-                this->tmpPolyline->editVertex(index, QPointF(lastPoint.x(), pointCoordscene.y()), 0);
+                this->tmpPolyline->setVertex(index,
+                                             Vertex{QPointF(lastPoint.x(), pointCoordscene.y()), 0});
             } else {
-                this->tmpPolyline->editVertex(index, pointCoordscene, 0);
+                this->tmpPolyline->setVertex(index, Vertex{pointCoordscene, 0});
             }
         } else { //绘制arc
             if (!KeyboardManager::getIns().IsCapsLocked) {
-                this->tmpPolyline->editVertex(index, pointCoordscene, 180);
+                this->tmpPolyline->setVertex(index, Vertex{pointCoordscene, 180});
             } else {
-                this->tmpPolyline->editVertex(index, pointCoordscene, -180);
+                this->tmpPolyline->setVertex(index, Vertex{pointCoordscene, -180});
             }
         }
     } else if (this->tmpPolyline && event == MouseEvent::LeftPress) {
@@ -73,10 +75,10 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event) {
         this->tmpArc->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpArc.get());
         this->tmpArc->operateIndex += 1;
-        this->tmpArc->editVertex(0, pointCoordscene, 0);
-        this->tmpArc->editVertex(1, pointCoordscene, 0);
+        this->tmpArc->setVertex(0, Vertex{pointCoordscene, 0});
+        this->tmpArc->setVertex(1, Vertex{pointCoordscene, 0});
     } else if  (this->tmpArc  &&  this->tmpArc->operateIndex == 1 && event == MouseEvent::MouseMove) {
-        this->tmpArc->editVertex(1, pointCoordscene, 180);
+        this->tmpArc->setVertex(1, Vertex{pointCoordscene, 180});
     } else if (this->tmpArc && this->tmpArc->operateIndex == 1 && event == MouseEvent::LeftPress) {
         this->tmpArc->operateIndex += 1;
         this->tmpArc->assistPoint = pointCoordscene;
@@ -88,7 +90,7 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event) {
         auto p2 = this->tmpArc->assistPoint;
         auto p3 = this->tmpArc->getVertex(1).point;
         getAngleFromThreePoints(p1, p2, p3, angle);
-        this->tmpArc->editVertex(1, pointCoordscene, angle);
+        this->tmpArc->setVertex(1, Vertex{pointCoordscene, angle});
     } else if (this->tmpArc && this->tmpArc->operateIndex == 2 && event == MouseEvent::LeftPress) {
         Manager::getIns().addItem(std::move(this->tmpArc));
     }
@@ -106,17 +108,17 @@ void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event) {
         this->tmpLine = std::make_shared < LineItem > ();
         this->tmpLine->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpLine.get());
-        this->tmpLine->editVertex(0, pointCoordscene);
-        this->tmpLine->editVertex(1, pointCoordscene);
+        this->tmpLine->setVertex(0, Vertex{pointCoordscene, 0});
+        this->tmpLine->setVertex(1, Vertex{pointCoordscene, 0});
     } else if  (this->tmpLine && event == MouseEvent::MouseMove) {
         QPointF vertex0 = this->tmpLine->getVertex(0).point;
         if (!KeyboardManager::getIns().IsControlHold) {
             if (KeyboardManager::getIns().IsXHold) {
-                this->tmpLine->editVertex(1, QPointF(pointCoordscene.x(), vertex0.y()));
+                this->tmpLine->setVertex(1, Vertex{QPointF(pointCoordscene.x(), vertex0.y())});
             } else if (KeyboardManager::getIns().IsYHold) {
-                this->tmpLine->editVertex(1, QPointF(vertex0.x(), pointCoordscene.y()));
+                this->tmpLine->setVertex(1, Vertex{QPointF(vertex0.x(), pointCoordscene.y())});
             } else {
-                this->tmpLine->editVertex(1, pointCoordscene);
+                this->tmpLine->setVertex(1, Vertex{pointCoordscene, 0});
             }
         }
     } else if (this->tmpLine && event == MouseEvent::LeftPress) {
@@ -136,7 +138,7 @@ void DrawManager::drawPoint(QPointF pointCoordscene, MouseEvent event) {
         this->tmpPoint = std::make_shared < PointItem > ();
         this->tmpPoint->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpPoint.get());
-        this->tmpPoint->editVertex(0, pointCoordscene);
+        this->tmpPoint->setVertex(0, Vertex{pointCoordscene, 0});
         Manager::getIns().addItem(std::move(this->tmpPoint));
     }
 }
@@ -151,13 +153,13 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpCircle = std::make_shared < CircleItem > ();
-        this->tmpCircle->editVertex(0, pointCoordscene);
+        this->tmpCircle->setVertex(0, Vertex{pointCoordscene, 0});
         this->tmpCircle->setPen(EDIT_PEN);
         /// TODO
         /// setLayer
         SceneManager::getIns().scene->addItem(this->tmpCircle.get());
     } else if (this->tmpCircle && event == MouseEvent::MouseMove) {
-        QPointF center = this->tmpCircle->getCenterPos();
+        QPointF center = this->tmpCircle->getCenter();
         double radius = QLineF(center, pointCoordscene).length();
         this->tmpCircle->editRadius (radius);
         // this->tmpCircle->setTransformOriginPoint(center);
@@ -177,10 +179,10 @@ void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
         this->tmpRect = std::make_shared < RectItem > ();
         this->tmpRect->setPen(EDIT_PEN);
         SceneManager::getIns().scene->addItem(this->tmpRect.get());
-        this->tmpRect->editVertex(0, pointCoordscene);
-        this->tmpRect->editVertex(1, pointCoordscene);
+        this->tmpRect->setVertex(0, Vertex{pointCoordscene, 0});
+        this->tmpRect->setVertex(1, Vertex{pointCoordscene, 0});
     } else if  (this->tmpRect && event == MouseEvent::MouseMove) {
-        this->tmpRect->editVertex (1, pointCoordscene);
+        this->tmpRect->setVertex(1, Vertex{pointCoordscene, 0});
     } else if (this->tmpRect && event == MouseEvent::LeftPress) {
         Manager::getIns().addItem(std::move(this->tmpRect));
     }
