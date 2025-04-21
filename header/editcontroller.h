@@ -143,7 +143,7 @@ public:
         //
         CircleItem *item = static_cast<CircleItem *>(curEditItem.get());
         item->setVertex(0, Vertex{pos, 0});
-        item->editRadius (radius);
+        item->setRadius (radius);
         this->updateTableViewModel();
     }
     void onTabWidgetPolylineGeometryTab(std::vector<Vertex> vertices)

@@ -8,10 +8,11 @@
 class LineItem: public GraphicsItem {
 public:
     LineItem();
-    LineItem(const LineItem &other): GraphicsItem(other),
-        m_vertexPair(other.m_vertexPair)
+    LineItem(const LineItem &other)
+        : GraphicsItem(other)
         , m_offset(other.m_offset)
-        , m_offsetCount(other.m_offsetCount) {
+        , m_offsetCount(other.m_offsetCount)
+    {
         m_vertexPair[0] = other.getVertex(0);
         m_vertexPair[1] = other.getVertex(1);
         // 更新出来paintitem和offsetitem

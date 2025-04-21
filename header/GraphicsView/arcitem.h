@@ -11,13 +11,12 @@
 class ArcItem: public GraphicsItem {
 public:
     /// 绘制时记录当前第几次点击
-    int operateIndex = 0;
+    int drawStep = 0;
     /// 绘制时记录中间的暂存点
     QPointF assistPoint = QPointF{};
 public:
     ArcItem();
     ArcItem(const ArcItem& other): GraphicsItem(other),
-        m_vertexPair(other.m_vertexPair),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
         m_vertexPair[0].point = other.getVertex(0).point;

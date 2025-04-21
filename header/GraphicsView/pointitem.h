@@ -8,10 +8,11 @@
 class PointItem: public GraphicsItem {
 public:
     PointItem();
-    PointItem(const PointItem& other): GraphicsItem(other),
-        m_vertex(other.m_vertex),
-        m_offset(other.m_offset),
-        m_offsetCount(other.m_offsetCount) {
+    PointItem(const PointItem &other)
+        : GraphicsItem(other)
+        , m_offset(other.m_offset)
+        , m_offsetCount(other.m_offsetCount)
+    {
         m_vertex = other.getVertex(0);
         // 更新出来paintitem和offsetitem
         this->animate();

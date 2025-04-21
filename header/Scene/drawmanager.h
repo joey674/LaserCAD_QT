@@ -1,17 +1,17 @@
 #ifndef GRAPHICSITEMMANAGER_H
 #define GRAPHICSITEMMANAGER_H
 
-#include <QMainWindow>
 #include <QGraphicsScene>
-#include <qgraphicsitem.h>
-#include "polylineitem.h"
+#include <QMainWindow>
 #include "arcitem.h"
+#include "circleitem.h"
+#include "ellipseitem.h"
 #include "lineitem.h"
 #include "pointitem.h"
-#include "circleitem.h"
-#include "rectitem.h"
+#include "polylineitem.h"
 #include "protocol.h"
-
+#include "rectitem.h"
+#include <qgraphicsitem.h>
 
 class DrawManager {
 public:
@@ -24,9 +24,9 @@ public:
     std::shared_ptr < PointItem > tmpPoint;
     std::shared_ptr < CircleItem > tmpCircle;
     std::shared_ptr < RectItem > tmpRect;
+    std::shared_ptr<EllipseItem> tmpEllipse;
     std::shared_ptr < QGraphicsPathItem > tmpSpiral;
     std::shared_ptr < QGraphicsPolygonItem > tmpPolygon;
-    std::shared_ptr < QGraphicsEllipseItem > tmpEllipse;
     // 绘制辅助变量
     int polygonEdgeNum = 3; //绘制polygon使用
     // 绘制逻辑

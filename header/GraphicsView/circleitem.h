@@ -10,11 +10,11 @@ class CircleItem : public GraphicsItem {
 public:
     CircleItem() {};
     CircleItem(const CircleItem& other): GraphicsItem(other),
-        m_center(other.m_center),
         m_radius(other.m_radius),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
         // 更新出来paintitem和offsetitem
+        this->m_center = other.getVertex(0);
         this->animate();
     }
     std::shared_ptr < GraphicsItem > copy() const  override {
@@ -34,7 +34,8 @@ public:
         return true;
     }
     /// 编辑半径
-    bool editRadius(const double radius) {
+    bool setRadius(const double radius)
+    {
         if (radius < 0) {
             return false;
         }
