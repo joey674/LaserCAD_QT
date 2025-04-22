@@ -21,26 +21,7 @@ public:
 public:
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget单个对象编辑的回调;
-    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
-        //
-        if (this->m_currentEditItemGroup.size() != 1) {
-            return;
-        }
-        auto curEditItem = this->m_currentEditItemGroup[0];
-        //
-        QPointF unitOffset = dir * spacing;
-        for (int i = 1; i <= count; ++i) {
-            auto uuid = Manager::getIns().copyItem(curEditItem->getUUID());
-            auto copiedItem = Manager::getIns().itemMapFind(uuid);
-            if (!copiedItem) {
-                continue;
-            }
-            QPointF offset = unitOffset * i;
-            copiedItem->setCenter(curEditItem->getCenter() + offset);
-            DEBUG_VAR(curEditItem->getCenter());
-            DEBUG_VAR(copiedItem->getCenter());
-        }
-    }
+    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);
     void onTabWidgetCopyTabMatrixCopy(
         QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount) {
         //

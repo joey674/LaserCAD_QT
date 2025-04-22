@@ -8,6 +8,7 @@
 #include "uimanager.h"
 #include "tablemodel.h"
 #include "uimanager.h"
+#include <QModelIndexList>
 
 EditController EditController::ins;
 
@@ -25,20 +26,20 @@ void EditController::editItemInScene(QPointF pointCoordscene, MouseEvent event) 
     //
     // 处理scene中编辑
     switch (curEditItem->type()) {
-    case GraphicsItemType::Polyline: {
-        PolylineItem *item = static_cast<PolylineItem *>(curEditItem.get());
-        this->editPolyline(pointCoordscene, item, event);
-        break;
-    }
-    case GraphicsItemType::Arc: {
-        ArcItem *item = static_cast<ArcItem *>(curEditItem.get());
-        this->editArc(pointCoordscene, item, event);
-        break;
-    }
-    case GraphicsItemType::Line: {
-        break;
-    }
-        // TODO
+        case GraphicsItemType::Polyline: {
+                PolylineItem *item = static_cast < PolylineItem * > (curEditItem.get());
+                this->editPolyline(pointCoordscene, item, event);
+                break;
+            }
+        case GraphicsItemType::Arc: {
+                ArcItem *item = static_cast < ArcItem * > (curEditItem.get());
+                this->editArc(pointCoordscene, item, event);
+                break;
+            }
+        case GraphicsItemType::Line: {
+                break;
+            }
+            // TODO
     };
 }
 
@@ -89,23 +90,23 @@ void EditController::updateTabWidget() {
     } else if (this->m_currentEditItemGroup.size() == 1) { // 只有一个编辑对象
         auto curEditItem = this->m_currentEditItemGroup[0];
         switch (curEditItem->type()) {
-        case GraphicsItemType::Arc:
-            UiManager::getIns().UI()->tabWidget->addArcGeometryTab(curEditItem->getUUID());
-            break;
-        case GraphicsItemType::Circle:
-            UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(curEditItem->getUUID());
-            break;
-        case GraphicsItemType::Line:
-            UiManager::getIns().UI()->tabWidget->addLineGeometryTab(curEditItem->getUUID());
-            break;
-        case GraphicsItemType::Point:
-            UiManager::getIns().UI()->tabWidget->addPointGeometryTab(curEditItem->getUUID());
-            break;
-        case GraphicsItemType::Polyline:
-            UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
-            break;
-        default:
-            break;
+            case GraphicsItemType::Arc:
+                UiManager::getIns().UI()->tabWidget->addArcGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Circle:
+                UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Line:
+                UiManager::getIns().UI()->tabWidget->addLineGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Point:
+                UiManager::getIns().UI()->tabWidget->addPointGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Polyline:
+                UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
+                break;
+            default:
+                break;
         }
         UiManager::getIns().UI()->tabWidget->addCopyTab(curEditItem->getUUID());
         UiManager::getIns().UI()->tabWidget->addOffsetTab(curEditItem->getUUID());
@@ -113,7 +114,7 @@ void EditController::updateTabWidget() {
         UiManager::getIns().UI()->tabWidget->addDelayParamsTab(curEditItem->getUUID());
         return;
     } else { // 多个编辑对象
-        auto uuids = std::vector<UUID>();
+        auto uuids = std::vector < UUID > ();
         for (auto item : this->m_currentEditItemGroup) {
             uuids.push_back(item->getUUID());
         }
@@ -133,6 +134,50 @@ void EditController::updateTableViewModel() {
         auto curEditItem = this->m_currentEditItemGroup[0];
         model->setCurrentDisplayItem(curEditItem->getUUID());
     } else {
+    }
+}
+
+void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
+    //
+    if (this->m_currentEditItemGroup.size() != 1) {
+        return;
+    }
+    auto curEditItem = this->m_currentEditItemGroup[0];
+    // 创建 copiedGroup
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    QModelIndex targetIndex = model->getIndex(curEditItem->getUUID());
+    if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
+        return;
+    }
+    const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
+    QString name = "CopiedItemGroup";
+    QString type = "Group";
+    Manager::getIns().addItem(groupIndex, name, type);
+    // 创建copiedItem
+    auto nodeIndexList = QModelIndexList();
+    QPointF unitOffset = dir * spacing;
+    for (int i = 1; i <= count; ++i) {
+        auto copiedItemUuid = Manager::getIns().copyItem(curEditItem->getUUID());
+        auto copiedItem = Manager::getIns().itemMapFind(copiedItemUuid);
+        if (!copiedItem) {
+            continue;
+        }
+        QPointF offset = unitOffset * i;
+        copiedItem->setCenter(curEditItem->getCenter() + offset);
+        //
+        auto copiedItemNodeIndex = model->getIndex(copiedItemUuid);
+        model->setNodeProperty (copiedItemNodeIndex,
+                                TreeNodePropertyIndex::Name, " Copied" + curEditItem->getName ()  + QString::number (i));
+        nodeIndexList.push_back(copiedItemNodeIndex);
+    }
+    // 放进copiedGroup
+    auto mimeList = model->mimeData(nodeIndexList);
+    model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        auto node = model->getNode(nodeIndex);
+        auto parentNode = node->parent();
+        auto parentNodeIndex = model->getIndex(parentNode);
+        model->removeRows(node->indexInParent(), 1, parentNodeIndex);
     }
 }
 
@@ -203,13 +248,12 @@ void EditController::onTreeViewModelSelectionChanged(
     }
 }
 
-void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected)
-{
+void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) {
     // GraphicsItem
     auto item = Manager::getIns().itemMapFind(uuid);
     // TreeViewModel
     auto treeView = UiManager::getIns().UI()->treeView;
-    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
     //
     if (selected) {
@@ -227,14 +271,14 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected)
         // 设置treeview中取消选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Deselect
-                                               | QItemSelectionModel::Rows);
+                                           | QItemSelectionModel::Rows);
         treeView->expandToIndex(index);
         // 设置curEditItemGroup,删除item
         auto it = std::remove_if(this->m_currentEditItemGroup.begin(),
                                  this->m_currentEditItemGroup.end(),
-                                 [&](const std::shared_ptr<GraphicsItem> &ptr) {
-                                     return ptr == item;
-                                 });
+        [&](const std::shared_ptr < GraphicsItem > &ptr) {
+            return ptr == item;
+        });
         this->m_currentEditItemGroup.erase(it, this->m_currentEditItemGroup.end());
     }
     //
