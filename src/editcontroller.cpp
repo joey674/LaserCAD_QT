@@ -142,44 +142,20 @@ void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, i
     if (this->m_currentEditItemGroup.size() != 1) {
         return;
     }
+    //
     auto curEditItem = this->m_currentEditItemGroup[0];
-    // 创建 copiedGroup
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    QModelIndex targetIndex = model->getIndex(curEditItem->getUUID());
-    if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
+    curEditItem->setCopiedItem(dir, spacing, count);
+}
+
+void EditController::onTabWidgetCopyTabMatrixCopy(
+    QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount) {
+    if (this->m_currentEditItemGroup.size() != 1) {
         return;
     }
-    const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
-    QString name = "CopiedItemGroup";
-    QString type = "Group";
-    Manager::getIns().addItem(groupIndex, name, type);
-    // 创建copiedItem
-    auto nodeIndexList = QModelIndexList();
-    QPointF unitOffset = dir * spacing;
-    for (int i = 1; i <= count; ++i) {
-        auto copiedItemUuid = Manager::getIns().copyItem(curEditItem->getUUID());
-        auto copiedItem = Manager::getIns().itemMapFind(copiedItemUuid);
-        if (!copiedItem) {
-            continue;
-        }
-        QPointF offset = unitOffset * i;
-        copiedItem->setCenter(curEditItem->getCenter() + offset);
-        //
-        auto copiedItemNodeIndex = model->getIndex(copiedItemUuid);
-        model->setNodeProperty (copiedItemNodeIndex,
-                                TreeNodePropertyIndex::Name, " Copied" + curEditItem->getName ()  + QString::number (i));
-        nodeIndexList.push_back(copiedItemNodeIndex);
-    }
-    // 放进copiedGroup
-    auto mimeList = model->mimeData(nodeIndexList);
-    model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
-    for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto node = model->getNode(nodeIndex);
-        auto parentNode = node->parent();
-        auto parentNodeIndex = model->getIndex(parentNode);
-        model->removeRows(node->indexInParent(), 1, parentNodeIndex);
-    }
+    auto curEditItem = this->m_currentEditItemGroup[0];
+    curEditItem->setCopiedItem(hVec, vVec, hSpacing, vSpacing, hCount, vCount, 0);
 }
+
 
 void EditController::onTreeViewModelSelectionChanged(
     const QItemSelection &selected,

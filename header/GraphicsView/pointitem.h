@@ -32,7 +32,7 @@ public:
         animate();
         return true;
     }
-    bool setParallelOffset(const double offset, const double offsetNum) override { // TODO
+    bool setOffsetItem(const double offset, const double offsetNum) override { // TODO
         return true;
     }
     bool setCenter(const QPointF point) override
@@ -48,7 +48,7 @@ public:
         return true;
     }
 protected:
-    bool updateParallelOffset() override { // TODO
+    bool updateOffsetItem() override { // TODO
         return true;
     }
     bool updatePaintItem() override {
@@ -76,10 +76,10 @@ public:
     {
         return cavc::Polyline < double > ();
     }
-    double getParallelOffset() const override {
+    double getOffset() const override {
         return this->m_offset;
     }
-    double getParallelOffsetCount() const override {
+    double getOffsetCount() const override {
         return this->m_offsetCount;
     }
     Vertex getVertex(const int index) const override

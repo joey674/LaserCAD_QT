@@ -43,7 +43,7 @@ public:
         animate();
         return true;
     }
-    bool setParallelOffset(const double offset, const double offsetNum) override {
+    bool setOffsetItem(const double offset, const double offsetNum) override {
         this->m_offset = offset;
         this->m_offsetCount = offsetNum;
         this->animate();
@@ -64,7 +64,7 @@ public:
         return true;
     }
 protected:
-    bool updateParallelOffset() override {
+    bool updateOffsetItem() override {
         if (this->m_offset == 0 || this->m_offsetCount == 0) {
             return true;
         }
@@ -112,10 +112,10 @@ public:
         input.addVertex(p2.x(), p2.y(), -1);
         return input;
     }
-    double getParallelOffset() const override {
+    double getOffset() const override {
         return this->m_offset;
     }
-    double getParallelOffsetCount() const override {
+    double getOffsetCount() const override {
         return this->m_offsetCount;
     }
     Vertex getVertex(const int index = 0) const override

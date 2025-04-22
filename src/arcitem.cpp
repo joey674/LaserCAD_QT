@@ -1,8 +1,7 @@
 #include "arcitem.h"
 #include "logger.h"
 
-ArcItem::ArcItem()
-{
+ArcItem::ArcItem() {
     // INFO_MSG("create ArcItem, uuid: "+this->getUUID());
 }
 
@@ -30,6 +29,10 @@ void ArcItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, Q
     for (auto& item : this->m_offsetItemList) {
         item->paint(painter, &optionx, widget);
     }
+    // 绘制copied
+    for (auto& item : this->m_copiedItemList) {
+        item->paint(painter, &optionx, widget);
+    }
 }
 
 QRectF ArcItem::boundingRect() const {
@@ -37,11 +40,18 @@ QRectF ArcItem::boundingRect() const {
         return QRectF();
     }
     QRectF newRect = m_paintItem->boundingRect();
+    // 包含offsetItem
     newRect = newRect.adjusted(
                   -abs(this->m_offset) * this->m_offsetCount - 1,
                   -abs(this->m_offset) * this->m_offsetCount - 1,
                   abs(this->m_offset) * this->m_offsetCount + 1,
                   abs(this->m_offset) * this->m_offsetCount + 1);
+    // 包含所有 copiedItem
+    for (const auto &item : m_copiedItemList) {
+        if (item) {
+            newRect = newRect.united(item->boundingRect());
+        }
+    }
     return newRect;
 }
 

@@ -8,7 +8,7 @@ PolylineItem::PolylineItem() {
     // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
 }
 
-bool PolylineItem::updateParallelOffset() {
+bool PolylineItem::updateOffsetItem() {
     if (m_vertexList.size() < 2) {
         return false;
     }
@@ -33,11 +33,11 @@ bool PolylineItem::updateParallelOffset() {
     return true;
 }
 
-double PolylineItem::getParallelOffset()const {
+double PolylineItem::getOffset()const {
     return this->m_offset;
 }
 
-double PolylineItem::getParallelOffsetCount()const {
+double PolylineItem::getOffsetCount()const {
     return  this->m_offsetCount;
 }
 

@@ -23,31 +23,7 @@ public:
     /// tabWidget单个对象编辑的回调;
     void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);
     void onTabWidgetCopyTabMatrixCopy(
-        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount) {
-        //
-        if (this->m_currentEditItemGroup.size() != 1) {
-            return;
-        }
-        auto curEditItem = this->m_currentEditItemGroup[0];
-        //
-        QPointF hOffset = hVec * hSpacing;
-        QPointF vOffset = vVec * vSpacing;
-        QPointF origin = curEditItem->getCenter();
-        for (int row = 0; row < vCount; ++row) {
-            for (int col = 0; col < hCount; ++col) {
-                if (row == 0 && col == 0) {
-                    continue;
-                }
-                auto uuid = Manager::getIns().copyItem(curEditItem->getUUID());
-                auto copiedItem = Manager::getIns().itemMapFind(uuid);
-                if (!copiedItem) {
-                    continue;
-                }
-                QPointF offset = hOffset * col + vOffset * row;
-                copiedItem->setCenter(origin + offset);
-            }
-        }
-    }
+        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
     void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
@@ -55,7 +31,7 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->setParallelOffset(offset, offsetNum);
+        curEditItem->setOffsetItem(offset, offsetNum);
         this->updateTableViewModel();
     }
     void onTabWidgetMarkParamsTab(MarkParams params) {

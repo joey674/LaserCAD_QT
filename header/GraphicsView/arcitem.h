@@ -9,6 +9,7 @@
 #include <polylineoffset.hpp>
 
 class ArcItem: public GraphicsItem {
+    friend class ArcItem;
 public:
     /// 绘制时记录当前第几次点击
     int drawStep = 0;
@@ -16,11 +17,13 @@ public:
     QPointF assistPoint = QPointF{};
 public:
     ArcItem();
-    ArcItem(const ArcItem& other): GraphicsItem(other),
-        m_offset(other.m_offset),
-        m_offsetCount(other.m_offsetCount) {
-        m_vertexPair[0] = other.getVertex(0);
-        m_vertexPair[1] = other.getVertex(1);
+    ArcItem(const ArcItem &other)
+        : GraphicsItem(other)
+        , m_vertexPair(other.m_vertexPair),
+          m_offset(other.m_offset),
+          m_offsetCount(other.m_offsetCount) {
+        // m_vertexPair[0] = other.getVertex(0);
+        // m_vertexPair[1] = other.getVertex(1);
         // 更新出来paintitem和offsetitem
         this->animate();
     }
@@ -55,14 +58,58 @@ public:
     bool rotate(const double angle) override { //TODO
         return true;
     }
-    bool setParallelOffset(const double offset, const double offsetNum) override {
+    bool setOffsetItem(const double offset, const double offsetNum) override {
         this->m_offset = offset;
         this->m_offsetCount = offsetNum;
         this->animate();
         return true;
     }
+    bool setCopiedItem(QPointF dir, double spacing, int count) override {
+        m_copiedItemList.clear();
+        //
+        QPointF unitOffset = dir * spacing;
+        for (int i = 1; i <= count; ++i) {
+            auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->copy());
+            QPointF offset = unitOffset * i;
+            copiedItem->m_vertexPair[0].point += offset;
+            copiedItem->m_vertexPair[1].point += offset;
+            copiedItem->animate();
+            m_copiedItemList.push_back(copiedItem);
+        }
+        //
+        this->animate();
+        return true;
+    }
+    bool setCopiedItem(QPointF hVec, QPointF vVec,
+                       double hSpacing, double vSpacing,
+                       int hCount, int vCount,
+                       int copiedOrder )  override {
+        m_copiedItemList.clear();
+        QPointF hOffset = hVec * hSpacing;
+        QPointF vOffset = vVec * vSpacing;
+        for (int row = 0; row < vCount; ++row) {
+            for (int col = 0; col < hCount; ++col) {
+                if (row == 0 && col == 0) {
+                    continue;
+                }
+                auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->copy());
+                if (!copiedItem) {
+                    continue;
+                }
+                QPointF totalOffset = hOffset * col + vOffset * row;
+                // 由于是再内部paint 所以是内部偏移 vertex, 而不是外部调用inScene的Vertex
+                copiedItem->m_vertexPair[0].point += totalOffset;
+                copiedItem->m_vertexPair[1].point += totalOffset;
+                copiedItem->animate();
+                m_copiedItemList.push_back(copiedItem);
+            }
+        }
+        this->animate();
+        return true;
+    }
+
 protected:
-    bool updateParallelOffset() override {
+    bool updateOffsetItem() override {
         if (this->m_offset == 0 || this->m_offsetCount == 0) {
             return true;
         }
@@ -91,6 +138,15 @@ protected:
         this->m_paintItem->setPen(this->getPen());
         return true;
     }
+    bool updateCopiedItem() override {
+        //传进来的就是成品 就不用再转换了
+        // for (auto &item : this->m_copiedItemList) {
+        //     DEBUG_VAR(item->getVertex(0).point);
+        //     DEBUG_VAR(item->getVertex(1).point);
+        //     DEBUG_VAR(item->getVertex(1).angle);
+        // }
+        return true;
+    };
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         // 输入cavc库
@@ -131,10 +187,10 @@ public:
         }
         return input;
     }
-    double getParallelOffset() const override {
+    double getOffset() const override {
         return this->m_offset;
     }
-    double getParallelOffsetCount() const override {
+    double getOffsetCount() const override {
         return this->m_offsetCount;
     }
     Vertex getVertex(const int index) const override {
@@ -175,6 +231,7 @@ private:
     double m_offset  = 0;
     int m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < ArcItem>> m_copiedItemList;
 };
 
 #endif // ARCITEM_H

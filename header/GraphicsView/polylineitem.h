@@ -43,7 +43,7 @@ public:
         animate();
         return true;
     }
-    bool setParallelOffset(const double offset, const double offsetNum) override {
+    bool setOffsetItem(const double offset, const double offsetNum) override {
         this->m_offset = offset;
         this->m_offsetCount = offsetNum;
         if (offsetNum < 0) {
@@ -73,7 +73,7 @@ public:
         return true;
     }
 protected:
-    bool updateParallelOffset() override;
+    bool updateOffsetItem() override;
     bool updatePaintItem() override {
         if (m_vertexList.size() < 2) {
             return false;
@@ -157,8 +157,8 @@ public:
         ///********************************************
         return input;
     }
-    double getParallelOffset() const override;
-    double getParallelOffsetCount() const override;
+    double getOffset() const override;
+    double getOffsetCount() const override;
     Vertex getVertex(const int index) const override;
     QPointF getCenter() const override;
     QString getName() const override;

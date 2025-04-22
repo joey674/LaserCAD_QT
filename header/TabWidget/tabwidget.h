@@ -111,8 +111,8 @@ public:
     void addOffsetTab(const UUID uuid)
     {
         auto item = Manager::getIns().itemMapFind(uuid);
-        auto offset = item->getParallelOffset();
-        auto offsetCount = item->getParallelOffsetCount();
+        auto offset = item->getOffset();
+        auto offsetCount = item->getOffsetCount();
         if (offset == 0 && offsetCount == 0) {
             offset = 10;
             offsetCount = 3;
