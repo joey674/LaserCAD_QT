@@ -19,8 +19,8 @@ public:
     ArcItem(const ArcItem& other): GraphicsItem(other),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
-        m_vertexPair[0].point = other.getVertex(0).point;
-        m_vertexPair[1].point = other.getVertex(1).point;
+        m_vertexPair[0] = other.getVertex(0);
+        m_vertexPair[1] = other.getVertex(1);
         // 更新出来paintitem和offsetitem
         this->animate();
     }
@@ -28,8 +28,7 @@ public:
         return std::make_shared < ArcItem > (ArcItem(*this));
     }
 public:
-    bool setVertex(const int index, const Vertex vertex) override
-    {
+    bool setVertex(const int index, const Vertex vertex) override {
         if (index > 1 || vertex.angle >= 360 || vertex.angle <= -360) {
             WARN_VAR(index);
             return false;
@@ -39,10 +38,15 @@ public:
         animate();
         return true;
     }
-    bool setCenter(const QPointF point) override
-    {
-        // DEBUG_MSG("use arc setCenter");
-        QPointF currentCenter = this->getCenter();
+    bool setCenter(const QPointF point) override {
+        //
+        auto center = QPointF{};
+        double radius = 0;
+        getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point,
+                                       this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
+        auto posOffset = this->pos();
+        QPointF currentCenter = center + posOffset;
+        //
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -65,7 +69,7 @@ protected:
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline<double> input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm(false);
             input.isClosed() = false;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
@@ -88,8 +92,7 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
-    {
+    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         // 输入cavc库
         cavc::Polyline < double > input;
         QPointF p1, p2;
@@ -100,7 +103,6 @@ public:
             p1 = m_vertexPair[0].point;
             p2 = m_vertexPair[1].point;
         }
-
         auto angle = m_vertexPair[1].angle;
         if (angle > 180.01 || angle < -180.01) {
             auto sign = angle > 0 ? 1 : -1;
@@ -135,8 +137,7 @@ public:
     double getParallelOffsetCount() const override {
         return this->m_offsetCount;
     }
-    Vertex getVertex(const int index) const override
-    {
+    Vertex getVertex(const int index) const override {
         if (index > 1) {
             assert("false index:only 0,1");
         }
@@ -145,13 +146,15 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-    QPointF getCenter() const override
-    {
+    QPointF getCenter() const override {
         auto center = QPointF{};
         double radius = 0;
-        getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point, this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
+        getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point,
+                                       this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
         auto posOffset = this->pos();
-        return center + posOffset;
+        auto centerPos = center + posOffset;
+        // DEBUG_VAR(centerPos);
+        return centerPos;
     }
     QString getName() const override {
         return "ArcItem";

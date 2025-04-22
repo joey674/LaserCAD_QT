@@ -11,10 +11,12 @@ class PolylineItem: public GraphicsItem {
 public:
     PolylineItem();
     PolylineItem(const PolylineItem& other): GraphicsItem(other),
+        // m_vertexList(other.m_vertexList),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
-        for (int i = 0; i < this->getVertexCount(); ++i) {
-            m_vertexList[i] = other.getVertex(i);
+        this->m_vertexList = std::vector < Vertex > ();
+        for (int i = 0; i < other.getVertexCount(); ++i) {
+            m_vertexList.push_back (other.getVertex(i));
         }
         // 更新出来paintitem和offsetitem
         this->animate();
@@ -30,8 +32,7 @@ public:
         animate();
         return true;
     }
-    bool setVertex(const int index, const Vertex vertex) override
-    {
+    bool setVertex(const int index, const Vertex vertex) override {
         QPointF pos = vertex.point - this->scenePos();
         m_vertexList[index] = Vertex{pos, vertex.angle};
         animate();
@@ -51,8 +52,7 @@ public:
         this->animate();
         return true;
     }
-    bool setCenter(const QPointF point) override
-    {
+    bool setCenter(const QPointF point) override {
         DEBUG_MSG("use polyline setCenter");
         QPointF currentCenter = this->getCenter();
         QPointF offset = point - currentCenter;
@@ -100,8 +100,7 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
-    {
+    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
         int count = this->getVertexCount();
         for (int i = 0; i < count; ++i) {
@@ -185,14 +184,13 @@ private:
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
 };
 
-inline std::shared_ptr<PolylineItem> FromCavcForm(cavc::Polyline<double> polyline)
-{
-    auto item = std::make_shared<PolylineItem>();
+inline std::shared_ptr < PolylineItem > FromCavcForm(cavc::Polyline < double > polyline) {
+    auto item = std::make_shared < PolylineItem > ();
     // item->LineType = LineType::offsetItem;
     for (size_t i = 0; i < polyline.size(); ++i) {
         auto newPoint = QPointF(polyline.vertexes()[i].x(), polyline.vertexes()[i].y());
         auto newBulge = (i > 0) ? polyline.vertexes()[i - 1].bulge()
-                                : polyline.vertexes()[polyline.size() - 1].bulge();
+                        : polyline.vertexes()[polyline.size() - 1].bulge();
         double newAngle = 0;
         getAngleFromBulge(newBulge * (-1), newAngle);
         item->addVertex(newPoint, newAngle);

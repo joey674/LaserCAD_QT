@@ -10,11 +10,10 @@
 #include <polylinecombine.hpp>
 #include <qgraphicsitem.h>
 
-class EditController
-{
+class EditController {
 public:
-    std::vector<std::shared_ptr<GraphicsItem> > m_currentEditItemGroup
-        = std::vector<std::shared_ptr<GraphicsItem> >();
+    std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
+        = std::vector < std::shared_ptr < GraphicsItem> > ();
 /// 更新对应的编辑Widget
 public:
     void updateTabWidget();
@@ -22,8 +21,7 @@ public:
 public:
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget单个对象编辑的回调;
-    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count)
-    {
+    void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -39,11 +37,12 @@ public:
             }
             QPointF offset = unitOffset * i;
             copiedItem->setCenter(curEditItem->getCenter() + offset);
+            DEBUG_VAR(curEditItem->getCenter());
+            DEBUG_VAR(copiedItem->getCenter());
         }
     }
     void onTabWidgetCopyTabMatrixCopy(
-        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount)
-    {
+        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -68,8 +67,7 @@ public:
             }
         }
     }
-    void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum)
-    {
+    void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -101,8 +99,7 @@ public:
     }
     /// \brief onTabWidgetArcGeometryTab
     /// \param start
-    void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle)
-    {
+    void onTabWidgetArcGeometryTab(QPointF start, QPointF end, double angle) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -141,27 +138,23 @@ public:
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
         //
-        CircleItem *item = static_cast<CircleItem *>(curEditItem.get());
+        CircleItem *item = static_cast < CircleItem * > (curEditItem.get());
         item->setVertex(0, Vertex{pos, 0});
         item->setRadius (radius);
         this->updateTableViewModel();
     }
-    void onTabWidgetPolylineGeometryTab(std::vector<Vertex> vertices)
-    {
+    void onTabWidgetPolylineGeometryTab(std::vector < Vertex > vertices) {
         // 只处理单个对象
         if (this->m_currentEditItemGroup.size() != 1) {
             WARN_MSG("Polyline edit only supports single selection.");
             return;
         }
-
         auto curEditItemPtr = this->m_currentEditItemGroup[0];
-        auto curEditItem = static_cast<PolylineItem *>(curEditItemPtr.get());
-
+        auto curEditItem = static_cast < PolylineItem * > (curEditItemPtr.get());
         // 顶点数量不匹配时，重建顶点数据
         for (size_t i = 0; i < vertices.size(); ++i) {
-            curEditItem->setVertex(static_cast<uint>(i), vertices[i]);
+            curEditItem->setVertex(static_cast < uint > (i), vertices[i]);
         }
-
         this->updateTableViewModel();
     }
 
@@ -170,8 +163,7 @@ public:
 
     /// \brief onTabWidgetMultiItemsEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
-    void onTabWidgetMultiItemsEditTab(std::vector<MultiEditParam> params)
-    {
+    void onTabWidgetMultiItemsEditTab(std::vector < MultiEditParam > params) {
         if (this->m_currentEditItemGroup.empty()) {
             return;
         }
@@ -221,27 +213,23 @@ public:
     }
     /// \brief onTabWidgetMultiCombineTab
     /// 把两个闭合曲线做boolan Operation
-    void onTabWidgetDuoItemsBoolOpTab(cavc::PlineCombineMode mode)
-    {
+    void onTabWidgetDuoItemsBoolOpTab(cavc::PlineCombineMode mode) {
         if (this->m_currentEditItemGroup.size() != 2) {
             WARN_MSG("Boolean operation requires exactly two selected items.");
             return;
         }
-
         // 获取两个 polyline item
         auto aPtr = this->m_currentEditItemGroup[0];
         auto bPtr = this->m_currentEditItemGroup[1];
-        auto aItem = dynamic_cast<GraphicsItem *>(aPtr.get());
-        auto bItem = dynamic_cast<GraphicsItem *>(bPtr.get());
-
+        auto aItem = dynamic_cast < GraphicsItem * > (aPtr.get());
+        auto bItem = dynamic_cast < GraphicsItem * > (bPtr.get());
         // 转换为 cavc polyline
         auto cavcA = aItem->getCavcForm(true);
         cavcA.isClosed() = true;
         auto cavcB = bItem->getCavcForm(true);
         cavcB.isClosed() = true;
         // 执行布尔操作
-        cavc::CombineResult<double> result = cavc::combinePolylines(cavcA, cavcB, mode);
-
+        cavc::CombineResult < double > result = cavc::combinePolylines(cavcA, cavcB, mode);
         for (const auto &pline : result.remaining) {
             auto item = FromCavcForm(pline);
             SceneManager::getIns().scene->addItem(item.get());
@@ -265,14 +253,15 @@ public:
 
     /// \brief onGraphicsItemPositionHasChanged
     /// 单个物体位置变换后的回调
-    void onGraphicsItemPositionHasChanged(UUID uuid) { this->updateTableViewModel(); }
+    void onGraphicsItemPositionHasChanged(UUID uuid) {
+        this->updateTableViewModel();
+    }
     /// \brief onGraphicsItemSelectedHasChanged
     /// 单个物体选中状态变化的回调; selected状态可以重叠, 当tree中选中令scene中选中时, scene中的选中回调也会让tree选中; 但是不会触发selectedChanged;
     void onGraphicsItemSelectedHasChanged(UUID uuid, bool selected);
     /// \brief onGraphicsItemMouseRelease
     /// 物体上鼠标release事件; 更新一次tabWidget(尽量不实时更新 减少开销)
-    void onGraphicsItemMouseRelease(UUID uuid)
-    {
+    void onGraphicsItemMouseRelease(UUID uuid) {
         // this->updateTableViewModel();
         this->updateTabWidget();
     }
