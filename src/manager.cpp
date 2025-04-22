@@ -117,25 +117,25 @@ void Manager::deleteItem(QString uuid) {
     auto allNodes = model->getAllChildNodes(QModelIndex());
     for (const auto& node : allNodes) {
         if(uuid == node->property(TreeNodePropertyIndex::UUID).toString()) {
-            // DEBUG_MSG("current delete uuid: " + uuid);
-            //删除目标节点下所有子节点
+            //先删除目标节点下所有子节点;
+            // 由于getAllChildNodes是顺序添加 那删除就倒序删除就不会出现先删父节点再删子节点
             auto nodefamily = model->getAllChildNodes(model->getIndex(node));
+            std::reverse(nodefamily.begin(), nodefamily.end());
             for (auto childNode : nodefamily) {
                 UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
-                // DEBUG_MSG("current delete childUuid: " + childUuid);
                 auto parentNodeIndex = model->getIndex(childNode->parent());
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
-                    FATAL_MSG("fail to removeRow");
+                    FATAL_MSG("fail to removeRow from childNode");
                 }
                 itemMapErase(childUuid);
             }
-            // 删去在treeViewModel内的节点;
+            // 删去目标节点;
             auto parentNodeIndex = model->getIndex(node->parent());
             if (!model->removeRows(node->indexInParent(), 1, parentNodeIndex)) {
-                FATAL_MSG("fail to removeRow");
+                FATAL_MSG("fail to removeRow from parentNode");
             }
-            // 删去在itemmap中的节点
             itemMapErase(uuid);
+            //
             break;
         }
     }
