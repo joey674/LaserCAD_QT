@@ -148,12 +148,12 @@ void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, i
 }
 
 void EditController::onTabWidgetCopyTabMatrixCopy(
-    QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount) {
+    QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount, int copyOrder) {
     if (this->m_currentEditItemGroup.size() != 1) {
         return;
     }
     auto curEditItem = this->m_currentEditItemGroup[0];
-    curEditItem->setCopiedItem(hVec, vVec, hSpacing, vSpacing, hCount, vCount, 0);
+    curEditItem->setCopiedItem(hVec, vVec, hSpacing, vSpacing, hCount, vCount, copyOrder);
 }
 
 

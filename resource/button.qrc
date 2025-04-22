@@ -18,5 +18,6 @@
         <file>undoButton.svg</file>
         <file>drawLineButton.svg</file>
         <file>drawPointButton.svg</file>
+        <file>breakButton.svg</file>
     </qresource>
 </RCC>

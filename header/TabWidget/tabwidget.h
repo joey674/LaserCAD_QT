@@ -21,15 +21,13 @@ class TabWidget : public QTabWidget {
 public:
     explicit TabWidget(QWidget *parent = nullptr) {};
 
-    void clearAllTabs()
-    {
+    void clearAllTabs() {
         while (count() > 0) {
             removeTab(0);
         }
     }
 
-    void addCopyTab(const UUID uuid)
-    {
+    void addCopyTab(const UUID uuid) {
         QWidget* copyTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(copyTab);
         // 1. 复制方式选择
@@ -79,6 +77,11 @@ public:
         QSpinBox* vCountSpin = new QSpinBox();
         vCountSpin->setRange(1, 9999);
         vCountSpin->setValue(10);
+        QComboBox* copyOrderCombo = new QComboBox();
+        copyOrderCombo->addItem("Zig-Zag by Row", 0);
+        copyOrderCombo->addItem("Zig-Zag by Column", 1);
+        copyOrderCombo->addItem("Sequential by Row", 2);
+        copyOrderCombo->addItem("Sequential by Column", 3);
         QPushButton* matrixConfirmBtn = new QPushButton("Confirm");
         matrixLayout->addRow("Horizontal Vector:", horizontalVecEdit);
         matrixLayout->addRow("Vertical Vector:", verticalVecEdit);
@@ -86,8 +89,8 @@ public:
         matrixLayout->addRow("Vertical Spacing:", vSpacingSpin);
         matrixLayout->addRow("Horizontal Count:", hCountSpin);
         matrixLayout->addRow("Vertical Count:", vCountSpin);
+        matrixLayout->addRow("Copy Order:", copyOrderCombo);
         matrixLayout->addRow("", matrixConfirmBtn);
-        // 连接 matrixConfirmBtn 点击事件
         QObject::connect(matrixConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
             QPointF hVec = parseStringToPointF(horizontalVecEdit->text());
             QPointF vVec = parseStringToPointF(verticalVecEdit->text());
@@ -95,21 +98,20 @@ public:
             double vSpacing = vSpacingSpin->value();
             int hCount = hCountSpin->value();
             int vCount = vCountSpin->value();
+            int copyOrder = 0;
+            copyOrder = copyOrderCombo->currentData().toInt();
             EditController::getIns().onTabWidgetCopyTabMatrixCopy(
-                hVec, vVec, hSpacing, vSpacing, hCount, vCount);
+                hVec, vVec, hSpacing, vSpacing, hCount, vCount, copyOrder);
         });
         // 添加两个页面
         stackedWidget->addWidget(vectorPage); // index 0
         stackedWidget->addWidget(matrixPage); // index 1
-        // 切换逻辑
         QObject::connect(modeCombo, QOverload < int >::of(&QComboBox::currentIndexChanged), stackedWidget, &QStackedWidget::setCurrentIndex);
         mainLayout->addWidget(stackedWidget);
-        // 添加到 tab 中
         this->addTab(copyTab, "Copy");
     }
 
-    void addOffsetTab(const UUID uuid)
-    {
+    void addOffsetTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto offset = item->getOffset();
         auto offsetCount = item->getOffsetCount();
@@ -260,8 +262,7 @@ public:
         this->addTab(delayTab, "DelayParams");
     }
 
-    void addArcGeometryTab(const UUID uuid)
-    {
+    void addArcGeometryTab(const UUID uuid) {
         // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();
         auto item = Manager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertex(0).point;
@@ -407,30 +408,24 @@ public:
         });
         this->addTab(pointTab, "Geometry");
     }
-    void addPolylineGeometryTab(const UUID uuid)
-    {
+    void addPolylineGeometryTab(const UUID uuid) {
         auto itemPtr = Manager::getIns().itemMapFind(uuid);
-        auto item = static_cast<PolylineItem *>(itemPtr.get());
+        auto item = static_cast < PolylineItem * > (itemPtr.get());
         uint count = item->getVertexCount();
-
         // 创建 scroll 区域
         QScrollArea *scrollArea = new QScrollArea();
         QWidget *innerWidget = new QWidget();
         QVBoxLayout *mainLayout = new QVBoxLayout(innerWidget);
-
         // 存储每个 vertex 的输入组件
-        struct VertexInput
-        {
+        struct VertexInput {
             QDoubleSpinBox *x;
             QDoubleSpinBox *y;
             QDoubleSpinBox *angle;
         };
-        QVector<VertexInput> vertexInputs;
-
+        QVector < VertexInput > vertexInputs;
         for (uint i = 0; i < count; ++i) {
             QPointF pos = item->getVertex(i).point;
             double angle = item->getVertex(i).angle;
-
             QDoubleSpinBox *vx = new QDoubleSpinBox();
             vx->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
                               "0; height: 0;  }");
@@ -440,7 +435,6 @@ public:
             QDoubleSpinBox *va = new QDoubleSpinBox();
             va->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
                               "0; height: 0;  }");
-
             vx->setRange(-1e6, 1e6);
             vy->setRange(-1e6, 1e6);
             va->setRange(-360, 360);
@@ -450,27 +444,22 @@ public:
             vx->setValue(pos.x());
             vy->setValue(pos.y());
             va->setValue(i == 0 ? 0.0 : angle); // 第一个点 angle 固定为 0
-            if (i == 0)
-                va->setEnabled(false); // 不让编辑
-
+            if (i == 0) {
+                va->setEnabled(false);    // 不让编辑
+            }
             // 横向布局: "Vertex i: X [ ] Y [ ] Angle [ ]"
             QHBoxLayout *lineLayout = new QHBoxLayout();
-
             QLabel *label = new QLabel(QString("Vertex %1:").arg(i));
             label->setMinimumWidth(60);
-
             QLabel *xLabel = new QLabel("X:");
             QLabel *yLabel = new QLabel("Y:");
             QLabel *aLabel = new QLabel("Angle:");
-
             xLabel->setMinimumWidth(10);
             yLabel->setMinimumWidth(10);
             aLabel->setMinimumWidth(50);
-
             vx->setFixedWidth(60);
             vy->setFixedWidth(60);
             va->setFixedWidth(60);
-
             lineLayout->addWidget(label);
             lineLayout->addWidget(xLabel);
             lineLayout->addWidget(vx);
@@ -479,29 +468,24 @@ public:
             lineLayout->addWidget(aLabel);
             lineLayout->addWidget(va);
             lineLayout->addStretch();
-
             mainLayout->addLayout(lineLayout);
             vertexInputs.append(VertexInput{vx, vy, va});
         }
-
         // Confirm 按钮
         QPushButton *confirmBtn = new QPushButton("Confirm");
         confirmBtn->setFixedWidth(100);
         confirmBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         mainLayout->addWidget(confirmBtn, 0, Qt::AlignCenter);
-
         // 设置 scroll 区域
         scrollArea->setWidget(innerWidget);
         scrollArea->setWidgetResizable(true);
-
         // 加入 tab
         QWidget *tab = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(tab);
         layout->addWidget(scrollArea);
-
         // 点击事件
-        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
-            std::vector<Vertex> result;
+        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
+            std::vector < Vertex > result;
             for (int i = 0; i < vertexInputs.size(); ++i) {
                 const auto &w = vertexInputs[i];
                 Vertex v;
@@ -511,12 +495,10 @@ public:
             }
             EditController::getIns().onTabWidgetPolylineGeometryTab(result);
         });
-
         this->addTab(tab, "Geometry");
     }
 
-    void addMultiItemsEditTab(const std::vector<UUID> & /*uuids*/)
-    {
+    void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
         QWidget* tab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(tab);
         QFormLayout* formLayout = new QFormLayout();
@@ -526,7 +508,7 @@ public:
             QDoubleSpinBox *deltaSpin;
         };
         QMap < QString, FieldWidgets > fields;
-        auto addField = [&](const QString &name, double defaultValue = 0.0) {
+        auto addField = [&](const QString & name, double defaultValue = 0.0) {
             QCheckBox *check = new QCheckBox(name);
             QDoubleSpinBox *valueSpin = new QDoubleSpinBox();
             QDoubleSpinBox *deltaSpin = new QDoubleSpinBox();
@@ -555,7 +537,6 @@ public:
             formLayout->addRow(check, hLayout);
             fields[name] = FieldWidgets{check, valueSpin, deltaSpin};
         };
-
         // 添加字段
         addField("Position.x");
         addField("Position.y");
@@ -596,38 +577,32 @@ public:
         //
         this->addTab(tab, "Multi Edit");
     }
-    void addDuoItemsBoolOpTab(const std::vector<UUID> &uuids)
-    {
-        if (uuids.size() != 2)
+    void addDuoItemsBoolOpTab(const std::vector < UUID > &uuids) {
+        if (uuids.size() != 2) {
             return;
-
+        }
         // 创建 UI
         QWidget *tab = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(tab);
-
         QLabel *label = new QLabel("Select Boolean Operation:");
         QComboBox *combo = new QComboBox();
         combo->addItem("Union",
-                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Union)));
+                       QVariant::fromValue(static_cast < int > (cavc::PlineCombineMode::Union)));
         combo->addItem("Exclude",
-                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Exclude)));
+                       QVariant::fromValue(static_cast < int > (cavc::PlineCombineMode::Exclude)));
         combo->addItem("Intersect",
-                       QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::Intersect)));
-        combo->addItem("XOR", QVariant::fromValue(static_cast<int>(cavc::PlineCombineMode::XOR)));
-
+                       QVariant::fromValue(static_cast < int > (cavc::PlineCombineMode::Intersect)));
+        combo->addItem("XOR", QVariant::fromValue(static_cast < int > (cavc::PlineCombineMode::XOR)));
         QPushButton *confirmBtn = new QPushButton("Confirm");
-
         layout->addWidget(label);
         layout->addWidget(combo);
         layout->addWidget(confirmBtn, 0, Qt::AlignCenter);
-
         // 仅传出选择项和 uuid
-        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
+        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
             int opIndex = combo->currentData().toInt();
-            cavc::PlineCombineMode mode = static_cast<cavc::PlineCombineMode>(opIndex);
+            cavc::PlineCombineMode mode = static_cast < cavc::PlineCombineMode > (opIndex);
             EditController::getIns().onTabWidgetDuoItemsBoolOpTab(mode);
         });
-
         this->addTab(tab, "Boolean Op");
     }
 };

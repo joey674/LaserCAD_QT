@@ -83,30 +83,80 @@ public:
     bool setCopiedItem(QPointF hVec, QPointF vVec,
                        double hSpacing, double vSpacing,
                        int hCount, int vCount,
-                       int copiedOrder )  override {
+                       int copiedOrder) override {
         m_copiedItemList.clear();
         QPointF hOffset = hVec * hSpacing;
         QPointF vOffset = vVec * vSpacing;
+        // 构建偏移矩阵
+        std::vector < std::vector < QPointF>> offsetMatrix(vCount, std::vector < QPointF > (hCount));
         for (int row = 0; row < vCount; ++row) {
             for (int col = 0; col < hCount; ++col) {
-                if (row == 0 && col == 0) {
-                    continue;
-                }
-                auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->copy());
-                if (!copiedItem) {
-                    continue;
-                }
-                QPointF totalOffset = hOffset * col + vOffset * row;
-                // 由于是再内部paint 所以是内部偏移 vertex, 而不是外部调用inScene的Vertex
-                copiedItem->m_vertexPair[0].point += totalOffset;
-                copiedItem->m_vertexPair[1].point += totalOffset;
-                copiedItem->animate();
-                m_copiedItemList.push_back(copiedItem);
+                offsetMatrix[row][col] = hOffset * col + vOffset * row;
             }
+        }
+        auto insertCopy = [&](int row, int col) {
+            if (row == 0 && col == 0) {
+                return;    // 跳过原始位置
+            }
+            auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->copy());
+            if (!copiedItem) {
+                return;
+            }
+            QPointF offset = offsetMatrix[row][col];
+            copiedItem->m_vertexPair[0].point += offset;
+            copiedItem->m_vertexPair[1].point += offset;
+            copiedItem->animate();
+            m_copiedItemList.push_back(copiedItem);
+        };
+        switch (copiedOrder) {
+            case 0: // 行优先，蛇形
+                for (int row = 0; row < vCount; ++row) {
+                    if (row % 2 == 0) {
+                        for (int col = 0; col < hCount; ++col) {
+                            insertCopy(row, col);
+                        }
+                    } else {
+                        for (int col = hCount - 1; col >= 0; --col) {
+                            insertCopy(row, col);
+                        }
+                    }
+                }
+                break;
+            case 1: // 列优先，蛇形
+                for (int col = 0; col < hCount; ++col) {
+                    if (col % 2 == 0) {
+                        for (int row = 0; row < vCount; ++row) {
+                            insertCopy(row, col);
+                        }
+                    } else {
+                        for (int row = vCount - 1; row >= 0; --row) {
+                            insertCopy(row, col);
+                        }
+                    }
+                }
+                break;
+            case 2: // 行优先，顺序
+                for (int row = 0; row < vCount; ++row) {
+                    for (int col = 0; col < hCount; ++col) {
+                        insertCopy(row, col);
+                    }
+                }
+                break;
+            case 3: // 列优先，顺序
+                for (int col = 0; col < hCount; ++col) {
+                    for (int row = 0; row < vCount; ++row) {
+                        insertCopy(row, col);
+                    }
+                }
+                break;
+            default:
+                WARN_MSG("Unknown copiedOrder value");
+                break;
         }
         this->animate();
         return true;
     }
+
 
 protected:
     bool updateOffsetItem() override {

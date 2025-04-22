@@ -23,7 +23,7 @@ public:
     /// tabWidget单个对象编辑的回调;
     void onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count);
     void onTabWidgetCopyTabMatrixCopy(
-        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount);
+        QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount, int copyOrder);
     void onTabWidgetOffsetTabParallelOffset(double offset, double offsetNum) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
