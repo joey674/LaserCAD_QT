@@ -218,8 +218,11 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     QModelIndex index = model->getIndex(uuid);
     //
     if (selected) {
-        // 设置pen
+        // 设置对象显示属性
         item->setPen(EDIT_PEN);
+        //
+        // item->m_editRect = new EditRect(item.get ());
+        // SceneManager::getIns().scene->addItem(item->m_editRect);
         // 设置treeview中选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
@@ -227,8 +230,14 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         // 设置curEditItemGroup,添加item
         this->m_currentEditItemGroup.push_back(item);
     } else {
-        // 设置pen
+        // 设置对象显示属性
         item->setPen(DISPLAY_PEN);
+        // //
+        // if (item->m_editRect) {
+        //     SceneManager::getIns().scene->removeItem(item->m_editRect);
+        //     SceneManager::getIns().scene->removeItem(item->m_editRect);
+        //     item->m_editRect = nullptr;
+        // }
         // 设置treeview中取消选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Deselect

@@ -9,8 +9,10 @@
 #include <polylineoffset.hpp>
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
+#include "editrect.h"
 
 class GraphicsItem: public QGraphicsItem {
+    friend class EditRect;
 public:
     GraphicsItem() {
         this->m_uuid = GenerateUUID();
@@ -84,7 +86,12 @@ public:
         this->m_delayParams = params;
         return true;
     }
-    /// ********************
+    bool showResizeHandles(bool show) {
+        this->m_showResizeHandles = show;
+        this->animate();
+        return true;
+    }
+/// ********************
 /// \brief update
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
@@ -165,6 +172,9 @@ protected:
     OffsetParams m_offsetParams  = OffsetParams {0, 0};
     VectorCopyParams m_vectorCopyParams  = VectorCopyParams {QPointF{0, 0}, 0, 0};
     MatrixCopyParams m_matrixCopyParams  = MatrixCopyParams {QPointF{0, 0}, QPointF{0, 0}, 0, 0, 0, 0, 0};
+public:
+    bool m_showResizeHandles = false;
+//     EditRect *m_editRect = nullptr;
 };
 
 #endif // GRAPHICSITEM_H

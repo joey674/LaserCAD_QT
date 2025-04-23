@@ -291,9 +291,8 @@ protected:
         QStyleOptionGraphicsItem optionx(*option);
         optionx.state &= ~QStyle::State_Selected;
         // 绘制线段
-        // this->m_paintItem->paint(painter, &optionx, widget);
-        this->m_paintItem->paint(painter, option, widget);
-        // 绘制编辑原点
+        this->m_paintItem->paint(painter, &optionx, widget);
+        // 绘制顶点
         painter->setPen(Qt::NoPen);
         painter->setBrush(Qt::red);
         for (const auto &vertex : m_vertexPair) {

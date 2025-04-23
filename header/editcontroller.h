@@ -14,6 +14,7 @@ class EditController {
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
+
 /// ********************
 /// 更新对应的编辑Widget
 /// ********************
