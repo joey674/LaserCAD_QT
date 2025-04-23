@@ -15,14 +15,17 @@ public:
     GraphicsItem() {
         this->m_uuid = GenerateUUID();
         this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
-    }
-    GraphicsItem(const GraphicsItem &other) {
+    };
+    GraphicsItem(const GraphicsItem &) = delete;
+    GraphicsItem &operator=(const GraphicsItem &) = delete;
+    void initFrom(const GraphicsItem &other) {
+        // 拷贝基础字段;  不可以拷贝copyparams/offsetparams; 如果有需要再说
         this->m_uuid = GenerateUUID();
         this->setFlags(other.flags());
         this->m_markParams = other.m_markParams;
         this->m_delayParams = other.m_delayParams;
     }
-    virtual std::shared_ptr < GraphicsItem > copy() const = 0;
+    virtual std::shared_ptr < GraphicsItem > clone() const = 0;
 /// ********************
 /// \brief control
 /// 直接修改 控制对象
@@ -30,27 +33,42 @@ public:
 /// 这里存的vertex以及获得的pos都是真实scene位置; 都已经经过变换, 不用再考虑锚点
 /// ********************
 public:
-    /// \brief setVertex
+    /// \brief setVertexInScene
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
-    virtual bool setVertex(const int index, const Vertex vertex) = 0;
-    /// \brief setCenter
+    virtual bool setVertexInScene(const int index, const Vertex vertex) = 0;
+    /// \brief setCenterInScene
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
-    virtual bool setCenter(const QPointF point) = 0;
+    virtual bool setCenterInScene(const QPointF point) = 0;
     /// \brief setOffsetItem
     /// \param offset
-    virtual bool setOffsetItem(const double offset, const double offsetNum) = 0;
+    virtual bool setOffsetItem(OffsetParams params) {
+        this->m_offsetParams = params;
+        this->animate();
+        return true;
+    }
     /// \brief setCopiedItem
     /// \param items
-    virtual bool setCopiedItem(QPointF dir, double spacing, int count) {
+    bool setCopiedItem(VectorCopyParams params) {
+        this->m_vectorCopyParams = params;
+        this->m_matrixCopyParams.setEmpty();
+        this->animate();
+        return true;
     };
-    virtual bool setCopiedItem(QPointF hVec, QPointF vVec,
-                               double hSpacing, double vSpacing,
-                               int hCount, int vCount,
-                               int copiedOrder ) {
+    bool setCopiedItem(MatrixCopyParams params) {
+        this->m_matrixCopyParams = params;
+        this->m_vectorCopyParams.setEmpty();
+        this->animate();
+        return true;
     };
     /// \brief rotate
     /// \param angle
     virtual bool rotate(const double angle) = 0;
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() {
+        this->animate();
+    };
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() {
+        this->animate();
+    };
     /// \brief setPen
     /// \param
     bool setPen(QPen setPen) {
@@ -104,14 +122,12 @@ public:
     /// \brief getOffset
     /// \return
     virtual cavc::Polyline < double > getCavcForm(bool inSceneCoord) const = 0;
-    virtual double getOffset() const = 0;
-    virtual double getOffsetCount() const = 0;
-    /// \brief getVertex
+    /// \brief getVertexInScene
     /// \return 这里返回的是在scene中vertex的真实位置;不考虑锚点位置;禁止直接修改vertex
-    virtual Vertex getVertex(const int index) const = 0;
-    /// \brief getCenter
+    virtual Vertex getVertexInScene(const int index) const = 0;
+    /// \brief getCenterInScene
     /// \return 这里返回的是scene真实位置;不考虑锚点位置;禁止直接修改vertex
-    virtual QPointF getCenter() const = 0;
+    virtual QPointF getCenterInScene() const = 0;
     virtual QString getName() const;
     const QString getUUID() const;
     const QPen getPen() const;
@@ -120,6 +136,15 @@ public:
     }
     const DelayParams getDelayParams() const {
         return this->m_delayParams;
+    }
+    const OffsetParams getOffsetParams() const {
+        return this->m_offsetParams;
+    }
+    const VectorCopyParams getVectorCopyParams() const {
+        return this->m_vectorCopyParams;
+    }
+    const MatrixCopyParams getMatrixCopyParams() const {
+        return this->m_matrixCopyParams;
     }
 /// ********************
 /// \brief overload
@@ -137,6 +162,9 @@ protected:
     QPen m_pen = DISPLAY_PEN;
     MarkParams m_markParams;
     DelayParams m_delayParams;
+    OffsetParams m_offsetParams  = OffsetParams {0, 0};
+    VectorCopyParams m_vectorCopyParams  = VectorCopyParams {QPointF{0, 0}, 0, 0};
+    MatrixCopyParams m_matrixCopyParams  = MatrixCopyParams {QPointF{0, 0}, QPointF{0, 0}, 0, 0, 0, 0, 0};
 };
 
 #endif // GRAPHICSITEM_H

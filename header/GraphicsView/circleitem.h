@@ -9,21 +9,17 @@
 class CircleItem : public GraphicsItem {
 public:
     CircleItem() {};
-    CircleItem(const CircleItem& other): GraphicsItem(other),
+    CircleItem(const CircleItem& other):
         m_radius(other.m_radius),
         m_offset(other.m_offset),
         m_offsetCount(other.m_offsetCount) {
-        // 更新出来paintitem和offsetitem
-        this->m_center = other.getVertex(0);
-        this->animate();
     }
-    std::shared_ptr < GraphicsItem > copy() const  override {
+    std::shared_ptr < GraphicsItem > clone() const  {
         return std::make_shared < CircleItem > (CircleItem(*this));
     }
 public:
     /// 编辑圆心
-    bool setVertex(const int index, const Vertex vertex) override
-    {
+    bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index > 1) {
             WARN_VAR(index);
             return false;
@@ -34,8 +30,7 @@ public:
         return true;
     }
     /// 编辑半径
-    bool setRadius(const double radius)
-    {
+    bool setRadius(const double radius) {
         if (radius < 0) {
             return false;
         }
@@ -43,17 +38,10 @@ public:
         animate();
         return true;
     }
-    bool setOffsetItem(const double offset, const double offsetNum) override {
-        this->m_offset = offset;
-        this->m_offsetCount = offsetNum;
-        this->animate();
-        return true;
-    }
-    bool setCenter(const QPointF point) override
-    {
-        // DEBUG_MSG("use circle setCenter");
+    bool setCenterInScene(const QPointF point) override {
+        // DEBUG_MSG("use circle setCenterInScene");
         // DEBUG_VAR(point);
-        QPointF currentCenter = this->getCenter();
+        QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -71,7 +59,7 @@ protected:
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline<double> input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm(false);
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offset * offsetIndex);
             // 获取结果
@@ -97,13 +85,12 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
-    {
+    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
         QPointF p1, p2;
         if (inSceneCoord) {
-            p1 = this->getVertex(0).point - QPointF{this->m_radius, 0};
-            p2 = this->getVertex(1).point + QPointF{this->m_radius, 0};
+            p1 = this->getVertexInScene(0).point - QPointF{this->m_radius, 0};
+            p2 = this->getVertexInScene(1).point + QPointF{this->m_radius, 0};
         } else {
             p1 = m_center.point - QPointF{this->m_radius, 0};
             p2 = m_center.point + QPointF{this->m_radius, 0};
@@ -112,14 +99,7 @@ public:
         input.addVertex(p2.x(), p2.y(), -1);
         return input;
     }
-    double getOffset() const override {
-        return this->m_offset;
-    }
-    double getOffsetCount() const override {
-        return this->m_offsetCount;
-    }
-    Vertex getVertex(const int index = 0) const override
-    {
+    Vertex getVertexInScene(const int index = 0) const override {
         if (index > 1) {
             assert("false index:only 0");
         }
@@ -128,8 +108,7 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-    QPointF getCenter() const override
-    {
+    QPointF getCenterInScene() const override {
         auto posOffset = this->pos();
         auto centerPos = this->m_center.point + posOffset;
         // DEBUG_VAR(centerPos);

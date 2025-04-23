@@ -1,29 +1,23 @@
 #include "polylineitem.h"
-#include "logger.h"
 #include <polyline.hpp>
 #include <polylineoffset.hpp>
-#include "utils.hpp"
 
-PolylineItem::PolylineItem() {
-    // INFO_MSG("create PolylineItem, uuid: "+this->getUUID());
-}
 
 bool PolylineItem::updateOffsetItem() {
     if (m_vertexList.size() < 2) {
         return false;
     }
-    if (this->m_offset == 0) {
+    if (this->m_offsetParams.offset == 0) {
         return true;
     }
     this->m_offsetItemList.clear();
-    for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavcForm(false);
         input.isClosed() = false;
         // input.isClosed() = true;
-        std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
-            this->m_offset
-            * offsetIndex);
+        std::vector < cavc::Polyline < double>> results
+            = cavc::parallelOffset(input, this->m_offsetParams.offset * offsetIndex);
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
@@ -33,23 +27,13 @@ bool PolylineItem::updateOffsetItem() {
     return true;
 }
 
-double PolylineItem::getOffset()const {
-    return this->m_offset;
-}
-
-double PolylineItem::getOffsetCount()const {
-    return  this->m_offsetCount;
-}
-
-Vertex PolylineItem::getVertex(const int index) const
-{
+Vertex PolylineItem::getVertexInScene(const int index) const {
     QPointF point = m_vertexList[index].point;
     QPointF pos = point + this->scenePos();
     return Vertex{pos, m_vertexList[index].angle};
 }
 
-QPointF PolylineItem::getCenter() const
-{
+QPointF PolylineItem::getCenterInScene() const {
     if (m_vertexList.empty()) {
         return QPointF(0, 0);
     }
@@ -89,10 +73,10 @@ QRectF PolylineItem::boundingRect() const {
         newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
     }
     newRect = newRect.adjusted(
-                  -abs(this->m_offset) * this->m_offsetCount - 1,
-                  -abs(this->m_offset) * this->m_offsetCount - 1,
-                  abs(this->m_offset) * this->m_offsetCount + 1,
-                  abs(this->m_offset) * this->m_offsetCount + 1);
+                  -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                  -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                  abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
+                  abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
     return newRect;
 }
 
@@ -111,7 +95,7 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     // 绘制拖拽原点
     painter->setPen(Qt::NoPen);
     for (const auto &vertex : m_vertexList) {
-        if (this->m_offsetCount > 0) {
+        if (this->m_offsetParams.offsetCount > 0) {
             painter->setBrush(Qt::red);
             painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
         } else {

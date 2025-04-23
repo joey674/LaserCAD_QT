@@ -58,7 +58,7 @@ public:
             QPointF dir = parseStringToPointF(directionVecEdit->text());
             double spacing = spacingSpin->value();
             int count = countSpin->value();
-            EditController::getIns().onTabWidgetCopyTabVectorCopy(dir, spacing, count);
+            EditController::getIns().onTabWidgetCopyTabVectorCopy(VectorCopyParams{dir, spacing, count});
         });
         // --- Matrix Copy Layout ---
         QWidget* matrixPage = new QWidget();
@@ -100,8 +100,8 @@ public:
             int vCount = vCountSpin->value();
             int copyOrder = 0;
             copyOrder = copyOrderCombo->currentData().toInt();
-            EditController::getIns().onTabWidgetCopyTabMatrixCopy(
-                hVec, vVec, hSpacing, vSpacing, hCount, vCount, copyOrder);
+            EditController::getIns().onTabWidgetCopyTabMatrixCopy(MatrixCopyParams{
+                hVec, vVec, hSpacing, vSpacing, hCount, vCount, copyOrder});
         });
         // 添加两个页面
         stackedWidget->addWidget(vectorPage); // index 0
@@ -113,8 +113,8 @@ public:
 
     void addOffsetTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        auto offset = item->getOffset();
-        auto offsetCount = item->getOffsetCount();
+        auto offset = item->getOffsetParams ().offset;
+        auto offsetCount = item->getOffsetParams ().offsetCount;
         if (offset == 0 && offsetCount == 0) {
             offset = 10;
             offsetCount = 3;
@@ -139,7 +139,7 @@ public:
         connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
             double offset = spacingSpin->value();
             int offsetNum = countSpin->value();
-            EditController::getIns ().onTabWidgetOffsetTabParallelOffset(offset, offsetNum);
+            EditController::getIns ().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
         });
         this->addTab(offsetTab, "Offset");
     }
@@ -263,11 +263,10 @@ public:
     }
 
     void addArcGeometryTab(const UUID uuid) {
-        // auto map = Manager::getIns().propertyMapFind(uuid, PropertyIndex::Geometry).toMap();
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertex(0).point;
-        QPointF v1 = item->getVertex(1).point;
-        double angle = item->getVertex(1).angle;
+        QPointF v0 = item->getVertexInScene(0).point;
+        QPointF v1 = item->getVertexInScene(1).point;
+        double angle = item->getVertexInScene(1).angle;
         //
         QWidget* arcTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(arcTab);
@@ -316,7 +315,7 @@ public:
     void addCircleGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < CircleItem * > (itemptr.get());
-        QPointF center = item->getVertex(0).point;
+        QPointF center = item->getVertexInScene(0).point;
         double radius = item->getRadius();
         //
         QWidget* circleTab = new QWidget();
@@ -352,8 +351,8 @@ public:
     }
     void addLineGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertex(0).point;
-        QPointF v1 = item->getVertex(1).point;
+        QPointF v0 = item->getVertexInScene(0).point;
+        QPointF v1 = item->getVertexInScene(1).point;
         //
         QWidget* lineTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(lineTab);
@@ -386,7 +385,7 @@ public:
     }
     void addPointGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        QPointF v0 = item->getVertex(0).point;
+        QPointF v0 = item->getVertexInScene(0).point;
         //
         QWidget* pointTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(pointTab);
@@ -424,8 +423,8 @@ public:
         };
         QVector < VertexInput > vertexInputs;
         for (uint i = 0; i < count; ++i) {
-            QPointF pos = item->getVertex(i).point;
-            double angle = item->getVertex(i).angle;
+            QPointF pos = item->getVertexInScene(i).point;
+            double angle = item->getVertexInScene(i).angle;
             QDoubleSpinBox *vx = new QDoubleSpinBox();
             vx->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
                               "0; height: 0;  }");

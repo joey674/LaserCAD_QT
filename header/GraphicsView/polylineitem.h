@@ -9,19 +9,11 @@
 
 class PolylineItem: public GraphicsItem {
 public:
-    PolylineItem();
-    PolylineItem(const PolylineItem& other): GraphicsItem(other),
-        // m_vertexList(other.m_vertexList),
-        m_offset(other.m_offset),
-        m_offsetCount(other.m_offsetCount) {
-        this->m_vertexList = std::vector < Vertex > ();
-        for (int i = 0; i < other.getVertexCount(); ++i) {
-            m_vertexList.push_back (other.getVertex(i));
-        }
-        // 更新出来paintitem和offsetitem
-        this->animate();
+    PolylineItem() {};
+    PolylineItem(const PolylineItem& other):
+        m_vertexList(other.m_vertexList)    {
     }
-    std::shared_ptr < GraphicsItem > copy() const  override {
+    std::shared_ptr < GraphicsItem > clone() const   {
         return std::make_shared < PolylineItem > (PolylineItem(*this));
     }
 
@@ -32,7 +24,7 @@ public:
         animate();
         return true;
     }
-    bool setVertex(const int index, const Vertex vertex) override {
+    bool setVertexInScene(const int index, const Vertex vertex) override {
         QPointF pos = vertex.point - this->scenePos();
         m_vertexList[index] = Vertex{pos, vertex.angle};
         animate();
@@ -43,18 +35,9 @@ public:
         animate();
         return true;
     }
-    bool setOffsetItem(const double offset, const double offsetNum) override {
-        this->m_offset = offset;
-        this->m_offsetCount = offsetNum;
-        if (offsetNum < 0) {
-            FATAL_MSG("offset num must be positive");
-        }
-        this->animate();
-        return true;
-    }
-    bool setCenter(const QPointF point) override {
-        DEBUG_MSG("use polyline setCenter");
-        QPointF currentCenter = this->getCenter();
+    bool setCenterInScene(const QPointF point) override {
+        DEBUG_MSG("use polyline setCenterInScene");
+        QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
         DEBUG_VAR(point);
         QString msg = QString("curCenter: (%1, %2), offset: (%3, %4), this->pos: (%5, %6)")
@@ -99,6 +82,9 @@ protected:
         }
         return true;
     }
+    bool updateCopiedItem() override {
+        return true;
+    }
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
@@ -106,8 +92,8 @@ public:
         for (int i = 0; i < count; ++i) {
             QPointF p1, p2;
             if (inSceneCoord) {
-                p1 = this->getVertex(i).point;
-                p2 = this->getVertex((i + 1) % count).point;
+                p1 = this->getVertexInScene(i).point;
+                p2 = this->getVertexInScene((i + 1) % count).point;
             } else {
                 p1 = this->m_vertexList[i].point;
                 p2 = this->m_vertexList[(i + 1) % count].point;
@@ -157,10 +143,8 @@ public:
         ///********************************************
         return input;
     }
-    double getOffset() const override;
-    double getOffsetCount() const override;
-    Vertex getVertex(const int index) const override;
-    QPointF getCenter() const override;
+    Vertex getVertexInScene(const int index) const override;
+    QPointF getCenterInScene() const override;
     QString getName() const override;
     uint getVertexCount() const;
 public:
@@ -174,14 +158,10 @@ public:
                const QStyleOptionGraphicsItem* option,
                QWidget* widget) override;
 private:
-    ///
     std::vector < Vertex > m_vertexList;
     std::vector < std::shared_ptr < QGraphicsItem>> m_paintItemList;
-    ///
-    /// \brief m_offset
-    double m_offset  = 0;
-    uint m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_copiedItemList;
 };
 
 inline std::shared_ptr < PolylineItem > FromCavcForm(cavc::Polyline < double > polyline) {

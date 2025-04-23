@@ -21,7 +21,7 @@
 
 class Manager {
 private:
-    std::unordered_map<UUID, std::shared_ptr<GraphicsItem>> m_itemMap;
+    std::unordered_map < UUID, std::shared_ptr < GraphicsItem>> m_itemMap;
 
 public:
     /// \brief addItem 添加graphicitem
@@ -33,7 +33,7 @@ public:
     /// \brief copyItem 复制graphicitem
     UUID copyItem(UUID uuid) {
         auto itemptr = itemMapFind(uuid);
-        auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->copy();
+        auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->clone();
         SceneManager::getIns().scene->addItem(item.get());
         this->addItem(item);
         setItemSelectable(item->getUUID(), true);

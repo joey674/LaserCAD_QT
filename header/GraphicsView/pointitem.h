@@ -9,20 +9,14 @@ class PointItem: public GraphicsItem {
 public:
     PointItem();
     PointItem(const PointItem &other)
-        : GraphicsItem(other)
-        , m_offset(other.m_offset)
-        , m_offsetCount(other.m_offsetCount)
-    {
-        m_vertex = other.getVertex(0);
-        // 更新出来paintitem和offsetitem
-        this->animate();
+        : m_offset(other.m_offset),
+          m_offsetCount(other.m_offsetCount) {
     }
-    std::shared_ptr < GraphicsItem > copy() const  override {
+    std::shared_ptr < GraphicsItem > clone() const   {
         return std::make_shared < PointItem > (PointItem(*this));
     }
 public:
-    bool setVertex(const int index, const Vertex vertex) override
-    {
+    bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index >= 1) {
             WARN_MSG("index can only be 0 for point");
             return false;
@@ -32,13 +26,9 @@ public:
         animate();
         return true;
     }
-    bool setOffsetItem(const double offset, const double offsetNum) override { // TODO
-        return true;
-    }
-    bool setCenter(const QPointF point) override
-    {
-        DEBUG_MSG("use point setCenter");
-        QPointF currentCenter = this->getCenter();
+    bool setCenterInScene(const QPointF point) override {
+        DEBUG_MSG("use point setCenterInScene");
+        QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
@@ -72,18 +62,10 @@ protected:
         return true;
     }
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
-    {
+    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         return cavc::Polyline < double > ();
     }
-    double getOffset() const override {
-        return this->m_offset;
-    }
-    double getOffsetCount() const override {
-        return this->m_offsetCount;
-    }
-    Vertex getVertex(const int index) const override
-    {
+    Vertex getVertexInScene(const int index) const override {
         if (index > 1) {
             WARN_MSG("false index:only 0");
         }
@@ -92,8 +74,7 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-    QPointF getCenter() const override
-    {
+    QPointF getCenterInScene() const override {
         auto center = QPointF{};
         center = m_vertex.point;
         auto posOffset = this->pos();

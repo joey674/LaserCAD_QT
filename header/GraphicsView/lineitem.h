@@ -9,21 +9,14 @@ class LineItem: public GraphicsItem {
 public:
     LineItem();
     LineItem(const LineItem &other)
-        : GraphicsItem(other)
-        , m_offset(other.m_offset)
-        , m_offsetCount(other.m_offsetCount)
-    {
-        m_vertexPair[0] = other.getVertex(0);
-        m_vertexPair[1] = other.getVertex(1);
-        // 更新出来paintitem和offsetitem
-        this->animate();
+        : m_offset(other.m_offset),
+          m_offsetCount(other.m_offsetCount) {
     }
-    std::shared_ptr < GraphicsItem > copy() const  override {
+    std::shared_ptr < GraphicsItem > clone() const   {
         return std::make_shared < LineItem > (LineItem(*this));
     }
 public:
-    bool setVertex(const int index, const Vertex vertex) override
-    {
+    bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index > 1) {
             return false;
         }
@@ -32,36 +25,29 @@ public:
         animate();
         return true;
     }
-    bool setOffsetItem(const double offset, const double offsetNum) override
-    {
-        this->m_offset = offset;
-        this->m_offsetCount = offsetNum;
-        this->animate();
-        return true;
-    }
-    bool setCenter(const QPointF point) override
-    {
-        QPointF currentCenter = this->getCenter();
+    bool setCenterInScene(const QPointF point) override {
+        QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
         this->setPos(this->pos() + offset);
         this->animate();
         return true;
     }
-    bool rotate(const double angle) override { return true; } // TODO
+    bool rotate(const double angle) override {
+        return true;    // TODO
+    }
 protected:
-    bool updateOffsetItem() override
-    {
+    bool updateOffsetItem() override {
         if (this->m_offset == 0 || this->m_offsetCount == 0) {
             return true;
         }
         this->m_offsetItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline<double> input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm(false);
             input.isClosed() = false;
-            std::vector<cavc::Polyline<double>> results = cavc::parallelOffset(input,
-                                                                               this->m_offset
-                                                                                   * offsetIndex);
+            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
+                this->m_offset
+                * offsetIndex);
             // 获取结果
             for (const auto &polyline : results) {
                 auto item = FromCavcForm(polyline);
@@ -70,39 +56,33 @@ protected:
         }
         return true;
     } // TODO
-    bool updatePaintItem() override
-    {
+    bool updatePaintItem() override {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->m_paintItem = nullptr;
         auto v1 = m_vertexPair[0].point;
         auto v2 = m_vertexPair[1].point;
-        this->m_paintItem = std::make_shared<QGraphicsLineItem>(QLineF(v1, v2));
+        this->m_paintItem = std::make_shared < QGraphicsLineItem > (QLineF(v1, v2));
         this->m_paintItem->setPen(this->getPen());
         return true;
     }
 
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
-    {
+    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         // 输入cavc库
-        cavc::Polyline<double> input;
+        cavc::Polyline < double > input;
         QPointF p1, p2;
         if (inSceneCoord) {
-            p1 = this->getVertex(0).point;
-            p2 = this->getVertex(1).point;
+            p1 = this->getVertexInScene(0).point;
+            p2 = this->getVertexInScene(1).point;
         } else {
             p1 = m_vertexPair[0].point;
             p2 = m_vertexPair[1].point;
         }
-
         input.addVertex(p1.x(), p1.y(), 0);
         input.addVertex(p2.x(), p2.y(), 0);
         return input;
     }
-    double getOffset() const override { return this->m_offset; }
-    double getOffsetCount() const override { return this->m_offsetCount; }
-    Vertex getVertex(const int index) const override
-    {
+    Vertex getVertexInScene(const int index) const override {
         if (index > 1) {
             assert("false index:only 0,1");
         }
@@ -111,14 +91,15 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-    QPointF getCenter() const override
-    {
+    QPointF getCenterInScene() const override {
         auto center = QPointF{};
         center = (m_vertexPair[0].point + m_vertexPair[1].point) / 2;
         auto posOffset = this->pos();
         return center + posOffset;
     }
-    QString getName() const override { return "LineItem"; }
+    QString getName() const override {
+        return "LineItem";
+    }
 
 public:
     int type() const override {

@@ -21,19 +21,14 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private: // 初始化组件
-    // titlebar
     TitleBar *titleBar;
-    // statusbar
     QLabel *labelMouseCoordinate;
-    //
     QAction *addLayerAction;
     QAction *addGroupAction;
     QAction *deleteNodeAction;
     QAction *copyNodeAction;
     QAction *setLayerVisibleAction;
     QAction *setLayerUnvisibleAction;
-
-    ///
     void initTitleBar();
     void initGraphicsView();
     void initDrawToolButton();
@@ -44,12 +39,13 @@ private: // 初始化组件
     void initTableViewModel();
     void initTabWidget();
     void test();
-
+public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
+    void setEditMode();
+    void setDrawMode();
 protected: // 键盘输入重载
     void keyPressEvent(QKeyEvent* ) override;
     void keyReleaseEvent(QKeyEvent* ) override;
     void resizeEvent(QResizeEvent *event) override;
-
 private slots: // 接收graphicsview信号的槽
     void onGraphicsviewMouseMoved(QPoint);
     void onGraphicsviewMouseLeftPressed(QPoint);
@@ -69,15 +65,16 @@ private slots: // 绘制工具按钮
     void onDrawPolygonButtonClicked();
     void onDrawEllipseButtonClicked();
 private slots: // 编辑工具按钮
-    void on_editButton_clicked();
-    void on_drawTestLineButton_clicked();
-    void on_rotateButton_clicked();
-    void on_centerButton_clicked();
-    void on_createOffsetButton_clicked();
-    void on_deleteButton_clicked();
-    void on_dragSceneButton_clicked();
-    void on_undoButton_clicked();
-    void on_redoButton_clicked();
+    void onEditButtonClicked();
+    void onDrawTestLineButtonClicked() {}
+    void onRotateButtonClicked();
+    void onCenterButtonClicked();
+    void onDeleteButtonClicked();
+    void onDragSceneButtonClicked();
+    void onUndoButtonClicked() {}
+    void onRedoButtonClicked() {};
+    void onBreakCopiedItemButtonClicked();
+    void onBreakOffsetItemButtonClicked();
 private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelShowContextMenu(const QPoint &pos);
     void onTreeViewModelAddLayer();

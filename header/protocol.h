@@ -140,8 +140,6 @@ struct MarkParams {
     }
 };
 
-Q_DECLARE_METATYPE(MarkParams);
-
 struct DelayParams {
     int startDelay = 100;
     int endDelay = 120;
@@ -174,47 +172,54 @@ struct DelayParams {
     }
 };
 
-Q_DECLARE_METATYPE(DelayParams);
-
-enum PropertyIndex {
-    Visible,
-    Selectable,
-    Movable,
-    Pen,
-    // Position,
-    ParallelOffset,
-    ParallelOffsetNum,
-    // Geometry,
-    Mark,
-    Delay,
+struct OffsetParams {
+    double offset;
+    int offsetCount;
 };
 
-inline const std::map < PropertyIndex, QVariant > DefaultPropertyMap
-= {{PropertyIndex::Visible, QVariant(true)},
-    {PropertyIndex::Selectable, QVariant(true)},
-    {PropertyIndex::Movable, QVariant(true)},
-    {PropertyIndex::Pen, DISPLAY_PEN},
-    // {PropertyIndex::Position, QPointF{}},
-    {PropertyIndex::ParallelOffset, 0},
-    {PropertyIndex::ParallelOffsetNum, 0},
-    // {PropertyIndex::Geometry, QMap < QString, QVariant > ()},
-    {PropertyIndex::Mark, QVariant::fromValue (MarkParams{})},
-    {PropertyIndex::Delay, QVariant::fromValue (DelayParams{})},
+struct VectorCopyParams {
+    QPointF dir;
+    double spacing;
+    int count;
+
+    void setEmpty() {
+        dir = QPointF(0, 0);
+        spacing = 0.0;
+        count = 0;
+    }
+    bool checkEmpty() const {
+        return dir == QPointF(0, 0) && spacing == 0.0 && count == 0;
+    }
 };
-/// 暂时不用 先用item自己的get函数就行, 不然要实时更新太麻烦了 到时候再封装manager就行
-// inline const QMap < QString, QVariant > GeometryArc = QMap < QString, QVariant > {
-//     { "Vertex0", QVariant::fromValue(Vertex{}) },
-//     { "Vertex1", QVariant::fromValue(Vertex{}) }
-// };
-// inline const QMap < QString, QVariant > GeometryLline = QMap < QString, QVariant > {
-//     { "Vertex0", QVariant::fromValue(Vertex{}) },
-//     { "Vertex1", QVariant::fromValue(Vertex{}) }
-// };
-// inline const QMap < QString, QVariant > GeometryCircle = QMap < QString, QVariant > {
-//     { "Radius", 0}
-// };
-// inline const QMap < QString, QVariant > GeometryPoint = QMap < QString, QVariant > {
-// };
+
+struct MatrixCopyParams {
+    QPointF hVec;
+    QPointF vVec;
+    double hSpacing;
+    double vSpacing;
+    int hCount;
+    int vCount;
+    int copiedOrder;
+
+    void setEmpty() {
+        hVec = QPointF(0, 0);
+        vVec = QPointF(0, 0);
+        hSpacing = 0.0;
+        vSpacing = 0.0;
+        hCount = 0;
+        vCount = 0;
+        copiedOrder = 0;
+    }
+    bool checkEmpty() const {
+        return hVec == QPointF(0, 0) &&
+               vVec == QPointF(0, 0) &&
+               hSpacing == 0.0 &&
+               vSpacing == 0.0 &&
+               hCount == 0 &&
+               vCount == 0 &&
+               copiedOrder == 0;
+    }
+};
 
 /*****************************************************************************
  * TreeViewModel

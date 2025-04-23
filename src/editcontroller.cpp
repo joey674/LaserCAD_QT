@@ -60,7 +60,7 @@ void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, M
     if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease) {
         double minDistance = 50;
         for (int i = 0; i < item->getVertexCount(); ++i) {
-            double distance = QLineF(pointCoordscene, item->getVertex(i).point).length();
+            double distance = QLineF(pointCoordscene, item->getVertexInScene(i).point).length();
             if (distance <= 10.0 && distance < minDistance) {
                 minDistance = distance;
                 this->currentEditPolylineVertexIndex = i;
@@ -68,8 +68,8 @@ void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, M
             }
         }
     } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::MouseMove) {
-        double angle = item->getVertex(this->currentEditPolylineVertexIndex).angle;
-        item->setVertex(this->currentEditPolylineVertexIndex, Vertex{pointCoordscene, angle});
+        double angle = item->getVertexInScene(this->currentEditPolylineVertexIndex).angle;
+        item->setVertexInScene(this->currentEditPolylineVertexIndex, Vertex{pointCoordscene, angle});
         // 注意这里输入的是绝对坐标 所以要减去相对坐标！
     } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::LeftRelease) {
         this->currentEditPolylineVertexIndex = -1;
@@ -137,24 +137,9 @@ void EditController::updateTableViewModel() {
     }
 }
 
-void EditController::onTabWidgetCopyTabVectorCopy(QPointF dir, double spacing, int count) {
-    //
-    if (this->m_currentEditItemGroup.size() != 1) {
-        return;
-    }
-    //
-    auto curEditItem = this->m_currentEditItemGroup[0];
-    curEditItem->setCopiedItem(dir, spacing, count);
-}
 
-void EditController::onTabWidgetCopyTabMatrixCopy(
-    QPointF hVec, QPointF vVec, double hSpacing, double vSpacing, int hCount, int vCount, int copyOrder) {
-    if (this->m_currentEditItemGroup.size() != 1) {
-        return;
-    }
-    auto curEditItem = this->m_currentEditItemGroup[0];
-    curEditItem->setCopiedItem(hVec, vVec, hSpacing, vSpacing, hCount, vCount, copyOrder);
-}
+
+
 
 
 void EditController::onTreeViewModelSelectionChanged(

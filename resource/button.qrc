@@ -9,15 +9,15 @@
         <file>drawPolygonButton.svg</file>
         <file>drawSpiralButton.svg</file>
         <file>deleteButton.svg</file>
-        <file>resetButton.svg</file>
+        <file>editButton.svg</file>
         <file>rotateButton.svg</file>
         <file>drawTestLineButton.svg</file>
-        <file>createOffsetButton.svg</file>
+        <file>breakOffsetItemButton.svg</file>
         <file>centerButton.svg</file>
         <file>redoButton.svg</file>
         <file>undoButton.svg</file>
         <file>drawLineButton.svg</file>
         <file>drawPointButton.svg</file>
-        <file>breakButton.svg</file>
+        <file>breakCopiedItemButton.svg</file>
     </qresource>
 </RCC>

@@ -14,9 +14,13 @@
 
 inline QString GenerateUUID() {
     QUuid uuid = QUuid::createUuid();
-    return uuid.toString(QUuid::WithoutBraces);
+    if (!uuid.isNull()) {
+        return uuid.toString(QUuid::WithoutBraces);
+    } else {
+        WARN_MSG("cant not gernerate uuid");
+        return "00000000-0000-0000-0000-000000000000";
+    }
 }
-
 ///
 /// \brief getAngleFromBulge 绘制圆弧时的转换 vertex<->Point/bulge
 /// \param bulge
