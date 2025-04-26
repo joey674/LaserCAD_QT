@@ -4,6 +4,7 @@
 #include <QGraphicsScene>
 #include <QMainWindow>
 #include "arcitem.h"
+#include "editrect.h"
 #include "manager.h"
 #include "polylineitem.h"
 #include "protocol.h"
@@ -14,16 +15,33 @@ class EditController {
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
-
-/// ********************
-/// 更新对应的编辑Widget
-/// ********************
+    std::unique_ptr<EditRect> m_editRect;
+    /// ********************
+    /// 更新对应的编辑Widget
+    /// ********************
 public:
     void updateTabWidget();
     void updateTableViewModel();
-/// ********************
-/// 编辑回调
-/// ********************
+    void updateEditRect()
+    {
+        // 初始化
+        if (!m_editRect) {
+            m_editRect = std::make_unique<EditRect>();
+            SceneManager::getIns().scene->addItem(m_editRect.get());
+        }
+        //
+        if (!m_currentEditItemGroup.empty()) {
+            m_editRect->setEditItems(m_currentEditItemGroup);
+            m_editRect->show();
+        } else {
+            m_editRect->setEditItems(std::vector<std::shared_ptr<GraphicsItem>>());
+            m_editRect->hide();
+        }
+    }
+
+    /// ********************
+    /// 编辑回调
+    /// ********************
 public:
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget单个对象编辑的回调;
@@ -222,8 +240,6 @@ public:
         auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
         auto offsetItems = curEditItem->breakOffsetItem();
         for (auto &item : offsetItems) {
-            item->setFlag(QGraphicsItem::ItemIsMovable, true);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, true);
             SceneManager::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
         }
@@ -237,8 +253,6 @@ public:
         auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
         auto copiedItems = curEditItem->breakCopiedItem();
         for (auto &item : copiedItems) {
-            item->setFlag(QGraphicsItem::ItemIsMovable, true);
-            item->setFlag(QGraphicsItem::ItemIsSelectable, true);
             SceneManager::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
         }

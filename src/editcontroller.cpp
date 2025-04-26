@@ -254,6 +254,7 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     //
     this->updateTabWidget();
     this->updateTableViewModel();
+    this->updateEditRect();
 }
 
 ///

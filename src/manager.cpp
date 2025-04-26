@@ -60,10 +60,14 @@ void Manager::setItemVisible(UUID uuid, bool status) {
 }
 
 void Manager::setItemSelectable(UUID uuid, bool status) {
+    // TODO
+    status = true;
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
 }
 
 void Manager::setItemMovable(UUID uuid, bool status) {
+    // TODO
+    status = false;
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
 }
 
