@@ -124,17 +124,17 @@ void EditController::updateTabWidget() {
 }
 
 void EditController::updateTableViewModel() {
-    // clear
-    TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
-    model->clear();
-    //
-    if (this->m_currentEditItemGroup.empty()) {
-        return;
-    } else if (this->m_currentEditItemGroup.size() == 1) { // 只有一个编辑对象
-        auto curEditItem = this->m_currentEditItemGroup[0];
-        model->setCurrentDisplayItem(curEditItem->getUUID());
-    } else {
-    }
+    // // clear
+    // TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
+    // model->clear();
+    // //
+    // if (this->m_currentEditItemGroup.empty()) {
+    //     return;
+    // } else if (this->m_currentEditItemGroup.size() == 1) { // 只有一个编辑对象
+    //     auto curEditItem = this->m_currentEditItemGroup[0];
+    //     model->setCurrentDisplayItem(curEditItem->getUUID());
+    // } else {
+    // }
 }
 
 

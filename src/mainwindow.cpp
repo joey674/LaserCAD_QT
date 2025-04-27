@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initEditToolButton();
     initLayerButton();
     initTreeViewModel();
-    initTableViewModel();
+    // initTableViewModel();
     initStatusBar();
     initTabWidget();
     //
@@ -411,13 +411,13 @@ void MainWindow::initTreeViewModel() {
 }
 
 void MainWindow::initTableViewModel() {
-    auto *model = new TableModel(this);
-    UiManager::getIns().UI()->tableView->setModel(model);
-    UiManager::getIns().UI()->tableView->verticalHeader()->setVisible(false);
-    UiManager::getIns().UI()->tableView->setAlternatingRowColors(true);
-    UiManager::getIns().UI()->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-    UiManager::getIns().UI()->tableView->setColumnWidth(0, 190);
-    UiManager::getIns().UI()->tableView->setColumnWidth(1, 190);
+    // auto *model = new TableModel(this);
+    // UiManager::getIns().UI()->tableView->setModel(model);
+    // UiManager::getIns().UI()->tableView->verticalHeader()->setVisible(false);
+    // UiManager::getIns().UI()->tableView->setAlternatingRowColors(true);
+    // UiManager::getIns().UI()->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+    // UiManager::getIns().UI()->tableView->setColumnWidth(0, 190);
+    // UiManager::getIns().UI()->tableView->setColumnWidth(1, 190);
 }
 
 void MainWindow::initTabWidget() {
