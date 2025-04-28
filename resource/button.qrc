@@ -19,5 +19,8 @@
         <file>drawLineButton.svg</file>
         <file>drawPointButton.svg</file>
         <file>breakCopiedItemButton.svg</file>
+        <file>signalInButton.png</file>
+        <file>signalOutButton.png</file>
+        <file>signalPauseButton.png</file>
     </qresource>
 </RCC>

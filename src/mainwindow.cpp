@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initDrawToolButton();
     initEditToolButton();
     initLayerButton();
+    initHardwareButton();
     initTreeViewModel();
     // initTableViewModel();
     initStatusBar();
@@ -368,6 +369,49 @@ void MainWindow::initLayerButton() {
     // // DEBUG_VAR(layer1Button->isCheckable());
     // // DEBUG_VAR(layer1Button->isChecked());
     // this->layerButtons.append(layer1Button);
+}
+
+void MainWindow::initHardwareButton()
+{
+    QString buttonStyle = buttonStyle1;
+    QToolButton *signalInButton = UiManager::getIns().UI()->signalInButton;
+    signalInButton->setIcon(QIcon(":/button/signalInButton.png"));
+    signalInButton->setIconSize(QSize(30, 30));
+    signalInButton->setStyleSheet(buttonStyle);
+    signalInButton->setCheckable(true);
+    signalInButton->setAutoExclusive(false);
+    signalInButton->setToolTip("");
+    UiManager::getIns().registerToolButton(signalInButton);
+    // connect(signalInButton,
+    //         &QToolButton::clicked,
+    //         this,
+    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    //
+    QToolButton *signalOutButton = UiManager::getIns().UI()->signalOutButton;
+    signalOutButton->setIcon(QIcon(":/button/signalOutButton.png"));
+    signalOutButton->setIconSize(QSize(30, 30));
+    signalOutButton->setStyleSheet(buttonStyle);
+    signalOutButton->setCheckable(true);
+    signalOutButton->setAutoExclusive(false);
+    signalOutButton->setToolTip("");
+    UiManager::getIns().registerToolButton(signalOutButton);
+    // connect(breakOffsetItemButton,
+    //         &QToolButton::clicked,
+    //         this,
+    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    //
+    QToolButton *signalPauseButton = UiManager::getIns().UI()->signalPauseButton;
+    signalPauseButton->setIcon(QIcon(":/button/signalPauseButton.png"));
+    signalPauseButton->setIconSize(QSize(30, 30));
+    signalPauseButton->setStyleSheet(buttonStyle);
+    signalPauseButton->setCheckable(true);
+    signalPauseButton->setAutoExclusive(false);
+    signalPauseButton->setToolTip("");
+    UiManager::getIns().registerToolButton(signalPauseButton);
+    // connect(breakOffsetItemButton,
+    //         &QToolButton::clicked,
+    //         this,
+    //         &MainWindow::onBreakOffsetItemButtonClicked);
 }
 
 void MainWindow::initStatusBar() {

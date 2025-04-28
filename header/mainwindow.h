@@ -34,6 +34,7 @@ private: // 初始化组件
     void initDrawToolButton();
     void initEditToolButton();
     void initLayerButton();
+    void initHardwareButton();
     void initStatusBar();
     void initTreeViewModel();
     void initTableViewModel();
