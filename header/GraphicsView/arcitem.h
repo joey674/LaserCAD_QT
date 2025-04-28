@@ -66,7 +66,6 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-
     std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
         // 获取当前最新的copiedItem
         this->animate();
@@ -280,9 +279,9 @@ public:
     QString getName() const override {
         return "ArcItem";
     }
-    int type() const override {
-        return GraphicsItemType::Arc;
-    }
+    int type() const override { return GraphicsItemType::Arc; }
+    uint getVertexCount() const override { return 2; }
+
 protected:
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {

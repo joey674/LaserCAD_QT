@@ -146,7 +146,8 @@ public:
     Vertex getVertexInScene(const int index) const override;
     QPointF getCenterInScene() const override;
     QString getName() const override;
-    uint getVertexCount() const;
+    uint getVertexCount() const override;
+
 public:
     int type() const override {
         return GraphicsItemType::Polyline;

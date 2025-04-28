@@ -131,9 +131,8 @@ public:
     virtual QString getName() const;
     const QString getUUID() const;
     const QPen getPen() const;
-    const MarkParams getMarkParams() const {
-        return this->m_markParams;
-    }
+    virtual uint getVertexCount() const { return 1; }; // TODO
+    const MarkParams getMarkParams() const { return this->m_markParams; }
     const DelayParams getDelayParams() const {
         return this->m_delayParams;
     }

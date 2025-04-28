@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-const int HandleSize = 8;       // 手柄尺寸
-const qreal MinRectSize = 10.0; // 最小宽高，避免被缩成负数或消失
+const int HandleSize = 8;
+const qreal MinRectSize = 10.0;
 
 enum class EditMode { None, Scale, Move, Rotate };
 
@@ -42,9 +42,12 @@ public:
         for (size_t i = 1; i < m_editItems.size(); ++i) {
             combinedRect = combinedRect.united(m_editItems[i]->sceneBoundingRect());
         }
-
         m_editRect = combinedRect;
-        resetCenter();
+
+        prepareGeometryChange();
+        setRotation(0);
+        setPos(m_editRect.center());
+        m_editRect.moveCenter(QPointF(0, 0));
     }
 
     QRectF boundingRect() const override { return m_editRect.adjusted(-50, -50, 50, 50); }
@@ -71,7 +74,7 @@ protected:
         m_currentHandleIndex = hitTestHandles(event->pos());
         m_lastPressedScenePos = event->scenePos();
         m_lastPressedLocalPos = event->pos();
-        m_startTargetRect = m_editRect;
+        m_startEditRect = m_editRect;
         m_startRotation = this->rotation();
         m_startPos = pos();
 
@@ -112,6 +115,72 @@ protected:
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override
     {
+        if (m_editMode == EditMode::Move) {
+            QPointF deltaMove = this->pos() - m_startPos;
+
+            for (auto &item : m_editItems) {
+                if (auto gItem = std::dynamic_pointer_cast<GraphicsItem>(item)) {
+                    applyMoveToGraphicsItem(*gItem, deltaMove);
+                }
+            }
+        } else if (m_editMode == EditMode::Rotate) {
+            qreal deltaRotation = this->rotation() - m_startRotation;
+
+            // 旋转中心
+            QPointF center = mapToScene(QPointF(0, 0)); // 当前EditRect中心（已经是scene坐标了）
+
+            for (auto &item : m_editItems) {
+                if (auto gItem = std::dynamic_pointer_cast<GraphicsItem>(item)) {
+                    applyRotateToGraphicsItem(*gItem, deltaRotation, center);
+                }
+            }
+        } else if (m_editMode == EditMode::Scale) {
+            // 计算缩放比例
+            qreal scaleX = m_editRect.width() / m_startEditRect.width();
+            qreal scaleY = m_editRect.height() / m_startEditRect.height();
+
+            // 强制等比缩放
+            qreal uniformScale = (std::abs(scaleX) < std::abs(scaleY)) ? scaleX : scaleY;
+            scaleX = scaleY = uniformScale;
+
+            // 确定固定点
+            QPointF startFixedPoint;
+            switch (m_currentHandleIndex) {
+            case 0:
+                startFixedPoint = m_startEditRect.bottomRight();
+                break;
+            case 1:
+                startFixedPoint = m_startEditRect.bottomLeft();
+                break;
+            case 2:
+                startFixedPoint = m_startEditRect.topRight();
+                break;
+            case 3:
+                startFixedPoint = m_startEditRect.topLeft();
+                break;
+            default:
+                startFixedPoint = m_startEditRect.center();
+                break;
+            }
+            startFixedPoint = mapToScene(startFixedPoint);
+
+            for (auto &item : m_editItems) {
+                if (auto gItem = std::dynamic_pointer_cast<GraphicsItem>(item)) {
+                    applyScaleToGraphicsItem(*gItem, scaleX, scaleY, startFixedPoint);
+                }
+            }
+
+            //
+            prepareGeometryChange();
+            // 计算新的EditRect的中心 (注意是局部的)
+            QPointF newCenterInScene = mapToScene(m_editRect.center());
+            // 更新自己的位置
+            setPos(newCenterInScene);
+            // m_editRect中心移动到(0,0)
+            m_editRect.moveCenter(QPointF(0, 0));
+        }
+
+        // 重置
         m_editMode = EditMode::None;
         m_currentHandleIndex = -1;
         event->accept();
@@ -125,17 +194,9 @@ private:
 
     QPointF m_lastPressedScenePos;
     QPointF m_lastPressedLocalPos;
-    QRectF m_startTargetRect;
+    QRectF m_startEditRect;
     qreal m_startRotation = 0.0;
     QPointF m_startPos;
-
-    void resetCenter()
-    {
-        prepareGeometryChange();
-        setRotation(0);
-        setPos(m_editRect.center());
-        m_editRect.moveCenter(QPointF(0, 0));
-    }
 
     QRectF handleRect(int index) const
     {
@@ -164,7 +225,6 @@ private:
         }
         return QRectF(pos.x() - HandleSize / 2, pos.y() - HandleSize / 2, HandleSize, HandleSize);
     }
-
     QColor getHandleColor(int index) const
     {
         if (index <= 3)
@@ -175,7 +235,6 @@ private:
             return Qt::red;
         return Qt::black;
     }
-
     int hitTestHandles(const QPointF &pos) const
     {
         for (int i = 0; i < 6; ++i) {
@@ -185,41 +244,98 @@ private:
         return -1;
     }
 
+    /// \brief applyScale
+    /// \param delta
     void applyScale(const QPointF &delta)
     {
         prepareGeometryChange();
-        QRectF rect = m_startTargetRect;
+        QRectF rect = m_startEditRect;
+
+        QPointF fixedPoint;
+        QPointF movingPointRaw;
 
         switch (m_currentHandleIndex) {
-        case 0:
-            rect.setTopLeft(rect.topLeft() + delta);
+        case 0: // 左上角
+            fixedPoint = rect.bottomRight();
+            movingPointRaw = rect.topLeft() + delta;
             break;
-        case 1:
-            rect.setTopRight(rect.topRight() + delta);
+        case 1: // 右上角
+            fixedPoint = rect.bottomLeft();
+            movingPointRaw = rect.topRight() + delta;
             break;
-        case 2:
-            rect.setBottomLeft(rect.bottomLeft() + delta);
+        case 2: // 左下角
+            fixedPoint = rect.topRight();
+            movingPointRaw = rect.bottomLeft() + delta;
             break;
-        case 3:
-            rect.setBottomRight(rect.bottomRight() + delta);
+        case 3: // 右下角
+            fixedPoint = rect.topLeft();
+            movingPointRaw = rect.bottomRight() + delta;
+            break;
+        default:
+            return;
+        }
+
+        // 原矩形宽高比
+        qreal aspectRatio = m_startEditRect.width() / m_startEditRect.height();
+
+        // 计算从fixedPoint到movingPointRaw的向量
+        QPointF rawVec = movingPointRaw - fixedPoint;
+
+        qreal dx = rawVec.x();
+        qreal dy = rawVec.y();
+
+        // 确保缩放时保持宽高比
+        if (std::abs(dx) > std::abs(dy) * aspectRatio) {
+            dy = dx / aspectRatio;
+        } else {
+            dx = dy * aspectRatio;
+        }
+
+        // 防止拉动到负宽高（翻转）
+        qreal newWidth = std::abs(dx);
+        qreal newHeight = std::abs(dy);
+
+        if (newWidth < MinRectSize) {
+            newWidth = MinRectSize;
+            newHeight = MinRectSize / aspectRatio;
+        }
+        if (newHeight < MinRectSize) {
+            newHeight = MinRectSize;
+            newWidth = MinRectSize * aspectRatio;
+        }
+
+        // 根据handle方向，修正移动点
+        QPointF correctedVec;
+        switch (m_currentHandleIndex) {
+        case 0: // 左上角
+            correctedVec = QPointF(-newWidth, -newHeight);
+            break;
+        case 1: // 右上角
+            correctedVec = QPointF(newWidth, -newHeight);
+            break;
+        case 2: // 左下角
+            correctedVec = QPointF(-newWidth, newHeight);
+            break;
+        case 3: // 右下角
+            correctedVec = QPointF(newWidth, newHeight);
             break;
         }
 
-        // 防止负宽高
-        if (rect.width() < MinRectSize)
-            rect.setWidth(MinRectSize);
-        if (rect.height() < MinRectSize)
-            rect.setHeight(MinRectSize);
+        QPointF movingPoint = fixedPoint + correctedVec;
 
-        m_editRect = rect;
+        QRectF newRect(fixedPoint, movingPoint);
+        m_editRect = newRect.normalized();
     }
 
+    /// \brief applyMove
+    /// \param deltaScene
     void applyMove(const QPointF &deltaScene)
     {
         prepareGeometryChange();
         setPos(m_startPos + deltaScene);
     }
-
+    /// \brief applyRotate
+    /// \param currentScenePos
     void applyRotate(const QPointF &currentScenePos)
     {
         prepareGeometryChange();
@@ -252,6 +368,53 @@ private:
         QPointF offset = centerInScene - afterRotationCenter;
 
         setPos(pos() + offset);
+    }
+
+    /// \brief applyMoveToGraphicsItem
+    /// \param item
+    void applyMoveToGraphicsItem(GraphicsItem &item, const QPointF &deltaMove)
+    {
+        for (int i = 0; i < item.getVertexCount(); ++i) {
+            Vertex vertex = item.getVertexInScene(i);
+            QPointF movedPos = vertex.point + deltaMove;
+            item.setVertexInScene(i, Vertex{movedPos, vertex.angle});
+        }
+    }
+    /// \brief applyRotateToGraphicsItem
+    /// \param item
+    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center)
+    {
+        qreal radians = qDegreesToRadians(deltaRotationDeg);
+
+        for (int i = 0; i < item.getVertexCount(); ++i) {
+            Vertex vertex = item.getVertexInScene(i);
+            QPointF vec = vertex.point - center;
+
+            qreal xNew = vec.x() * std::cos(radians) - vec.y() * std::sin(radians);
+            qreal yNew = vec.x() * std::sin(radians) + vec.y() * std::cos(radians);
+
+            QPointF rotatedPos = center + QPointF(xNew, yNew);
+
+            item.setVertexInScene(i, Vertex{rotatedPos, vertex.angle});
+        }
+    }
+    /// \brief applyScaleToGraphicsItem
+    /// \param item
+    void applyScaleToGraphicsItem(GraphicsItem &item,
+                                  qreal scaleX,
+                                  qreal scaleY,
+                                  const QPointF &center)
+    {
+        for (int i = 0; i < item.getVertexCount(); ++i) {
+            Vertex vertex = item.getVertexInScene(i);
+            QPointF vec = vertex.point - center;
+
+            QPointF scaledVec(vec.x() * scaleX, vec.y() * scaleY);
+            QPointF finalPos = center + scaledVec;
+
+            // 角度不变
+            item.setVertexInScene(i, Vertex{finalPos, vertex.angle});
+        }
     }
 };
 

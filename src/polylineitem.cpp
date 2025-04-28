@@ -55,10 +55,10 @@ QString PolylineItem::getName() const {
     return "PolylineItem";
 }
 
-uint PolylineItem::getVertexCount() const {
+uint PolylineItem::getVertexCount() const
+{
     return m_vertexList.size();
 }
-
 
 QRectF PolylineItem::boundingRect() const {
     if (this->m_paintItemList.empty()) {
@@ -86,11 +86,8 @@ void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
     QStyleOptionGraphicsItem optionx(* option);
     optionx.state &= ~QStyle::State_Selected;
     // 绘制线段
-    // for (auto& item : this->m_paintItemList) {
-    //     item->paint(painter, &optionx, widget);
-    // }
-    for (auto& item : this->m_paintItemList) {
-        item->paint(painter, option, widget);
+    for (auto &item : this->m_paintItemList) {
+        item->paint(painter, &optionx, widget);
     }
     // 绘制拖拽原点
     painter->setPen(Qt::NoPen);
