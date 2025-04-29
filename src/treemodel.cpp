@@ -1,6 +1,6 @@
 #include "treemodel.h"
 #include "treenode.h"
-#include "scenemanager.h"
+#include "scenecontroller.h"
 #include "manager.h"
 #include "polylineitem.h"
 #include "logger.h"
@@ -24,7 +24,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     if (!nodeIndex.isValid())
         return {};
     // 获取当前选中的图层
-    int curlayer = SceneManager::getIns().getCurrentLayer();
+    int curlayer = SceneController::getIns().getCurrentLayer();
     TreeNode *item = getNode(nodeIndex);
     QString itemName = item->property(TreeNodePropertyIndex::Name).toString();
     QString itemType = item->property(TreeNodePropertyIndex::Type).toString();

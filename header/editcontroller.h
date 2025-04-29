@@ -26,7 +26,7 @@ public:
         // 初始化
         if (!m_editRect) {
             m_editRect = std::make_unique < EditRect > ();
-            SceneManager::getIns().scene->addItem(m_editRect.get());
+            SceneController::getIns().scene->addItem(m_editRect.get());
         }
         //
         if (!m_currentEditItemGroup.empty()) {
@@ -223,7 +223,7 @@ public:
         cavc::CombineResult < double > result = cavc::combinePolylines(cavcA, cavcB, mode);
         for (const auto &pline : result.remaining) {
             auto item = FromCavcForm(pline);
-            SceneManager::getIns().scene->addItem(item.get());
+            SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(item);
         }
     }
@@ -238,7 +238,7 @@ public:
         auto offsetItems = curEditItem->breakOffsetItem();
         for (auto &item : offsetItems) {
             auto uuid = item->getUUID();
-            SceneManager::getIns().scene->addItem(item.get());
+            SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
             Manager::getIns().setItemSelectable(uuid, true);
         }
@@ -253,7 +253,7 @@ public:
         auto copiedItems = curEditItem->breakCopiedItem();
         for (auto &item : copiedItems) {
             auto uuid = item->getUUID();
-            SceneManager::getIns().scene->addItem(item.get());
+            SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
             Manager::getIns().setItemSelectable(uuid, true);
         }
@@ -296,7 +296,7 @@ public:
         // 清除editController中的编辑列表
         EditController::getIns().m_currentEditItemGroup.clear();
         // DEBUG
-        QGraphicsScene *scene = SceneManager::getIns().scene;
+        QGraphicsScene *scene = SceneController::getIns().scene;
         const auto &items = scene->items();
         DEBUG_MSG("Scene has" + QString::number (items.size()) + "items:");
     }

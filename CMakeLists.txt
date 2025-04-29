@@ -81,13 +81,12 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Ui//css.h
         # Keyboard
         header/Keyboard/keyboardmanager.h                     src/keyboardmanager.cpp
-        # Scene
-        header/Scene/scenemanager.h                                  src/scenemanager.cpp
-        header/Scene/drawmanager.h                                    src/drawmanager.cpp
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
         header/editcontroller.h                                                   src/editcontroller.cpp
+        header/scenecontroller.h                                               src/scenecontroller.cpp
+        header/drawcontroller.h                                                 src/drawcontroller.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -111,7 +110,6 @@ target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Scene)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Ui)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboard)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)

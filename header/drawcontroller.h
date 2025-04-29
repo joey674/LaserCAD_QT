@@ -13,7 +13,7 @@
 #include "rectitem.h"
 #include <qgraphicsitem.h>
 
-class DrawManager {
+class DrawController {
 public:
     void resetTmpItemStatus();
     // 绘制对象暂存
@@ -41,13 +41,13 @@ public:
     void drawEllipse(QPointF pointCoordscene, MouseEvent event);
 
 private:
-    static DrawManager ins;
-    DrawManager() {};
-    DrawManager(const DrawManager &);
-    ~DrawManager() {};
-    DrawManager &operator = (const DrawManager &);
+    static DrawController ins;
+    DrawController() {};
+    DrawController(const DrawController &);
+    ~DrawController() {};
+    DrawController &operator = (const DrawController &);
 public:
-    static DrawManager &getIns();
+    static DrawController &getIns();
 };
 
 #endif // GRAPHICSITEMMANAGER_H

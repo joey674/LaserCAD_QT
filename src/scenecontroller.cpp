@@ -1,22 +1,24 @@
-#include "scenemanager.h"
+#include "scenecontroller.h"
 #include "logger.h"
 #include "uimanager.h"
 #include "treemodel.h"
 #include "manager.h"
 #include <QScrollBar>
 
-SceneManager SceneManager::ins;
+SceneController SceneController::ins;
 
-SceneManager &SceneManager::getIns() {
+SceneController &SceneController::getIns() {
     return ins;
 }
 
-std::pair < double, double > SceneManager::getSceneScale() {
+std::pair < double, double > SceneController::getSceneScale() {
     return this->sceneScale;
 }
 
-void SceneManager::setCurrentLayer(int layer) {
+void SceneController::setCurrentLayer(int layer) {
+    //
     this->currentLayer = layer;
+    //
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     model->update();
     auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
@@ -30,17 +32,17 @@ void SceneManager::setCurrentLayer(int layer) {
     }
 }
 
-int SceneManager::getCurrentLayer() {
+int SceneController::getCurrentLayer() {
     return currentLayer;
 }
 
-int SceneManager::layerCount() {
+int SceneController::layerCount() {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     auto layerCount = model->rowCount(QModelIndex());
     return layerCount;
 }
 
-void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event) {
+void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
     if (event == MouseEvent::LeftPress) {
         // 设置鼠标光标
         UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ClosedHandCursor);
@@ -50,8 +52,8 @@ void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event) {
         QPointF newP = pointCoordView;
         QPointF translation = newP - oldP;
         // DEBUG_VAR(translation);
-        translation.setX(translation.x() / SceneManager::getIns().getSceneScale().first);
-        translation.setY(translation.y() / SceneManager::getIns().getSceneScale().second);
+        translation.setX(translation.x() / SceneController::getIns().getSceneScale().first);
+        translation.setY(translation.y() / SceneController::getIns().getSceneScale().second);
         UiManager::getIns().UI()->graphicsView->translate(translation.x(), translation.y());
         this->dragScenePoint = pointCoordView;
     } else if (event == MouseEvent::LeftRelease) {
@@ -60,7 +62,7 @@ void SceneManager::dragScene(QPointF pointCoordView, MouseEvent event) {
     }
 }
 
-void SceneManager::setSceneScale(double x, double y) {
+void SceneController::setSceneScale(double x, double y) {
     if (x <= 0 || y <= 0) {
         WARN_MSG("worng scene scale");
         return;

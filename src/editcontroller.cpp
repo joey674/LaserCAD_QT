@@ -3,7 +3,7 @@
 #include "arcitem.h"
 #include "protocol.h"
 #include "logger.h"
-#include "scenemanager.h"
+#include "scenecontroller.h"
 #include "treemodel.h"
 #include "uimanager.h"
 #include "tablemodel.h"
@@ -137,11 +137,6 @@ void EditController::updateTableViewModel() {
     // }
 }
 
-
-
-
-
-
 void EditController::onTreeViewModelSelectionChanged(
     const QItemSelection &selected,
     const QItemSelection &deselected) {
@@ -190,7 +185,7 @@ void EditController::onTreeViewModelSelectionChanged(
     for (const QModelIndex &idx : selected.indexes()) {
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         if (type == "Layer") {
-            SceneManager::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
+            // SceneController::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
         } else if (type == "Item") {
             UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(uuid)->setSelected(true);
@@ -222,7 +217,7 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         item->setPen(EDIT_PEN);
         //
         // item->m_editRect = new EditRect(item.get ());
-        // SceneManager::getIns().scene->addItem(item->m_editRect);
+        // SceneController::getIns().scene->addItem(item->m_editRect);
         // 设置treeview中选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
@@ -234,8 +229,8 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         item->setPen(DISPLAY_PEN);
         // //
         // if (item->m_editRect) {
-        //     SceneManager::getIns().scene->removeItem(item->m_editRect);
-        //     SceneManager::getIns().scene->removeItem(item->m_editRect);
+        //     SceneController::getIns().scene->removeItem(item->m_editRect);
+        //     SceneController::getIns().scene->removeItem(item->m_editRect);
         //     item->m_editRect = nullptr;
         // }
         // 设置treeview中取消选中

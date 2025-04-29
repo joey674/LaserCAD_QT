@@ -120,7 +120,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="toolButton_4">
+          <widget class="QToolButton" name="showOnlyCurrentLayerButton">
            <property name="text">
             <string>showOnlyCurrentLayerButton</string>
            </property>
@@ -286,7 +286,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="showOnlyCurrentLayerButton">
+          <widget class="QToolButton" name="undoButton">
            <property name="text">
             <string>undo</string>
            </property>

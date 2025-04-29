@@ -16,7 +16,7 @@
 #include "pointitem.h"
 #include "polylineitem.h"
 #include "circleitem.h"
-#include "scenemanager.h"
+#include "scenecontroller.h"
 
 
 class Manager {
@@ -34,7 +34,7 @@ public:
     UUID copyItem(UUID uuid) {
         auto itemptr = itemMapFind(uuid);
         auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->clone();
-        SceneManager::getIns().scene->addItem(item.get());
+        SceneController::getIns().scene->addItem(item.get());
         this->addItem(item);
         return item->getUUID();
     };

@@ -43,6 +43,34 @@ QString buttonStyle2 = R"(
         }
     )";
 
+QString comboBoxStyle1 = R"(
+    QComboBox {
+        border: 1px solid transparent;
+        border-radius: 15px;
+        background-color: #d0d0d0;
+        color: black;
+        padding: 5px;
+        min-width: 6em;
+    }
+
+    QComboBox:hover {
+        background-color: #c0c0c0;
+    }
+
+    QComboBox:pressed, QComboBox:on {
+        background-color: #b0b0b0;
+    }
+
+    QComboBox::drop-down {
+        subcontrol-origin: padding;
+        subcontrol-position: top right;
+        width: 20px;
+        border-left: 1px solid gray;
+    }
+)";
+
+
+
 QString treeViewModelStyle1 = (R"(
     QTreeView {
         font-size: 13px;   /* 设置字体大小 */
@@ -97,7 +125,7 @@ QString drawCircleButtonToolTip(
     "<p>绘制圆</p>"
     "<p>左键点击设置圆心；左键再次点击设置圆弧大小</p>"
     "</body></html>"
-    );
+);
 QString drawArcButtonToolTip(
     "<html><head/>"
     "<body>"
@@ -105,7 +133,7 @@ QString drawArcButtonToolTip(
     "<p>绘制半弧</p>"
     "<p>左键点击设置初始点；左键再次点击设置结束点</p>"
     "</body></html>"
-    );
+);
 QString  drawLineButtonToolTip(
     "<html><head/>"
     "<body>"
@@ -113,7 +141,7 @@ QString  drawLineButtonToolTip(
     "<p>绘制直线</p>"
     "</p><p>长按x/y锁定绘制方向</p></body></html>"
     "</body></html>"
-    );
+);
 
 QString     drawPolylineButtonToolTip(
     "<html><head/>"
@@ -124,5 +152,5 @@ QString     drawPolylineButtonToolTip(
     "</p><p>按下capslock切换圆弧方向；"
     "</p><p>长按x/y锁定绘制方向</p></body></html>"
     "</body></html>"
-    );
+);
 #endif // CSS_H

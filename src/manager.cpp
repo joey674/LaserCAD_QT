@@ -3,7 +3,7 @@
 #include "logger.h"
 #include "treemodel.h"
 #include "uimanager.h"
-#include "scenemanager.h"
+#include "scenecontroller.h"
 #include "polylineitem.h"
 
 Manager Manager::ins;
@@ -18,7 +18,7 @@ Manager &Manager::getIns() {
 ///
 void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     auto treeView = UiManager::getIns().UI()->treeView;
-    int layer = SceneManager::getIns().getCurrentLayer();
+    int layer = SceneController::getIns().getCurrentLayer();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
     // 插入ItemMap
@@ -96,7 +96,7 @@ bool Manager::itemMapExist(UUID uuid) {
 }
 
 void Manager::setVisibleSync() {
-    for (int layer = 1; layer <= SceneManager::getIns().layerCount(); ++layer) {
+    for (int layer = 1; layer <= SceneController::getIns().layerCount(); ++layer) {
         auto uuids = getItemsByLayer(layer);
         bool isVisible = this->itemMapFind(uuids[0])->isVisible();
         // DEBUG_VAR(layer);

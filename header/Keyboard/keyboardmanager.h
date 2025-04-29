@@ -2,7 +2,7 @@
 #define KEYBOARDMANAGER_H
 
 #include <QKeyEvent>
-#include "scenemanager.h"
+#include "scenecontroller.h"
 #include "uimanager.h"
 #include "logger.h"
 
@@ -124,10 +124,10 @@ public:
     void  onTreeViewKeyPressEvent(QKeyEvent * event) {
         DEBUG_MSG("TreeView KeyPress");
         switch (event->key()) {
-        case Qt::Key_Shift: {
-            KeyboardManager::getIns().IsShiftHold = true;
-            break;
-        }
+            case Qt::Key_Shift: {
+                    KeyboardManager::getIns().IsShiftHold = true;
+                    break;
+                }
             case Qt::Key_Control: {
                     KeyboardManager::getIns().IsControlHold = true;
                     break;
@@ -135,7 +135,7 @@ public:
             default: {
                     break;
                 }
-                }
+        }
     }
     void  onTreeViewKeyReleaseEvent(QKeyEvent * event) {
         switch(event->key()) {
