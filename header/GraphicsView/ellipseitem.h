@@ -165,10 +165,12 @@ public:
     double getRotateAngle() {
         return this->m_rotateAngle;
     }
-
+    uint getVertexCount() const override {
+        return 1;
+    }
 public:
     int type() const override {
-        return GraphicsItemType::Circle;
+        return GraphicsItemType::Ellipse;
     }
 
 protected:

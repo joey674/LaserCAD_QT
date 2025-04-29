@@ -120,6 +120,9 @@ public:
     double getRadius() {
         return this->m_radius;
     }
+    uint getVertexCount() const override {
+        return 1;
+    }
 public:
     int type() const override {
         return GraphicsItemType::Circle;

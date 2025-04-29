@@ -105,6 +105,9 @@ public:
     QString getName() const override {
         return "RectItem";
     }
+    uint getVertexCount() const override {
+        return 2;
+    }
 public:
     int type() const override {
         return GraphicsItemType::Rect;

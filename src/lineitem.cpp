@@ -21,8 +21,8 @@ void LineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     QStyleOptionGraphicsItem optionx(* option);
     optionx.state &= ~QStyle::State_Selected;
     // 绘制线段
-    // this->m_paintItem->paint(painter, &optionx, widget);
-    this->m_paintItem->paint(painter, option, widget);
+    this->m_paintItem->paint(painter, &optionx, widget);
+    // this->m_paintItem->paint(painter, option, widget);
     // 绘制编辑原点
     painter->setPen(Qt::NoPen);
     painter->setBrush(Qt::red);

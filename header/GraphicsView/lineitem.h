@@ -100,7 +100,9 @@ public:
     QString getName() const override {
         return "LineItem";
     }
-
+    uint getVertexCount() const override {
+        return 2;
+    }
 public:
     int type() const override {
         return GraphicsItemType::Line;
