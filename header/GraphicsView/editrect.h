@@ -32,7 +32,7 @@ public:
         setAcceptHoverEvents(true);
         setAcceptedMouseButtons(Qt::LeftButton);
         setZValue(999);
-        QPixmap rawPixmap(":/button/rotateCursor.png");
+        QPixmap rawPixmap(":/cursor/rotateCursor.png");
         QPixmap scaled = rawPixmap.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         m_rotateCursor = QCursor(scaled, 16, 16);
     }

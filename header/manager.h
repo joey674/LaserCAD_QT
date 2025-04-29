@@ -36,14 +36,11 @@ public:
         auto  item = (dynamic_cast < GraphicsItem* > (itemptr.get()))->clone();
         SceneManager::getIns().scene->addItem(item.get());
         this->addItem(item);
-        setItemSelectable(item->getUUID(), true);
-        setItemMovable(item->getUUID(), true);
         return item->getUUID();
     };
     /// \brief setItem property
     void setItemVisible(UUID uuid, bool status);
     void setItemSelectable(UUID uuid, bool status);
-    void setItemMovable(UUID uuid, bool status);
     /// \brief getItem
     /// \param index
     UUID getItem(QModelIndex index);
@@ -51,6 +48,9 @@ public:
     /// \brief  getItemsByLayer
     /// 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
     std::vector < UUID > getItemsByLayer(int layer);
+private:
+    void setItemMovable(UUID uuid, bool status);
+
 public:
 /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久
 /// \param UUID

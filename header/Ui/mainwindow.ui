@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>981</width>
+    <width>1253</width>
     <height>752</height>
    </rect>
   </property>
@@ -95,6 +95,50 @@
        </item>
        <item row="1" column="1" colspan="6">
         <layout class="QHBoxLayout" name="horizontalLayout_EditButton">
+         <item>
+          <widget class="QToolButton" name="addLayerButton">
+           <property name="text">
+            <string>addLayerButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="deleteLayerButton">
+           <property name="text">
+            <string>deleteLayerButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="selectLayerComboBox"/>
+         </item>
+         <item>
+          <widget class="QToolButton" name="setLayerColorButton">
+           <property name="text">
+            <string>setLayerColorButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="toolButton_4">
+           <property name="text">
+            <string>showOnlyCurrentLayerButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item>
           <widget class="QToolButton" name="editButton">
            <property name="toolTip">
@@ -242,7 +286,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QToolButton" name="undoButton">
+          <widget class="QToolButton" name="showOnlyCurrentLayerButton">
            <property name="text">
             <string>undo</string>
            </property>

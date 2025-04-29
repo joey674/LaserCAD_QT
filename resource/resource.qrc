@@ -12,19 +12,20 @@
         <file>editButton.svg</file>
         <file>rotateButton.svg</file>
         <file>drawTestLineButton.svg</file>
-        <file>breakOffsetItemButton.svg</file>
         <file>centerButton.svg</file>
         <file>redoButton.svg</file>
         <file>undoButton.svg</file>
         <file>drawLineButton.svg</file>
         <file>drawPointButton.svg</file>
-        <file>breakCopiedItemButton.svg</file>
         <file>digitalInButton.png</file>
         <file>digitalOutButton.png</file>
         <file>doPauseButton.png</file>
-        <file>rotateCursor.png</file>
-        <file>rotateCursor1.png</file>
         <file>delayTimeButton.png</file>
         <file>motionButton.png</file>
+        <file>breakCopiedItemButton.png</file>
+        <file>breakOffsetItemButton.png</file>
+    </qresource>
+    <qresource prefix="/cursor">
+        <file>rotateCursor.png</file>
     </qresource>
 </RCC>

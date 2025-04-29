@@ -308,7 +308,7 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(redoButton);
     connect(redoButton, &QToolButton::clicked, this, &MainWindow::onRedoButtonClicked);
     //
-    QToolButton *undoButton = UiManager::getIns().UI()->undoButton;
+    QToolButton *undoButton = UiManager::getIns().UI()->showOnlyCurrentLayerButton;
     undoButton->setIcon(QIcon(":/button/undoButton.svg"));
     undoButton->setIconSize(QSize(30, 30));
     undoButton->setStyleSheet(buttonStyle);
@@ -319,7 +319,7 @@ void MainWindow::initEditToolButton() {
     connect(undoButton, &QToolButton::clicked, this, &MainWindow::onUndoButtonClicked);
     //
     QToolButton *breakCopiedItemButton = UiManager::getIns().UI()->breakCopiedItemButton;
-    breakCopiedItemButton->setIcon(QIcon(":/button/breakCopiedItemButton.svg"));
+    breakCopiedItemButton->setIcon(QIcon(":/button/breakCopiedItemButton.png"));
     breakCopiedItemButton->setIconSize(QSize(30, 30));
     breakCopiedItemButton->setStyleSheet(buttonStyle);
     breakCopiedItemButton->setCheckable(true);
@@ -330,7 +330,7 @@ void MainWindow::initEditToolButton() {
             this, &MainWindow::onBreakCopiedItemButtonClicked);
     //
     QToolButton *breakOffsetItemButton = UiManager::getIns().UI()->breakOffsetItemButton;
-    breakOffsetItemButton->setIcon(QIcon(":/button/breakOffsetItemButton.svg"));
+    breakOffsetItemButton->setIcon(QIcon(":/button/breakOffsetItemButton.png"));
     breakOffsetItemButton->setIconSize(QSize(30, 30));
     breakOffsetItemButton->setStyleSheet(buttonStyle);
     breakOffsetItemButton->setCheckable(true);
@@ -412,7 +412,7 @@ void MainWindow::initHardwareButton() {
     //         this,
     //         &MainWindow::onBreakOffsetItemButtonClicked);
     //
-    QToolButton * delayTimeButton = UiManager::getIns().UI()->delayTimeButton;
+    QToolButton *delayTimeButton = UiManager::getIns().UI()->delayTimeButton;
     delayTimeButton->setIcon(QIcon(":/button/delayTimeButton.png"));
     delayTimeButton->setIconSize(QSize(30, 30));
     delayTimeButton->setStyleSheet(buttonStyle);
@@ -424,7 +424,7 @@ void MainWindow::initHardwareButton() {
     //         &QToolButton::clicked,
     //         this,
     //         &MainWindow::onBreakOffsetItemButtonClicked);
-    QToolButton * motionButton = UiManager::getIns().UI()->motionButton;
+    QToolButton *motionButton = UiManager::getIns().UI()->motionButton;
     motionButton->setIcon(QIcon(":/button/motionButton.png"));
     motionButton->setIconSize(QSize(30, 30));
     motionButton->setStyleSheet(buttonStyle);
@@ -532,18 +532,18 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
         )
     );
     // 禁止鼠标左右键同时拖拽
-    if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
-        DrawManager::getIns().resetTmpItemStatus();
-        auto allItems = Manager::getIns().getItemsByLayer(0);
-        SceneManager::getIns().scene->clearSelection();
-        // 打断一下拖拽过程
-        for (const auto& item : allItems) {
-            Manager::getIns().setItemMovable(item, false);
-            QTimer::singleShot(10, this, [item]() {
-                Manager::getIns().setItemMovable(item, true);
-            });
-        }
-    }
+    // if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
+    //     DrawManager::getIns().resetTmpItemStatus();
+    //     auto allItems = Manager::getIns().getItemsByLayer(0);
+    //     SceneManager::getIns().scene->clearSelection();
+    //     // 打断一下拖拽过程
+    //     for (const auto& item : allItems) {
+    //         Manager::getIns().setItemMovable(item, false);
+    //         QTimer::singleShot(10, this, [item]() {
+    //             Manager::getIns().setItemMovable(item, false);
+    //         });
+    //     }
+    // }
     // 非拖拽行为
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
         switch (SceneManager::getIns().currentOperationEvent) {
@@ -904,7 +904,6 @@ void MainWindow::onDragSceneButtonClicked() {
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
     auto allItems = Manager::getIns().getItemsByLayer(0);
     for (auto item : allItems) {
-        Manager::getIns().setItemMovable(item, false);
         Manager::getIns().setItemSelectable(item, false);
     }
     //button check

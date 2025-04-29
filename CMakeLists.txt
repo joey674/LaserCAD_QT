@@ -75,7 +75,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Utils/logger.h                                                      src/logger.cpp
         header/Utils/utils.hpp                                                     src/utils.cpp
         header/Utils/titlebar.h                                                    src/titlebar.cpp
-        resource/button.qrc
+        resource/resource.qrc
         # Ui
         header/Ui/uimanager.h                                                   src/uimanager.cpp
         header/Ui//css.h

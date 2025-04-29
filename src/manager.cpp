@@ -21,7 +21,6 @@ void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     int layer = SceneManager::getIns().getCurrentLayer();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
-    auto type = ptr->type();
     // 插入ItemMap
     itemMapInsert(uuid, ptr);
     INFO_MSG("item add: " + ptr->getUUID());
@@ -39,6 +38,9 @@ void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     model->setNodeProperty(childNodeIndex, TreeNodePropertyIndex::UUID, uuid);
     treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
             QItemSelectionModel::ClearAndSelect);
+    // 所有物体都不可以move!!
+    this->setItemSelectable(uuid, true);
+    this->setItemMovable(uuid, false);
 }
 
 void Manager::addItem(QModelIndex position, QString name, QString type) {
@@ -60,14 +62,10 @@ void Manager::setItemVisible(UUID uuid, bool status) {
 }
 
 void Manager::setItemSelectable(UUID uuid, bool status) {
-    // TODO
-    status = true;
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
 }
 
 void Manager::setItemMovable(UUID uuid, bool status) {
-    // TODO
-    status = false;
     itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
 }
 

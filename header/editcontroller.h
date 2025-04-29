@@ -225,8 +225,6 @@ public:
             auto item = FromCavcForm(pline);
             SceneManager::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(item);
-            Manager::getIns().setItemSelectable(item->getUUID(), true);
-            Manager::getIns().setItemMovable(item->getUUID(), true);
         }
     }
 

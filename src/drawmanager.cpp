@@ -27,7 +27,6 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpPolyline = std::make_shared < PolylineItem > ();
@@ -68,7 +67,6 @@ void DrawManager::drawArc(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpArc = std::make_shared < ArcItem > ();
@@ -102,7 +100,6 @@ void DrawManager::drawLine(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpLine = std::make_shared < LineItem > ();
@@ -132,7 +129,6 @@ void DrawManager::drawPoint(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpPoint = std::make_shared < PointItem > ();
@@ -149,7 +145,6 @@ void DrawManager::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpCircle = std::make_shared < CircleItem > ();
@@ -170,7 +165,6 @@ void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpRect = std::make_shared < RectItem > ();
@@ -197,7 +191,6 @@ void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
         auto allItems = Manager::getIns().getItemsByLayer(0);
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
-            Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
         this->tmpEllipse = std::make_shared < EllipseItem > ();

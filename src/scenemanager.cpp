@@ -23,12 +23,10 @@ void SceneManager::setCurrentLayer(int layer) {
     auto allItems = Manager::getIns().getItemsByLayer(0);
     for (const auto& item : allItems) {
         Manager::getIns().setItemSelectable(item, false);
-        Manager::getIns().setItemMovable(item, false);
         Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
     }
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemSelectable(item, true);
-        Manager::getIns().setItemMovable(item, true);
     }
 }
 
