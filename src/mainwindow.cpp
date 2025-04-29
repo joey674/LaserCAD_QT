@@ -371,8 +371,7 @@ void MainWindow::initLayerButton() {
     // this->layerButtons.append(layer1Button);
 }
 
-void MainWindow::initHardwareButton()
-{
+void MainWindow::initHardwareButton() {
     QString buttonStyle = buttonStyle1;
     QToolButton *signalInButton = UiManager::getIns().UI()->signalInButton;
     signalInButton->setIcon(QIcon(":/button/signalInButton.png"));
@@ -964,18 +963,21 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     this->copyNodeAction = new QAction("Copy Node", &contextMenu);
     this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
     this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
+    this->selectAllItemsInGroupAction = new QAction("Select all Items In this Group", &contextMenu);
     contextMenu.addAction(this->addLayerAction);
     contextMenu.addAction(this->addGroupAction);
     contextMenu.addAction(this->deleteNodeAction);
     contextMenu.addAction(this->copyNodeAction);
     contextMenu.addAction(this->setLayerVisibleAction);
     contextMenu.addAction(this->setLayerUnvisibleAction);
+    contextMenu.addAction(this->selectAllItemsInGroupAction);
     connect(this->addLayerAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddLayer);
     connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
     connect(this->deleteNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelDeleteNode);
     connect(this->copyNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelCopyNode);
     connect(this->setLayerVisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerVisible);
     connect(this->setLayerUnvisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerUnvisible);
+    connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSelectAllItemsInGroup);
     onTreeViewModelUpdateActions();
     contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
@@ -1014,6 +1016,22 @@ void MainWindow::onTreeViewModelSetLayerUnvisible() {
     auto inLayerItems = Manager::getIns().getItemsByLayer(SceneManager::getIns().getCurrentLayer ());
     for (const auto& item : inLayerItems) {
         Manager::getIns().setItemVisible(item, false);
+    }
+}
+
+void MainWindow::onTreeViewModelSelectAllItemsInGroup() {
+    auto *treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    const auto nodeIndexList
+        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    if (nodeIndexList.size() > 1) {
+        return;
+    }
+    auto indexList = model->getAllChildIndexs(nodeIndexList[0]);
+    indexList.push_back(nodeIndexList[0]);
+    for (const auto &index : indexList) {
+        treeView->selectionModel()->select(index,
+                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
     }
 }
 
@@ -1069,6 +1087,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->addGroupAction->setEnabled(false);
             this->deleteNodeAction->setEnabled(false);
             this->copyNodeAction->setEnabled(false);
+            this->selectAllItemsInGroupAction->setEnabled(false);
             SceneManager::getIns().setCurrentLayer (model->getNode(nodeIndex)->indexInParent() + 1);
             return;
         } else if (type == "Group") {
@@ -1078,6 +1097,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->addGroupAction->setEnabled(true);
             this->deleteNodeAction->setEnabled(true);
             this->copyNodeAction->setEnabled(false);
+            this->selectAllItemsInGroupAction->setEnabled(true);
             return;
         } else if (type == "Item") {
             this->addLayerAction->setEnabled(false);
@@ -1086,6 +1106,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->addGroupAction->setEnabled(true);
             this->deleteNodeAction->setEnabled(true);
             this->copyNodeAction->setEnabled(true);
+            this->selectAllItemsInGroupAction->setEnabled(false);
             return;
         }
     }

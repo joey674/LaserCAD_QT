@@ -9,8 +9,7 @@
 #include "treenode.h"
 
 
-class TreeModel : public QAbstractItemModel
-{
+class TreeModel : public QAbstractItemModel {
     Q_OBJECT
 
 public:
@@ -21,12 +20,12 @@ public:
 
     /// 获取/修改node名字
     QVariant data(const QModelIndex &nodeIndex, int role) const override;
-    bool setData(const QModelIndex &nodeIndex, const QVariant &name,int role = Qt::EditRole) override;
+    bool setData(const QModelIndex &nodeIndex, const QVariant &name, int role = Qt::EditRole) override;
     /// 获取/修改model名字
-    QVariant headerData(int section, Qt::Orientation orientation,int role = Qt::DisplayRole) const override;
-    bool setHeaderData(int section, Qt::Orientation orientation,const QVariant &value, int role = Qt::EditRole) override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
     /// 获取node子节点的QModelIndex
-    QModelIndex index(int row, int column,const QModelIndex &parentIndex = {}) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parentIndex = {}) const override;
     /// 获取node父节点的QModelIndex
     QModelIndex parent(const QModelIndex &nodeIndex) const override;
     /// 获取node的子节点个数
@@ -35,7 +34,7 @@ public:
     int columnCount(const QModelIndex &nodeIndex = QModelIndex()) const override;;
     /// 插入/删除子节点
     bool insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex = {}) override;
-    bool removeRows(int removePosition,int nodeCount,const QModelIndex &nodeIndex = {}) override;
+    bool removeRows(int removePosition, int nodeCount, const QModelIndex &nodeIndex = {}) override;
     /// 控制节点的可操作选项;返回什么flag就说明item可以进行什么操作
     Qt::ItemFlags flags(const QModelIndex &index) const override;
 
@@ -47,7 +46,7 @@ public:
     /// 首位代表层级; 层级1如果直接在层级0下,就说明是0的子节点;
     /// 所有批量操作TreeNode,都用这个形式;
     QMimeData *mimeData(const QModelIndexList &indexes) const override;
-    bool canDropMimeData(const QMimeData *data,Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const override;
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) override;
 public:
     ///  获取某个对象; 如果输入空index,就返回root
@@ -58,8 +57,8 @@ public:
     QModelIndex getIndex(const UUID  uuid) const;
 
     /// \brief getAllChildNodes 获取所有子节点
-    std::vector<TreeNode*> getAllChildNodes(const QModelIndex &nodeIndex) const;;
-
+    std::vector < TreeNode * > getAllChildNodes(const QModelIndex &nodeIndex) const;
+    std::vector < QModelIndex > getAllChildIndexs(const QModelIndex &nodeIndex) const;
     void setNodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant &value);
     QVariant nodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex);
 
@@ -68,10 +67,10 @@ public:
 private:
     void setupExemplarModelData();
     void setupDefaultModelData();
-    void setupModelData(const QList<QStringView> &lines);
-    void serializeNodeToStream(TreeNode *item, QDataStream &stream,int currentLevel) const;
+    void setupModelData(const QList < QStringView > &lines);
+    void serializeNodeToStream(TreeNode *item, QDataStream &stream, int currentLevel) const;
 
-    std::shared_ptr<TreeNode> m_rootItem;// 整个model的信息都存在rootItem里; 现在暂时存了model名字
+    std::shared_ptr < TreeNode > m_rootItem; // 整个model的信息都存在rootItem里; 现在暂时存了model名字
 };
 
 #endif // TREEVIEWMODEL_H

@@ -29,6 +29,7 @@ private: // 初始化组件
     QAction *copyNodeAction;
     QAction *setLayerVisibleAction;
     QAction *setLayerUnvisibleAction;
+    QAction *selectAllItemsInGroupAction;
     void initTitleBar();
     void initGraphicsView();
     void initDrawToolButton();
@@ -84,6 +85,7 @@ private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelCopyNode();
     void onTreeViewModelSetLayerVisible();
     void onTreeViewModelSetLayerUnvisible();
+    void onTreeViewModelSelectAllItemsInGroup();
 public slots:
     void onTreeViewModelUpdateActions();
 };

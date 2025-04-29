@@ -10,8 +10,15 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+#include <QCursor>
+#include <QPixmap>
+#include <QDialog>
+#include <QFormLayout>
+#include <QDoubleSpinBox>
+#include <QDialogButtonBox>
 
 const int HandleSize = 8;
+const int DisplayPadding = 10;
 const qreal MinRectSize = 10.0;
 
 enum class EditMode { None, Scale, Move, Rotate };
@@ -25,6 +32,9 @@ public:
         setAcceptHoverEvents(true);
         setAcceptedMouseButtons(Qt::LeftButton);
         setZValue(999);
+        QPixmap rawPixmap(":/button/rotateCursor.png");
+        QPixmap scaled = rawPixmap.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        m_rotateCursor = QCursor(scaled, 16, 16);
     }
 
     void setEditItems(std::vector < std::shared_ptr < GraphicsItem>> items) {
@@ -35,9 +45,10 @@ public:
             setRotation(0);
             return;
         }
-        QRectF combinedRect = m_editItems[0]->sceneBoundingRect();
+        QRectF combinedRect = m_editItems[0]->mapRectToScene(m_editItems[0]->getBoundingRectBasis());
         for (size_t i = 1; i < m_editItems.size(); ++i) {
-            combinedRect = combinedRect.united(m_editItems[i]->sceneBoundingRect());
+            QRectF basisRect = m_editItems[i]->mapRectToScene(m_editItems[i]->getBoundingRectBasis());
+            combinedRect = combinedRect.united(basisRect);
         }
         m_editRect = combinedRect;
         prepareGeometryChange();
@@ -55,7 +66,8 @@ public:
         QPen pen(Qt::gray, 1, Qt::DashLine);
         painter->setPen(pen);
         painter->setBrush(Qt::NoBrush);
-        painter->drawRect(m_editRect);
+        QRectF displayRect = m_editRect.adjusted(-DisplayPadding, -DisplayPadding, DisplayPadding, DisplayPadding);
+        painter->drawRect(displayRect);
         painter->setPen(Qt::NoPen);
         for (int i = 0; i < 6; ++i) {
             painter->setBrush(getHandleColor(i));
@@ -79,6 +91,20 @@ protected:
             m_editMode = EditMode::Move;
         } else if (m_currentHandleIndex == 5) {
             m_editMode = EditMode::Rotate;
+        }
+        if (m_editItems.size() == 1) {
+            if (auto gItem = std::dynamic_pointer_cast < GraphicsItem > (m_editItems[0])) {
+                for (int i = 0; i < gItem->getVertexCount(); ++i) {
+                    Vertex v = gItem->getVertexInScene(i);
+                    QPointF scenePoint = v.point;
+                    QPointF localPoint = mapFromScene(scenePoint);
+                    if (QRectF(localPoint - QPointF(5, 5), QSizeF(10, 10)).contains(event->pos())) {
+                        openVertexInputDialog(*gItem, i, v); // 触发输入框
+                        event->accept();
+                        return;
+                    }
+                }
+            }
         }
         event->accept();
     }
@@ -114,7 +140,7 @@ protected:
         } else if (m_editMode == EditMode::Rotate) {
             qreal deltaRotation = this->rotation() - m_startRotation;
             // 旋转中心
-            QPointF center = mapToScene(QPointF(0, 0)); // 当前EditRect中心（已经是scene坐标了）
+            QPointF center = mapToScene(QPointF(0, 0)); // 当前EditRect中心
             for (auto &item : m_editItems) {
                 if (auto gItem = std::dynamic_pointer_cast < GraphicsItem > (item)) {
                     applyRotateToGraphicsItem(*gItem, deltaRotation, center);
@@ -167,6 +193,34 @@ protected:
         event->accept();
     }
 
+    void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
+        int handleIndex = hitTestHandles(event->pos());
+        switch (handleIndex) {
+            case 0: // 左上角
+                setCursor(Qt::SizeFDiagCursor);
+                break;
+            case 1: // 右上角
+                setCursor(Qt::SizeBDiagCursor);
+                break;
+            case 2: // 左下角
+                setCursor(Qt::SizeBDiagCursor);
+                break;
+            case 3: // 右下角
+                setCursor(Qt::SizeFDiagCursor);
+                break;
+            case 4: // 移动
+                setCursor(Qt::SizeAllCursor);
+                break;
+            case 5: // 旋转
+                setCursor(m_rotateCursor);
+                break;
+            default:
+                setCursor(Qt::ArrowCursor);
+                break;
+        }
+        event->accept();
+    }
+
 private:
     std::vector < std::shared_ptr < GraphicsItem>> m_editItems;
     QRectF m_editRect;
@@ -179,32 +233,36 @@ private:
     qreal m_startRotation = 0.0;
     QPointF m_startPos;
 
+    QCursor m_rotateCursor;
+
     QRectF handleRect(int index) const {
+        QRectF displayRect = m_editRect.adjusted(-DisplayPadding, -DisplayPadding, DisplayPadding, DisplayPadding);
         QPointF pos;
         switch (index) {
             case 0:
-                pos = m_editRect.topLeft();
+                pos = displayRect.topLeft();
                 break;
             case 1:
-                pos = m_editRect.topRight();
+                pos = displayRect.topRight();
                 break;
             case 2:
-                pos = m_editRect.bottomLeft();
+                pos = displayRect.bottomLeft();
                 break;
             case 3:
-                pos = m_editRect.bottomRight();
+                pos = displayRect.bottomRight();
                 break;
             case 4:
-                pos = (m_editRect.topLeft() + m_editRect.topRight()) / 2.0;
+                pos = (displayRect.topLeft() + displayRect.topRight()) / 2.0;
                 pos.setY(pos.y() - 20);
                 break;
             case 5:
-                pos = (m_editRect.bottomLeft() + m_editRect.bottomRight()) / 2.0;
+                pos = (displayRect.bottomLeft() + displayRect.bottomRight()) / 2.0;
                 pos.setY(pos.y() + 20);
                 break;
         }
         return QRectF(pos.x() - HandleSize / 2, pos.y() - HandleSize / 2, HandleSize, HandleSize);
     }
+
     QColor getHandleColor(int index) const {
         if (index <= 3) {
             return Qt::green;
@@ -395,6 +453,41 @@ private:
             ellipse->setRadiusY(oldRadiusY * uniformScale);
         }
     }
+
+    /// \brief openVertexInputDialog
+    /// \param item
+    void openVertexInputDialog(GraphicsItem &item, int index, const Vertex &currentVertex) {
+        QDialog dialog;
+        dialog.setWindowTitle("Edit Vertex");
+        QFormLayout *form = new QFormLayout(&dialog);
+        QDoubleSpinBox *xSpin = new QDoubleSpinBox;
+        QDoubleSpinBox *ySpin = new QDoubleSpinBox;
+        QDoubleSpinBox *angleSpin = new QDoubleSpinBox;
+        xSpin->setRange(-1e6, 1e6);
+        ySpin->setRange(-1e6, 1e6);
+        angleSpin->setRange(-360, 360);
+        xSpin->setValue(currentVertex.point.x());
+        ySpin->setValue(currentVertex.point.y());
+        angleSpin->setValue(currentVertex.angle);
+        form->addRow("X ", xSpin);
+        form->addRow("Y ", ySpin);
+        form->addRow("Angle", angleSpin);
+        QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        form->addWidget(buttons);
+        QObject::connect(buttons, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        if (dialog.exec() == QDialog::Accepted) {
+            QPointF newPos(xSpin->value(), ySpin->value());
+            double newAngle = angleSpin->value();
+            // 对于弧来说, 不允许其设置为直线
+            if (newAngle == 0) {
+                return;
+            }
+            item.setVertexInScene(index, Vertex{newPos, newAngle});
+        }
+        setEditItems(m_editItems);
+    }
+
 };
 
 #endif // EDITRECT_H

@@ -19,28 +19,28 @@ EditController EditController::ins;
 ///
 void EditController::editItemInScene(QPointF pointCoordscene, MouseEvent event) {
     //
-    if (this->m_currentEditItemGroup.empty() || this->m_currentEditItemGroup.size() > 1) {
-        return;
-    }
-    auto curEditItem = this->m_currentEditItemGroup[0];
+    // if (this->m_currentEditItemGroup.empty() || this->m_currentEditItemGroup.size() > 1) {
+    //     return;
+    // }
+    // auto curEditItem = this->m_currentEditItemGroup[0];
     //
     // 处理scene中编辑
-    switch (curEditItem->type()) {
-        case GraphicsItemType::Polyline: {
-                PolylineItem *item = static_cast < PolylineItem * > (curEditItem.get());
-                this->editPolyline(pointCoordscene, item, event);
-                break;
-            }
-        case GraphicsItemType::Arc: {
-                ArcItem *item = static_cast < ArcItem * > (curEditItem.get());
-                this->editArc(pointCoordscene, item, event);
-                break;
-            }
-        case GraphicsItemType::Line: {
-                break;
-            }
-            // TODO
-    };
+    // switch (curEditItem->type()) {
+    //     case GraphicsItemType::Polyline: {
+    //             PolylineItem *item = static_cast < PolylineItem * > (curEditItem.get());
+    //             this->editPolyline(pointCoordscene, item, event);
+    //             break;
+    //         }
+    //     case GraphicsItemType::Arc: {
+    //             ArcItem *item = static_cast < ArcItem * > (curEditItem.get());
+    //             this->editArc(pointCoordscene, item, event);
+    //             break;
+    //         }
+    //     case GraphicsItemType::Line: {
+    //             break;
+    //         }
+    //         // TODO
+    // };
 }
 
 ///

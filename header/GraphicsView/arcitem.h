@@ -217,6 +217,13 @@ protected:
         }
         return false;
     }
+    QRectF getBoundingRectBasis() const override {
+        if (!this->m_paintItem) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItem->boundingRect();
+        return newRect;
+    }
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         // 输入cavc库
@@ -279,11 +286,33 @@ public:
     QString getName() const override {
         return "ArcItem";
     }
-    int type() const override { return GraphicsItemType::Arc; }
-    uint getVertexCount() const override { return 2; }
+    int type() const override {
+        return GraphicsItemType::Arc;
+    }
+    uint getVertexCount() const override {
+        return 2;
+    }
 
 protected:
-    QRectF boundingRect() const override;
+    QRectF boundingRect() const override {
+        if (!this->m_paintItem) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItem->boundingRect();
+        // 包含offsetItem
+        newRect = newRect.adjusted(
+                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
+                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
+        // 包含所有 copiedItem
+        for (const auto &item : m_copiedItemList) {
+            if (item) {
+                newRect = newRect.united(item->boundingRect());
+            }
+        }
+        return newRect;
+    }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         Q_UNUSED(widget);
         // 设置option删去offset线段的选框

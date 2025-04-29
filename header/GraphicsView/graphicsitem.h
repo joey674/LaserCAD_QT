@@ -63,12 +63,8 @@ public:
     /// \brief rotate
     /// \param angle
     virtual bool rotate(const double angle) = 0;
-    virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() {
-        this->animate();
-    };
-    virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() {
-        this->animate();
-    };
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() {};
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() {};
     /// \brief setPen
     /// \param
     bool setPen(QPen setPen) {
@@ -97,9 +93,7 @@ protected:
     virtual bool updatePaintItem() = 0;
     /// \brief updateCopiedItem
     /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
-    virtual bool updateCopiedItem() {
-        return true;
-    };
+    virtual bool updateCopiedItem() {};
     /// \brief animate
     ///
     virtual bool animate() {
@@ -132,6 +126,7 @@ public:
     const QString getUUID() const;
     const QPen getPen() const;
     virtual uint getVertexCount() const = 0;
+    virtual QRectF getBoundingRectBasis() const {};
     const MarkParams getMarkParams() const {
         return this->m_markParams;
     }

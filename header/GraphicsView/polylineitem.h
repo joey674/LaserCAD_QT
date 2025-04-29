@@ -147,7 +147,20 @@ public:
     QPointF getCenterInScene() const override;
     QString getName() const override;
     uint getVertexCount() const override;
-
+    QRectF getBoundingRectBasis() const override {
+        if (this->m_paintItemList.empty()) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItemList[0]->boundingRect();
+        for (auto& item : this->m_paintItemList) {
+            qreal minX = std::min(newRect.left(), item->boundingRect().left());
+            qreal minY = std::min(newRect.top(), item->boundingRect().top());
+            qreal maxX = std::max(newRect.right(), item->boundingRect().right());
+            qreal maxY = std::max(newRect.bottom(), item->boundingRect().bottom());
+            newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
+        }
+        return newRect;
+    }
 public:
     int type() const override {
         return GraphicsItemType::Polyline;

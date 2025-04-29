@@ -22,5 +22,7 @@
         <file>signalInButton.png</file>
         <file>signalOutButton.png</file>
         <file>signalPauseButton.png</file>
+        <file>rotateCursor.png</file>
+        <file>rotateCursor1.png</file>
     </qresource>
 </RCC>
