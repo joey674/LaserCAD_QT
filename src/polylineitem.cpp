@@ -2,8 +2,8 @@
 #include <polyline.hpp>
 #include <polylineoffset.hpp>
 
-
-bool PolylineItem::updateOffsetItem() {
+bool PolylineItem::updateOffsetItem()
+{
     if (m_vertexList.size() < 2) {
         return false;
     }
@@ -16,7 +16,7 @@ bool PolylineItem::updateOffsetItem() {
         auto input = this->getCavcForm(false);
         input.isClosed() = false;
         // input.isClosed() = true;
-        std::vector < cavc::Polyline < double>> results
+        std::vector<cavc::Polyline<double>> results
             = cavc::parallelOffset(input, this->m_offsetParams.offset * offsetIndex);
         // 获取结果
         for (const auto &polyline : results) {
@@ -27,7 +27,8 @@ bool PolylineItem::updateOffsetItem() {
     return true;
 }
 
-Vertex PolylineItem::getVertexInScene(const int index) const {
+Vertex PolylineItem::getVertexInScene(const int index) const
+{
     QPointF point = m_vertexList[index].point;
     QPointF pos = point + this->scenePos();
     return Vertex{pos, m_vertexList[index].angle};
@@ -60,48 +61,6 @@ uint PolylineItem::getVertexCount() const
     return m_vertexList.size();
 }
 
-QRectF PolylineItem::boundingRect() const {
-    if (this->m_paintItemList.empty()) {
-        return QRectF();
-    }
-    QRectF newRect = m_paintItemList[0]->boundingRect();
-    for (auto& item : this->m_paintItemList) {
-        qreal minX = std::min(newRect.left(), item->boundingRect().left());
-        qreal minY = std::min(newRect.top(), item->boundingRect().top());
-        qreal maxX = std::max(newRect.right(), item->boundingRect().right());
-        qreal maxY = std::max(newRect.bottom(), item->boundingRect().bottom());
-        newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
-    }
-    newRect = newRect.adjusted(
-                  -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                  -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                  abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
-                  abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
-    return newRect;
-}
 
-void PolylineItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-    Q_UNUSED(widget);
-    // 设置option删去offset线段的选框
-    QStyleOptionGraphicsItem optionx(* option);
-    optionx.state &= ~QStyle::State_Selected;
-    // 绘制线段
-    for (auto &item : this->m_paintItemList) {
-        item->paint(painter, &optionx, widget);
-    }
-    // 绘制拖拽原点
-    painter->setPen(Qt::NoPen);
-    for (const auto &vertex : m_vertexList) {
-        if (this->m_offsetParams.offsetCount > 0) {
-            painter->setBrush(Qt::red);
-            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        } else {
-            painter->setBrush(Qt::blue);
-            painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        }
-    }
-    // 绘制offset
-    for (auto& item : this->m_offsetItemList) {
-        item->paint(painter, &optionx, widget);
-    }
-}
+
+

@@ -373,40 +373,65 @@ void MainWindow::initLayerButton() {
 
 void MainWindow::initHardwareButton() {
     QString buttonStyle = buttonStyle1;
-    QToolButton *signalInButton = UiManager::getIns().UI()->signalInButton;
-    signalInButton->setIcon(QIcon(":/button/signalInButton.png"));
-    signalInButton->setIconSize(QSize(30, 30));
-    signalInButton->setStyleSheet(buttonStyle);
-    signalInButton->setCheckable(true);
-    signalInButton->setAutoExclusive(false);
-    signalInButton->setToolTip("");
-    UiManager::getIns().registerToolButton(signalInButton);
+    QToolButton *digitalInButton = UiManager::getIns().UI()->digitalInButton;
+    digitalInButton->setIcon(QIcon(":/button/digitalInButton.png"));
+    digitalInButton->setIconSize(QSize(30, 30));
+    digitalInButton->setStyleSheet(buttonStyle);
+    digitalInButton->setCheckable(true);
+    digitalInButton->setAutoExclusive(false);
+    digitalInButton->setToolTip("");
+    UiManager::getIns().registerToolButton(digitalInButton);
     // connect(signalInButton,
     //         &QToolButton::clicked,
     //         this,
     //         &MainWindow::onBreakOffsetItemButtonClicked);
     //
-    QToolButton *signalOutButton = UiManager::getIns().UI()->signalOutButton;
-    signalOutButton->setIcon(QIcon(":/button/signalOutButton.png"));
-    signalOutButton->setIconSize(QSize(30, 30));
-    signalOutButton->setStyleSheet(buttonStyle);
-    signalOutButton->setCheckable(true);
-    signalOutButton->setAutoExclusive(false);
-    signalOutButton->setToolTip("");
-    UiManager::getIns().registerToolButton(signalOutButton);
+    QToolButton *digitalOutButton = UiManager::getIns().UI()->digitalOutButton;
+    digitalOutButton->setIcon(QIcon(":/button/digitalOutButton.png"));
+    digitalOutButton->setIconSize(QSize(30, 30));
+    digitalOutButton->setStyleSheet(buttonStyle);
+    digitalOutButton->setCheckable(true);
+    digitalOutButton->setAutoExclusive(false);
+    digitalOutButton->setToolTip("");
+    UiManager::getIns().registerToolButton(digitalOutButton);
     // connect(breakOffsetItemButton,
     //         &QToolButton::clicked,
     //         this,
     //         &MainWindow::onBreakOffsetItemButtonClicked);
     //
-    QToolButton *signalPauseButton = UiManager::getIns().UI()->signalPauseButton;
-    signalPauseButton->setIcon(QIcon(":/button/signalPauseButton.png"));
-    signalPauseButton->setIconSize(QSize(30, 30));
-    signalPauseButton->setStyleSheet(buttonStyle);
-    signalPauseButton->setCheckable(true);
-    signalPauseButton->setAutoExclusive(false);
-    signalPauseButton->setToolTip("");
-    UiManager::getIns().registerToolButton(signalPauseButton);
+    QToolButton *doPauseButton = UiManager::getIns().UI()->doPauseButton;
+    doPauseButton->setIcon(QIcon(":/button/doPauseButton.png"));
+    doPauseButton->setIconSize(QSize(30, 30));
+    doPauseButton->setStyleSheet(buttonStyle);
+    doPauseButton->setCheckable(true);
+    doPauseButton->setAutoExclusive(false);
+    doPauseButton->setToolTip("");
+    UiManager::getIns().registerToolButton(doPauseButton);
+    // connect(breakOffsetItemButton,
+    //         &QToolButton::clicked,
+    //         this,
+    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    //
+    QToolButton * delayTimeButton = UiManager::getIns().UI()->delayTimeButton;
+    delayTimeButton->setIcon(QIcon(":/button/delayTimeButton.png"));
+    delayTimeButton->setIconSize(QSize(30, 30));
+    delayTimeButton->setStyleSheet(buttonStyle);
+    delayTimeButton->setCheckable(true);
+    delayTimeButton->setAutoExclusive(false);
+    delayTimeButton->setToolTip("");
+    UiManager::getIns().registerToolButton(delayTimeButton);
+    // connect(breakOffsetItemButton,
+    //         &QToolButton::clicked,
+    //         this,
+    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    QToolButton * motionButton = UiManager::getIns().UI()->motionButton;
+    motionButton->setIcon(QIcon(":/button/motionButton.png"));
+    motionButton->setIconSize(QSize(30, 30));
+    motionButton->setStyleSheet(buttonStyle);
+    motionButton->setCheckable(true);
+    motionButton->setAutoExclusive(false);
+    motionButton->setToolTip("");
+    UiManager::getIns().registerToolButton(motionButton);
     // connect(breakOffsetItemButton,
     //         &QToolButton::clicked,
     //         this,

@@ -15,18 +15,17 @@ class EditController {
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
-    std::unique_ptr<EditRect> m_editRect;
+    std::unique_ptr < EditRect > m_editRect;
     /// ********************
     /// 更新对应的编辑Widget
     /// ********************
 public:
     void updateTabWidget();
     void updateTableViewModel();
-    void updateEditRect()
-    {
+    void updateEditRect() {
         // 初始化
         if (!m_editRect) {
-            m_editRect = std::make_unique<EditRect>();
+            m_editRect = std::make_unique < EditRect > ();
             SceneManager::getIns().scene->addItem(m_editRect.get());
         }
         //
@@ -34,7 +33,7 @@ public:
             m_editRect->setEditItems(m_currentEditItemGroup);
             m_editRect->show();
         } else {
-            m_editRect->setEditItems(std::vector<std::shared_ptr<GraphicsItem>>());
+            m_editRect->setEditItems(std::vector < std::shared_ptr < GraphicsItem>>());
             m_editRect->hide();
         }
     }
@@ -240,8 +239,10 @@ public:
         auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
         auto offsetItems = curEditItem->breakOffsetItem();
         for (auto &item : offsetItems) {
+            auto uuid = item->getUUID();
             SceneManager::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
+            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onBreakCopiedItemTriggered
@@ -253,8 +254,10 @@ public:
         auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
         auto copiedItems = curEditItem->breakCopiedItem();
         for (auto &item : copiedItems) {
+            auto uuid = item->getUUID();
             SceneManager::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
+            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onCenterToOriginTrigger 回归物体到中心

@@ -8,21 +8,20 @@
 
 class EllipseItem : public GraphicsItem {
 public:
-    int drawStep = 0;
-
-public:
     EllipseItem() {};
-    EllipseItem(const EllipseItem &other)
-        : m_radiusX(other.m_radiusX),
-          m_radiusY(other.m_radiusY),
-          m_rotateAngle(other.m_rotateAngle),
-          m_offset(other.m_offset),
-          m_offsetCount(other.m_offsetCount) {
+    std::shared_ptr < GraphicsItem > clone() const override {
+        auto item = std::make_shared < EllipseItem > ();
+        // 拷贝基类字段
+        item->initFrom(*this);
+        // 拷贝 ArcItem 自己的字段
+        item->m_center = this->m_center;
+        item->m_radiusX = this->m_radiusX;
+        item->m_radiusY = this->m_radiusY;
+        item->m_rotateAngle = this->m_rotateAngle;
+        // 构建paintItem/copyItem/offsetItem
+        item->animate();
+        return item;
     }
-    std::shared_ptr < GraphicsItem > clone() const  {
-        return std::make_shared < EllipseItem > (EllipseItem(*this));
-    }
-
 public:
     /// 编辑圆心
     bool setVertexInScene(const int index, const Vertex vertex) override {
@@ -73,22 +72,52 @@ public:
         //TODO
         return true;
     }
-
+    std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
+        // 获取当前最新的copiedItem
+        this->animate();
+        // 设置Params为空
+        m_vectorCopyParams.setEmpty();
+        m_matrixCopyParams.setEmpty();
+        // 获取当前copiedItem  如果没有copiedItem就返回空数组
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        result.reserve(this->m_copiedItemList.size());
+        for (auto &&item : std::move(this->m_copiedItemList)) {
+            item->setPos(this->pos()); // 把位置也更新了; 作为copiedItem是不会保存这个数据的
+            result.emplace_back(std::move(item));
+        }
+        m_copiedItemList.clear();
+        return result;
+    }
+    std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
+        // 获取当前最新的copiedItem
+        this->animate();
+        // 设置Params为空
+        m_offsetParams.offset = 0;
+        m_offsetParams.offsetCount = 0;
+        //获取当前offsetItem  如果没有offsetItem就返回空数组
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        result.reserve(this->m_offsetItemList.size());
+        for (auto &&item : std::move(this->m_offsetItemList)) {
+            item->setPos(this->pos()); // 把位置也更新了; 作为offsetItem是不会保存这个数据的
+            result.emplace_back(std::move(item));
+        }
+        m_offsetItemList.clear();
+        return result;
+    };
 protected:
     bool updateOffsetItem() override {
-        if (this->m_offset == 0 || this->m_offsetCount == 0) {
+        //
+        if (this->m_offsetParams.offset == 0 || this->m_offsetParams.offsetCount == 0) {
             return true;
         }
         this->m_offsetItemList.clear();
-        for (int offsetIndex = 1; offsetIndex <= this->m_offsetCount; offsetIndex++) {
+        for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
             // 输入cavc库
             cavc::Polyline < double > input = this->getCavcForm(false);
             input.isClosed() = true;
-            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
-                this->m_offset
-                * offsetIndex);
+            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_offsetParams.offset * offsetIndex);
             // 获取结果
-            for (const auto &polyline : results) {
+            for (const auto& polyline : results) {
                 auto item = FromCavcForm(polyline);
                 this->m_offsetItemList.push_back(std::move(item));
             }
@@ -124,18 +153,135 @@ protected:
         this->m_paintItem.reset(pathItem);
         return true;
     }
-
+    bool updateCopiedItem() override {
+        this->m_copiedItemList.clear();
+        //
+        if (this->m_vectorCopyParams.checkEmpty() && this->m_matrixCopyParams.checkEmpty()) {
+            return true;
+        } else if ((!this->m_vectorCopyParams.checkEmpty())
+                   && (!this->m_matrixCopyParams.checkEmpty())) {
+            WARN_MSG("should not happen");
+            return false;
+        }
+        //
+        if (!this->m_vectorCopyParams.checkEmpty()) {
+            m_copiedItemList.clear();
+            //
+            QPointF unitOffset =
+                this->m_vectorCopyParams.dir * this->m_vectorCopyParams.spacing;
+            for (int i = 1; i <= this->m_vectorCopyParams.count; ++i) {
+                // DEBUG_VAR(this->getUUID());
+                auto copiedItem = std::dynamic_pointer_cast < EllipseItem > (this->clone());
+                QPointF offset = unitOffset * i;
+                copiedItem->m_center.point += offset;
+                copiedItem->animate();
+                // DEBUG_VAR(copiedItem->getUUID());
+                m_copiedItemList.push_back(copiedItem);
+            }
+            return true;
+        }
+        //
+        if (!this->m_matrixCopyParams.checkEmpty()) {
+            m_copiedItemList.clear();
+            QPointF hOffset = this->m_matrixCopyParams.hVec * this->m_matrixCopyParams. hSpacing;
+            QPointF vOffset = this->m_matrixCopyParams.vVec * this->m_matrixCopyParams.vSpacing;
+            std::vector < std::vector < QPointF>> offsetMatrix(this->m_matrixCopyParams.vCount,
+                    std::vector < QPointF > (this->m_matrixCopyParams.hCount));
+            for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
+                for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
+                    offsetMatrix[row][col] = hOffset * col + vOffset * row;
+                }
+            }
+            auto insertCopy = [&](int row, int col) {
+                if (row == 0 && col == 0) {
+                    return;    // 跳过原始位置后开始复制
+                }
+                auto copiedItem = std::dynamic_pointer_cast < EllipseItem > (this->clone());
+                if (!copiedItem) {
+                    return;
+                }
+                QPointF offset = offsetMatrix[row][col];
+                copiedItem->m_center.point += offset;
+                copiedItem->animate();
+                m_copiedItemList.push_back(copiedItem);
+            };
+            switch (this->m_matrixCopyParams.copiedOrder) {
+                case 0: // 行优先，蛇形
+                    for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
+                        if (row % 2 == 0) {
+                            for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
+                                insertCopy(row, col);
+                            }
+                        } else {
+                            for (int col = this->m_matrixCopyParams.hCount - 1; col >= 0; --col) {
+                                insertCopy(row, col);
+                            }
+                        }
+                    }
+                    break;
+                case 1: // 列优先，蛇形
+                    for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
+                        if (col % 2 == 0) {
+                            for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
+                                insertCopy(row, col);
+                            }
+                        } else {
+                            for (int row = this->m_matrixCopyParams.vCount - 1; row >= 0; --row) {
+                                insertCopy(row, col);
+                            }
+                        }
+                    }
+                    break;
+                case 2: // 行优先，顺序
+                    for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
+                        for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
+                            insertCopy(row, col);
+                        }
+                    }
+                    break;
+                case 3: // 列优先，顺序
+                    for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
+                        for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
+                            insertCopy(row, col);
+                        }
+                    }
+                    break;
+                default:
+                    WARN_MSG("Unknown copiedOrder value");
+                    break;
+            }
+            return true;
+        }
+        return false;
+    }
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
-        QPointF p1, p2;
+        const int segments = 64; // 越多越圆滑
+        double angleRad = m_rotateAngle * M_PI / 180.0;
+        double cosA = std::cos(angleRad);
+        double sinA = std::sin(angleRad);
+        QPointF center = m_center.point;
         if (inSceneCoord) {
-            // p1 = this->getVertexInScene(0).point - QPointF{this->m_radius, 0};
-            // p2 = this->getVertexInScene(1).point + QPointF{this->m_radius, 0};
-        } else {
-            // p1 = m_center.point - QPointF{this->m_radius, 0};
-            // p2 = m_center.point + QPointF{this->m_radius, 0};
+            center += this->scenePos(); // 加上Item的场景偏移
         }
+        auto mapPoint = [&](double x, double y) -> QPointF {
+            double xr = x * cosA - y * sinA;
+            double yr = x * sinA + y * cosA;
+            return QPointF(xr, yr) + center;
+        };
+        for (int i = 0; i <= segments; ++i) {
+            double theta = 2.0 * M_PI * i / segments;
+            double x = m_radiusX * std::cos(theta);
+            double y = m_radiusY * std::sin(theta);
+            QPointF pt = mapPoint(x, y);
+            if (i == 0) {
+                input.addVertex(pt.x(), pt.y(), 0); // 第一点，bulge=0
+            } else {
+                input.addVertex(pt.x(), pt.y(), 0);
+            }
+        }
+        input.isClosed() = true; // 椭圆是闭合的
         return input;
     }
     Vertex getVertexInScene(const int index = 0) const override {
@@ -168,26 +314,63 @@ public:
     uint getVertexCount() const override {
         return 1;
     }
-public:
     int type() const override {
         return GraphicsItemType::Ellipse;
     }
-
+    QRectF getBoundingRectBasis() const override {
+        if (!this->m_paintItem) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItem->boundingRect();
+        return newRect;
+    }
 protected:
-    QRectF boundingRect() const override;
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
-
+    QRectF boundingRect() const override {
+        if (!this->m_paintItem) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItem->boundingRect();
+        // 包含offsetItem
+        newRect = newRect.adjusted(
+                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
+                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
+                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
+        // 包含所有 copiedItem
+        for (const auto &item : m_copiedItemList) {
+            if (item) {
+                newRect = newRect.united(item->boundingRect());
+            }
+        }
+        return newRect;
+    }
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
+        Q_UNUSED(widget);
+        // 设置option删去offset线段的选框
+        QStyleOptionGraphicsItem optionx(*option);
+        optionx.state &= ~QStyle::State_Selected;
+        // 绘制线段
+        this->m_paintItem->paint(painter, &optionx, widget);
+        // 绘制offset
+        for (auto &item : this->m_offsetItemList) {
+            item->paint(painter, &optionx, widget);
+        }
+        // 绘制copied
+        for (auto &item : this->m_copiedItemList) {
+            item->paint(painter, &optionx, widget);
+        }
+    }
 private:
-    ///
     Vertex m_center = Vertex{QPointF{0, 0}, 0};
     double m_radiusX = 0;
     double m_radiusY = 0;
     double m_rotateAngle = 0;
+    //
     std::shared_ptr < QGraphicsPathItem > m_paintItem;
-    ///
-    double m_offset = 0;
-    int m_offsetCount = 0;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < EllipseItem>> m_copiedItemList;
+public:
+    int drawStep = 0;
 };
 
 #endif // ELLIPSEITEM_H

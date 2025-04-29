@@ -62,6 +62,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsView/ellipseitem.h                          src/ellipseitem.cpp
         header/GraphicsView/spiralitem.h                            src/spiralitem.cpp
         header/GraphicsView/polygonitem.h                       src/polygonitem.cpp
+        header/GraphicsView/editrect.h          header/GraphicsView/editrect.cpp# editrect
         # TreeViewModel
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
@@ -86,9 +87,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
-        header/editcontroller.h                                                    src/editcontroller.cpp
-        header/GraphicsView/editrect.h header/GraphicsView/editrect.cpp
-
+        header/editcontroller.h                                                   src/editcontroller.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -19,10 +19,12 @@
         <file>drawLineButton.svg</file>
         <file>drawPointButton.svg</file>
         <file>breakCopiedItemButton.svg</file>
-        <file>signalInButton.png</file>
-        <file>signalOutButton.png</file>
-        <file>signalPauseButton.png</file>
+        <file>digitalInButton.png</file>
+        <file>digitalOutButton.png</file>
+        <file>doPauseButton.png</file>
         <file>rotateCursor.png</file>
         <file>rotateCursor1.png</file>
+        <file>delayTimeButton.png</file>
+        <file>motionButton.png</file>
     </qresource>
 </RCC>

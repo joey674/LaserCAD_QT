@@ -41,10 +41,10 @@ void DrawManager::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
             QPointF lastPoint = this->tmpPolyline->getVertexInScene(index - 1).point;
             if (KeyboardManager::getIns().IsXHold) {
                 this->tmpPolyline->setVertexInScene(index,
-                                             Vertex{QPointF(pointCoordscene.x(), lastPoint.y()), 0});
+                                                    Vertex{QPointF(pointCoordscene.x(), lastPoint.y()), 0});
             } else if (KeyboardManager::getIns().IsYHold) {
                 this->tmpPolyline->setVertexInScene(index,
-                                             Vertex{QPointF(lastPoint.x(), pointCoordscene.y()), 0});
+                                                    Vertex{QPointF(lastPoint.x(), pointCoordscene.y()), 0});
             } else {
                 this->tmpPolyline->setVertexInScene(index, Vertex{pointCoordscene, 0});
             }
@@ -178,14 +178,20 @@ void DrawManager::drawRect(QPointF pointCoordscene, MouseEvent event) {
         SceneManager::getIns().scene->addItem(this->tmpRect.get());
         this->tmpRect->setVertexInScene(0, Vertex{pointCoordscene, 0});
         this->tmpRect->setVertexInScene(1, Vertex{pointCoordscene, 0});
+        this->tmpRect->setVertexInScene(2, Vertex{pointCoordscene, 0});
+        this->tmpRect->setVertexInScene(3, Vertex{pointCoordscene, 0});
+        this->tmpRect->setVertexInScene(4, Vertex{pointCoordscene, 0});
     } else if  (this->tmpRect && event == MouseEvent::MouseMove) {
-        this->tmpRect->setVertexInScene(1, Vertex{pointCoordscene, 0});
+        QPointF start = this->tmpRect->getVertexInScene(0).point;
+        QPointF current = pointCoordscene;
+        this->tmpRect->setVertexInScene(1, Vertex{QPointF(current.x(), start.y()), 0}); // 右上
+        this->tmpRect->setVertexInScene(2, Vertex{QPointF(current.x(), current.y()), 0}); // 右下
+        this->tmpRect->setVertexInScene(3, Vertex{QPointF(start.x(), current.y()), 0});
     } else if (this->tmpRect && event == MouseEvent::LeftPress) {
         Manager::getIns().addItem(std::move(this->tmpRect));
     }
 }
-void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event)
-{
+void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpEllipse && event == MouseEvent::LeftPress) {
         // 第一次点击：创建临时椭圆，记录中心点
         auto allItems = Manager::getIns().getItemsByLayer(0);
@@ -194,8 +200,7 @@ void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event)
             Manager::getIns().setItemMovable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
         }
-
-        this->tmpEllipse = std::make_shared<EllipseItem>();
+        this->tmpEllipse = std::make_shared < EllipseItem > ();
         this->tmpEllipse->setPen(EDIT_PEN);
         this->tmpEllipse->setVertexInScene(0, Vertex{pointCoordscene, 0}); // 圆心
         SceneManager::getIns().scene->addItem(this->tmpEllipse.get());
@@ -205,31 +210,25 @@ void DrawManager::drawEllipse(QPointF pointCoordscene, MouseEvent event)
         QPointF delta = pointCoordscene - center;
         double radiusX = std::hypot(delta.x(), delta.y());
         double angle = std::fmod((std::atan2(delta.y(), delta.x()) * 180.0 / M_PI + 360.0), 360.0);
-
         this->tmpEllipse->setRadiusX(radiusX);
         this->tmpEllipse->setRadiusY(radiusX); // 暂时等于X
         this->tmpEllipse->setRotateAngle(angle);
-
     } else if (this->tmpEllipse && this->tmpEllipse->drawStep == 0
                && event == MouseEvent::LeftPress) {
         // 第一次拖完点击确认，进入第三步
         this->tmpEllipse->drawStep = 1;
-
     } else if (this->tmpEllipse && this->tmpEllipse->drawStep == 1
                && event == MouseEvent::MouseMove) {
         // 第三步：拖出RY（保持RX、角度不变）
         QPointF center = this->tmpEllipse->getVertexInScene(0).point;
         double angleRad = this->tmpEllipse->getRotateAngle() * M_PI / 180.0;
         QPointF local = pointCoordscene - center;
-
         // 把鼠标坐标反向旋转回到 local 坐标系
         double cosA = std::cos(-angleRad);
         double sinA = std::sin(-angleRad);
         QPointF rotated(local.x() * cosA - local.y() * sinA, local.x() * sinA + local.y() * cosA);
-
         double radiusY = std::abs(rotated.y());
         this->tmpEllipse->setRadiusY(radiusY);
-
     } else if (this->tmpEllipse && this->tmpEllipse->drawStep == 1
                && event == MouseEvent::LeftPress) {
         Manager::getIns().addItem(std::move(this->tmpEllipse));

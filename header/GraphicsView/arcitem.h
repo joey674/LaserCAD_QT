@@ -9,9 +9,8 @@
 #include <polylineoffset.hpp>
 
 class ArcItem: public GraphicsItem {
-    friend class ArcItem;
 public:
-    ArcItem() {};
+    ArcItem() {}
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < ArcItem > ();
         // 拷贝基类字段
@@ -217,13 +216,6 @@ protected:
         }
         return false;
     }
-    QRectF getBoundingRectBasis() const override {
-        if (!this->m_paintItem) {
-            return QRectF();
-        }
-        QRectF newRect = m_paintItem->boundingRect();
-        return newRect;
-    }
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         // 输入cavc库
@@ -292,7 +284,13 @@ public:
     uint getVertexCount() const override {
         return 2;
     }
-
+    QRectF getBoundingRectBasis() const override {
+        if (!this->m_paintItem) {
+            return QRectF();
+        }
+        QRectF newRect = m_paintItem->boundingRect();
+        return newRect;
+    }
 protected:
     QRectF boundingRect() const override {
         if (!this->m_paintItem) {
@@ -341,7 +339,6 @@ protected:
             item->paint(painter, &optionx, widget);
         }
     }
-
 private:
     std::array < Vertex, 2 > m_vertexPair = {Vertex{QPointF{0, 0}, 0}, Vertex{QPointF{0, 0}, 0}};
     // 实时生成的对象

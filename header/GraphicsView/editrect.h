@@ -480,9 +480,9 @@ private:
             QPointF newPos(xSpin->value(), ySpin->value());
             double newAngle = angleSpin->value();
             // 对于弧来说, 不允许其设置为直线
-            if (newAngle == 0) {
-                return;
-            }
+            // if (newAngle == 0) {
+            //     return;
+            // }
             item.setVertexInScene(index, Vertex{newPos, newAngle});
         }
         setEditItems(m_editItems);

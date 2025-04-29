@@ -453,23 +453,37 @@
        <item row="0" column="1" colspan="6">
         <layout class="QHBoxLayout" name="horizontalLayout_HardwareButton">
          <item>
-          <widget class="QToolButton" name="signalInButton">
+          <widget class="QToolButton" name="digitalInButton">
            <property name="text">
-            <string>SignalInButton</string>
+            <string>digitalInButton</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="signalOutButton">
+          <widget class="QToolButton" name="digitalOutButton">
            <property name="text">
-            <string>SignalOutButton</string>
+            <string>digitalOutButton</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="signalPauseButton">
+          <widget class="QToolButton" name="doPauseButton">
            <property name="text">
-            <string>SignalPauseButton</string>
+            <string>doPauseButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="delayTimeButton">
+           <property name="text">
+            <string>delayTimeButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="motionButton">
+           <property name="text">
+            <string>motionButton</string>
            </property>
           </widget>
          </item>
