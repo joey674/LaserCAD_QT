@@ -18,7 +18,7 @@ Manager &Manager::getIns() {
 ///
 UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     auto treeView = UiManager::getIns().UI()->treeView;
-    UUID layerUuid = SceneController::getIns().getCurrentLayerUuid();
+    UUID layerUuid = SceneController::getIns().getCurrentLayer();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
     // 插入ItemMap

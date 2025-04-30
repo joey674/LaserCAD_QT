@@ -24,6 +24,8 @@
         <file>motionButton.png</file>
         <file>breakCopiedItemButton.png</file>
         <file>breakOffsetItemButton.png</file>
+        <file>addLayerButton.png</file>
+        <file>deleteLayerButton.png</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>

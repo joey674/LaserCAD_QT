@@ -19,7 +19,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     if (!nodeIndex.isValid())
         return {};
     // 获取当前选中的图层
-    UUID curlayer = SceneController::getIns().getCurrentLayerUuid();
+    UUID curlayer = SceneController::getIns().getCurrentLayer();
     TreeNode *node = getNode(nodeIndex);
     QString itemName = node->property(TreeNodePropertyIndex::Name).toString();
     QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
@@ -40,7 +40,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     // 第2列为当前工作图层
     else if (nodeIndex.column() == 2) {
         if (role == Qt::CheckStateRole && itemType == "Layer") {
-            bool isCurrent = ( itemUUID == SceneController::getIns ().getCurrentLayerUuid () );
+            bool isCurrent = ( itemUUID == SceneController::getIns ().getCurrentLayer () );
             return isCurrent ? Qt::Checked : Qt::Unchecked;
         }
     }
@@ -88,7 +88,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         // 设置当前节点
         TreeNode *node = getNode(nodeIndex);
         auto uuid = node->property(TreeNodePropertyIndex::UUID).toString ();
-        SceneController::getIns().setCurrentLayerUuid(uuid);
+        SceneController::getIns().setCurrentLayer(uuid);
         // 通知整列刷新
         emit dataChanged(this->index(0, 2), this->index(rowCount() - 1, 2), {Qt::CheckStateRole});
         return true;

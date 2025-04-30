@@ -69,7 +69,6 @@ private slots: // 绘制工具按钮
 private slots: // 编辑工具按钮
     void onEditButtonClicked();
     void onDrawTestLineButtonClicked() {}
-    void onRotateButtonClicked();
     void onCenterButtonClicked();
     void onDeleteButtonClicked();
     void onDragSceneButtonClicked();
@@ -77,6 +76,9 @@ private slots: // 编辑工具按钮
     void onRedoButtonClicked() {};
     void onBreakCopiedItemButtonClicked();
     void onBreakOffsetItemButtonClicked();
+private slots: //图层按钮
+    void onAddLayerButtonClicked();
+    void onDeleteLayerButtonClicked();
 private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelShowContextMenu(const QPoint &pos);
     void onTreeViewModelAddLayer();

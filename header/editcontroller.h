@@ -240,6 +240,7 @@ public:
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
+            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onBreakCopiedItemTriggered
@@ -254,6 +255,7 @@ public:
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
+            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onCenterToOriginTrigger 回归物体到中心
@@ -265,17 +267,7 @@ public:
         for (auto& item : EditController::getIns().m_currentEditItemGroup) {
             item->setCenterInScene(QPointF{0, 0});
         }
-    }
-    /// \brief onRotateTriggered 旋转物体 先做简易版本只转90度
-    /// TODO
-    void onRotateTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
-            return;
-        }
-        for (auto& item : EditController::getIns().m_currentEditItemGroup) {
-            auto angle = item->rotation();
-            item->setRotation(angle + 90);
-        }
+        this->updateEditRect();
     }
     void onDeleteTriggered() {
         //

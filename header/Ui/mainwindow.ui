@@ -110,19 +110,9 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="selectLayerComboBox"/>
-         </item>
-         <item>
           <widget class="QToolButton" name="setLayerColorButton">
            <property name="text">
             <string>setLayerColorButton</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="showOnlyCurrentLayerButton">
-           <property name="text">
-            <string>showOnlyCurrentLayerButton</string>
            </property>
           </widget>
          </item>
@@ -193,22 +183,6 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="rotateButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>rotate</string>
-           </property>
-           <property name="checkable">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="horizontalSpacer">
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
@@ -268,22 +242,6 @@
             <bool>true</bool>
            </property>
           </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item>
           <widget class="QToolButton" name="undoButton">

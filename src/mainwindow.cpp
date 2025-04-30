@@ -258,16 +258,6 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(dragSceneButton);
     connect(dragSceneButton, &QToolButton::clicked, this, &MainWindow::onDragSceneButtonClicked);
     //
-    QToolButton *rotateButton = UiManager::getIns().UI()->rotateButton;
-    rotateButton->setIcon(QIcon(":/button/rotateButton.svg"));
-    rotateButton->setIconSize(QSize(30, 30));
-    rotateButton->setStyleSheet(buttonStyle);
-    rotateButton->setCheckable(true);
-    rotateButton->setAutoExclusive(false);
-    rotateButton->setToolTip("旋转对象");
-    UiManager::getIns().registerToolButton(rotateButton);
-    connect(rotateButton, &QToolButton::clicked, this, &MainWindow::onRotateButtonClicked);
-    //
     QToolButton *deleteButton = UiManager::getIns().UI()->deleteButton;
     deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
     deleteButton->setIconSize(QSize(30, 30));
@@ -343,7 +333,6 @@ void MainWindow::initEditToolButton() {
 
 void MainWindow::initLayerButton() {
     auto buttonStyle = buttonStyle1;
-    auto comboBoxStyle = comboBoxStyle1;
     //
     QToolButton *addLayerButton = UiManager::getIns().UI()->addLayerButton;
     addLayerButton->setIcon(QIcon(":/button/addLayerButton.png"));
@@ -352,8 +341,8 @@ void MainWindow::initLayerButton() {
     addLayerButton->setCheckable(false);
     addLayerButton->setToolTip("");
     UiManager::getIns().registerToolButton(addLayerButton);
-    // connect(breakOffsetItemButton, &QToolButton::clicked,
-    //         this, &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(addLayerButton, &QToolButton::clicked,
+            this, &MainWindow::onAddLayerButtonClicked);
     //
     QToolButton *deleteLayerButton = UiManager::getIns().UI()->deleteLayerButton;
     deleteLayerButton->setIcon(QIcon(":/button/deleteLayerButton.png"));
@@ -362,33 +351,19 @@ void MainWindow::initLayerButton() {
     deleteLayerButton->setCheckable(false);
     deleteLayerButton->setToolTip("");
     UiManager::getIns().registerToolButton(deleteLayerButton);
+    connect(deleteLayerButton, &QToolButton::clicked,
+            this, &MainWindow::onDeleteLayerButtonClicked);
+    //
+    // QToolButton *setLayerColorButton = UiManager::getIns().UI()->setLayerColorButton;
+    // setLayerColorButton->setIcon(QIcon(":/button/setLayerColorButton.png"));
+    // setLayerColorButton->setIconSize(QSize(30, 30));
+    // setLayerColorButton->setStyleSheet(buttonStyle);
+    // setLayerColorButton->setCheckable(false);
+    // setLayerColorButton->setToolTip("");
+    // UiManager::getIns().registerToolButton(setLayerColorButton);
     // connect(breakOffsetItemButton, &QToolButton::clicked,
     //         this, &MainWindow::onBreakOffsetItemButtonClicked);
     //
-    QToolButton *setLayerColorButton = UiManager::getIns().UI()->setLayerColorButton;
-    setLayerColorButton->setIcon(QIcon(":/button/setLayerColorButton.png"));
-    setLayerColorButton->setIconSize(QSize(30, 30));
-    setLayerColorButton->setStyleSheet(buttonStyle);
-    setLayerColorButton->setCheckable(false);
-    setLayerColorButton->setToolTip("");
-    UiManager::getIns().registerToolButton(setLayerColorButton);
-    // connect(breakOffsetItemButton, &QToolButton::clicked,
-    //         this, &MainWindow::onBreakOffsetItemButtonClicked);
-    //
-    QToolButton *showOnlyCurrentLayerButton = UiManager::getIns().UI()->showOnlyCurrentLayerButton;
-    showOnlyCurrentLayerButton->setIcon(QIcon(":/button/showOnlyCurrentLayerButton.png"));
-    showOnlyCurrentLayerButton->setIconSize(QSize(30, 30));
-    showOnlyCurrentLayerButton->setStyleSheet(buttonStyle);
-    showOnlyCurrentLayerButton->setCheckable(false);
-    showOnlyCurrentLayerButton->setToolTip("");
-    UiManager::getIns().registerToolButton(showOnlyCurrentLayerButton);
-    // connect(breakOffsetItemButton, &QToolButton::clicked,
-    //         this, &MainWindow::onBreakOffsetItemButtonClicked);
-    //
-    auto *selectLayerComboBox = UiManager::getIns().UI()->selectLayerComboBox;
-    selectLayerComboBox->setStyleSheet(comboBoxStyle);
-    selectLayerComboBox->setToolTip("");
-    selectLayerComboBox->clear();
 }
 
 void MainWindow::initHardwareButton() {
@@ -480,6 +455,9 @@ void MainWindow::initTreeViewModel() {
     view->setAcceptDrops(true);
     view->setDropIndicatorShown(true);
     view->setDragDropMode(QAbstractItemView::InternalMove);
+    view->setColumnWidth(0, 200);
+    view->setColumnWidth(1, 50);
+    view->setColumnWidth(2, 50);
     ///
     ///  contextmenu
     ///
@@ -567,7 +545,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     // }
     // 非拖拽行为
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
-        switch (SceneController::getIns().currentOperationEvent) {
+        switch (SceneController::getIns().m_currentOperationEvent) {
             case OperationEvent::EditProperty: {
                     EditController::getIns().editItemInScene(pointCoordscene, event);
                     break;
@@ -610,7 +588,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     }
     // 左键拖拽(尽量不要用 因为item的拖动也是左键拖拽 容易撞车造成bug)
     else if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
-        switch (SceneController::getIns().currentOperationEvent) {
+        switch (SceneController::getIns().m_currentOperationEvent) {
             case OperationEvent::DragScene: {
                     SceneController::getIns().dragScene(pointCoordView, event);
                     break;
@@ -621,7 +599,7 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     }
     // 右键拖拽
     else if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
-        switch (SceneController::getIns().currentOperationEvent) {
+        switch (SceneController::getIns().m_currentOperationEvent) {
             default:
                 {}
         }
@@ -633,7 +611,7 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView) {
     KeyboardManager::getIns().IsMouseLeftButtonHold = true;
     auto event = MouseEvent::LeftPress;
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    switch (SceneController::getIns().currentOperationEvent) {
+    switch (SceneController::getIns().m_currentOperationEvent) {
         case OperationEvent::DragScene: {
                 SceneController::getIns().dragScene(pointCoordView, event);
                 break;
@@ -688,7 +666,7 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView) {
     KeyboardManager::getIns().IsMouseRightButtonHold = true;
     auto event = MouseEvent::RightPress;
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    switch (SceneController::getIns().currentOperationEvent) {
+    switch (SceneController::getIns().m_currentOperationEvent) {
         case OperationEvent::DragScene: {
                 SceneController::getIns().dragScene(pointCoordView, event);
                 break;
@@ -738,7 +716,7 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView) {
     KeyboardManager::getIns().IsMouseLeftButtonHold = false;
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
     auto event = MouseEvent::LeftRelease;
-    switch (SceneController::getIns().currentOperationEvent) {
+    switch (SceneController::getIns().m_currentOperationEvent) {
         case OperationEvent::DragScene: {
                 SceneController::getIns().dragScene(pointCoordView, event);
                 break;
@@ -788,7 +766,7 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView) {
     KeyboardManager::getIns().IsMouseRightButtonHold = false;
     auto event = MouseEvent::RightRelease;
     QPointF pointCoordscene = UiManager::getIns().UI()->graphicsView->mapToScene(pointCoordView);
-    switch (SceneController::getIns().currentOperationEvent) {
+    switch (SceneController::getIns().m_currentOperationEvent) {
         case OperationEvent::DragScene: {
                 SceneController::getIns().dragScene(pointCoordView, event);
                 break;
@@ -861,55 +839,55 @@ void MainWindow::setDrawMode() {
 void MainWindow::onDrawLineButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawLineButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawLine;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawLine;
 }
 
 void MainWindow::onDrawCircleButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawCircleButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawCircle;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawCircle;
 }
 
 void MainWindow::onDrawPolylineButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawPolylineButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawPolyline;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawPolyline;
 }
 
 void MainWindow::onDrawArcButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawArcButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawArc;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawArc;
 }
 
 void MainWindow::onDrawPointButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawPointButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawPoint;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawPoint;
 }
 
 void MainWindow::onDrawSpiralButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawSpiralButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawSpiral;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawSpiral;
 }
 
 void MainWindow::onDrawRectButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawRectButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawRect;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawRect;
 }
 
 void MainWindow::onDrawPolygonButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawPolygonButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawPolygon;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawPolygon;
 }
 
 void MainWindow::onDrawEllipseButtonClicked() {
     setDrawMode();
     UiManager::getIns().UI()->drawEllipseButton->setChecked(true);
-    SceneController::getIns().currentOperationEvent = OperationEvent::DrawEllipse;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DrawEllipse;
 }
 
 ///
@@ -919,7 +897,7 @@ void MainWindow::onDragSceneButtonClicked() {
     // 设置鼠标光标
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::OpenHandCursor);
     // tool status
-    SceneController::getIns().currentOperationEvent = OperationEvent::DragScene;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::DragScene;
     DrawController::getIns().resetTmpItemStatus();
     // drag mode/所有物体设置不可动
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
@@ -940,7 +918,7 @@ void MainWindow::onEditButtonClicked() {
     // 设置鼠标光标
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     // tool status
-    SceneController::getIns().currentOperationEvent = OperationEvent::EditProperty;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::EditProperty;
     DrawController::getIns().resetTmpItemStatus();
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -949,14 +927,14 @@ void MainWindow::onEditButtonClicked() {
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
     // 设置当前图层内物体可动;所有物体颜色为黑;等等默认行为(都在setCurrentLayer里)
-    SceneController::getIns().setCurrentLayerUuid(SceneController::getIns().getCurrentLayerUuid());
+    SceneController::getIns().setCurrentLayer(SceneController::getIns().getCurrentLayer());
 }
 
 void MainWindow::setEditMode() {
     // 设置鼠标光标
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     // tool status
-    SceneController::getIns().currentOperationEvent = OperationEvent::EditProperty;
+    SceneController::getIns().m_currentOperationEvent = OperationEvent::EditProperty;
     DrawController::getIns().resetTmpItemStatus();
     // drag mode
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::RubberBandDrag);
@@ -986,10 +964,15 @@ void MainWindow::onBreakOffsetItemButtonClicked() {
     EditController::getIns().onBreakOffsetItemTriggered();
 }
 
-void MainWindow::onRotateButtonClicked() {
-    setEditMode();
-    EditController::getIns().onRotateTriggered();
+void MainWindow::onAddLayerButtonClicked() {
+    SceneController::getIns().addLayer();
 }
+
+void MainWindow::onDeleteLayerButtonClicked() {
+    SceneController::getIns().deleteCurrentLayer ();
+}
+
+
 
 ///
 /// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
@@ -1002,19 +985,19 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
         return;
     }
     QMenu contextMenu(this);
-    this->addLayerAction = new QAction("Add Layer", &contextMenu);
+    // this->addLayerAction = new QAction("Add Layer", &contextMenu);
     this->addGroupAction = new QAction("Add Group", &contextMenu);
     this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
     this->copyNodeAction = new QAction("Copy Node", &contextMenu);
-    this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
-    this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
+    // this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
+    // this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
     this->selectAllItemsInGroupAction = new QAction("Select all Items In this Group", &contextMenu);
-    contextMenu.addAction(this->addLayerAction);
+    // contextMenu.addAction(this->addLayerAction);
     contextMenu.addAction(this->addGroupAction);
     contextMenu.addAction(this->deleteNodeAction);
     contextMenu.addAction(this->copyNodeAction);
-    contextMenu.addAction(this->setLayerVisibleAction);
-    contextMenu.addAction(this->setLayerUnvisibleAction);
+    // contextMenu.addAction(this->setLayerVisibleAction);
+    // contextMenu.addAction(this->setLayerUnvisibleAction);
     contextMenu.addAction(this->selectAllItemsInGroupAction);
     connect(this->addLayerAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddLayer);
     connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
@@ -1051,14 +1034,14 @@ void MainWindow::onTreeViewModelCopyNode() {
 }
 
 void MainWindow::onTreeViewModelSetLayerVisible() {
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayerUuid ());
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
     // for (const auto& item : inLayerItems) {
     //     Manager::getIns().setItemVisible(item, true);
     // }
 }
 
 void MainWindow::onTreeViewModelSetLayerUnvisible() {
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayerUuid ());
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
     // for (const auto& item : inLayerItems) {
     //     Manager::getIns().setItemVisible(item, false);
     // }
@@ -1081,16 +1064,16 @@ void MainWindow::onTreeViewModelSelectAllItemsInGroup() {
 }
 
 void MainWindow::onTreeViewModelAddLayer() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    auto layerCount = model->rowCount(QModelIndex());
-    if (!model->insertRow(layerCount, QModelIndex())) {
-        FATAL_MSG("fail insert layer");
-    }
-    const QModelIndex layerNodeIndex = model->index(layerCount, 0, QModelIndex());
-    QString name = "Layer" + QString::number(layerCount + 1);
-    QString type = "Layer";
-    Manager::getIns().addItem(layerNodeIndex, name, type);
-    onTreeViewModelUpdateActions();
+    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // auto layerCount = model->rowCount(QModelIndex());
+    // if (!model->insertRow(layerCount, QModelIndex())) {
+    //     FATAL_MSG("fail insert layer");
+    // }
+    // const QModelIndex layerNodeIndex = model->index(layerCount, 0, QModelIndex());
+    // QString name = "Layer" + QString::number(layerCount + 1);
+    // QString type = "Layer";
+    // Manager::getIns().addItem(layerNodeIndex, name, type);
+    // onTreeViewModelUpdateActions();
 }
 
 void MainWindow::onTreeViewModelAddGroup() {
@@ -1133,7 +1116,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->deleteNodeAction->setEnabled(false);
             this->copyNodeAction->setEnabled(false);
             this->selectAllItemsInGroupAction->setEnabled(false);
-            // SceneController::getIns().setCurrentLayerUuid (model->getNode(nodeIndex)->indexInParent() + 1);
+            // SceneController::getIns().setCurrentLayer (model->getNode(nodeIndex)->indexInParent() + 1);
             return;
         } else if (type == "Group") {
             this->addLayerAction->setEnabled(false);
