@@ -16,9 +16,9 @@ Manager &Manager::getIns() {
 /// \brief Manager::addItem
 /// \param ptr
 ///
-void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
+UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     auto treeView = UiManager::getIns().UI()->treeView;
-    int layer = SceneController::getIns().getCurrentLayer();
+    UUID layerUuid = SceneController::getIns().getCurrentLayerUuid();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
     // 插入ItemMap
@@ -26,7 +26,18 @@ void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     INFO_MSG("item add: " + ptr->getUUID());
     // 插入TreeViewModel 注意 这个要最后做 不然会报bug
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    QModelIndex layerNodeIndex = model->index(layer - 1, 0, QModelIndex());
+    QModelIndex layerNodeIndex;
+    for (int row = 0; row < model->rowCount(); ++row) {
+        QModelIndex index = model->index(row, 0, QModelIndex()); // 第 row 行的图层
+        TreeNode *node = model->getNode(index);
+        if (node && node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+            QString uuid = node->property(TreeNodePropertyIndex::UUID).toString();
+            if (uuid == layerUuid) {
+                layerNodeIndex = index;
+                break;
+            }
+        }
+    }
     auto rowCount = model->rowCount(layerNodeIndex);
     name = name + QString::number(rowCount + 1);
     if (!model->insertRow(rowCount, layerNodeIndex)) {
@@ -39,11 +50,11 @@ void Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     treeView->selectionModel()->setCurrentIndex(model->index(0, 0, childNodeIndex),
             QItemSelectionModel::ClearAndSelect);
     // 所有物体都不可以move!!
-    this->setItemSelectable(uuid, true);
     this->setItemMovable(uuid, false);
+    return uuid;
 }
 
-void Manager::addItem(QModelIndex position, QString name, QString type) {
+UUID Manager::addItem(QModelIndex position, QString name, QString type) {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     if (!position.isValid()) {
         FATAL_MSG("fail add item to manager");
@@ -55,19 +66,33 @@ void Manager::addItem(QModelIndex position, QString name, QString type) {
     // 插入ItemMap;
     itemMapInsert(item.get()->getUUID(), item);
     INFO_MSG("item add: " + item->getUUID());
+    return item.get()->getUUID();
 }
 
-void Manager::setItemVisible(UUID uuid, bool status) {
-    itemMapFind(uuid)->setVisible(status);
+
+std::vector < UUID > Manager::getChildItems(UUID uuid) {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // model->update();
+    QModelIndex nodeIndex;
+    std::vector < UUID > uuidGroup;
+    // 只有输入特定uuid才能获得根节点 从而返回所有节点
+    if (uuid == "0-0-0-0") {
+        nodeIndex = QModelIndex{};
+    } else if (!itemMapExist(uuid)) {
+        WARN_MSG("Unknown UUID");
+        return uuidGroup;
+    } else {
+        nodeIndex = model->getIndex(uuid);
+    }
+    auto allItems = model->getAllChildNodes(nodeIndex);
+    for (const auto &item : allItems) {
+        auto uuid = item->property(TreeNodePropertyIndex::UUID).toString();
+        uuidGroup.push_back(uuid);
+    }
+    return uuidGroup;
 }
 
-void Manager::setItemSelectable(UUID uuid, bool status) {
-    itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
-}
 
-void Manager::setItemMovable(UUID uuid, bool status) {
-    itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
-}
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     auto it = m_itemMap.find(uuid);
@@ -96,17 +121,35 @@ bool Manager::itemMapExist(UUID uuid) {
 }
 
 void Manager::setVisibleSync() {
-    for (int layer = 1; layer <= SceneController::getIns().layerCount(); ++layer) {
-        auto uuids = getItemsByLayer(layer);
-        bool isVisible = this->itemMapFind(uuids[0])->isVisible();
-        // DEBUG_VAR(layer);
-        // DEBUG_VAR(isVisible);
-        for (const auto &uuid : uuids) {
-            // DEBUG_VAR(item);
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    int layerCount = model->rowCount(); // 根节点下的所有一层节点
+    for (int row = 0; row < layerCount; ++row) {
+        QModelIndex layerIndex = model->index(row, 0, QModelIndex());
+        TreeNode *layerNode = model->getNode(layerIndex);
+        if (!layerNode) {
+            FATAL_MSG("");
+            continue;
+        }
+        if (layerNode->property(TreeNodePropertyIndex::Type) != QVariant("Layer")) {
+            FATAL_MSG("");
+            continue;
+        }
+        // 获取子图形节点
+        auto childNodes = model->getAllChildNodes(layerIndex);
+        if (childNodes.empty()) {
+            continue;
+        }
+        // 获取layer的可视状态
+        auto layerUuid = layerNode->property(TreeNodePropertyIndex::UUID).toString();
+        bool isVisible = this->itemMapFind(layerUuid)->isVisible();
+        // 应用到所有子图形
+        for (auto *node : childNodes) {
+            auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
             this->setItemVisible(uuid, isVisible);
         }
     }
 }
+
 
 ///
 /// \brief Manager::deleteItem
@@ -154,25 +197,29 @@ QString Manager::getItem(QGraphicsItem *item) {
     return laseritem->getUUID();
 }
 
-std::vector < QString > Manager::getItemsByLayer(int layer) {
-    auto treeView = UiManager::getIns().UI()->treeView;
-    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    QModelIndex nodeIndex;
-    auto itemsGroup = std::vector < QString > ();
-    if (layer == 0) {
-        nodeIndex = QModelIndex();
-        // 如果是根节点就不放进来(因为也没有uuid)
-    } else {
-        if (layer > model->rowCount()) {
-            FATAL_MSG("input layer exceed the existing layer count");
-        }
-        nodeIndex = model->index(layer - 1, 0, QModelIndex());
-        auto nodeUUID = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
-        itemsGroup.push_back(nodeUUID);
-    }
-    auto nodesGroup = model->getAllChildNodes(nodeIndex);
-    for (const auto& node : nodesGroup) {
-        itemsGroup.push_back(node->property(TreeNodePropertyIndex::UUID).toString());
-    }
-    return itemsGroup;
-}
+// std::vector < QString > Manager::getItemsByLayer(UUID layerUuid) {
+//     auto treeView = UiManager::getIns().UI()->treeView;
+//     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+//     QModelIndex layerNodeIndex = QModelIndex{};
+//     auto itemsGroup = std::vector < QString > ();
+//     for (int row = 0; row < model->rowCount(); ++row) {
+//         QModelIndex index = model->index(row, 0, QModelIndex()); // 第 row 行的图层
+//         TreeNode *node = model->getNode(index);
+//         if (node && node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+//             QString uuid = node->property(TreeNodePropertyIndex::UUID).toString();
+//             if (uuid == layerUuid) {
+//                 layerNodeIndex = index;
+//                 break;
+//             }
+//         }
+//     }
+//     if (layerNodeIndex == QModelIndex{}) { // 没找到
+//         return itemsGroup;
+//     } else {
+//         auto nodesGroup = model->getAllChildNodes(layerNodeIndex);
+//         for (const auto& node : nodesGroup) {
+//             itemsGroup.push_back(node->property(TreeNodePropertyIndex::UUID).toString());
+//         }
+//         return itemsGroup;
+//     }
+// }

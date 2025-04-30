@@ -9,13 +9,8 @@ using namespace Qt::StringLiterals;
 
 TreeModel::TreeModel(const QString &modelName, QObject *parent)
     : QAbstractItemModel(parent) {
-    // QVariantList rootProperty(1);
-    // rootProperty.push_back(modelName);
-    // m_rootItem = std::make_shared<TreeNode>(rootProperty);
     m_rootItem = std::make_shared < TreeNode > ();
     m_rootItem->setProperty(TreeNodePropertyIndex::Name, modelName);
-    // setupExemplarModelData();
-    setupDefaultModelData();
 }
 
 TreeModel::~TreeModel() = default;
@@ -24,59 +19,109 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     if (!nodeIndex.isValid())
         return {};
     // 获取当前选中的图层
-    int curlayer = SceneController::getIns().getCurrentLayer();
-    TreeNode *item = getNode(nodeIndex);
-    QString itemName = item->property(TreeNodePropertyIndex::Name).toString();
-    QString itemType = item->property(TreeNodePropertyIndex::Type).toString();
-    QString itemUUID = item->property(TreeNodePropertyIndex::UUID).toString();
+    UUID curlayer = SceneController::getIns().getCurrentLayerUuid();
+    TreeNode *node = getNode(nodeIndex);
+    QString itemName = node->property(TreeNodePropertyIndex::Name).toString();
+    QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
+    QString itemUUID = node->property(TreeNodePropertyIndex::UUID).toString();
     bool isVisible = Manager::getIns().itemMapFind(itemUUID)->isVisible();
-    if (role == Qt::DisplayRole || role == Qt::EditRole) {
-        if (itemType == "Layer" && !isVisible) {
-            return (item->property(TreeNodePropertyIndex::Name).toString() + "     " + "Hide");
-        } else {
-            return item->property(TreeNodePropertyIndex::Name);
+    // 第0列显示名称 表示树状结构
+    if (nodeIndex.column() == 0) {
+        if (role == Qt::DisplayRole || role == Qt::EditRole) {
+            return node->property(TreeNodePropertyIndex::Name);
         }
     }
-    if (role == Qt::ForegroundRole && itemName == ("Layer" + QString::number(curlayer))) {
-        return QBrush(Qt::blue);  // 蓝色表示选中
+    // 第1列为可选中按钮 显示layer是否可视
+    else if (nodeIndex.column() == 1) {
+        if (role == Qt::CheckStateRole && itemType == "Layer") {
+            return isVisible ? Qt::Checked : Qt::Unchecked;
+        }
     }
-    if (role == Qt::FontRole && itemName == ("Layer" + QString::number(curlayer))) {
-        QFont font;
-        font.setBold(true);
-        // font.setItalic(true);
-        return font;
+    // 第2列为当前工作图层
+    else if (nodeIndex.column() == 2) {
+        if (role == Qt::CheckStateRole && itemType == "Layer") {
+            bool isCurrent = ( itemUUID == SceneController::getIns ().getCurrentLayerUuid () );
+            return isCurrent ? Qt::Checked : Qt::Unchecked;
+        }
+    }
+    //
+    else if (nodeIndex.column() == 3 && role == Qt::CheckStateRole) {
     }
     return {};
 }
 
-bool TreeModel::setData(const QModelIndex &nodeIndex, const QVariant &name, int role) {
-    if (role != Qt::EditRole) {
+bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, int role) {
+    if (!nodeIndex.isValid()) {
         return false;
     }
-    TreeNode *item = getNode(nodeIndex);
-    bool result = item->setProperty(TreeNodePropertyIndex::Name, name);
-    if (result)
-        emit dataChanged(nodeIndex, nodeIndex, {Qt::DisplayRole, Qt::EditRole});
-    return result;
+    TreeNode *node = getNode(nodeIndex);
+    if (!node) {
+        return false;
+    }
+    // 第 0 列编辑名字
+    if (nodeIndex.column() == 0 && role == Qt::EditRole) {
+        bool result = node->setProperty(TreeNodePropertyIndex::Name, value);
+        if (result)
+            emit dataChanged(nodeIndex, nodeIndex, {Qt::DisplayRole, Qt::EditRole});
+        return result;
+    }
+    // 第 1 列设置layer可视状态
+    else if (nodeIndex.column() == 1 && role == Qt::CheckStateRole) {
+        bool isVisible = (value.toInt() == Qt::Checked);
+        auto nodeList = this->getAllChildNodes(nodeIndex);
+        nodeList.push_back(node);
+        for (const auto &curNode : nodeList) {
+            auto uuid = curNode->property(TreeNodePropertyIndex::UUID).toString();
+            DEBUG_VAR(uuid);
+            DEBUG_VAR(isVisible);
+            Manager::getIns().setItemVisible(uuid, isVisible);
+        }
+        emit dataChanged(nodeIndex, nodeIndex, {Qt::CheckStateRole});
+        return true;
+    }
+    // 第2列设置当前编辑layer
+    else if (nodeIndex.column() == 2 && role == Qt::CheckStateRole) {
+        // 只响应 Qt::Checked，忽略取消（因为是互斥）
+        if (value.toInt() != Qt::Checked) {
+            return false;
+        }
+        // 设置当前节点
+        TreeNode *node = getNode(nodeIndex);
+        auto uuid = node->property(TreeNodePropertyIndex::UUID).toString ();
+        SceneController::getIns().setCurrentLayerUuid(uuid);
+        // 通知整列刷新
+        emit dataChanged(this->index(0, 2), this->index(rowCount() - 1, 2), {Qt::CheckStateRole});
+        return true;
+    }
+    return false;
 }
-
-QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const { // 返回m_rootItem的名字
-    return (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-           ? m_rootItem->property(TreeNodePropertyIndex::Name) : QVariant{};
+QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (orientation != Qt::Horizontal || role != Qt::DisplayRole)
+        return {};
+    if (section == 0) {
+        return m_rootItem->property(TreeNodePropertyIndex::Name);
+    } else if (section == 1) {
+        return "Visible";
+    } else if (section == 2) {
+        return "CurLayer";
+    } else if (section == 3) {
+    }
+    return {};
 }
-
-bool TreeModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role) {
+bool TreeModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant & value, int role) {
     if (role != Qt::EditRole || orientation != Qt::Horizontal) {
         return false;
     }
-    const bool result = m_rootItem->setProperty(TreeNodePropertyIndex::Name, value);
-    if (result) {
-        emit headerDataChanged(orientation, section, section);
+    if (section == 0) {
+        bool result = m_rootItem->setProperty(TreeNodePropertyIndex::Name, value);
+        if (result) {
+            emit headerDataChanged(orientation, section, section);
+        }
+        return result;
     }
-    return result;
+    return false;
 }
-
-QModelIndex TreeModel::index(int row, int column, const QModelIndex &parentIndex) const {
+QModelIndex TreeModel::index(int row, int column, const QModelIndex & parentIndex) const {
     if (parentIndex.isValid() && parentIndex.column() != 0)
         return {};
     TreeNode *parentItem = getNode(parentIndex);
@@ -87,8 +132,7 @@ QModelIndex TreeModel::index(int row, int column, const QModelIndex &parentIndex
     }
     return {};
 }
-
-QModelIndex TreeModel::parent(const QModelIndex &nodeIndex) const {
+QModelIndex TreeModel::parent(const QModelIndex & nodeIndex) const {
     if (!nodeIndex.isValid())
         return {};
     TreeNode *childItem = getNode(nodeIndex);
@@ -96,21 +140,18 @@ QModelIndex TreeModel::parent(const QModelIndex &nodeIndex) const {
     return (parentItem != m_rootItem.get() && parentItem != nullptr)
            ? createIndex(parentItem->indexInParent(), 0, parentItem) : QModelIndex{};
 }
-
-int TreeModel::rowCount(const QModelIndex &nodeIndex) const {
+int TreeModel::rowCount(const QModelIndex & nodeIndex) const {
     if (nodeIndex.isValid() && nodeIndex.column() > 0) {
         return 0;
     }
     const TreeNode *nodeItem = getNode(nodeIndex);
     return nodeItem ? nodeItem->childCount() : 0;
 }
-
-int TreeModel::columnCount(const QModelIndex &nodeIndex) const {
+int TreeModel::columnCount(const QModelIndex & nodeIndex) const {
     Q_UNUSED(nodeIndex)
-    return 1;
+    return 4;
 }
-
-bool TreeModel::insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex) {
+bool TreeModel::insertRows(int insertPosition, int nodeCount, const QModelIndex & nodeIndex) {
     TreeNode *nodeItem = getNode(nodeIndex);
     if (!nodeItem) {
         return false;
@@ -120,8 +161,7 @@ bool TreeModel::insertRows(int insertPosition, int nodeCount, const QModelIndex 
     endInsertRows();
     return success;
 }
-
-bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex &nodeIndex) {
+bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex & nodeIndex) {
     TreeNode *nodeItem = getNode(nodeIndex);
     if (!nodeItem) {
         return false;
@@ -133,28 +173,58 @@ bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex 
     Manager::getIns().setVisibleSync();
     return success;
 }
-
-Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const {
+Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
     if (!index.isValid()) {
         return Qt::NoItemFlags;
     }
-    // 如果是Layer节点, 不允许拖拽移动和编辑,但是可以接受drop
+    Qt::ItemFlags defaultFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     auto node = getNode(index);
-    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
-        return Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+    // 第0列
+    if (index.column() == 0) {
+        // 如果是Layer节点, 不允许拖拽移动和编辑,但是可以接受drop
+        if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+            defaultFlags |= Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+        }
+        // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
+        else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Item")) {
+            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsEditable
+                            | QAbstractItemModel::flags(index);
+        } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Group")) {
+            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable
+                            | QAbstractItemModel::flags(index);
+        } else {
+            FATAL_MSG("Unknown");
+        }
     }
-    // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
-    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Item")) {
-        return Qt::ItemIsDragEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    //第1列
+    else if (index.column() == 1) {
+        // 如果是Layer节点, 可以设置可视
+        if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+            defaultFlags |= Qt::ItemIsUserCheckable;
+        } else {
+            defaultFlags |= Qt::NoItemFlags;
+        }
     }
-    if(node->property(TreeNodePropertyIndex::Type) == QVariant("Group")) {
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    //第2列
+    else if (index.column() == 2) {
+        // 如果是Layer节点, 可以设置工作图层
+        if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+            defaultFlags |= Qt::ItemIsUserCheckable;
+        } else {
+            defaultFlags |= Qt::NoItemFlags;
+        }
     }
-    WARN_MSG("Unknown TreeNode");
-    return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    //第3列
+    else if (index.column() == 3) {
+    }
+    // 其他列
+    else {
+        FATAL_MSG("Unknown index column");
+    }
+    return defaultFlags;
 }
 
-QVariant TreeModel::nodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex) {
+QVariant TreeModel::nodeProperty(const QModelIndex & nodeIndex, const TreeNodePropertyIndex propertyIndex) {
     auto node = getNode(nodeIndex);
     if (!node) {
         FATAL_MSG("nodeindex not found");
@@ -172,13 +242,6 @@ void TreeModel::update() {
         }
     }
 }
-
-
-
-
-
-
-
 void TreeModel::setupExemplarModelData() {
     m_rootItem->insertChilds(m_rootItem->childCount(), 1);
     auto layer1 =  m_rootItem->child(m_rootItem->childCount() - 1);
@@ -214,13 +277,12 @@ void TreeModel::setupExemplarModelData() {
         }
     }
 }
-
 void TreeModel::setupDefaultModelData() {
     m_rootItem->insertChilds(m_rootItem->childCount(), 1);
-    auto layer1 =  m_rootItem->child(m_rootItem->childCount() - 1);
-    Manager::getIns().addItem(getIndex(layer1), "Layer1", "Layer");
+    auto layer1 = m_rootItem->child(m_rootItem->childCount() - 1);
+    auto uuid = Manager::getIns().addItem(getIndex(layer1), "Layer1", "Layer");
+    SceneController::getIns().initLayerUuid(uuid);
 }
-
 void TreeModel::setupModelData(const QList < QStringView > &lines) {
     // struct ParentIndentation
     // {
@@ -258,8 +320,7 @@ void TreeModel::setupModelData(const QList < QStringView > &lines) {
     //     }
     // }
 }
-
-void TreeModel::serializeNodeToStream(TreeNode *item, QDataStream &stream, int currentLevel) const {
+void TreeModel::serializeNodeToStream(TreeNode * item, QDataStream & stream, int currentLevel) const {
     QString line;
     line += QString::number(currentLevel);
     line += "|";
@@ -273,18 +334,15 @@ void TreeModel::serializeNodeToStream(TreeNode *item, QDataStream &stream, int c
         serializeNodeToStream(item->child(i), stream, nextLevel);
     }
 }
-
 Qt::DropActions TreeModel::supportedDropActions() const {
     return Qt::CopyAction | Qt::MoveAction;
 }
-
 QStringList TreeModel::mimeTypes() const {
     QStringList types;
     types << "application/vnd.text.list";
     return types;
 }
-
-QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const {
+QMimeData *TreeModel::mimeData(const QModelIndexList & indexes) const {
     QMimeData *mimeData = new QMimeData;
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
@@ -297,8 +355,7 @@ QMimeData *TreeModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setData("application/vnd.text.list", encodedData);
     return mimeData;
 }
-
-bool TreeModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) const {
+bool TreeModel::canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parentNodeIndex) const {
     Q_UNUSED(action);
     if (!data->hasFormat("application/vnd.text.list")) {
         return false;
@@ -308,8 +365,7 @@ bool TreeModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, in
     }
     return true;
 }
-
-bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex) {
+bool TreeModel::dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parentNodeIndex) {
     if (!canDropMimeData(data, action, row, column, parentNodeIndex)) {
         return false;
     }
@@ -375,87 +431,30 @@ bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int r
     }
     return true;
 }
-
-// bool TreeModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parentNodeIndex)
-// {
-//     if (!canDropMimeData(data, action, row, column, parentNodeIndex))
-//         return false;
-
-//     if (action == Qt::IgnoreAction)
-//         return true;
-
-//     int beginRowInTopLevel;
-//     if (row != -1) // 如果是parent节点当前没有子节点, row会设置成-1
-//         beginRowInTopLevel = row;
-//     else // 如果parent节点有子节点,row设置成节点个数,也就是存到parent节点下的最后一位
-//         beginRowInTopLevel = rowCount(parentNodeIndex);
-
-//     QByteArray encodedData = data->data("application/vnd.text.list");
-//     QDataStream stream(&encodedData, QIODevice::ReadOnly);
-//     QStringList newItems;
-//     int rows = 0;
-//     while (!stream.atEnd()) {
-//         QString line;
-//         stream >> line;
-//         newItems << line;
-//         ++rows;
-//     }
-
-//     QVector<QPair<TreeNode*, QModelIndex>> parentStack;
-//     parentStack.push_back(qMakePair(getNode(parentNodeIndex), parentNodeIndex));
-
-//     for (const QString &line : std::as_const(newItems)) {
-//         // 解析层级和节点属性
-//         QStringList itemList = line.split('|', Qt::SkipEmptyParts);
-//         int level = itemList[0].toInt();
-//         itemList.pop_front();
-
-//         DEBUG_VAR(level);
-//         DEBUG_VAR(itemList);
-
-//         while (parentStack.size() > level + 1) {
-//             parentStack.pop_back();
-//         }
-
-//         TreeNode *parentItem = parentStack.last().first;
-//         QModelIndex parentIndex = parentStack.last().second;
-
-//         int childIndex = parentItem->childCount();
-//         if (level == 0) // 如果level是0,那么就用我们指示的插入位置;如果是大于0 也就是子节点, 就按照最后位置去插入位置
-//             childIndex = beginRowInTopLevel;
-
-//         insertRows(childIndex, 1, parentIndex);
-//         QModelIndex newIdx = this->index(childIndex, 0, parentIndex);
-//         TreeNode *item = this->getNode(newIdx);
-
-//         for (int i = 0; i < item->propertyCount(); i++) {
-//             if (i < itemList.size()) {
-//                 item->setProperty(i, itemList[i]);
-//             }
-//         }
-
-//         parentStack.push_back(qMakePair(item, newIdx));
-
-//         beginRowInTopLevel++;
-//     }
-
-//     return true;
-// }
-
 TreeNode *TreeModel::getNode(const QModelIndex &index) const {
-    if (index.isValid()) {
-        if (auto *item = static_cast < TreeNode * > (index.internalPointer())) {
-            return item;
-        }
+    // 明确是根节点
+    if (index == QModelIndex()) {
+        Q_ASSERT(m_rootItem);
+        return m_rootItem.get();
     }
-    return m_rootItem.get();
+    // 其他无效 index（不是根节点），这是异常
+    if (!index.isValid()) {
+        WARN_MSG("getNode: received invalid index (but not root)");
+        return nullptr;
+    }
+    // index 有效，检查内部指针
+    void *ptr = index.internalPointer();
+    if (!ptr) {
+        WARN_MSG("getNode: internalPointer is null!");
+        return nullptr;
+    }
+    return static_cast < TreeNode * > (ptr);
 }
 
-QModelIndex TreeModel::getIndex(const TreeNode *node) const {
+QModelIndex TreeModel::getIndex(const TreeNode * node) const {
     auto index = node->indexInParent();
     return createIndex(index, 0, node);
 }
-
 QModelIndex TreeModel::getIndex(const UUID uuid) const {
     auto allNodes = this->getAllChildNodes(QModelIndex());
     for (auto node : allNodes) {
@@ -466,13 +465,22 @@ QModelIndex TreeModel::getIndex(const UUID uuid) const {
     }
     return QModelIndex{};
 }
-
 std::vector < TreeNode * > TreeModel::getAllChildNodes(const QModelIndex &nodeIndex) const {
     std::vector < TreeNode * > children;
-    int childCount = rowCount(nodeIndex);
+    // 返回node都返回第0列的
+    auto baseIndex = nodeIndex.sibling(nodeIndex.row(), 0);
+    TreeNode* baseNode = getNode(baseIndex);
+    if (!baseNode) {
+        WARN_MSG("null node");
+        return children;
+    }
+    int childCount = rowCount(baseIndex);
     for (int row = 0; row < childCount; ++row) {
-        QModelIndex childIndex = this->index(row, 0, nodeIndex);
+        QModelIndex childIndex = index(row, 0, baseIndex);
         TreeNode* childNode = getNode(childIndex);
+        if (!childNode) {
+            continue;
+        }
         children.push_back(childNode);
         auto subChildren = getAllChildNodes(childIndex);
         children.insert(children.end(), subChildren.begin(), subChildren.end());
@@ -482,9 +490,17 @@ std::vector < TreeNode * > TreeModel::getAllChildNodes(const QModelIndex &nodeIn
 
 std::vector < QModelIndex > TreeModel::getAllChildIndexs(const QModelIndex &nodeIndex) const {
     std::vector < QModelIndex > children;
-    int childCount = rowCount(nodeIndex);
+    QModelIndex baseIndex = nodeIndex.sibling(nodeIndex.row(), 0);
+    TreeNode *baseNode = getNode(baseIndex);
+    if (!baseNode) {
+        return children; // 可能是无效索引或错误节点
+    }
+    int childCount = rowCount(baseIndex);
     for (int row = 0; row < childCount; ++row) {
-        QModelIndex childIndex = this->index(row, 0, nodeIndex);
+        QModelIndex childIndex = this->index(row, 0, baseIndex);
+        if (!childIndex.isValid()) {
+            continue;
+        }
         children.push_back(childIndex);
         auto subChildren = getAllChildIndexs(childIndex);
         children.insert(children.end(), subChildren.begin(), subChildren.end());
@@ -492,28 +508,10 @@ std::vector < QModelIndex > TreeModel::getAllChildIndexs(const QModelIndex &node
     return children;
 }
 
-void TreeModel::setNodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant &value) {
+void TreeModel::setNodeProperty(const QModelIndex & nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant & value) {
     auto node = getNode(nodeIndex);
     if (!node) {
         FATAL_MSG("nodeindex not found");
     }
     node->setProperty(propertyIndex, value);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

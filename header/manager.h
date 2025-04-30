@@ -25,9 +25,9 @@ private:
 
 public:
     /// \brief addItem 添加graphicitem
-    void addItem(std::shared_ptr < GraphicsItem > ptr);
+    UUID addItem(std::shared_ptr < GraphicsItem > ptr);
     /// \brief addItem 添加非graphicitem(包括layer node physicItem)
-    void addItem(QModelIndex position, QString name, QString type);
+    UUID addItem(QModelIndex position, QString name, QString type);
     /// \brief deleteItem 删除item
     void deleteItem(UUID uuid);
     /// \brief copyItem 复制graphicitem
@@ -39,17 +39,23 @@ public:
         return item->getUUID();
     };
     /// \brief setItem property
-    void setItemVisible(UUID uuid, bool status);
-    void setItemSelectable(UUID uuid, bool status);
+    void setItemVisible(UUID uuid, bool status) {
+        itemMapFind(uuid)->setVisible(status);
+    }
+    void setItemSelectable(UUID uuid, bool status) {
+        itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsSelectable, status);
+    }
     /// \brief getItem
     /// \param index
     UUID getItem(QModelIndex index);
     UUID getItem(QGraphicsItem* item);
-    /// \brief  getItemsByLayer
-    /// 获得这个图层下的所有节点(包括图层节点);    layer从1开始; 如果输入0, 那么就是返回所有节点(父节点为根节点)
-    std::vector < UUID > getItemsByLayer(int layer);
+    /// \brief getChildItems
+    /// \param uuid 输入"0-0-0-0"是获取所有节点; 其他未知节点返回空数组
+    std::vector < UUID > getChildItems(UUID uuid);
 private:
-    void setItemMovable(UUID uuid, bool status);
+    void setItemMovable(UUID uuid, bool status) {
+        itemMapFind(uuid)->setFlag(QGraphicsItem::ItemIsMovable, status);
+    }
 
 public:
 /// \brief itemMap 返回item 保护一层 不然老是在这里崩溃 还得debug很久

@@ -500,37 +500,67 @@ public:
     void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
         QWidget* tab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(tab);
-        QFormLayout* formLayout = new QFormLayout();
         struct FieldWidgets {
             QCheckBox *enableCheck;
             QDoubleSpinBox *valueSpin;
             QDoubleSpinBox *deltaSpin;
         };
         QMap < QString, FieldWidgets > fields;
+        // 创建 scroll 区域包裹 form layout
+        QScrollArea* scrollArea = new QScrollArea();
+        scrollArea->setWidgetResizable(true);
+        QWidget* scrollWidget = new QWidget();
+        QFormLayout* formLayout = new QFormLayout(scrollWidget);
+        scrollWidget->setLayout(formLayout);
+        scrollArea->setWidget(scrollWidget);
+        scrollArea->setMinimumHeight(300);  // 你可以根据需要设置默认高度
+        mainLayout->addWidget(scrollArea);
         auto addField = [&](const QString & name, double defaultValue = 0.0) {
-            QCheckBox *check = new QCheckBox(name);
-            QDoubleSpinBox *valueSpin = new QDoubleSpinBox();
-            QDoubleSpinBox *deltaSpin = new QDoubleSpinBox();
+            QCheckBox* check = new QCheckBox(name);
+            QDoubleSpinBox* valueSpin = new QDoubleSpinBox();
+            QSlider* valueSlider = new QSlider(Qt::Horizontal);
+            QDoubleSpinBox* deltaSpin = new QDoubleSpinBox();
             // 设置范围/精度
-            valueSpin->setRange(-999999, 999999);
+            double min = -9999.0;
+            double max = 9999.0;
+            valueSpin->setRange(min, max);
             valueSpin->setDecimals(3);
-            deltaSpin->setRange(-999999, 999999);
+            deltaSpin->setRange(min, max);
             deltaSpin->setDecimals(3);
-            // 设置默认值
+            valueSlider->setRange(static_cast < int > (min * 100), static_cast < int > (max * 100));
+            // 同步 slider <-> spinbox
+            connect(valueSpin, QOverload < double >::of(&QDoubleSpinBox::valueChanged),
+            [ = ](double val) {
+                valueSlider->setValue(static_cast < int > (val * 100));
+            });
+            connect(valueSlider, &QSlider::valueChanged,
+            [ = ](int val) {
+                valueSpin->setValue(val / 100.0);
+            });
+            // 默认值
             valueSpin->setValue(defaultValue);
+            valueSlider->setValue(static_cast < int > (defaultValue * 100));
             deltaSpin->setValue(0);
-            // 禁用状态跟随勾选
+            // 禁用逻辑
             valueSpin->setEnabled(false);
+            valueSlider->setEnabled(false);
             deltaSpin->setEnabled(false);
             connect(check, &QCheckBox::toggled, valueSpin, &QDoubleSpinBox::setEnabled);
+            connect(check, &QCheckBox::toggled, valueSlider, &QSlider::setEnabled);
             connect(check, &QCheckBox::toggled, deltaSpin, &QDoubleSpinBox::setEnabled);
-            //
+            // 控件宽度
             check->setMinimumWidth(180);
             valueSpin->setFixedWidth(80);
             deltaSpin->setFixedWidth(80);
-            // 组装 layout
-            QHBoxLayout *hLayout = new QHBoxLayout();
-            hLayout->addWidget(valueSpin);
+            // 布局组装
+            QVBoxLayout* sliderLayout = new QVBoxLayout();
+            sliderLayout->setSpacing(2);
+            sliderLayout->setContentsMargins(0, 0, 0, 0);
+            sliderLayout->addWidget(valueSpin);
+            sliderLayout->addWidget(valueSlider);
+            QHBoxLayout* hLayout = new QHBoxLayout();
+            hLayout->addLayout(sliderLayout);
+            hLayout->addSpacing(10);
             hLayout->addWidget(new QLabel("+"));
             hLayout->addWidget(deltaSpin);
             formLayout->addRow(check, hLayout);
@@ -552,11 +582,9 @@ public:
         addField("DelayParams: markDelay", 0);
         addField("DelayParams: jumpDelay", 0);
         addField("DelayParams: polygonDelay", 0);
-        mainLayout->addLayout(formLayout);
-        // 按钮应用
+        // Confirm 按钮
         QPushButton* ConfirmBtn = new QPushButton("Confirm");
         mainLayout->addWidget(ConfirmBtn);
-        //
         connect(ConfirmBtn, &QPushButton::clicked, tab, [ = ]() {
             std::vector < MultiEditParam > result;
             for (auto it = fields.begin(); it != fields.end(); ++it) {
@@ -569,13 +597,13 @@ public:
                 param.fieldName = key;
                 param.baseValue = w.valueSpin->value();
                 param.deltaValue = w.deltaSpin->value();
-                result.push_back (param);
+                result.push_back(param);
             }
             EditController::getIns().onTabWidgetMultiItemsEditTab(result);
         });
-        //
         this->addTab(tab, "Multi Edit");
     }
+
     void addDuoItemsBoolOpTab(const std::vector < UUID > &uuids) {
         if (uuids.size() != 2) {
             return;

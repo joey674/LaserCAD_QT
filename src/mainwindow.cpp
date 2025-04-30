@@ -470,6 +470,7 @@ void MainWindow::initTreeViewModel() {
     ///
     auto* model = new TreeModel("Items Browser", this);
     auto* view = UiManager::getIns().UI()->treeView;
+    model->setupDefaultModelData();
     view->setStyleSheet(treeViewModelStyle1);
     view->setModel(model);
     view->bindModel();
@@ -558,9 +559,9 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     //     SceneController::getIns().scene->clearSelection();
     //     // 打断一下拖拽过程
     //     for (const auto& item : allItems) {
-    //         Manager::getIns().setItemMovable(item, false);
+    //         Manager::getIns().etItemMovable(item, false);
     //         QTimer::singleShot(10, this, [item]() {
-    //             Manager::getIns().setItemMovable(item, false);
+    //             Manager::getIns().etItemMovable(item, false);
     //         });
     //     }
     // }
@@ -922,7 +923,7 @@ void MainWindow::onDragSceneButtonClicked() {
     DrawController::getIns().resetTmpItemStatus();
     // drag mode/所有物体设置不可动
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag);
-    auto allItems = Manager::getIns().getItemsByLayer(0);
+    auto allItems = Manager::getIns().getChildItems("0-0-0-0");
     for (auto item : allItems) {
         Manager::getIns().setItemSelectable(item, false);
     }
@@ -948,7 +949,7 @@ void MainWindow::onEditButtonClicked() {
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
     // 设置当前图层内物体可动;所有物体颜色为黑;等等默认行为(都在setCurrentLayer里)
-    SceneController::getIns().setCurrentLayer(SceneController::getIns().getCurrentLayer());
+    SceneController::getIns().setCurrentLayerUuid(SceneController::getIns().getCurrentLayerUuid());
 }
 
 void MainWindow::setEditMode() {
@@ -1050,17 +1051,17 @@ void MainWindow::onTreeViewModelCopyNode() {
 }
 
 void MainWindow::onTreeViewModelSetLayerVisible() {
-    auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
-    for (const auto& item : inLayerItems) {
-        Manager::getIns().setItemVisible(item, true);
-    }
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayerUuid ());
+    // for (const auto& item : inLayerItems) {
+    //     Manager::getIns().setItemVisible(item, true);
+    // }
 }
 
 void MainWindow::onTreeViewModelSetLayerUnvisible() {
-    auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
-    for (const auto& item : inLayerItems) {
-        Manager::getIns().setItemVisible(item, false);
-    }
+    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayerUuid ());
+    // for (const auto& item : inLayerItems) {
+    //     Manager::getIns().setItemVisible(item, false);
+    // }
 }
 
 void MainWindow::onTreeViewModelSelectAllItemsInGroup() {
@@ -1132,7 +1133,7 @@ void MainWindow::onTreeViewModelUpdateActions() {
             this->deleteNodeAction->setEnabled(false);
             this->copyNodeAction->setEnabled(false);
             this->selectAllItemsInGroupAction->setEnabled(false);
-            // SceneController::getIns().setCurrentLayer (model->getNode(nodeIndex)->indexInParent() + 1);
+            // SceneController::getIns().setCurrentLayerUuid (model->getNode(nodeIndex)->indexInParent() + 1);
             return;
         } else if (type == "Group") {
             this->addLayerAction->setEnabled(false);

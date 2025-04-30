@@ -185,7 +185,7 @@ void EditController::onTreeViewModelSelectionChanged(
     for (const QModelIndex &idx : selected.indexes()) {
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         if (type == "Layer") {
-            // SceneController::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
+            // SceneController::getIns().setCurrentLayerUuid(model->getNode(idx)->indexInParent() + 1);
         } else if (type == "Item") {
             UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(uuid)->setSelected(true);
@@ -211,6 +211,7 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     auto treeView = UiManager::getIns().UI()->treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
+    Q_ASSERT(index.isValid());
     //
     if (selected) {
         // 设置对象显示属性

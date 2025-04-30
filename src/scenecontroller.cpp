@@ -15,25 +15,26 @@ std::pair < double, double > SceneController::getSceneScale() {
     return this->sceneScale;
 }
 
-void SceneController::setCurrentLayer(int layer) {
-    //
-    this->currentLayer = layer;
-    //
+void SceneController::setCurrentLayerUuid(UUID layerUuid) {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    model->update();
-    auto inLayerItems = Manager::getIns().getItemsByLayer(this->currentLayer);
-    auto allItems = Manager::getIns().getItemsByLayer(0);
-    for (const auto& item : allItems) {
-        Manager::getIns().setItemSelectable(item, false);
-        Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
+    auto uuids = Manager::getIns().getChildItems("0-0-0-0");
+    for (const auto &uuid : uuids) {
+        Manager::getIns().setItemSelectable(uuid, false);
+        Manager::getIns().itemMapFind(uuid)->setPen(DISPLAY_PEN);
     }
-    for (const auto& item : inLayerItems) {
-        Manager::getIns().setItemSelectable(item, true);
+    // 设置当前图层
+    this->currentLayerUuid = layerUuid;
+    // 当前图层可选中
+    auto layerNodeIndex = model->getIndex(layerUuid);
+    auto inLayerItems = model->getAllChildNodes(layerNodeIndex);
+    for (const auto &item : inLayerItems) {
+        auto uuid = item->property(TreeNodePropertyIndex::UUID).toString();
+        Manager::getIns().setItemSelectable(uuid, true);
     }
 }
 
-int SceneController::getCurrentLayer() {
-    return currentLayer;
+UUID SceneController::getCurrentLayerUuid() {
+    return currentLayerUuid;
 }
 
 int SceneController::layerCount() {

@@ -20,10 +20,10 @@ void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelec
 
 void TreeView::dropEvent(QDropEvent *event) {
     QTreeView::dropEvent(event);
-    // QTimer::singleShot(10, [this]() {
-    //     DEBUG_MSG("after moved");
-    //     Manager::getIns().setVisibleSync();
-    // });
+    QTimer::singleShot(10, [this]() {
+        DEBUG_MSG("after moved");
+        Manager::getIns().setVisibleSync();
+    });
 }
 
 void TreeView::keyPressEvent(QKeyEvent *event) {

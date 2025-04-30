@@ -31,7 +31,7 @@ public:
     /// 获取node的子节点个数
     int rowCount(const QModelIndex &nodeIndex = {}) const override;
     /// 只使用column0 所以返回columnCount = 1
-    int columnCount(const QModelIndex &nodeIndex = QModelIndex()) const override;;
+    int columnCount(const QModelIndex &nodeIndex = QModelIndex()) const override;
     /// 插入/删除子节点
     bool insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex = {}) override;
     bool removeRows(int removePosition, int nodeCount, const QModelIndex &nodeIndex = {}) override;
@@ -64,9 +64,9 @@ public:
 
     /// 外部强制视图刷新(暂时设置只刷新layer的选中以及visible)
     void update();
-private:
     void setupExemplarModelData();
     void setupDefaultModelData();
+private:
     void setupModelData(const QList < QStringView > &lines);
     void serializeNodeToStream(TreeNode *item, QDataStream &stream, int currentLevel) const;
 

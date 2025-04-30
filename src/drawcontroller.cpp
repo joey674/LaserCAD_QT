@@ -24,7 +24,7 @@ void DrawController::resetTmpItemStatus() {
 void DrawController::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPolyline && event == MouseEvent::LeftPress) {
         // 设置其他元素不可动不可选中 颜色为display
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -64,7 +64,7 @@ void DrawController::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
 void DrawController::drawArc(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpArc && event == MouseEvent::LeftPress) {
         // 设置其他元素不可动不可选中 颜色为display
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -97,7 +97,7 @@ void DrawController::drawArc(QPointF pointCoordscene, MouseEvent event) {
 void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpLine && event == MouseEvent::LeftPress) {
         // 设置其他元素不可动不可选中 颜色为display
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -126,7 +126,7 @@ void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
 void DrawController::drawPoint(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPoint && event == MouseEvent::LeftPress) {
         // 设置其他元素不可动不可选中 颜色为display
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -142,7 +142,7 @@ void DrawController::drawPoint(QPointF pointCoordscene, MouseEvent event) {
 void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpCircle && event == MouseEvent::LeftPress) {
         // 设置其他元素不可动不可选中 颜色为display
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -162,7 +162,7 @@ void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
 }
 void DrawController::drawRect(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpRect && event == MouseEvent::LeftPress) {
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
@@ -188,7 +188,7 @@ void DrawController::drawRect(QPointF pointCoordscene, MouseEvent event) {
 void DrawController::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpEllipse && event == MouseEvent::LeftPress) {
         // 第一次点击：创建临时椭圆，记录中心点
-        auto allItems = Manager::getIns().getItemsByLayer(0);
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
             Manager::getIns().itemMapFind(item)->setPen(DISPLAY_PEN);
