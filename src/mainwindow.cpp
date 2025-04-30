@@ -948,7 +948,7 @@ void MainWindow::onEditButtonClicked() {
     UiManager::getIns().setAllToolButtonChecked(false);
     UiManager::getIns().UI()->editButton->setChecked(true);
     // 设置当前图层内物体可动;所有物体颜色为黑;等等默认行为(都在setCurrentLayer里)
-    // SceneController::getIns().setCurrentLayer(SceneController::getIns().getCurrentLayer());
+    SceneController::getIns().setCurrentLayer(SceneController::getIns().getCurrentLayer());
 }
 
 void MainWindow::setEditMode() {

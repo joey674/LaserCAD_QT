@@ -240,7 +240,6 @@ public:
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
-            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onBreakCopiedItemTriggered
@@ -255,7 +254,6 @@ public:
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(std::move(item));
-            Manager::getIns().setItemSelectable(uuid, true);
         }
     }
     /// \brief onCenterToOriginTrigger 回归物体到中心
