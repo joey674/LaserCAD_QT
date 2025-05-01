@@ -9,9 +9,7 @@ const QString GraphicsItem::getUUID()const {
     return this->m_uuid;
 }
 
-const QPen GraphicsItem::getPen()const {
-    return this->m_pen;
-}
+
 
 QVariant GraphicsItem::itemChange(GraphicsItemChange change, const QVariant &value) {
     if (change == QGraphicsItem::ItemPositionHasChanged) {

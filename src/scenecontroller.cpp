@@ -21,7 +21,6 @@ void SceneController::setCurrentLayer(UUID layerUuid) {
     auto uuids = Manager::getIns().getChildItems("0-0-0-0");
     for (const auto &uuid : uuids) {
         Manager::getIns().setItemSelectable(uuid, false);
-        Manager::getIns().itemMapFind(uuid)->setPen(DISPLAY_PEN);
     }
     // 设置当前图层
     this->m_currentLayer = layerUuid;
@@ -72,6 +71,13 @@ void SceneController::deleteCurrentLayer() {
     // // 删除sceneController里
     // this->m_layerList.erase(this->m_currentLayer);
     // this->m_currentLayer = this->m_layerList[0];
+}
+
+QColor SceneController::getCurrentLayerColor() const
+{
+    auto uuid = this->m_currentLayer;
+    auto color = Manager::getIns().itemMapFind(uuid)->getColor();
+    return color;
 }
 
 void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {

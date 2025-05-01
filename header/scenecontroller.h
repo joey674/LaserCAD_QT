@@ -43,6 +43,10 @@ public:
     ///
     void addLayer();
     void deleteCurrentLayer();
+    /// \brief m_dragScenePoint
+    ///
+    QColor getCurrentLayerColor() const;
+
 public:
     /// drag scene
     QPointF m_dragScenePoint = QPointF(0, 0);

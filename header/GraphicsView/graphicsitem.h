@@ -67,8 +67,9 @@ public:
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() = 0;
     /// \brief setPen
     /// \param
-    bool setPen(QPen setPen) {
-        this->m_pen = setPen;
+    bool setColor(QColor color)
+    {
+        this->m_pen.setColor(color);
         this->animate();
         return true;
     };
@@ -124,7 +125,8 @@ public:
     virtual QPointF getCenterInScene() const = 0;
     virtual QString getName() const;
     const QString getUUID() const;
-    const QPen getPen() const;
+    const QColor getColor() const { return this->m_pen.color(); }
+    const QPen getPen() const { return this->m_pen; }
     virtual uint getVertexCount() const = 0;
     virtual QRectF getBoundingRectBasis() const = 0;
     const MarkParams getMarkParams() const {
@@ -155,7 +157,11 @@ protected:
 /// ********************
 protected:
     QString m_uuid;
-    QPen m_pen = DISPLAY_PEN;
+    QPen m_pen = []() {
+        QPen pen(Qt::black, 1);
+        pen.setCosmetic(true);
+        return pen;
+    }();
     MarkParams m_markParams;
     DelayParams m_delayParams;
     OffsetParams m_offsetParams  = OffsetParams {0, 0};

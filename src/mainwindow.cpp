@@ -16,15 +16,16 @@
 // #include "utils.h"
 #include "logger.h"
 // #include "titlebar.h"
-#include <polyline.hpp>
-#include "manager.h"
-#include "treemodel.h"
-#include "keyboardmanager.h"
-#include "uimanager.h"
-#include "scenecontroller.h"
-#include "editcontroller.h"
+#include "colordelegate.h"
 #include "drawcontroller.h"
+#include "editcontroller.h"
+#include "keyboardmanager.h"
+#include "manager.h"
+#include "scenecontroller.h"
 #include "tablemodel.h"
+#include "treemodel.h"
+#include "uimanager.h"
+#include <polyline.hpp>
 
 ///
 /// \brief MainWindow::MainWindow
@@ -87,34 +88,39 @@ void MainWindow::initGraphicsView() {
     QTimer::singleShot(100, this, []() {
         SceneController::getIns().setSceneScale(10, 10);
     });
+    QPen pen = []() {
+        QPen pen(Qt::red, 1);
+        pen.setCosmetic(true);
+        return pen;
+    }();
     QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
     QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
-    xAxis->setPen(AXIS_PEN);
+    xAxis->setPen(pen);
     xAxis->setPos(0, 0);
-    yAxis->setPen(AXIS_PEN);
+    yAxis->setPen(pen);
     yAxis->setPos(0, 0);
     SceneController::getIns().scene->addItem(xAxis);
     SceneController::getIns().scene->addItem(yAxis);
     QGraphicsLineItem *xArrowL = new QGraphicsLineItem(90, 10, 100, 0);
     QGraphicsLineItem *xArrowR = new QGraphicsLineItem(90, -10, 100, 0);
-    xArrowL->setPen(AXIS_PEN);
-    xArrowR->setPen(AXIS_PEN);
+    xArrowL->setPen(pen);
+    xArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(xArrowL);
     SceneController::getIns().scene->addItem(xArrowR);
     QGraphicsLineItem *yArrowL = new QGraphicsLineItem(10, 90, 0, 100);
     QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-10, 90, 0, 100);
-    yArrowL->setPen(AXIS_PEN);
-    yArrowR->setPen(AXIS_PEN);
+    yArrowL->setPen(pen);
+    yArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(yArrowL);
     SceneController::getIns().scene->addItem(yArrowR);
     QGraphicsLineItem *bound1 = new QGraphicsLineItem(900, 900, 1000, 1000);
     QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000, -1000, -900, -900);
     QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900, 900, -1000, 1000);
     QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000, -1000, 900, -900);
-    bound1->setPen(AXIS_PEN);
-    bound2->setPen(AXIS_PEN);
-    bound3->setPen(AXIS_PEN);
-    bound4->setPen(AXIS_PEN);
+    bound1->setPen(pen);
+    bound2->setPen(pen);
+    bound3->setPen(pen);
+    bound4->setPen(pen);
     SceneController::getIns().scene->addItem(bound1);
     SceneController::getIns().scene->addItem(bound2);
     SceneController::getIns().scene->addItem(bound3);
@@ -438,9 +444,7 @@ void MainWindow::initStatusBar() {
 }
 
 void MainWindow::initTreeViewModel() {
-    ///
     /// \brief model
-    ///
     auto* model = new TreeModel("Items Browser", this);
     auto* view = UiManager::getIns().UI()->treeView;
     model->setupDefaultModelData();
@@ -454,12 +458,10 @@ void MainWindow::initTreeViewModel() {
     view->setDropIndicatorShown(true);
     view->setDragDropMode(QAbstractItemView::InternalMove);
     view->setColumnWidth(0, 200);
-    view->setColumnWidth(1, 50);
-    view->setColumnWidth(2, 75);
-    view->setColumnWidth(3, 50);
-    ///
+    view->setColumnWidth(1, 60);
+    view->setColumnWidth(2, 60);
+    view->setColumnWidth(3, 60);
     ///  contextmenu
-    ///
     // view->setContextMenuPolicy(Qt::CustomContextMenu);
     // connect(view,
     //         &QWidget::customContextMenuRequested,
@@ -474,6 +476,9 @@ void MainWindow::initTreeViewModel() {
     [ = ](const QItemSelection & selected, const QItemSelection & deselected) {
         EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
     });
+    /// 设置自定义颜色编辑器
+    view->setItemDelegateForColumn(3, new ColorDelegate(view));
+    view->setEditTriggers(QAbstractItemView::AllEditTriggers); // 单机弹出颜色框
 }
 
 void MainWindow::initTableViewModel() {

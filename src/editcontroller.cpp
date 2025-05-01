@@ -213,8 +213,6 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     Q_ASSERT(index.isValid());
     //
     if (selected) {
-        // 设置对象显示属性
-        item->setPen(EDIT_PEN);
         //
         // item->m_editRect = new EditRect(item.get ());
         // SceneController::getIns().scene->addItem(item->m_editRect);
@@ -225,8 +223,6 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         // 设置curEditItemGroup,添加item
         this->m_currentEditItemGroup.push_back(item);
     } else {
-        // 设置对象显示属性
-        item->setPen(DISPLAY_PEN);
         // //
         // if (item->m_editRect) {
         //     SceneController::getIns().scene->removeItem(item->m_editRect);

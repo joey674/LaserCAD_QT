@@ -63,31 +63,6 @@ const std::pair < double, double > DisplayPointSize = std::pair < double, double
 const std::pair < double, double > EditPointSize = std::pair < double, double > {4, 4};
 
 /*****************************************************************************
- * GraphicsView
- * 绘制对象使用的画笔
- *****************************************************************************/
-const QPen DISPLAY_PEN = []() {
-    QPen pen(Qt::black, 1);
-    pen.setCosmetic(true);
-    return pen;
-}
-();
-
-const QPen EDIT_PEN = []() {
-    QPen pen(Qt::green, 1);
-    pen.setCosmetic(true);
-    return pen;
-}
-();
-
-const QPen AXIS_PEN = []() {
-    QPen pen(Qt::red, 1);
-    pen.setCosmetic(true);
-    return pen;
-}
-();
-
-/*****************************************************************************
  * Manager
  * PropertyMap
  *****************************************************************************/

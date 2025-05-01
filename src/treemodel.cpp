@@ -1,9 +1,10 @@
 #include "treemodel.h"
-#include "treenode.h"
-#include "scenecontroller.h"
+#include <QColorDialog>
+#include "logger.h"
 #include "manager.h"
 #include "polylineitem.h"
-#include "logger.h"
+#include "scenecontroller.h"
+#include "treenode.h"
 
 using namespace Qt::StringLiterals;
 
@@ -25,6 +26,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
     QString itemUUID = node->property(TreeNodePropertyIndex::UUID).toString();
     bool isVisible = Manager::getIns().itemMapFind(itemUUID)->isVisible();
+    QColor color = Manager::getIns().itemMapFind(itemUUID)->getColor();
     // 第0列显示名称 表示树状结构
     if (nodeIndex.column() == 0) {
         if (role == Qt::DisplayRole || role == Qt::EditRole) {
@@ -44,8 +46,13 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
             return isCurrent ? Qt::Checked : Qt::Unchecked;
         }
     }
-    //
-    else if (nodeIndex.column() == 3 && role == Qt::CheckStateRole) {
+    // 第3列显示颜色
+    else if (nodeIndex.column() == 3) {
+        if (role == Qt::BackgroundRole && itemType == "Layer") {
+            return QBrush(color);
+        } else {
+            return QBrush(Qt::white);
+        }
     }
     return {};
 }
@@ -58,6 +65,9 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
     if (!node) {
         return false;
     }
+    auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
+    QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
+    // auto color = Manager::getIns().itemMapFind(uuid)->getColor();
     // 第 0 列编辑名字
     if (nodeIndex.column() == 0 && role == Qt::EditRole) {
         bool result = node->setProperty(TreeNodePropertyIndex::Name, value);
@@ -93,6 +103,20 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         emit dataChanged(this->index(0, 2), this->index(rowCount() - 1, 2), {Qt::CheckStateRole});
         return true;
     }
+    // 第3列设置当前layer颜色
+    else if (nodeIndex.column() == 3 && role == Qt::BackgroundRole && itemType == "Layer") {
+        QColor color = value.value<QColor>();
+        DEBUG_VAR(color);
+        std::vector<TreeNode *> nodeList = this->getAllChildNodes(nodeIndex);
+        nodeList.push_back(node);
+        for (const auto node : nodeList) {
+            auto childUuid = node->property(TreeNodePropertyIndex::UUID).toString();
+            Manager::getIns().itemMapFind(childUuid)->setColor(color);
+        }
+        emit dataChanged(nodeIndex, nodeIndex, {Qt::BackgroundRole});
+        return true;
+    }
+
     return false;
 }
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -105,6 +129,7 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int rol
     } else if (section == 2) {
         return "CurLayer";
     } else if (section == 3) {
+        return "Color";
     }
     return {};
 }
@@ -202,7 +227,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
         if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
             defaultFlags |= Qt::ItemIsUserCheckable;
         } else {
-            defaultFlags |= Qt::NoItemFlags;
+            return Qt::NoItemFlags;
         }
     }
     //第2列
@@ -211,11 +236,17 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
         if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
             defaultFlags |= Qt::ItemIsUserCheckable;
         } else {
-            defaultFlags |= Qt::NoItemFlags;
+            return Qt::NoItemFlags;
         }
     }
     //第3列
     else if (index.column() == 3) {
+        // 如果是layer节点,可以编辑颜色
+        if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
+            defaultFlags |= Qt::ItemIsEditable;
+        } else {
+            return Qt::NoItemFlags;
+        }
     }
     // 其他列
     else {

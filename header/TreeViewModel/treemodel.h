@@ -30,7 +30,7 @@ public:
     QModelIndex parent(const QModelIndex &nodeIndex) const override;
     /// 获取node的子节点个数
     int rowCount(const QModelIndex &nodeIndex = {}) const override;
-    /// 只使用column0 所以返回columnCount = 1
+    /// 使用的列数
     int columnCount(const QModelIndex &nodeIndex = QModelIndex()) const override;
     /// 插入/删除子节点
     bool insertRows(int insertPosition, int nodeCount, const QModelIndex &nodeIndex = {}) override;
