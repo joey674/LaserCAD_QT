@@ -79,7 +79,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         emit dataChanged(nodeIndex, nodeIndex, {Qt::CheckStateRole});
         return true;
     }
-    // 第2列设置当前编辑layer
+    // 第2列设置当前可编辑layer
     else if (nodeIndex.column() == 2 && role == Qt::CheckStateRole) {
         // 只响应 Qt::Checked，忽略取消（因为是互斥）
         if (value.toInt() != Qt::Checked) {

@@ -185,7 +185,6 @@ void EditController::onTreeViewModelSelectionChanged(
     for (const QModelIndex &idx : selected.indexes()) {
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         if (type == "Layer") {
-            // SceneController::getIns().setCurrentLayer(model->getNode(idx)->indexInParent() + 1);
         } else if (type == "Item") {
             UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
             Manager::getIns().itemMapFind(uuid)->setSelected(true);

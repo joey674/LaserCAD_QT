@@ -101,7 +101,7 @@ public:
         //
         curEditItem->setVertexInScene(0, Vertex{start, 0});
         curEditItem->setVertexInScene(1, Vertex{end, angle});
-        this->updateTableViewModel();
+        this->updateEditRect();
     }
     void onTabWidgetLineGeometryTab(QPointF start, QPointF end) {
         //
@@ -112,7 +112,7 @@ public:
         //
         curEditItem->setVertexInScene(0, Vertex{start, 0});
         curEditItem->setVertexInScene(1, Vertex{end, 0});
-        this->updateTableViewModel();
+        this->updateEditRect();
     }
     void onTabWidgetPointGeometryTab(QPointF pos) {
         //
@@ -122,7 +122,7 @@ public:
         auto &curEditItem = this->m_currentEditItemGroup[0];
         //
         curEditItem->setVertexInScene(0, Vertex{pos, 0});
-        this->updateTableViewModel();
+        this->updateEditRect();
     }
     void onTabWidgetCircleGeometryTab(QPointF pos, double radius) {
         //
@@ -134,7 +134,7 @@ public:
         CircleItem *item = static_cast < CircleItem * > (curEditItem.get());
         item->setVertexInScene(0, Vertex{pos, 0});
         item->setRadius (radius);
-        this->updateTableViewModel();
+        this->updateEditRect();
     }
     void onTabWidgetPolylineGeometryTab(std::vector < Vertex > vertices) {
         // 只处理单个对象
@@ -148,7 +148,7 @@ public:
         for (size_t i = 0; i < vertices.size(); ++i) {
             curEditItem->setVertexInScene(static_cast < uint > (i), vertices[i]);
         }
-        this->updateTableViewModel();
+        this->updateEditRect();
     }
     void onTabWidgetRectGeometryTab() {}
     void onTabWidgetEclipseGeometryTab() {}
@@ -201,6 +201,7 @@ public:
             DEBUG_VAR(pos);
             item->setCenterInScene(pos);
         }
+        this->updateEditRect();
     }
     /// \brief onTabWidgetMultiCombineTab
     /// 把两个闭合曲线做boolan Operation
@@ -226,6 +227,7 @@ public:
             SceneController::getIns().scene->addItem(item.get());
             Manager::getIns().addItem(item);
         }
+        this->updateEditRect();
     }
 
     /// \brief onBreakOffsetTriggered

@@ -9,10 +9,12 @@
 class SceneController {
 public:
     /// scene
+    ///
     QGraphicsScene *scene;
     OperationEvent m_currentOperationEvent = None;
 public:
     /// scene scale
+    ///
     std::pair < double, double > m_sceneScale = {1, 1};
     /// \brief SceneController::setSceneScale  放大缩小画布
     /// \param x,y  缩放倍率(基于当前状态再缩放)
@@ -37,7 +39,8 @@ public:
     /// \brief layerCount
     /// \return
     int layerCount();
-
+    /// \brief addLayer
+    ///
     void addLayer();
     void deleteCurrentLayer();
 public:

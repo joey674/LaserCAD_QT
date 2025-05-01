@@ -16,6 +16,7 @@ std::pair < double, double > SceneController::getSceneScale() {
 }
 
 void SceneController::setCurrentLayer(UUID layerUuid) {
+    // 设置所有物体不可选中;
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     auto uuids = Manager::getIns().getChildItems("0-0-0-0");
     for (const auto &uuid : uuids) {

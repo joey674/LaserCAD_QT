@@ -23,13 +23,6 @@ public:
 private: // 初始化组件
     TitleBar *titleBar;
     QLabel *labelMouseCoordinate;
-    QAction *addLayerAction;
-    QAction *addGroupAction;
-    QAction *deleteNodeAction;
-    QAction *copyNodeAction;
-    QAction *setLayerVisibleAction;
-    QAction *setLayerUnvisibleAction;
-    QAction *selectAllItemsInGroupAction;
     void initTitleBar();
     void initGraphicsView();
     void initDrawToolButton();

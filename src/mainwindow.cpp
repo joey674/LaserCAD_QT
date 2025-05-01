@@ -26,7 +26,6 @@
 #include "drawcontroller.h"
 #include "tablemodel.h"
 
-
 ///
 /// \brief MainWindow::MainWindow
 /// \param parent
@@ -137,7 +136,6 @@ void MainWindow::initGraphicsView() {
     connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseWheelTriggered(QWheelEvent*)),
             this, SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
-
 
 void MainWindow::initDrawToolButton() {
     QString buttonStyle = buttonStyle1;
@@ -457,15 +455,16 @@ void MainWindow::initTreeViewModel() {
     view->setDragDropMode(QAbstractItemView::InternalMove);
     view->setColumnWidth(0, 200);
     view->setColumnWidth(1, 50);
-    view->setColumnWidth(2, 50);
+    view->setColumnWidth(2, 75);
+    view->setColumnWidth(3, 50);
     ///
     ///  contextmenu
     ///
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(view,
-            &QWidget::customContextMenuRequested,
-            this,
-            &MainWindow::onTreeViewModelShowContextMenu);
+    // view->setContextMenuPolicy(Qt::CustomContextMenu);
+    // connect(view,
+    //         &QWidget::customContextMenuRequested,
+    //         this,
+    //         &MainWindow::onTreeViewModelShowContextMenu);
     connect(view, &QTreeView::clicked, this, [ = ](const QModelIndex & index) {
         EditController::getIns().onTreeViewModelClicked (index);
     });
@@ -972,42 +971,31 @@ void MainWindow::onDeleteLayerButtonClicked() {
     SceneController::getIns().deleteCurrentLayer ();
 }
 
-
-
 ///
 /// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
 /// \param pos
 ///
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     // 获取鼠标点击的位置
-    QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
-    if (!index.isValid()) {
-        return;
-    }
-    QMenu contextMenu(this);
-    // this->addLayerAction = new QAction("Add Layer", &contextMenu);
-    this->addGroupAction = new QAction("Add Group", &contextMenu);
-    this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
-    this->copyNodeAction = new QAction("Copy Node", &contextMenu);
-    // this->setLayerVisibleAction = new QAction("Set Layer Visible", &contextMenu);
-    // this->setLayerUnvisibleAction = new QAction("Set Layer Unvisible", &contextMenu);
-    this->selectAllItemsInGroupAction = new QAction("Select all Items In this Group", &contextMenu);
-    // contextMenu.addAction(this->addLayerAction);
-    contextMenu.addAction(this->addGroupAction);
-    contextMenu.addAction(this->deleteNodeAction);
-    contextMenu.addAction(this->copyNodeAction);
-    // contextMenu.addAction(this->setLayerVisibleAction);
-    // contextMenu.addAction(this->setLayerUnvisibleAction);
-    contextMenu.addAction(this->selectAllItemsInGroupAction);
-    connect(this->addLayerAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddLayer);
-    connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
-    connect(this->deleteNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelDeleteNode);
-    connect(this->copyNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelCopyNode);
-    connect(this->setLayerVisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerVisible);
-    connect(this->setLayerUnvisibleAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSetLayerUnvisible);
-    connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSelectAllItemsInGroup);
-    onTreeViewModelUpdateActions();
-    contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
+    // QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
+    // if (!index.isValid()) {
+    //     return;
+    // }
+    // QMenu contextMenu(this);
+    // this->addGroupAction = new QAction("Add Group", &contextMenu);
+    // this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
+    // this->copyNodeAction = new QAction("Copy Node", &contextMenu);
+    // this->selectAllItemsInGroupAction = new QAction("Select all Items In this Group", &contextMenu);
+    // contextMenu.addAction(this->addGroupAction);
+    // contextMenu.addAction(this->deleteNodeAction);
+    // contextMenu.addAction(this->copyNodeAction);
+    // contextMenu.addAction(this->selectAllItemsInGroupAction);
+    // connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
+    // connect(this->deleteNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelDeleteNode);
+    // connect(this->copyNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelCopyNode);
+    // connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSelectAllItemsInGroup);
+    // onTreeViewModelUpdateActions();
+    // contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
 
 void MainWindow::onTreeViewModelDeleteNode() {
@@ -1104,68 +1092,28 @@ void MainWindow::onTreeViewModelAddGroup() {
 }
 
 void MainWindow::onTreeViewModelUpdateActions() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    for (const QModelIndex &nodeIndex : nodeIndexList) {
-        QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
-        if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
-            this->addLayerAction->setEnabled(true);
-            this->setLayerVisibleAction->setEnabled(true);
-            this->setLayerUnvisibleAction->setEnabled(true);
-            this->addGroupAction->setEnabled(false);
-            this->deleteNodeAction->setEnabled(false);
-            this->copyNodeAction->setEnabled(false);
-            this->selectAllItemsInGroupAction->setEnabled(false);
-            // SceneController::getIns().setCurrentLayer (model->getNode(nodeIndex)->indexInParent() + 1);
-            return;
-        } else if (type == "Group") {
-            this->addLayerAction->setEnabled(false);
-            this->setLayerVisibleAction->setEnabled(false);
-            this->setLayerUnvisibleAction->setEnabled(false);
-            this->addGroupAction->setEnabled(true);
-            this->deleteNodeAction->setEnabled(true);
-            this->copyNodeAction->setEnabled(false);
-            this->selectAllItemsInGroupAction->setEnabled(true);
-            return;
-        } else if (type == "Item") {
-            this->addLayerAction->setEnabled(false);
-            this->setLayerVisibleAction->setEnabled(false);
-            this->setLayerUnvisibleAction->setEnabled(false);
-            this->addGroupAction->setEnabled(true);
-            this->deleteNodeAction->setEnabled(true);
-            this->copyNodeAction->setEnabled(true);
-            this->selectAllItemsInGroupAction->setEnabled(false);
-            return;
-        }
-    }
+    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    // for (const QModelIndex &nodeIndex : nodeIndexList) {
+    //     QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
+    //     if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
+    //         this->addGroupAction->setEnabled(false);
+    //         this->deleteNodeAction->setEnabled(false);
+    //         this->copyNodeAction->setEnabled(false);
+    //         this->selectAllItemsInGroupAction->setEnabled(false);
+    //         return;
+    //     } else if (type == "Group") {
+    //         this->addGroupAction->setEnabled(true);
+    //         this->deleteNodeAction->setEnabled(true);
+    //         this->copyNodeAction->setEnabled(false);
+    //         this->selectAllItemsInGroupAction->setEnabled(true);
+    //         return;
+    //     } else if (type == "Item") {
+    //         this->addGroupAction->setEnabled(true);
+    //         this->deleteNodeAction->setEnabled(true);
+    //         this->copyNodeAction->setEnabled(true);
+    //         this->selectAllItemsInGroupAction->setEnabled(false);
+    //         return;
+    //     }
+    // }
 }
-
-
-///
-/// test function
-///
-void printResults(const std::vector < cavc::Polyline < double>>& results) {
-    for (size_t i = 0; i < results.size(); ++i) {
-        const cavc::Polyline < double > & polyline = results[i];
-        qDebug() << "Polyline " << i << " (size = " << polyline.size() << "):\n";
-        for (size_t j = 0; j < polyline.size(); ++j) {
-            double x = polyline.vertexes()[j].x();
-            double y = polyline.vertexes()[j].y();
-            double bulge = polyline.vertexes()[j].bulge();
-            qDebug() << "  Vertex " << j << ": (" << x << ", " << y << "), bulge: " << bulge << "\n";
-        }
-        qDebug() << "  Closed: " << (polyline.isClosed() ? "Yes" : "No") << "\n";
-    }
-}
-
-static bool flag = false;
-
-
-
-
-
-
-
-
-
-

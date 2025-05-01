@@ -270,7 +270,7 @@ public:
             double yr = x * sinA + y * cosA;
             return QPointF(xr, yr) + center;
         };
-        for (int i = 0; i <= segments; ++i) {
+        for (int i = 0; i < segments; ++i) {
             double theta = 2.0 * M_PI * i / segments;
             double x = m_radiusX * std::cos(theta);
             double y = m_radiusY * std::sin(theta);
@@ -281,10 +281,11 @@ public:
                 input.addVertex(pt.x(), pt.y(), 0);
             }
         }
-        input.isClosed() = true; // 椭圆是闭合的
         return input;
     }
-    Vertex getVertexInScene(const int index = 0) const override {
+
+    Vertex getVertexInScene(const int index = 0) const override
+    {
         if (index > 1) {
             assert("false index:only 0");
         }
@@ -293,37 +294,36 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-    QPointF getCenterInScene() const override {
+
+    QPointF getCenterInScene() const override
+    {
         auto posOffset = this->pos();
         auto centerPos = this->m_center.point + posOffset;
         // DEBUG_VAR(centerPos);
         return centerPos;
     }
-    QString getName() const override {
-        return "EllipseItem";
-    }
-    double getRadiusX() {
-        return this->m_radiusX;
-    }
-    double getRadiusY() {
-        return this->m_radiusY;
-    }
-    double getRotateAngle() {
-        return this->m_rotateAngle;
-    }
-    uint getVertexCount() const override {
-        return 1;
-    }
-    int type() const override {
-        return GraphicsItemType::Ellipse;
-    }
-    QRectF getBoundingRectBasis() const override {
+
+    QString getName() const override { return "EllipseItem"; }
+
+    double getRadiusX() { return this->m_radiusX; }
+
+    double getRadiusY() { return this->m_radiusY; }
+
+    double getRotateAngle() { return this->m_rotateAngle; }
+
+    uint getVertexCount() const override { return 1; }
+
+    int type() const override { return GraphicsItemType::Ellipse; }
+
+    QRectF getBoundingRectBasis() const override
+    {
         if (!this->m_paintItem) {
             return QRectF();
         }
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
+
 protected:
     QRectF boundingRect() const override {
         if (!this->m_paintItem) {
@@ -344,6 +344,7 @@ protected:
         }
         return newRect;
     }
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         Q_UNUSED(widget);
         // 设置option删去offset线段的选框
