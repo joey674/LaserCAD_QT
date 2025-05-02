@@ -271,8 +271,71 @@ public:
             item->setCenterInScene(QPointF{0, 0});
         }
         this->updateEditRect();
+        this->updateTabWidget();
     }
-
+    void onMirrorHorizontalTriggered()
+    {
+        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+            return;
+        }
+        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+            QPointF center = item->getCenterInScene();
+            auto vertexCount = item->getVertexCount();
+            for (int i = 0; i < vertexCount; i++) {
+                Vertex vertex = item->getVertexInScene(i);
+                auto newX = 2 * center.x() - vertex.point.x();
+                auto newY = vertex.point.y();
+                auto newAngle = -vertex.angle;
+                Vertex newVertex = Vertex{QPointF{newX, newY}, newAngle};
+                item->setVertexInScene(i, newVertex);
+            }
+            if (item->type() == GraphicsItemType::Ellipse) {
+                auto ellipse = static_cast<EllipseItem *>(item.get());
+                auto angle = ellipse->getRotateAngle();
+                auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
+                ellipse->setRotateAngle(mirroredAngle);
+            } else if (item->type() == GraphicsItemType::Spiral) {
+            }
+    }
+    this->updateEditRect();
+    this->updateTabWidget();
+};
+void onMirrorVerticalTriggered()
+{
+    if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        return;
+    }
+    for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+        QPointF center = item->getCenterInScene();
+        auto vertexCount = item->getVertexCount();
+        for (int i = 0; i < vertexCount; i++) {
+            Vertex vertex = item->getVertexInScene(i);
+            auto newY = 2 * center.y() - vertex.point.y();
+            auto newX = vertex.point.x();
+            auto newAngle = -vertex.angle;
+            Vertex newVertex = Vertex{QPointF{newX, newY}, newAngle};
+            item->setVertexInScene(i, newVertex);
+        }
+        if (item->type() == GraphicsItemType::Ellipse) {
+            auto ellipse = static_cast<EllipseItem *>(item.get());
+            auto angle = ellipse->getRotateAngle();
+            auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
+            ellipse->setRotateAngle(mirroredAngle);
+        }
+    }
+    this->updateEditRect();
+    this->updateTabWidget();
+};
+void onAlignTriggered()
+{
+    if (EditController::getIns().m_currentEditItemGroup.size() <= 2) {
+        return;
+    }
+    for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+    }
+    this->updateEditRect();
+    this->updateTabWidget();
+};
     /// \brief 按钮回调 负责剪切 拷贝 删除 操作editItemGroup/copyCutItemGroup
     ///
     void onDeleteItemsTriggered() {

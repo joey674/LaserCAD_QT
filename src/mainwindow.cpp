@@ -1039,17 +1039,17 @@ void MainWindow::onCenterButtonClicked() {
 
 void MainWindow::onMirrorHorizontalButtonClicked() {
     setEditMode();
-    EditController::getIns().onCenterToOriginTriggered();
+    EditController::getIns().onMirrorHorizontalTriggered();
 }
 
 void MainWindow::onMirrorVerticalButtonClicked() {
     setEditMode();
-    EditController::getIns().onCenterToOriginTriggered();
+    EditController::getIns().onMirrorVerticalTriggered();
 }
 
 void MainWindow::onAlignButtonClicked() {
     setEditMode();
-    EditController::getIns().onCenterToOriginTriggered();
+    EditController::getIns().onAlignTriggered();
 }
 
 void MainWindow::onDeleteButtonClicked() {

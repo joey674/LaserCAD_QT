@@ -225,7 +225,8 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
                             | Qt::ItemIsDropEnabled
                             | QAbstractItemModel::flags(index);
         } else {
-            FATAL_MSG("Unknown");
+            WARN_VAR(node->property(TreeNodePropertyIndex::Type));
+            return Qt::NoItemFlags;
         }
     }
     //第1列

@@ -32,6 +32,7 @@
         <file>loopButton.png</file>
         <file>mirrorHorizontalButton.png</file>
         <file>mirrorVerticalButton.png</file>
+        <file>alignButton.png</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>
