@@ -10,9 +10,10 @@
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
 
-class GraphicsItem: public QGraphicsItem {
+class GraphicsItem: /*public QObject,*/ public QGraphicsItem {
+    // Q_OBJECT
 public:
-    GraphicsItem() {
+    GraphicsItem(/*QObject *parent = nullptr*/) { /*: QObject(parent)*/
         this->m_uuid = GenerateUUID();
         this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     };
@@ -67,8 +68,7 @@ public:
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() = 0;
     /// \brief setPen
     /// \param
-    bool setColor(QColor color)
-    {
+    bool setColor(QColor color) {
         this->m_pen.setColor(color);
         this->animate();
         return true;
@@ -125,8 +125,12 @@ public:
     virtual QPointF getCenterInScene() const = 0;
     virtual QString getName() const;
     const QString getUUID() const;
-    const QColor getColor() const { return this->m_pen.color(); }
-    const QPen getPen() const { return this->m_pen; }
+    const QColor getColor() const {
+        return this->m_pen.color();
+    }
+    const QPen getPen() const {
+        return this->m_pen;
+    }
     virtual uint getVertexCount() const = 0;
     virtual QRectF getBoundingRectBasis() const = 0;
     const MarkParams getMarkParams() const {

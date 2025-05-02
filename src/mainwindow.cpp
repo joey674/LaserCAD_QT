@@ -92,7 +92,8 @@ void MainWindow::initGraphicsView() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
         return pen;
-    }();
+    }
+    ();
     QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
     QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
     xAxis->setPen(pen);
@@ -333,6 +334,41 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(breakOffsetItemButton);
     connect(breakOffsetItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakOffsetItemButtonClicked);
+    /// 粘贴 复制 剪切
+    ///
+    ///
+    QToolButton *cutButton = UiManager::getIns().UI()->cutButton;
+    cutButton->setIcon(QIcon(":/button/cutButton.png"));
+    cutButton->setIconSize(QSize(30, 30));
+    cutButton->setStyleSheet(buttonStyle);
+    cutButton->setCheckable(true);
+    cutButton->setAutoExclusive(false);
+    cutButton->setToolTip("");
+    UiManager::getIns().registerToolButton(cutButton);
+    connect(cutButton, &QToolButton::clicked,
+            this, &MainWindow::onCutButtonClicked);
+    //
+    QToolButton *copyButton = UiManager::getIns().UI()->copyButton;
+    copyButton->setIcon(QIcon(":/button/copyButton.png"));
+    copyButton->setIconSize(QSize(30, 30));
+    copyButton->setStyleSheet(buttonStyle);
+    copyButton->setCheckable(true);
+    copyButton->setAutoExclusive(false);
+    copyButton->setToolTip("");
+    UiManager::getIns().registerToolButton(copyButton);
+    connect(copyButton, &QToolButton::clicked,
+            this, &MainWindow::onCopyButtonClicked);
+    //
+    QToolButton *pasteButton = UiManager::getIns().UI()->pasteButton;
+    pasteButton->setIcon(QIcon(":/button/pasteButton.png"));
+    pasteButton->setIconSize(QSize(30, 30));
+    pasteButton->setStyleSheet(buttonStyle);
+    pasteButton->setCheckable(true);
+    pasteButton->setAutoExclusive(false);
+    pasteButton->setToolTip("");
+    UiManager::getIns().registerToolButton(pasteButton);
+    connect(pasteButton, &QToolButton::clicked,
+            this, &MainWindow::onPasteButtonClicked);
 }
 
 void MainWindow::initLayerButton() {
@@ -955,7 +991,7 @@ void MainWindow::onCenterButtonClicked() {
 
 void MainWindow::onDeleteButtonClicked() {
     setEditMode();
-    EditController::getIns().onDeleteTriggered ();
+    EditController::getIns().onDeleteItemsTriggered ();
 }
 
 void MainWindow::onBreakCopiedItemButtonClicked() {
@@ -966,6 +1002,21 @@ void MainWindow::onBreakCopiedItemButtonClicked() {
 void MainWindow::onBreakOffsetItemButtonClicked() {
     setEditMode();
     EditController::getIns().onBreakOffsetItemTriggered();
+}
+
+void MainWindow::onCutButtonClicked() {
+    setEditMode();
+    EditController::getIns().onCutItemsTriggered();
+}
+
+void MainWindow::onCopyButtonClicked() {
+    setEditMode();
+    EditController::getIns().onCopyItemsTriggered();
+}
+
+void MainWindow::onPasteButtonClicked() {
+    setEditMode();
+    EditController::getIns().onPasteItemsTriggered();
 }
 
 void MainWindow::onAddLayerButtonClicked() {

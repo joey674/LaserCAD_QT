@@ -22,7 +22,7 @@
 class Manager {
 private:
     std::unordered_map < UUID, std::shared_ptr < GraphicsItem>> m_itemMap;
-
+    std::vector < std::shared_ptr < GraphicsItem>> m_deletedItemList;
 public:
     /// \brief addItem 添加graphicitem
     UUID addItem(std::shared_ptr < GraphicsItem > ptr);
@@ -64,8 +64,8 @@ public:
     void itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr);
     void itemMapErase(UUID uuid);
     bool itemMapExist(UUID uuid);
-/// \brief setVisibleSync 设置图层以及其下所有对象的visible是同步的
-    void setVisibleSync();
+/// \brief setVisibleSync 设置图层以及其下所有对象的visible/color/selectable是同步的
+    void setLayerItemStateSync();
 
 private:
     static Manager ins;

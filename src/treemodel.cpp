@@ -105,9 +105,9 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
     }
     // 第3列设置当前layer颜色
     else if (nodeIndex.column() == 3 && role == Qt::BackgroundRole && itemType == "Layer") {
-        QColor color = value.value<QColor>();
+        QColor color = value.value < QColor > ();
         DEBUG_VAR(color);
-        std::vector<TreeNode *> nodeList = this->getAllChildNodes(nodeIndex);
+        std::vector < TreeNode * > nodeList = this->getAllChildNodes(nodeIndex);
         nodeList.push_back(node);
         for (const auto node : nodeList) {
             auto childUuid = node->property(TreeNodePropertyIndex::UUID).toString();
@@ -116,7 +116,6 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         emit dataChanged(nodeIndex, nodeIndex, {Qt::BackgroundRole});
         return true;
     }
-
     return false;
 }
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -195,28 +194,35 @@ bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex 
     const bool success = nodeItem->removeChilds(removePosition, nodeCount);
     endRemoveRows();
     //     DEBUG_MSG("after moved");
-    Manager::getIns().setVisibleSync();
+    Manager::getIns().setLayerItemStateSync();
     return success;
 }
 Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
     if (!index.isValid()) {
         return Qt::NoItemFlags;
     }
-    Qt::ItemFlags defaultFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+    Qt::ItemFlags defaultFlags = Qt::ItemIsEnabled;
     auto node = getNode(index);
     // 第0列
     if (index.column() == 0) {
         // 如果是Layer节点, 不允许拖拽移动和编辑,但是可以接受drop
         if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
-            defaultFlags |= Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+            defaultFlags |= Qt::ItemIsDropEnabled
+                            | QAbstractItemModel::flags(index)
+                            | Qt::ItemIsSelectable;
         }
         // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
         else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Item")) {
-            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsEditable
-                            | QAbstractItemModel::flags(index);
+            defaultFlags |= Qt::ItemIsDragEnabled
+                            | Qt::ItemIsEditable
+                            | QAbstractItemModel::flags(index)
+                            | Qt::ItemIsSelectable;
         } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Group")) {
-            defaultFlags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEditable
-                            | QAbstractItemModel::flags(index);
+            defaultFlags |= Qt::ItemIsDragEnabled
+                            | Qt::ItemIsDropEnabled
+                            | Qt::ItemIsEditable
+                            | QAbstractItemModel::flags(index)
+                            | Qt::ItemIsSelectable;
         } else {
             FATAL_MSG("Unknown");
         }

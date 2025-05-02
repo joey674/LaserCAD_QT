@@ -56,7 +56,7 @@
          <property name="maximumSize">
           <size>
            <width>400</width>
-           <height>1000</height>
+           <height>400</height>
           </size>
          </property>
          <widget class="QWidget" name="tab">
@@ -110,14 +110,48 @@
           </widget>
          </item>
          <item>
-          <widget class="QToolButton" name="setLayerColorButton">
+          <spacer name="horizontalSpacer_6">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="cutButton">
            <property name="text">
-            <string>setLayerColorButton</string>
+            <string>cutButton</string>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_6">
+          <widget class="QToolButton" name="copyButton">
+           <property name="text">
+            <string>copyButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="pasteButton">
+           <property name="text">
+            <string>pasteButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="deleteButton">
+           <property name="text">
+            <string>deleteButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
@@ -158,13 +192,6 @@
            </property>
            <property name="text">
             <string>center</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="deleteButton">
-           <property name="text">
-            <string>delete</string>
            </property>
           </widget>
          </item>

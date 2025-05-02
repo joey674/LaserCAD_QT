@@ -8,14 +8,18 @@
 #include "manager.h"
 #include "polylineitem.h"
 #include "protocol.h"
+#include <QTimer>
 #include <polylinecombine.hpp>
 #include <qgraphicsitem.h>
+#include <QCoreApplication>
 
 class EditController {
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
     std::unique_ptr < EditRect > m_editRect;
+    std::vector < std::shared_ptr < GraphicsItem> > m_currentCutCopyItemGroup
+        = std::vector < std::shared_ptr < GraphicsItem> > ();
     /// ********************
     /// 更新对应的编辑Widget
     /// ********************
@@ -230,7 +234,7 @@ public:
         this->updateEditRect();
     }
 
-    /// \brief onBreakOffsetTriggered
+    /// \brief 按钮回调 直接操作当前editItemGroup;
     ///
     void onBreakOffsetItemTriggered() {
         if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
@@ -245,8 +249,6 @@ public:
             Manager::getIns().setItemSelectable(uuid, true);
         }
     }
-    /// \brief onBreakCopiedItemTriggered
-    ///
     void onBreakCopiedItemTriggered() {
         if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
             return;
@@ -260,8 +262,6 @@ public:
             Manager::getIns().setItemSelectable(uuid, true);
         }
     }
-    /// \brief onCenterToOriginTrigger 回归物体到中心
-    ///
     void onCenterToOriginTriggered() {
         if (EditController::getIns().m_currentEditItemGroup.empty ()) {
             return;
@@ -271,28 +271,78 @@ public:
         }
         this->updateEditRect();
     }
-    void onDeleteTriggered() {
+
+    /// \brief 按钮回调 负责剪切 拷贝 删除 操作editItemGroup/copyCutItemGroup
+    ///
+    void onDeleteItemsTriggered() {
         //
         if (EditController::getIns().m_currentEditItemGroup.empty()) {
             return;
         }
         // 在manager中删除; 先安全只读,不动 item 对象,最后在一起删除; 这里不要边遍历边删
-        //  注意 这里不用删除scene; 会自动处理掉;
         std::vector < QString > uuids;
         for (const auto &item : EditController::getIns().m_currentEditItemGroup) {
             uuids.push_back(item->getUUID());
         }
         for (const auto &uuid : uuids) {
+            // 一个clearSelection的bug,在remove之后还触发了对象的回调 导致空指针
+            auto item = Manager::getIns().itemMapFind(uuid);
+            SceneController::getIns().scene->removeItem(item.get());//  在场景中删除
             Manager::getIns().deleteItem(uuid);
+            DEBUG_MSG(uuid + " is deleted");
         }
         // 清除editController中的编辑列表
         EditController::getIns().m_currentEditItemGroup.clear();
         // DEBUG
-        QGraphicsScene *scene = SceneController::getIns().scene;
-        const auto &items = scene->items();
-        DEBUG_MSG("Scene has" + QString::number (items.size()) + "items:");
+        const auto &items = SceneController::getIns().scene->items();
+        INFO_MSG("Scene has " + QString::number(items.size() - 11) + " items");
+        //
+        this->updateEditRect();
     }
-
+    void onCutItemsTriggered() {
+        //
+        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+            return;
+        }
+        //
+        this->m_currentCutCopyItemGroup.clear();
+        for (const auto& item : this->m_currentEditItemGroup) {
+            auto newItem = item->clone();
+            this->m_currentCutCopyItemGroup.push_back(newItem);
+        }
+        onDeleteItemsTriggered(); // 触发deletetriggered 删除当前编辑对象
+        //
+        this->updateEditRect();
+    }
+    void onCopyItemsTriggered() {
+        //
+        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+            return;
+        }
+        //
+        this->m_currentCutCopyItemGroup.clear();
+        for (const auto& item : this->m_currentEditItemGroup) {
+            auto newItem = item->clone();
+            this->m_currentCutCopyItemGroup.push_back(newItem);
+        }
+        //
+        this->updateEditRect();
+    }
+    void onPasteItemsTriggered() {
+        //
+        if (EditController::getIns().m_currentCutCopyItemGroup.empty()) {
+            return;
+        }
+        //
+        for (const auto& item : this->m_currentCutCopyItemGroup) {
+            auto newItem = item->clone();
+            newItem->setColor(SceneController::getIns().getCurrentLayerColor());
+            SceneController::getIns().scene->addItem(newItem.get());
+            Manager::getIns().addItem(std::move (newItem));
+        }
+        //
+        this->updateEditRect();
+    }
 /// ********************
 /// 在treeView和Scene中控制当前编辑对象的回调
 /// ********************

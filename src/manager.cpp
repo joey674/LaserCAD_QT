@@ -95,12 +95,11 @@ std::vector < UUID > Manager::getChildItems(UUID uuid) {
 
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
-    auto it = m_itemMap.find(uuid);
-    if (it == m_itemMap.end()) {
+    if (!itemMapExist(uuid)) {
         WARN_VAR(uuid);
         FATAL_MSG("fail to find item by uuid");
     }
-    return it->second;
+    return m_itemMap.find(uuid)->second;
 }
 
 void Manager::itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr) {
@@ -108,6 +107,10 @@ void Manager::itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr) {
 }
 
 void Manager::itemMapErase(UUID uuid) {
+    if (!itemMapExist(uuid)) {
+        WARN_VAR(uuid);
+        FATAL_MSG("fail to find item by uuid");
+    }
     m_itemMap.erase(uuid);
 }
 
@@ -120,7 +123,7 @@ bool Manager::itemMapExist(UUID uuid) {
     return true;
 }
 
-void Manager::setVisibleSync() {
+void Manager::setLayerItemStateSync() {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     int layerCount = model->rowCount(); // 根节点下的所有一层节点
     for (int row = 0; row < layerCount; ++row) {
@@ -139,13 +142,17 @@ void Manager::setVisibleSync() {
         if (childNodes.empty()) {
             continue;
         }
-        // 获取layer的可视状态
+        // 获取layer的状态
         auto layerUuid = layerNode->property(TreeNodePropertyIndex::UUID).toString();
         bool isVisible = this->itemMapFind(layerUuid)->isVisible();
+        QColor color = this->itemMapFind(layerUuid)->getColor();
+        bool isCurLayer = SceneController::getIns().getCurrentLayer() == layerUuid;
         // 应用到所有子图形
         for (auto *node : childNodes) {
             auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
             this->setItemVisible(uuid, isVisible);
+            this->itemMapFind(uuid)->setColor(color);
+            this->setItemSelectable(uuid, isCurLayer);
         }
     }
 }
@@ -162,7 +169,7 @@ void Manager::deleteItem(QString uuid) {
     auto allNodes = model->getAllChildNodes(QModelIndex());
     for (const auto& node : allNodes) {
         if(uuid == node->property(TreeNodePropertyIndex::UUID).toString()) {
-            //先删除目标节点下所有子节点;
+            // 先删除目标节点下所有子节点;
             // 由于getAllChildNodes是顺序添加 那删除就倒序删除就不会出现先删父节点再删子节点
             auto nodefamily = model->getAllChildNodes(model->getIndex(node));
             std::reverse(nodefamily.begin(), nodefamily.end());
@@ -172,15 +179,26 @@ void Manager::deleteItem(QString uuid) {
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
                     FATAL_MSG("fail to removeRow from childNode");
                 }
-                itemMapErase(childUuid);
+                /// TODO-------------------------------------
+                /// 暂时不释放资源
+                auto item = itemMapFind(childUuid);
+                item->setVisible(false);
+                this->itemMapErase(childUuid);
+                this->m_deletedItemList.push_back(std::move (item));
+                /// TODO-------------------------------------
             }
             // 删去目标节点;
             auto parentNodeIndex = model->getIndex(node->parent());
             if (!model->removeRows(node->indexInParent(), 1, parentNodeIndex)) {
                 FATAL_MSG("fail to removeRow from parentNode");
             }
-            itemMapErase(uuid);
-            //
+            /// TODO-------------------------------------
+            /// 暂时不释放资源
+            auto item = itemMapFind(uuid);
+            item->setVisible(false);
+            this->itemMapErase(uuid);
+            this->m_deletedItemList.push_back(std::move (item));
+            /// TODO-------------------------------------
             break;
         }
     }

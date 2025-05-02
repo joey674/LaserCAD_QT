@@ -8,12 +8,15 @@
 #include <QMainWindow>
 #include <QApplication>
 #include <QPainter>
+#include "logger.h"
 
-class GraphicsView: public QGraphicsView
-{
+class GraphicsView: public QGraphicsView {
     Q_OBJECT
 public:
     explicit GraphicsView(QWidget *parent = nullptr) {};
+    ~GraphicsView() {
+        WARN_MSG( "GraphicsView destructed");
+    }
 
 protected:
     void mousePressEvent(QMouseEvent *) override;

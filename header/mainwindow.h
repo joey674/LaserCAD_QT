@@ -66,9 +66,13 @@ private slots: // 编辑工具按钮
     void onDeleteButtonClicked();
     void onDragSceneButtonClicked();
     void onUndoButtonClicked() {}
-    void onRedoButtonClicked() {};
+    void onRedoButtonClicked() {}
     void onBreakCopiedItemButtonClicked();
     void onBreakOffsetItemButtonClicked();
+    //
+    void onCutButtonClicked();
+    void onCopyButtonClicked();
+    void onPasteButtonClicked();
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();

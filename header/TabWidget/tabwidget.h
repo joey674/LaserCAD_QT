@@ -584,7 +584,7 @@ public:
         addField("DelayParams: polygonDelay", 0);
         // Confirm 按钮
         QPushButton* ConfirmBtn = new QPushButton("Confirm");
-        mainLayout->addWidget(ConfirmBtn);
+        formLayout->addRow(ConfirmBtn);
         connect(ConfirmBtn, &QPushButton::clicked, tab, [ = ]() {
             std::vector < MultiEditParam > result;
             for (auto it = fields.begin(); it != fields.end(); ++it) {
