@@ -53,28 +53,33 @@ void SceneController::addLayer() {
         FATAL_MSG("fail insert layer");
     }
     const QModelIndex layerNodeIndex = model->index(this->layerCount(), 0, QModelIndex());
-    QString name = "Layer" + QString::number(this->layerCount() + 1);
+    QString name = "Layer" + QString::number(this->m_layerCreatedCount + 1);
     QString type = "Layer";
-    auto uuid = Manager::getIns().addItem(layerNodeIndex, name, type);
+    auto uuid = Manager::getIns().addItem( name, type, layerNodeIndex);
     // 添加到sceneController里
     this->m_layerList.push_back(uuid);
+    // 统计总共创建过几个layer
+    this->m_layerCreatedCount ++;
 }
 
 void SceneController::deleteCurrentLayer() {
-    // if (this->layerCount() == 1) {
-    //     WARN_MSG("can not delete last layer");
-    // }
-    // // 删除到treemodel里/manager里
-    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    // auto layerIndex = model->getIndex(this->m_currentLayer);
-    // model->removeRow(layerIndex.row(), layerIndex.parent());
-    // // 删除sceneController里
-    // this->m_layerList.erase(this->m_currentLayer);
-    // this->m_currentLayer = this->m_layerList[0];
+    if (this->layerCount() == 1) {
+        WARN_MSG("can not delete last layer");
+        return;
+    }
+    // 删除treemodel里/manager里
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    auto layerIndex = model->getIndex(this->m_currentLayer);
+    Manager::getIns().deleteItem(this->getCurrentLayer());
+    // 删除sceneController里
+    auto it = std::find(this->m_layerList.begin(), this->m_layerList.end(), this->m_currentLayer);
+    if (it != this->m_layerList.end()) {
+        this->m_layerList.erase(it);
+    }
+    this->m_currentLayer = this->m_layerList[0];
 }
 
-QColor SceneController::getCurrentLayerColor() const
-{
+QColor SceneController::getCurrentLayerColor() const {
     auto uuid = this->m_currentLayer;
     auto color = Manager::getIns().itemMapFind(uuid)->getColor();
     return color;

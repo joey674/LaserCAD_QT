@@ -202,7 +202,7 @@ struct MatrixCopyParams {
  *****************************************************************************/
 enum class TreeNodePropertyIndex : int {
     Name = 0,       // QString
-    Type = 1,         // QString
+    Type = 1,         // QString: Layer/Group/Item/Signal
     UUID = 2,        // QString
 };
 

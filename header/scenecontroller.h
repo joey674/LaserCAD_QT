@@ -25,7 +25,8 @@ public:
 
 public:
     UUID m_currentLayer;
-    UUID m_layerCount;
+    int m_layerCreatedCount = 1;
+
     std::vector < UUID > m_layerList;
     /// \brief setCurrentLayer 设置当前layer; 同时还会做一些操作: 设定只有当前图层物体可动,其他不可动; 以及其他图层颜色为display;
     /// \param layer

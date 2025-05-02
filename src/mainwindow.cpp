@@ -369,6 +369,40 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(pasteButton);
     connect(pasteButton, &QToolButton::clicked,
             this, &MainWindow::onPasteButtonClicked);
+    //
+    //
+    QToolButton *mirrorHorizontalButton = UiManager::getIns().UI()->mirrorHorizontalButton;
+    mirrorHorizontalButton->setIcon(QIcon(":/button/mirrorHorizontalButton.png"));
+    mirrorHorizontalButton->setIconSize(QSize(30, 30));
+    mirrorHorizontalButton->setStyleSheet(buttonStyle);
+    mirrorHorizontalButton->setCheckable(true);
+    mirrorHorizontalButton->setAutoExclusive(false);
+    mirrorHorizontalButton->setToolTip("");
+    UiManager::getIns().registerToolButton(mirrorHorizontalButton);
+    connect(mirrorHorizontalButton, &QToolButton::clicked,
+            this, &MainWindow::onMirrorHorizontalButtonClicked);
+    //
+    QToolButton *mirrorVerticalButton = UiManager::getIns().UI()->mirrorVerticalButton;
+    mirrorVerticalButton->setIcon(QIcon(":/button/mirrorVerticalButton.png"));
+    mirrorVerticalButton->setIconSize(QSize(30, 30));
+    mirrorVerticalButton->setStyleSheet(buttonStyle);
+    mirrorVerticalButton->setCheckable(true);
+    mirrorVerticalButton->setAutoExclusive(false);
+    mirrorVerticalButton->setToolTip("");
+    UiManager::getIns().registerToolButton(mirrorVerticalButton);
+    connect(mirrorVerticalButton, &QToolButton::clicked,
+            this, &MainWindow::onMirrorVerticalButtonClicked);
+    //
+    QToolButton *alignButton = UiManager::getIns().UI()->alignButton;
+    alignButton->setIcon(QIcon(":/button/alignButton.png"));
+    alignButton->setIconSize(QSize(30, 30));
+    alignButton->setStyleSheet(buttonStyle);
+    alignButton->setCheckable(true);
+    alignButton->setAutoExclusive(false);
+    alignButton->setToolTip("");
+    UiManager::getIns().registerToolButton(alignButton);
+    connect(alignButton, &QToolButton::clicked,
+            this, &MainWindow::onAlignButtonClicked);
 }
 
 void MainWindow::initLayerButton() {
@@ -416,10 +450,10 @@ void MainWindow::initHardwareButton() {
     digitalInButton->setAutoExclusive(false);
     digitalInButton->setToolTip("");
     UiManager::getIns().registerToolButton(digitalInButton);
-    // connect(signalInButton,
-    //         &QToolButton::clicked,
-    //         this,
-    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(digitalInButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onDigitalInButtonClicked);
     //
     QToolButton *digitalOutButton = UiManager::getIns().UI()->digitalOutButton;
     digitalOutButton->setIcon(QIcon(":/button/digitalOutButton.png"));
@@ -429,10 +463,10 @@ void MainWindow::initHardwareButton() {
     digitalOutButton->setAutoExclusive(false);
     digitalOutButton->setToolTip("");
     UiManager::getIns().registerToolButton(digitalOutButton);
-    // connect(breakOffsetItemButton,
-    //         &QToolButton::clicked,
-    //         this,
-    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(digitalOutButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onDigitalOutButtonClicked);
     //
     QToolButton *doPauseButton = UiManager::getIns().UI()->doPauseButton;
     doPauseButton->setIcon(QIcon(":/button/doPauseButton.png"));
@@ -442,10 +476,10 @@ void MainWindow::initHardwareButton() {
     doPauseButton->setAutoExclusive(false);
     doPauseButton->setToolTip("");
     UiManager::getIns().registerToolButton(doPauseButton);
-    // connect(breakOffsetItemButton,
-    //         &QToolButton::clicked,
-    //         this,
-    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(doPauseButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onDoPauseButtonClicked);
     //
     QToolButton *delayTimeButton = UiManager::getIns().UI()->delayTimeButton;
     delayTimeButton->setIcon(QIcon(":/button/delayTimeButton.png"));
@@ -455,10 +489,11 @@ void MainWindow::initHardwareButton() {
     delayTimeButton->setAutoExclusive(false);
     delayTimeButton->setToolTip("");
     UiManager::getIns().registerToolButton(delayTimeButton);
-    // connect(breakOffsetItemButton,
-    //         &QToolButton::clicked,
-    //         this,
-    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(delayTimeButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onDelayTimeButtonClicked);
+    //
     QToolButton *motionButton = UiManager::getIns().UI()->motionButton;
     motionButton->setIcon(QIcon(":/button/motionButton.png"));
     motionButton->setIconSize(QSize(30, 30));
@@ -467,10 +502,23 @@ void MainWindow::initHardwareButton() {
     motionButton->setAutoExclusive(false);
     motionButton->setToolTip("");
     UiManager::getIns().registerToolButton(motionButton);
-    // connect(breakOffsetItemButton,
-    //         &QToolButton::clicked,
-    //         this,
-    //         &MainWindow::onBreakOffsetItemButtonClicked);
+    connect(motionButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onMotionButtonClicked);
+    //
+    QToolButton *loopButton = UiManager::getIns().UI()->loopButton;
+    loopButton->setIcon(QIcon(":/button/loopButton.png"));
+    loopButton->setIconSize(QSize(30, 30));
+    loopButton->setStyleSheet(buttonStyle);
+    loopButton->setCheckable(true);
+    loopButton->setAutoExclusive(false);
+    loopButton->setToolTip("");
+    UiManager::getIns().registerToolButton(loopButton);
+    connect(loopButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onLoopButtonClicked);
 }
 
 void MainWindow::initStatusBar() {
@@ -989,6 +1037,21 @@ void MainWindow::onCenterButtonClicked() {
     EditController::getIns().onCenterToOriginTriggered();
 }
 
+void MainWindow::onMirrorHorizontalButtonClicked() {
+    setEditMode();
+    EditController::getIns().onCenterToOriginTriggered();
+}
+
+void MainWindow::onMirrorVerticalButtonClicked() {
+    setEditMode();
+    EditController::getIns().onCenterToOriginTriggered();
+}
+
+void MainWindow::onAlignButtonClicked() {
+    setEditMode();
+    EditController::getIns().onCenterToOriginTriggered();
+}
+
 void MainWindow::onDeleteButtonClicked() {
     setEditMode();
     EditController::getIns().onDeleteItemsTriggered ();
@@ -1017,6 +1080,36 @@ void MainWindow::onCopyButtonClicked() {
 void MainWindow::onPasteButtonClicked() {
     setEditMode();
     EditController::getIns().onPasteItemsTriggered();
+}
+
+void MainWindow::onDigitalInButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("DigitalIn", "Signal");
+}
+
+void MainWindow::onDigitalOutButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("DigitalOut", "Signal");
+}
+
+void MainWindow::onDoPauseButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("DoPause", "Signal");
+}
+
+void MainWindow::onDelayTimeButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("DelayTime", "Signal");
+}
+
+void MainWindow::onMotionButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("Motion", "Signal");
+}
+
+void MainWindow::onLoopButtonClicked() {
+    setEditMode();
+    Manager::getIns().addItem("Loop", "Signal");
 }
 
 void MainWindow::onAddLayerButtonClicked() {
@@ -1134,7 +1227,7 @@ void MainWindow::onTreeViewModelAddGroup() {
     const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
     QString name = "Group";
     QString type = "Group";
-    Manager::getIns().addItem(groupIndex, name, type);
+    Manager::getIns().addItem( name, type, groupIndex);
     // 把节点列表移动到group节点下
     model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
     // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;

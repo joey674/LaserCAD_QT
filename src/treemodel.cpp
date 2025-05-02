@@ -201,28 +201,29 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
     if (!index.isValid()) {
         return Qt::NoItemFlags;
     }
-    Qt::ItemFlags defaultFlags = Qt::ItemIsEnabled;
+    Qt::ItemFlags defaultFlags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
     auto node = getNode(index);
     // 第0列
     if (index.column() == 0) {
         // 如果是Layer节点, 不允许拖拽移动和编辑,但是可以接受drop
         if (node->property(TreeNodePropertyIndex::Type) == QVariant("Layer")) {
             defaultFlags |= Qt::ItemIsDropEnabled
-                            | QAbstractItemModel::flags(index)
-                            | Qt::ItemIsSelectable;
+                            | QAbstractItemModel::flags(index);
         }
         // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
         else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Item")) {
             defaultFlags |= Qt::ItemIsDragEnabled
                             | Qt::ItemIsEditable
-                            | QAbstractItemModel::flags(index)
-                            | Qt::ItemIsSelectable;
+                            | QAbstractItemModel::flags(index);
         } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Group")) {
             defaultFlags |= Qt::ItemIsDragEnabled
                             | Qt::ItemIsDropEnabled
                             | Qt::ItemIsEditable
-                            | QAbstractItemModel::flags(index)
-                            | Qt::ItemIsSelectable;
+                            | QAbstractItemModel::flags(index);
+        } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Signal")) {
+            defaultFlags |= Qt::ItemIsDragEnabled
+                            | Qt::ItemIsDropEnabled
+                            | QAbstractItemModel::flags(index);
         } else {
             FATAL_MSG("Unknown");
         }
@@ -317,7 +318,7 @@ void TreeModel::setupExemplarModelData() {
 void TreeModel::setupDefaultModelData() {
     m_rootItem->insertChilds(m_rootItem->childCount(), 1);
     auto layer1 = m_rootItem->child(m_rootItem->childCount() - 1);
-    auto uuid = Manager::getIns().addItem(getIndex(layer1), "Layer1", "Layer");
+    auto uuid = Manager::getIns().addItem("Layer1", "Layer", getIndex(layer1));
     SceneController::getIns().initLayerUuid(uuid);
 }
 void TreeModel::setupModelData(const QList < QStringView > &lines) {

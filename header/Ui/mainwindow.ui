@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1253</width>
+    <width>1412</width>
     <height>752</height>
    </rect>
   </property>
@@ -114,6 +114,9 @@
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
@@ -155,6 +158,9 @@
            <property name="orientation">
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
            <property name="sizeHint" stdset="0">
             <size>
              <width>40</width>
@@ -192,6 +198,27 @@
            </property>
            <property name="text">
             <string>center</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="mirrorHorizontalButton">
+           <property name="text">
+            <string>mirrorHorizontalButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="mirrorVerticalButton">
+           <property name="text">
+            <string>mirrorVerticalButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="alignButton">
+           <property name="text">
+            <string>alignButton</string>
            </property>
           </widget>
          </item>
@@ -247,7 +274,7 @@
             <enum>Qt::Orientation::Horizontal</enum>
            </property>
            <property name="sizeType">
-            <enum>QSizePolicy::Policy::Fixed</enum>
+            <enum>QSizePolicy::Policy::Expanding</enum>
            </property>
            <property name="sizeHint" stdset="0">
             <size>
@@ -508,6 +535,29 @@
             <string>delayTimeButton</string>
            </property>
           </widget>
+         </item>
+         <item>
+          <widget class="QToolButton" name="loopButton">
+           <property name="text">
+            <string>loopButton</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Policy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
          </item>
          <item>
           <widget class="QToolButton" name="motionButton">

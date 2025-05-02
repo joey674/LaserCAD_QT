@@ -153,7 +153,7 @@ void EditController::onTreeViewModelSelectionChanged(
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         if (type == "Group") {
             groupIndexes.insert(idx);
-        } else if (type == "Item") {
+        } else if (type == "Item" || type == "Signal") {
             itemUUIDs.insert(model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString());
         }
     }
@@ -184,10 +184,14 @@ void EditController::onTreeViewModelSelectionChanged(
     // 处理select对象
     for (const QModelIndex &idx : selected.indexes()) {
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
+        UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
+        auto item = Manager::getIns().itemMapFind(uuid);
         if (type == "Layer") {
-        } else if (type == "Item") {
-            UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
-            Manager::getIns().itemMapFind(uuid)->setSelected(true);
+        } else if (type == "Item" ) {
+            item->setSelected(true);
+        } else if (type == "Signal") {
+            // 设置curEditItemGroup,添加item
+            this->m_currentEditItemGroup.push_back(item);
         }
     }
     // 处理deselect对象
@@ -196,9 +200,18 @@ void EditController::onTreeViewModelSelectionChanged(
             continue;
         }
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
-        if (type == "Item") {
-            UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
-            Manager::getIns().itemMapFind(uuid)->setSelected(false);
+        UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
+        auto item = Manager::getIns().itemMapFind(uuid);
+        if (type == "Item" ) {
+            item->setSelected(false);
+        } else if (type == "Signal") {
+            // 设置curEditItemGroup,移除item
+            auto it = std::remove_if(this->m_currentEditItemGroup.begin(),
+                                     this->m_currentEditItemGroup.end(),
+            [&](const std::shared_ptr < GraphicsItem > &ptr) {
+                return ptr == item;
+            });
+            this->m_currentEditItemGroup.erase(it, this->m_currentEditItemGroup.end());
         }
     }
 }
@@ -213,9 +226,6 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     Q_ASSERT(index.isValid());
     //
     if (selected) {
-        //
-        // item->m_editRect = new EditRect(item.get ());
-        // SceneController::getIns().scene->addItem(item->m_editRect);
         // 设置treeview中选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
@@ -223,18 +233,12 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         // 设置curEditItemGroup,添加item
         this->m_currentEditItemGroup.push_back(item);
     } else {
-        // //
-        // if (item->m_editRect) {
-        //     SceneController::getIns().scene->removeItem(item->m_editRect);
-        //     SceneController::getIns().scene->removeItem(item->m_editRect);
-        //     item->m_editRect = nullptr;
-        // }
         // 设置treeview中取消选中
         treeView->selectionModel()->select(index,
                                            QItemSelectionModel::Deselect
                                            | QItemSelectionModel::Rows);
         treeView->expandToIndex(index);
-        // 设置curEditItemGroup,删除item
+        // 设置curEditItemGroup,移除item
         auto it = std::remove_if(this->m_currentEditItemGroup.begin(),
                                  this->m_currentEditItemGroup.end(),
         [&](const std::shared_ptr < GraphicsItem > &ptr) {
@@ -247,12 +251,6 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     this->updateTableViewModel();
     this->updateEditRect();
 }
-
-///
-/// \brief EditController::onGraphicsItemSelectedHasChanged
-/// \param uuid
-/// \param selected
-///
 
 EditController &EditController::getIns() {
     return ins;

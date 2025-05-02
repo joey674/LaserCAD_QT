@@ -29,6 +29,9 @@
         <file>cutButton.png</file>
         <file>copyButton.png</file>
         <file>pasteButton.png</file>
+        <file>loopButton.png</file>
+        <file>mirrorHorizontalButton.png</file>
+        <file>mirrorVerticalButton.png</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>

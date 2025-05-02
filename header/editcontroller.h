@@ -14,6 +14,7 @@
 #include <QCoreApplication>
 
 class EditController {
+    friend class EditRect;
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();

@@ -7,9 +7,9 @@
 
 class TreeModel;
 
-class TreeNode
-{
+class TreeNode {
     friend class TreeModel;
+    friend class Manager;
 public:
     explicit TreeNode(TreeNode *parent = nullptr);
 
@@ -32,8 +32,8 @@ private:
     bool setProperty(int index, const QVariant &value);
     bool setPropertyList(const QVariantList &value);
 private:
-    std::vector<std::shared_ptr<TreeNode>> m_childItems;
-    QVariantList m_propertyList = QVariantList{"UndefinedName","UndefinedType","UndefinedUUID"};
+    std::vector < std::shared_ptr < TreeNode>> m_childItems;
+    QVariantList m_propertyList = QVariantList{"UndefinedName", "UndefinedType", "UndefinedUUID"};
     TreeNode *m_parentItem;
 };
 

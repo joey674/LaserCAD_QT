@@ -54,10 +54,17 @@ UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     return uuid;
 }
 
-UUID Manager::addItem(QModelIndex position, QString name, QString type) {
+UUID Manager::addItem(QString name, QString type, QModelIndex position) {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     if (!position.isValid()) {
-        FATAL_MSG("fail add item to manager");
+        WARN_MSG("position is not valid, will add to current layer");
+        auto layerUuid = SceneController::getIns().getCurrentLayer();
+        auto layerIndex = model->getIndex(layerUuid);
+        auto layerNode = model->getNode(layerIndex);
+        if (!model->insertRow(layerNode->childCount (), layerIndex)) {
+            FATAL_MSG("fail insert layer");
+        }
+        position = model->index(layerNode->childCount () - 1, 0, layerIndex);//
     }
     auto item = std::make_shared < PolylineItem > ();
     model->setNodeProperty(position, TreeNodePropertyIndex::Name, name);
@@ -68,7 +75,6 @@ UUID Manager::addItem(QModelIndex position, QString name, QString type) {
     INFO_MSG("item add: " + item->getUUID());
     return item.get()->getUUID();
 }
-
 
 std::vector < UUID > Manager::getChildItems(UUID uuid) {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
@@ -91,8 +97,6 @@ std::vector < UUID > Manager::getChildItems(UUID uuid) {
     }
     return uuidGroup;
 }
-
-
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     if (!itemMapExist(uuid)) {

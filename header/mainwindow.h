@@ -53,7 +53,7 @@ private slots: // 绘制工具按钮
     void onDrawLineButtonClicked();
     void onDrawPolylineButtonClicked();
     void onDrawArcButtonClicked();
-    void onDrawPointButtonClicked();;
+    void onDrawPointButtonClicked();
     void onDrawCircleButtonClicked();
     void onDrawSpiralButtonClicked();
     void onDrawRectButtonClicked();
@@ -61,18 +61,31 @@ private slots: // 绘制工具按钮
     void onDrawEllipseButtonClicked();
 private slots: // 编辑工具按钮
     void onEditButtonClicked();
-    void onDrawTestLineButtonClicked() {}
     void onCenterButtonClicked();
-    void onDeleteButtonClicked();
+    void onMirrorHorizontalButtonClicked();
+    void onMirrorVerticalButtonClicked();
+    void onAlignButtonClicked();
+    //
     void onDragSceneButtonClicked();
-    void onUndoButtonClicked() {}
-    void onRedoButtonClicked() {}
+    //
     void onBreakCopiedItemButtonClicked();
     void onBreakOffsetItemButtonClicked();
     //
+    void onDeleteButtonClicked();
     void onCutButtonClicked();
     void onCopyButtonClicked();
     void onPasteButtonClicked();
+    //
+    void onDrawTestLineButtonClicked() {}
+    void onUndoButtonClicked() {}
+    void onRedoButtonClicked() {}
+private slots: // 硬件操作按钮
+    void onDigitalInButtonClicked();
+    void onDigitalOutButtonClicked();
+    void onDoPauseButtonClicked();
+    void onDelayTimeButtonClicked();
+    void onMotionButtonClicked();
+    void onLoopButtonClicked();
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();
