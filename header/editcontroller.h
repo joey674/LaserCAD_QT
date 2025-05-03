@@ -1,17 +1,19 @@
 #ifndef EDITCONTROLLER_H
 #define EDITCONTROLLER_H
 
+#include <QCoreApplication>
 #include <QGraphicsScene>
 #include <QMainWindow>
+#include <QTimer>
 #include "arcitem.h"
 #include "editrect.h"
+#include "ellipseitem.h"
 #include "manager.h"
 #include "polylineitem.h"
 #include "protocol.h"
-#include <QTimer>
+#include "rectitem.h"
 #include <polylinecombine.hpp>
 #include <qgraphicsitem.h>
-#include <QCoreApplication>
 
 class EditController {
     friend class EditRect;
@@ -155,8 +157,51 @@ public:
         }
         this->updateEditRect();
     }
-    void onTabWidgetRectGeometryTab() {}
-    void onTabWidgetEclipseGeometryTab() {}
+    void onTabWidgetRectGeometryTab(QPointF leftTop, QPointF rightBottom)
+    {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        RectItem *item = static_cast<RectItem *>(curEditItem.get());
+        double left = leftTop.x();
+        double top = leftTop.y();
+        double right = rightBottom.x();
+        double bottom = rightBottom.y();
+        std::array<QPointF, 5> points = {
+            QPointF(left, top),     // 0 左上
+            QPointF(right, top),    // 1 右上
+            QPointF(right, bottom), // 2 右下
+            QPointF(left, bottom),  // 3 左下
+            QPointF(left, top)      // 4 回到左上闭合
+        };
+
+        for (int i = 0; i < 5; ++i) {
+            item->setVertexInScene(i, Vertex{points[i], 0});
+        }
+        this->updateEditRect();
+    }
+
+    void onTabWidgetEllipseGeometryTab(QPointF center,
+                                       double radiusX,
+                                       double radiusY,
+                                       double rotateAngle)
+    {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        //
+        EllipseItem *item = static_cast<EllipseItem *>(curEditItem.get());
+        item->setVertexInScene(0, Vertex{center, 0});
+        item->setRadiusX(radiusX);
+        item->setRadiusY(radiusY);
+        item->setRotateAngle(rotateAngle);
+        this->updateEditRect();
+    }
+    void onTabWidgetPolygonGeometryTab() {}
+    void onTabWidgetSpiralGeometryTab() {}
     /// \brief onTabWidgetMultiItemsEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
     void onTabWidgetMultiItemsEditTab(std::vector < MultiEditParam > params) {

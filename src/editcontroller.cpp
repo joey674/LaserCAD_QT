@@ -103,7 +103,19 @@ void EditController::updateTabWidget() {
                 UiManager::getIns().UI()->tabWidget->addPointGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Polyline:
-                UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
+                // UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Rect:
+                UiManager::getIns().UI()->tabWidget->addRectGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Ellipse:
+                UiManager::getIns().UI()->tabWidget->addEllipseGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Spiral:
+                UiManager::getIns().UI()->tabWidget->addSpiralGeometryTab(curEditItem->getUUID());
+                break;
+            case GraphicsItemType::Polygon:
+                UiManager::getIns().UI()->tabWidget->addPolygonGeometryTab(curEditItem->getUUID());
                 break;
             default:
                 break;

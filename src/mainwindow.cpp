@@ -85,9 +85,7 @@ void MainWindow::initGraphicsView() {
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(100, this, []() {
-        SceneController::getIns().setSceneScale(10, 10);
-    });
+    QTimer::singleShot(100, this, []() { SceneController::getIns().setSceneScale(10, 10); });
     QPen pen = []() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
@@ -114,10 +112,10 @@ void MainWindow::initGraphicsView() {
     yArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(yArrowL);
     SceneController::getIns().scene->addItem(yArrowR);
-    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900, 900, 1000, 1000);
-    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000, -1000, -900, -900);
-    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900, 900, -1000, 1000);
-    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000, -1000, 900, -900);
+    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * 2, 900 * 2, 1000 * 2, 1000 * 2);
+    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * 2, -1000 * 2, -900 * 2, -900 * 2);
+    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * 2, 900 * 2, -1000 * 2, 1000 * 2);
+    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * 2, -1000 * 2, 900 * 2, -900 * 2);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
@@ -597,11 +595,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event) {
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
-    QMainWindow::resizeEvent(event);  // 调用基类实现（可选）
+    QMainWindow::resizeEvent(event);
     SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(10, this, []() {
-        SceneController::getIns().setSceneScale(10, 10);
-    });
+    QTimer::singleShot(10, this, []() { SceneController::getIns().setSceneScale(10, 10); });
 }
 
 ///

@@ -17,7 +17,7 @@ public:
         return item;
     }
 public:
-    /// 编辑vertex; 0是左上坐标,2是右下坐标
+    /// 编辑vertex; 0是左上坐标,2是右下坐标: 0,1,2,3,4
     bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index > 4) {
             return false;

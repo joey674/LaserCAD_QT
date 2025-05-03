@@ -110,7 +110,6 @@ public:
         mainLayout->addWidget(stackedWidget);
         this->addTab(copyTab, "Copy");
     }
-
     void addOffsetTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto offset = item->getOffsetParams ().offset;
@@ -496,7 +495,131 @@ public:
         });
         this->addTab(tab, "Geometry");
     }
+    void addEllipseGeometryTab(const UUID uuid)
+    {
+        auto ptr = Manager::getIns().itemMapFind(uuid);
+        auto item = static_cast<EllipseItem *>(ptr.get());
+        QPointF center = item->getVertexInScene(0).point;
+        double radiusX = item->getRadiusX();
+        double radiusY = item->getRadiusY();
+        double angle = item->getRotateAngle(); // 椭圆的旋转角度（相对于 x 轴）
 
+        QWidget *ellipseTab = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(ellipseTab);
+        QFormLayout *formLayout = new QFormLayout();
+
+        // 中心点
+        QDoubleSpinBox *centerX = new QDoubleSpinBox();
+        centerX->setRange(-1e6, 1e6);
+        centerX->setValue(center.x());
+
+        QDoubleSpinBox *centerY = new QDoubleSpinBox();
+        centerY->setRange(-1e6, 1e6);
+        centerY->setValue(center.y());
+
+        // 半径
+        QDoubleSpinBox *radiusXSpin = new QDoubleSpinBox();
+        radiusXSpin->setRange(0.01, 1e6);
+        radiusXSpin->setValue(radiusX);
+
+        QDoubleSpinBox *radiusYSpin = new QDoubleSpinBox();
+        radiusYSpin->setRange(0.01, 1e6);
+        radiusYSpin->setValue(radiusY);
+
+        // 角度
+        QDoubleSpinBox *angleSpin = new QDoubleSpinBox();
+        angleSpin->setRange(0, 359.99);
+        angleSpin->setDecimals(2);
+        angleSpin->setValue(angle);
+
+        // 按钮
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+
+        // 添加到表单
+        formLayout->addRow("Center X:", centerX);
+        formLayout->addRow("Center Y:", centerY);
+        formLayout->addRow("Radius X:", radiusXSpin);
+        formLayout->addRow("Radius Y:", radiusYSpin);
+        formLayout->addRow("Angle:", angleSpin);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+
+        connect(confirmBtn, &QPushButton::clicked, ellipseTab, [=]() {
+            QPointF center(centerX->value(), centerY->value());
+            double rx = radiusXSpin->value();
+            double ry = radiusYSpin->value();
+            double angle = angleSpin->value();
+
+            if (rx <= 0 || ry <= 0) {
+                WARN_MSG("Radius must be positive");
+                return;
+            }
+
+            EditController::getIns().onTabWidgetEllipseGeometryTab(center, rx, ry, angle);
+        });
+
+        this->addTab(ellipseTab, "Geometry");
+    }
+    void addRectGeometryTab(const UUID uuid)
+    {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        QPointF topLeft = item->getVertexInScene(0).point;
+        QPointF bottomRight = item->getVertexInScene(1).point;
+
+        QWidget *rectTab = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(rectTab);
+        QFormLayout *formLayout = new QFormLayout();
+
+        // 左上点
+        QDoubleSpinBox *topLeftX = new QDoubleSpinBox();
+        topLeftX->setRange(-1e6, 1e6);
+        topLeftX->setValue(topLeft.x());
+
+        QDoubleSpinBox *topLeftY = new QDoubleSpinBox();
+        topLeftY->setRange(-1e6, 1e6);
+        topLeftY->setValue(topLeft.y());
+
+        // 右下点
+        QDoubleSpinBox *bottomRightX = new QDoubleSpinBox();
+        bottomRightX->setRange(-1e6, 1e6);
+        bottomRightX->setValue(bottomRight.x());
+
+        QDoubleSpinBox *bottomRightY = new QDoubleSpinBox();
+        bottomRightY->setRange(-1e6, 1e6);
+        bottomRightY->setValue(bottomRight.y());
+
+        // 按钮
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+
+        // 添加到 form layout
+        formLayout->addRow("Top Left X:", topLeftX);
+        formLayout->addRow("Top Left Y:", topLeftY);
+        formLayout->addRow("Bottom Right X:", bottomRightX);
+        formLayout->addRow("Bottom Right Y:", bottomRightY);
+
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+
+        // 绑定按钮事件
+        connect(confirmBtn, &QPushButton::clicked, rectTab, [=]() {
+            QPointF tl(topLeftX->value(), topLeftY->value());
+            QPointF br(bottomRightX->value(), bottomRightY->value());
+
+            if (tl == br) {
+                WARN_MSG("Invalid rectangle: two corners are the same");
+                return;
+            }
+
+            EditController::getIns().onTabWidgetRectGeometryTab(tl, br);
+        });
+
+        this->addTab(rectTab, "Geometry");
+    }
+    void addSpiralGeometryTab(const UUID uuid) {}
+    void addPolygonGeometryTab(const UUID uuid) {}
+
+    ///
+    /// \brief addMultiItemsEditTab
     void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
         QWidget* tab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(tab);
