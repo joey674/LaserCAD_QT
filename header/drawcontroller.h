@@ -12,6 +12,7 @@
 #include "polylineitem.h"
 #include "protocol.h"
 #include "rectitem.h"
+#include "spiralitem.h"
 #include <qgraphicsitem.h>
 
 class DrawController {
@@ -26,7 +27,7 @@ public:
     std::shared_ptr < CircleItem > tmpCircle;
     std::shared_ptr < RectItem > tmpRect;
     std::shared_ptr<EllipseItem> tmpEllipse;
-    std::shared_ptr < QGraphicsPathItem > tmpSpiral;
+    std::shared_ptr<SpiralItem> tmpSpiral;
     std::shared_ptr<PolygonItem> tmpPolygon;
     // 绘制逻辑
     void drawPolyline(QPointF pointCoordscene, MouseEvent event);

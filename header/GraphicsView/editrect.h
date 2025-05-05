@@ -14,6 +14,7 @@
 #include "ellipseitem.h"
 #include "graphicsitem.h"
 #include "polygonitem.h"
+#include "spiralitem.h"
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -341,76 +342,100 @@ private:
     }
     /// \brief applyRotateToGraphicsItem
     /// \param item
-    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center) {
+    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center)
+    {
         qreal radians = qDegreesToRadians(deltaRotationDeg);
+
+        // 旋转所有顶点
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
             QPointF vec = vertex.point - center;
+
             qreal xNew = vec.x() * std::cos(radians) - vec.y() * std::sin(radians);
             qreal yNew = vec.x() * std::sin(radians) + vec.y() * std::cos(radians);
+
             QPointF rotatedPos = center + QPointF(xNew, yNew);
-            item.setVertexInScene(i, Vertex{rotatedPos, vertex.angle});// 这里的angle是凸度 在任何变换中都不变
+            item.setVertexInScene(i, Vertex{rotatedPos, vertex.angle});
         }
-        // 对于椭圆 要修改angle
+
+        // 通用角度归一化函数
+        auto normalizeAngle = [](double angle) {
+            while (angle < 0.0)
+                angle += 360.0;
+            while (angle >= 360.0)
+                angle -= 360.0;
+            return angle;
+        };
+
+        // 特殊类型：更新其 angle 属性
         if (item.type() == GraphicsItemType::Ellipse) {
-            if (auto ellipse = dynamic_cast < EllipseItem * > (&item)) {
+            if (auto ellipse = dynamic_cast<EllipseItem *>(&item)) {
                 double oldAngle = ellipse->getRotateAngle();
-                double newAngle = oldAngle + deltaRotationDeg;
-                // 保证角度是正数
-                while (newAngle < 0) {
-                    newAngle += 360.0;
-                }
-                while (newAngle >= 360.0) {
-                    newAngle -= 360.0;
-                }
-                ellipse->setRotateAngle(newAngle);
+                ellipse->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
             }
         } else if (item.type() == GraphicsItemType::Polygon) {
             if (auto polygon = dynamic_cast<PolygonItem *>(&item)) {
                 double oldAngle = polygon->getRotateAngle();
-                double newAngle = oldAngle + deltaRotationDeg;
-                // 保证角度是正数
-                while (newAngle < 0) {
-                    newAngle += 360.0;
-                }
-                while (newAngle >= 360.0) {
-                    newAngle -= 360.0;
-                }
-                polygon->setRotateAngle(newAngle);
+                polygon->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
+            }
+        } else if (item.type() == GraphicsItemType::Spiral) {
+            if (auto spiral = dynamic_cast<SpiralItem *>(&item)) {
+                double oldAngle = spiral->getRotateAngle();
+                spiral->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
             }
         }
     }
+
     /// \brief applyScaleToGraphicsItem
     /// \param item
     void applyScaleToGraphicsItem(GraphicsItem &item,
                                   qreal scaleX,
                                   qreal scaleY,
-                                  const QPointF &center) {
+                                  const QPointF &center)
+    {
+        // 顶点缩放（中心点）
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
             QPointF vec = vertex.point - center;
             QPointF scaledVec(vec.x() * scaleX, vec.y() * scaleY);
             QPointF finalPos = center + scaledVec;
-            item.setVertexInScene(i, Vertex{finalPos, vertex.angle}); // 角度不变
+            item.setVertexInScene(i, Vertex{finalPos, vertex.angle});
         }
-        // 对于圆/椭圆/多边形 要修改radius
+
+        // 针对各类图元做半径/尺寸缩放
+        qreal uniformScale = scaleX; // 默认统一缩放比例，X/Y 一致才合理
+
         if (item.type() == GraphicsItemType::Circle) {
-            auto circle = dynamic_cast < CircleItem * > (&item);
-            qreal uniformScale = scaleX;
-            double oldRadius = circle->getRadius();
-            circle->setRadius(oldRadius * uniformScale);
+            auto circle = dynamic_cast<CircleItem *>(&item);
+            if (circle) {
+                double oldRadius = circle->getRadius();
+                circle->setRadius(oldRadius * uniformScale);
+            }
+
         } else if (item.type() == GraphicsItemType::Ellipse) {
-            auto ellipse = dynamic_cast < EllipseItem * > (&item);
-            qreal uniformScale = scaleX;
-            double oldRadiusX = ellipse->getRadiusX();
-            double oldRadiusY = ellipse->getRadiusY();
-            ellipse->setRadiusX(oldRadiusX * uniformScale);
-            ellipse->setRadiusY(oldRadiusY * uniformScale);
+            auto ellipse = dynamic_cast<EllipseItem *>(&item);
+            if (ellipse) {
+                double oldRadiusX = ellipse->getRadiusX();
+                double oldRadiusY = ellipse->getRadiusY();
+                ellipse->setRadiusX(oldRadiusX * uniformScale);
+                ellipse->setRadiusY(oldRadiusY * uniformScale);
+            }
+
         } else if (item.type() == GraphicsItemType::Polygon) {
             auto polygon = dynamic_cast<PolygonItem *>(&item);
-            qreal uniformScale = scaleX;
-            double oldRadius = polygon->getRadius();
-            polygon->setRadius(oldRadius * uniformScale);
+            if (polygon) {
+                double oldRadius = polygon->getRadius();
+                polygon->setRadius(oldRadius * uniformScale);
+            }
+
+        } else if (item.type() == GraphicsItemType::Spiral) {
+            auto spiral = dynamic_cast<SpiralItem *>(&item);
+            if (spiral) {
+                double oldR0 = spiral->getStartRadius();
+                double oldR1 = spiral->getEndRadius();
+                spiral->setStartRadius(oldR0 * uniformScale);
+                spiral->setEndRadius(oldR1 * uniformScale);
+            }
         }
     }
 

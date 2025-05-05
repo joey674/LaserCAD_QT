@@ -615,7 +615,84 @@ public:
 
         this->addTab(rectTab, "Geometry");
     }
-    void addSpiralGeometryTab(const UUID uuid) {}
+    void addSpiralGeometryTab(const UUID uuid)
+    {
+        auto itemptr = Manager::getIns().itemMapFind(uuid);
+        SpiralItem *item = static_cast<SpiralItem *>(itemptr.get());
+
+        QPointF center = item->getVertexInScene(0).point;
+        double r0 = item->getStartRadius();
+        double r1 = item->getEndRadius();
+        double turns = item->getTurns();
+        double step = item->getAngleStepDeg();
+
+        QWidget *spiralTab = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(spiralTab);
+        QFormLayout *formLayout = new QFormLayout();
+
+        // 中心点
+        QDoubleSpinBox *centerX = new QDoubleSpinBox();
+        centerX->setRange(-1e6, 1e6);
+        centerX->setValue(center.x());
+
+        QDoubleSpinBox *centerY = new QDoubleSpinBox();
+        centerY->setRange(-1e6, 1e6);
+        centerY->setValue(center.y());
+
+        // 起始半径
+        QDoubleSpinBox *startRadius = new QDoubleSpinBox();
+        startRadius->setRange(0.001, 1e6);
+        startRadius->setValue(r0);
+
+        // 终止半径
+        QDoubleSpinBox *endRadius = new QDoubleSpinBox();
+        endRadius->setRange(0.001, 1e6);
+        endRadius->setValue(r1);
+
+        // 圈数
+        QDoubleSpinBox *turnsSpin = new QDoubleSpinBox();
+        turnsSpin->setRange(0.1, 100);
+        turnsSpin->setDecimals(2);
+        turnsSpin->setValue(turns);
+
+        // 步进角度
+        QDoubleSpinBox *stepSpin = new QDoubleSpinBox();
+        stepSpin->setRange(0.1, 90.0);
+        stepSpin->setDecimals(2);
+        stepSpin->setValue(step);
+
+        // 按钮
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+
+        // 加入表单
+        formLayout->addRow("Center X:", centerX);
+        formLayout->addRow("Center Y:", centerY);
+        formLayout->addRow("Start Radius:", startRadius);
+        formLayout->addRow("End Radius:", endRadius);
+        formLayout->addRow("Turns:", turnsSpin);
+        formLayout->addRow("Angle Step (deg):", stepSpin);
+
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+
+        connect(confirmBtn, &QPushButton::clicked, spiralTab, [=]() {
+            QPointF center(centerX->value(), centerY->value());
+            double r0 = startRadius->value();
+            double r1 = endRadius->value();
+            double t = turnsSpin->value();
+            double step = stepSpin->value();
+
+            if (r0 <= 0 || r1 <= 0 || t <= 0 || step <= 0) {
+                WARN_MSG("Invalid spiral parameters");
+                return;
+            }
+
+            EditController::getIns().onTabWidgetSpiralGeometryTab(center, r0, r1, t, step);
+        });
+
+        this->addTab(spiralTab, "Geometry");
+    }
+
     void addPolygonGeometryTab(const UUID uuid)
     {
         auto itemptr = Manager::getIns().itemMapFind(uuid);

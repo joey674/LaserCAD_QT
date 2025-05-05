@@ -221,62 +221,36 @@ void DrawController::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     }
 }
 
-void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
-    //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditController::getIns().setItemsStatus(false,true,true,allItems);
-    //     /* center：螺旋的中心点
-    //     radius：螺旋的初始半径
-    //     spacing：每圈的间距
-    //     turns：螺旋的圈数*/
-    //     /// TODO
-    //     /// setLayer
-    //     if (!this->tmpSpiral && event == MouseEvent::LeftRelease)
-    //     {
-    //         QPointF centerPoint  = pointCoordscene;
-    //         this->tmpSpiral =  std::make_shared<QGraphicsPathItem>();
-    //         this->tmpSpiral->setData(0,pointCoordscene);
-    //         this->tmpSpiral->setPen(QPen(Qt::black, 1));
-    //         SceneController::getIns().scene->addItem(this->tmpSpiral.get());
-    //     }
-    //     else if  (this->tmpSpiral && event == MouseEvent::MouseMove)
-    //     {
-    //         // 这里都是设置了一个演示默认值；
-    //         QPointF centerPoint = this->tmpSpiral->data(0).toPointF();
-    //         QPointF endPoint = pointCoordscene;
-    //         int turns = 3;
-    //         double radius = QLineF(centerPoint,endPoint).length()/2;
-    //         double spacing = QLineF(centerPoint,endPoint).length()/6;
-    //         double dx = endPoint.x() - centerPoint.x();
-    //         double dy = endPoint.y() - centerPoint.y();
-    //         QPainterPath path;
-    //         bool start = true;
-    //         for (double theta = 0; theta < turns * 2 * M_PI; theta += 0.1)
-    //         {
-    //             double r = radius + spacing * theta / (2 * M_PI);
-    //             double x = centerPoint.x() + r * cos(theta);
-    //             double y = centerPoint.y() + r * sin(theta);
-    //             if (start == true)
-    //             {
-    //                 path.moveTo(centerPoint.x() + r * cos(theta),centerPoint.y()+r* sin(theta));
-    //                 start = false;
-    //             } else
-    //             {
-    //                 path.lineTo(x, y);
-    //             }
-    //         }
-    //         this->tmpSpiral->setTransformOriginPoint(centerPoint);
-    //         this->tmpSpiral->setRotation(atan2(dy, dx)* 180 / M_PI);
-    //         this->tmpSpiral->setPath(path);
-    //     }
-    //     else if (this->tmpSpiral && event == MouseEvent::LeftRelease)
-    //     {
-    //         // Manager::getIns().addItem(std::move(this->tmpSpiral));
-    //     }
+void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event)
+{
+    if (!this->tmpSpiral && event == MouseEvent::LeftPress) {
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        for (const auto &item : allItems) {
+            Manager::getIns().setItemSelectable(item, false);
+        }
+        this->tmpSpiral = std::make_shared<SpiralItem>();
+        this->tmpSpiral->setVertexInScene(0, Vertex{pointCoordscene, 0});
+        this->tmpSpiral->setColor(SceneController::getIns().getCurrentLayerColor());
+        this->tmpSpiral->setStartRadius(0); // 默认起始半径
+        this->tmpSpiral->setEndRadius(0);
+        this->tmpSpiral->setTurns(3);          // 默认圈数
+        this->tmpSpiral->setAngleStepDeg(5.0); // 默认角度分辨率
+
+        SceneController::getIns().scene->addItem(this->tmpSpiral.get());
+
+    } else if (this->tmpSpiral && event == MouseEvent::MouseMove) {
+        QPointF center = this->tmpSpiral->getCenterInScene();
+        double radius = QLineF(center, pointCoordscene).length();
+        this->tmpSpiral->setEndRadius(radius);
+
+    } else if (this->tmpSpiral && event == MouseEvent::LeftPress) {
+        Manager::getIns().addItem(std::move(this->tmpSpiral));
+    }
 }
 
 void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPolygon && event == MouseEvent::LeftPress) {
-        // 设置其他元素不可选中 颜色为display
+        // 设置其他元素不可选中
         auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
@@ -291,7 +265,7 @@ void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
         this->tmpPolygon->setRadius(radius);
         // this->tmpPolygon->setTransformOriginPoint(center);
     } else if (this->tmpPolygon && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpPolygon));
+        Manager::getIns().addItem(std::move(this->tmpSpiral));
     }
 }
 

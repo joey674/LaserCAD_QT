@@ -164,7 +164,6 @@ protected:
 
         return true;
     }
-
     bool updateCopiedItem() override
     {
         this->m_copiedItemList.clear();
@@ -295,7 +294,6 @@ public:
         }
         return polyline;
     }
-
     Vertex getVertexInScene(const int index = 0) const override
     {
         if (index > 1) {

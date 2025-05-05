@@ -13,6 +13,7 @@
 #include "polylineitem.h"
 #include "protocol.h"
 #include "rectitem.h"
+#include "spiralitem.h"
 #include <polylinecombine.hpp>
 #include <qgraphicsitem.h>
 
@@ -215,8 +216,25 @@ public:
 
         this->updateEditRect();
     }
+    void onTabWidgetSpiralGeometryTab(
+        QPointF center, double r0, double r1, double turns, double stepDeg)
+    {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
 
-    void onTabWidgetSpiralGeometryTab() {}
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        SpiralItem *item = static_cast<SpiralItem *>(curEditItem.get());
+
+        item->setVertexInScene(0, Vertex{center, 0});
+        item->setStartRadius(r0);
+        item->setEndRadius(r1);
+        item->setTurns(turns);
+        item->setAngleStepDeg(stepDeg);
+
+        this->updateEditRect();
+    }
+
     /// \brief onTabWidgetMultiItemsEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
     void onTabWidgetMultiItemsEditTab(std::vector < MultiEditParam > params) {
