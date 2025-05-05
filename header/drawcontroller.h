@@ -8,6 +8,7 @@
 #include "ellipseitem.h"
 #include "lineitem.h"
 #include "pointitem.h"
+#include "polygonitem.h"
 #include "polylineitem.h"
 #include "protocol.h"
 #include "rectitem.h"
@@ -26,9 +27,7 @@ public:
     std::shared_ptr < RectItem > tmpRect;
     std::shared_ptr<EllipseItem> tmpEllipse;
     std::shared_ptr < QGraphicsPathItem > tmpSpiral;
-    std::shared_ptr < QGraphicsPolygonItem > tmpPolygon;
-    // 绘制辅助变量
-    int polygonEdgeNum = 3; //绘制polygon使用
+    std::shared_ptr<PolygonItem> tmpPolygon;
     // 绘制逻辑
     void drawPolyline(QPointF pointCoordscene, MouseEvent event);
     void drawArc(QPointF pointCoordscene, MouseEvent event);

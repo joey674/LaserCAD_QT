@@ -9,6 +9,7 @@
 #include "editrect.h"
 #include "ellipseitem.h"
 #include "manager.h"
+#include "polygonitem.h"
 #include "polylineitem.h"
 #include "protocol.h"
 #include "rectitem.h"
@@ -181,7 +182,6 @@ public:
         }
         this->updateEditRect();
     }
-
     void onTabWidgetEllipseGeometryTab(QPointF center,
                                        double radiusX,
                                        double radiusY,
@@ -200,7 +200,22 @@ public:
         item->setRotateAngle(rotateAngle);
         this->updateEditRect();
     }
-    void onTabWidgetPolygonGeometryTab() {}
+    void onTabWidgetPolygonGeometryTab(QPointF center, double radius, uint edgeCount, double angle)
+    {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        PolygonItem *item = static_cast<PolygonItem *>(curEditItem.get());
+
+        item->setVertexInScene(0, Vertex{center, 0});
+        item->setRadius(radius);
+        item->setEdgeCount(edgeCount);
+        item->setRotateAngle(angle);
+
+        this->updateEditRect();
+    }
+
     void onTabWidgetSpiralGeometryTab() {}
     /// \brief onTabWidgetMultiItemsEditTab
     /// tabWidget多个对象编辑的回调; 多个对象统一编辑/规律编辑
@@ -344,43 +359,43 @@ public:
     }
     this->updateEditRect();
     this->updateTabWidget();
-};
-void onMirrorVerticalTriggered()
-{
-    if (EditController::getIns().m_currentEditItemGroup.empty()) {
-        return;
-    }
-    for (auto &item : EditController::getIns().m_currentEditItemGroup) {
-        QPointF center = item->getCenterInScene();
-        auto vertexCount = item->getVertexCount();
-        for (int i = 0; i < vertexCount; i++) {
-            Vertex vertex = item->getVertexInScene(i);
-            auto newY = 2 * center.y() - vertex.point.y();
-            auto newX = vertex.point.x();
-            auto newAngle = -vertex.angle;
-            Vertex newVertex = Vertex{QPointF{newX, newY}, newAngle};
-            item->setVertexInScene(i, newVertex);
+    };
+    void onMirrorVerticalTriggered()
+    {
+        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+            return;
         }
-        if (item->type() == GraphicsItemType::Ellipse) {
-            auto ellipse = static_cast<EllipseItem *>(item.get());
-            auto angle = ellipse->getRotateAngle();
-            auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
-            ellipse->setRotateAngle(mirroredAngle);
+        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+            QPointF center = item->getCenterInScene();
+            auto vertexCount = item->getVertexCount();
+            for (int i = 0; i < vertexCount; i++) {
+                Vertex vertex = item->getVertexInScene(i);
+                auto newY = 2 * center.y() - vertex.point.y();
+                auto newX = vertex.point.x();
+                auto newAngle = -vertex.angle;
+                Vertex newVertex = Vertex{QPointF{newX, newY}, newAngle};
+                item->setVertexInScene(i, newVertex);
+            }
+            if (item->type() == GraphicsItemType::Ellipse) {
+                auto ellipse = static_cast<EllipseItem *>(item.get());
+                auto angle = ellipse->getRotateAngle();
+                auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
+                ellipse->setRotateAngle(mirroredAngle);
+            }
         }
-    }
-    this->updateEditRect();
-    this->updateTabWidget();
-};
-void onAlignTriggered()
-{
-    if (EditController::getIns().m_currentEditItemGroup.size() <= 2) {
-        return;
-    }
-    for (auto &item : EditController::getIns().m_currentEditItemGroup) {
-    }
-    this->updateEditRect();
-    this->updateTabWidget();
-};
+        this->updateEditRect();
+        this->updateTabWidget();
+    };
+    void onAlignTriggered()
+    {
+        if (EditController::getIns().m_currentEditItemGroup.size() <= 2) {
+            return;
+        }
+        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+        }
+        this->updateEditRect();
+        this->updateTabWidget();
+    };
     /// \brief 按钮回调 负责剪切 拷贝 删除 操作editItemGroup/copyCutItemGroup
     ///
     void onDeleteItemsTriggered() {

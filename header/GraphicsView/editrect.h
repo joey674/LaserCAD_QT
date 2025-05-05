@@ -1,21 +1,22 @@
 #ifndef EDITRECT_H
 #define EDITRECT_H
 
+#include <QCursor>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QDoubleSpinBox>
+#include <QFormLayout>
 #include <QGraphicsItem>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
-#include "graphicsitem.h"
+#include <QPixmap>
 #include "circleitem.h"
 #include "ellipseitem.h"
+#include "graphicsitem.h"
+#include "polygonitem.h"
 #include <cmath>
 #include <memory>
 #include <vector>
-#include <QCursor>
-#include <QPixmap>
-#include <QDialog>
-#include <QFormLayout>
-#include <QDoubleSpinBox>
-#include <QDialogButtonBox>
 
 const int HandleSize = 8;
 const int DisplayPadding = 10;
@@ -364,6 +365,19 @@ private:
                 }
                 ellipse->setRotateAngle(newAngle);
             }
+        } else if (item.type() == GraphicsItemType::Polygon) {
+            if (auto polygon = dynamic_cast<PolygonItem *>(&item)) {
+                double oldAngle = polygon->getRotateAngle();
+                double newAngle = oldAngle + deltaRotationDeg;
+                // 保证角度是正数
+                while (newAngle < 0) {
+                    newAngle += 360.0;
+                }
+                while (newAngle >= 360.0) {
+                    newAngle -= 360.0;
+                }
+                polygon->setRotateAngle(newAngle);
+            }
         }
     }
     /// \brief applyScaleToGraphicsItem
@@ -379,7 +393,7 @@ private:
             QPointF finalPos = center + scaledVec;
             item.setVertexInScene(i, Vertex{finalPos, vertex.angle}); // 角度不变
         }
-        // 对于圆和椭圆 要修改radius
+        // 对于圆/椭圆/多边形 要修改radius
         if (item.type() == GraphicsItemType::Circle) {
             auto circle = dynamic_cast < CircleItem * > (&item);
             qreal uniformScale = scaleX;
@@ -392,6 +406,11 @@ private:
             double oldRadiusY = ellipse->getRadiusY();
             ellipse->setRadiusX(oldRadiusX * uniformScale);
             ellipse->setRadiusY(oldRadiusY * uniformScale);
+        } else if (item.type() == GraphicsItemType::Polygon) {
+            auto polygon = dynamic_cast<PolygonItem *>(&item);
+            qreal uniformScale = scaleX;
+            double oldRadius = polygon->getRadius();
+            polygon->setRadius(oldRadius * uniformScale);
         }
     }
 

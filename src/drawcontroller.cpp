@@ -9,7 +9,6 @@
 DrawController DrawController::ins;
 
 void DrawController::resetTmpItemStatus() {
-    this->polygonEdgeNum = 3;
     this->tmpCircle = NULL;
     this->tmpPolyline = NULL;
     this->tmpArc = NULL;
@@ -122,7 +121,7 @@ void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
 
 void DrawController::drawPoint(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPoint && event == MouseEvent::LeftPress) {
-        // 设置其他元素不可动不可选中 颜色为display
+        // 设置其他元素不可选中
         auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
@@ -137,7 +136,7 @@ void DrawController::drawPoint(QPointF pointCoordscene, MouseEvent event) {
 
 void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpCircle && event == MouseEvent::LeftPress) {
-        // 设置其他元素不可动不可选中 颜色为display
+        // 设置其他元素不可选中
         auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
@@ -155,6 +154,7 @@ void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         Manager::getIns().addItem(std::move(this->tmpCircle));
     }
 }
+
 void DrawController::drawRect(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpRect && event == MouseEvent::LeftPress) {
         auto allItems = Manager::getIns().getChildItems("0-0-0-0");
@@ -273,37 +273,26 @@ void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
     //         // Manager::getIns().addItem(std::move(this->tmpSpiral));
     //     }
 }
+
 void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
-    //     auto allItems = Manager::getIns().getItemsByLayer(0);
-    //     EditController::getIns().setItemsStatus(false,true,true,allItems);
-    //     /// TODO
-    //     /// setLayer
-    //     if (!this->tmpPolygon && event == MouseEvent::LeftRelease)
-    //     {
-    //         this->tmpPolygon = std::make_shared<QGraphicsPolygonItem>();
-    //         this->tmpPolygon->setData(0,pointCoordscene);
-    //         this->tmpPolygon->setPen(QPen(Qt::black, 1));
-    //         SceneController::getIns().scene->addItem(this->tmpPolygon.get());
-    //     }
-    //     else if  (this->tmpPolygon && event == MouseEvent::MouseMove)
-    //     {
-    //         QPolygonF newPolygon;
-    //         QPointF centerPoint = this->tmpPolygon->data(0).toPointF();
-    //         double radius = QLineF(centerPoint,pointCoordscene).length();
-    //         int edgeNum = polygonEdgeNum;
-    //         double angleStep = 2 * M_PI / edgeNum;
-    //         for (int i =0;i<edgeNum;i++) {
-    //             double angle = i * angleStep - M_PI/2;
-    //             QPointF Vertex(centerPoint.x()+radius*cos(angle),centerPoint.y()+radius*sin(angle));
-    //             newPolygon << Vertex;
-    //         }
-    //         this->tmpPolygon->setPolygon(newPolygon);
-    //         this->tmpPolygon->setTransformOriginPoint(centerPoint);
-    //     }
-    //     else if (this->tmpPolygon && event == MouseEvent::LeftRelease)
-    //     {
-    //         // Manager::getIns().addItem(std::move(this->tmpPolygon));
-    //     }
+    if (!this->tmpPolygon && event == MouseEvent::LeftPress) {
+        // 设置其他元素不可选中 颜色为display
+        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        for (const auto &item : allItems) {
+            Manager::getIns().setItemSelectable(item, false);
+        }
+        this->tmpPolygon = std::make_shared<PolygonItem>();
+        this->tmpPolygon->setVertexInScene(0, Vertex{pointCoordscene, 0});
+        this->tmpPolygon->setColor(SceneController::getIns().getCurrentLayerColor());
+        SceneController::getIns().scene->addItem(this->tmpPolygon.get());
+    } else if (this->tmpPolygon && event == MouseEvent::MouseMove) {
+        QPointF center = this->tmpPolygon->getCenterInScene();
+        double radius = QLineF(center, pointCoordscene).length();
+        this->tmpPolygon->setRadius(radius);
+        // this->tmpPolygon->setTransformOriginPoint(center);
+    } else if (this->tmpPolygon && event == MouseEvent::LeftPress) {
+        Manager::getIns().addItem(std::move(this->tmpPolygon));
+    }
 }
 
 DrawController &DrawController::getIns() {

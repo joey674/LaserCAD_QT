@@ -616,7 +616,71 @@ public:
         this->addTab(rectTab, "Geometry");
     }
     void addSpiralGeometryTab(const UUID uuid) {}
-    void addPolygonGeometryTab(const UUID uuid) {}
+    void addPolygonGeometryTab(const UUID uuid)
+    {
+        auto itemptr = Manager::getIns().itemMapFind(uuid);
+        auto item = static_cast<PolygonItem *>(itemptr.get());
+
+        QPointF center = item->getVertexInScene(0).point;
+        double radius = item->getRadius();
+        uint edgeCount = item->getEdgeCount();
+        double angle = item->getRotateAngle();
+
+        QWidget *polygonTab = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(polygonTab);
+        QFormLayout *formLayout = new QFormLayout();
+
+        // 中心点
+        QDoubleSpinBox *centerX = new QDoubleSpinBox();
+        centerX->setRange(-1e6, 1e6);
+        centerX->setValue(center.x());
+
+        QDoubleSpinBox *centerY = new QDoubleSpinBox();
+        centerY->setRange(-1e6, 1e6);
+        centerY->setValue(center.y());
+
+        // 半径
+        QDoubleSpinBox *radiusSpin = new QDoubleSpinBox();
+        radiusSpin->setRange(0.001, 1e6);
+        radiusSpin->setValue(radius);
+
+        // 边数
+        QSpinBox *edgeCountSpin = new QSpinBox();
+        edgeCountSpin->setRange(3, 100);
+        edgeCountSpin->setValue(static_cast<int>(edgeCount));
+
+        // 旋转角度
+        QDoubleSpinBox *angleSpin = new QDoubleSpinBox();
+        angleSpin->setRange(0.0, 359.99);
+        angleSpin->setDecimals(2);
+        angleSpin->setValue(angle);
+
+        QPushButton *confirmBtn = new QPushButton("Confirm");
+
+        formLayout->addRow("Center X:", centerX);
+        formLayout->addRow("Center Y:", centerY);
+        formLayout->addRow("Radius:", radiusSpin);
+        formLayout->addRow("Edge Count:", edgeCountSpin);
+        formLayout->addRow("Angle (°):", angleSpin);
+        mainLayout->addLayout(formLayout);
+        mainLayout->addWidget(confirmBtn);
+
+        connect(confirmBtn, &QPushButton::clicked, polygonTab, [=]() {
+            QPointF center(centerX->value(), centerY->value());
+            double radius = radiusSpin->value();
+            uint edgeCount = static_cast<uint>(edgeCountSpin->value());
+            double angle = angleSpin->value();
+
+            if (radius <= 0 || edgeCount < 3) {
+                WARN_MSG("Invalid polygon parameters");
+                return;
+            }
+
+            EditController::getIns().onTabWidgetPolygonGeometryTab(center, radius, edgeCount, angle);
+        });
+
+        this->addTab(polygonTab, "Geometry");
+    }
 
     ///
     /// \brief addMultiItemsEditTab

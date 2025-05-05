@@ -14,8 +14,13 @@ bool PolylineItem::updateOffsetItem()
     for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavcForm(false);
-        input.isClosed() = false;
-        // input.isClosed() = true;
+        // 自动判断 如果最后一个点与第一个点重合 那么就认为是close;
+        auto vertexCount = this->getVertexCount();
+        if (this->m_vertexList[0].point == this->m_vertexList[vertexCount - 1].point) {
+            input.isClosed() = true;
+        } else {
+            input.isClosed() = false;
+        }
         std::vector<cavc::Polyline<double>> results
             = cavc::parallelOffset(input, this->m_offsetParams.offset * offsetIndex);
         // 获取结果

@@ -112,10 +112,23 @@ void MainWindow::initGraphicsView() {
     yArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(yArrowL);
     SceneController::getIns().scene->addItem(yArrowR);
-    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * 2, 900 * 2, 1000 * 2, 1000 * 2);
-    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * 2, -1000 * 2, -900 * 2, -900 * 2);
-    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * 2, 900 * 2, -1000 * 2, 1000 * 2);
-    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * 2, -1000 * 2, 900 * 2, -900 * 2);
+    double scale = 4;
+    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * scale,
+                                                      900 * scale,
+                                                      1000 * scale,
+                                                      1000 * scale);
+    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * scale,
+                                                      -1000 * scale,
+                                                      -900 * scale,
+                                                      -900 * scale);
+    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * scale,
+                                                      900 * scale,
+                                                      -1000 * scale,
+                                                      1000 * scale);
+    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * scale,
+                                                      -1000 * scale,
+                                                      900 * scale,
+                                                      -900 * scale);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
