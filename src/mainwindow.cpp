@@ -25,7 +25,9 @@
 #include "tablemodel.h"
 #include "treemodel.h"
 #include "uimanager.h"
+#include "laserworker.h"
 #include <polyline.hpp>
+#include <QThread>
 
 ///
 /// \brief MainWindow::MainWindow
@@ -46,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     // initTableViewModel();
     initStatusBar();
     initTabWidget();
+    initLaserWorker();
     //
     connect(SceneController::getIns().scene, &QGraphicsScene::selectionChanged, [ = ]() {
         EditController::getIns().onSceneSelectionChanged();
@@ -85,7 +88,9 @@ void MainWindow::initGraphicsView() {
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(100, this, []() { SceneController::getIns().setSceneScale(10, 10); });
+    QTimer::singleShot(100, this, []() {
+        SceneController::getIns().setSceneScale(10, 10);
+    });
     QPen pen = []() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
@@ -114,21 +119,21 @@ void MainWindow::initGraphicsView() {
     SceneController::getIns().scene->addItem(yArrowR);
     double scale = 4;
     QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * scale,
-                                                      900 * scale,
-                                                      1000 * scale,
-                                                      1000 * scale);
+        900 * scale,
+        1000 * scale,
+        1000 * scale);
     QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * scale,
-                                                      -1000 * scale,
-                                                      -900 * scale,
-                                                      -900 * scale);
+        -1000 * scale,
+        -900 * scale,
+        -900 * scale);
     QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * scale,
-                                                      900 * scale,
-                                                      -1000 * scale,
-                                                      1000 * scale);
+        900 * scale,
+        -1000 * scale,
+        1000 * scale);
     QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * scale,
-                                                      -1000 * scale,
-                                                      900 * scale,
-                                                      -900 * scale);
+        -1000 * scale,
+        900 * scale,
+        -900 * scale);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
@@ -590,8 +595,16 @@ void MainWindow::initTabWidget() {
     UiManager::getIns().UI()->tabWidget->clearAllTabs();
 }
 
-void MainWindow::test() {
+void MainWindow::initLaserWorker() {
+    LaserWorker* worker = new LaserWorker();
+    QThread* thread = new QThread();
+    worker->moveToThread(thread);
+    connect(thread, &QThread::started, worker, &LaserWorker::run);
+    connect(this, &MainWindow::sendLaserCommand, worker, &LaserWorker::enqueueCommand);
+    thread->start();
 }
+
+void MainWindow::test() {}
 
 ///
 /// \brief MainWindow::keyPressEvent
@@ -610,7 +623,9 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event) {
 void MainWindow::resizeEvent(QResizeEvent *event) {
     QMainWindow::resizeEvent(event);
     SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(10, this, []() { SceneController::getIns().setSceneScale(10, 10); });
+    QTimer::singleShot(10, this, []() {
+        SceneController::getIns().setSceneScale(10, 10);
+    });
 }
 
 ///

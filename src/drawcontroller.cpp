@@ -221,28 +221,24 @@ void DrawController::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     }
 }
 
-void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event)
-{
+void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpSpiral && event == MouseEvent::LeftPress) {
         auto allItems = Manager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
         }
-        this->tmpSpiral = std::make_shared<SpiralItem>();
+        this->tmpSpiral = std::make_shared < SpiralItem > ();
         this->tmpSpiral->setVertexInScene(0, Vertex{pointCoordscene, 0});
         this->tmpSpiral->setColor(SceneController::getIns().getCurrentLayerColor());
         this->tmpSpiral->setStartRadius(0); // 默认起始半径
         this->tmpSpiral->setEndRadius(0);
         this->tmpSpiral->setTurns(3);          // 默认圈数
         this->tmpSpiral->setAngleStepDeg(5.0); // 默认角度分辨率
-
         SceneController::getIns().scene->addItem(this->tmpSpiral.get());
-
     } else if (this->tmpSpiral && event == MouseEvent::MouseMove) {
         QPointF center = this->tmpSpiral->getCenterInScene();
         double radius = QLineF(center, pointCoordscene).length();
         this->tmpSpiral->setEndRadius(radius);
-
     } else if (this->tmpSpiral && event == MouseEvent::LeftPress) {
         Manager::getIns().addItem(std::move(this->tmpSpiral));
     }
@@ -255,7 +251,7 @@ void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
         for (const auto &item : allItems) {
             Manager::getIns().setItemSelectable(item, false);
         }
-        this->tmpPolygon = std::make_shared<PolygonItem>();
+        this->tmpPolygon = std::make_shared < PolygonItem > ();
         this->tmpPolygon->setVertexInScene(0, Vertex{pointCoordscene, 0});
         this->tmpPolygon->setColor(SceneController::getIns().getCurrentLayerColor());
         SceneController::getIns().scene->addItem(this->tmpPolygon.get());
@@ -265,7 +261,7 @@ void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
         this->tmpPolygon->setRadius(radius);
         // this->tmpPolygon->setTransformOriginPoint(center);
     } else if (this->tmpPolygon && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpSpiral));
+        Manager::getIns().addItem(std::move(this->tmpPolygon));
     }
 }
 

@@ -20,7 +20,7 @@ class MainWindow : public QMainWindow {
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-private: // 初始化组件
+private: // 初始化组件./绑定硬件
     TitleBar *titleBar;
     QLabel *labelMouseCoordinate;
     void initTitleBar();
@@ -33,6 +33,7 @@ private: // 初始化组件
     void initTreeViewModel();
     void initTableViewModel();
     void initTabWidget();
+    void initLaserWorker();
     void test();
 public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
     void setEditMode();
@@ -100,6 +101,8 @@ private slots: // TreeViewModel的右键菜单栏
     void onTreeViewModelSelectAllItemsInGroup();
 public slots:
     void onTreeViewModelUpdateActions();
+signals:
+    void sendLaserCommand(const QVector < QPoint > & figure);
 };
 #endif // MAINWINDOW_H
 

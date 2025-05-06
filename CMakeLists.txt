@@ -16,15 +16,20 @@ set(PROJECT_SOURCES
         src/main.cpp                    header/Ui/mainwindow.ui
         src/mainwindow.cpp      header/mainwindow.h
 )
+set(RTC5_SOURCES
+    lib/RTC5/RTC5expl.h           #[[lib/RTC5/RTC5expl.c]] lib/RTC5/RTC5expl.cpp
+    lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
+)
 include_directories(${PROJECT_SOURCE_DIR})
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ${RTC5_SOURCES}
         ## lib
         # cavaliercontours
-        src/cavaliercontours.cpp
+        lib/CavalierContours/cavaliercontours.cpp
         lib/CavalierContours/intrcircle2circle2.hpp
         lib/CavalierContours/intrlineseg2circle2.hpp
         lib/CavalierContours/intrlineseg2lineseg2.hpp
@@ -39,16 +44,6 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         lib/CavalierContours/vector.hpp
         lib/CavalierContours/vector2.hpp
         lib/CavalierContours/cavaliercontours.h
-        # MagicEnum
-        lib/MagicEnum/magic_enum.hpp
-        lib/MagicEnum/magic_enum_all.hpp
-        lib/MagicEnum/magic_enum_containers.hpp
-        lib/MagicEnum/magic_enum_flags.hpp
-        lib/MagicEnum/magic_enum_format.hpp
-        lib/MagicEnum/magic_enum_fuse.hpp
-        lib/MagicEnum/magic_enum_iostream.hpp
-        lib/MagicEnum/magic_enum_switch.hpp
-        lib/MagicEnum/magic_enum_utility.hpp
         ## header
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
@@ -67,6 +62,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
         header/TreeViewModel/treeview.h                            src/treeview.cpp
+        header/TreeViewModel/colordelegate.h        header/TreeViewModel/colordelegate.cpp
         # TableViewModel
         header/TableViewModel/tablemodel.h                     src/tablemodel.cpp
         # TabWidget
@@ -81,13 +77,14 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Ui//css.h
         # Keyboard
         header/Keyboard/keyboardmanager.h                     src/keyboardmanager.cpp
+        # LaserWorker
+        header/LaserWorker/laserworker.h        header/LaserWorker/laserworker.cpp
         # main
         header/manager.h                                                           src/manager.cpp
         header/protocol.h
         header/editcontroller.h                                                   src/editcontroller.cpp
         header/scenecontroller.h                                               src/scenecontroller.cpp
         header/drawcontroller.h                                                 src/drawcontroller.cpp
-        header/TreeViewModel/colordelegate.h header/TreeViewModel/colordelegate.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -116,8 +113,8 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Keyboar
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidget)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
 
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/MagicEnum)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
 
@@ -146,3 +143,8 @@ install(TARGETS LaserCAD
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(LaserCAD)
 endif()
+
+add_custom_command(TARGET LaserCAD POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLLx64.dll
+            $<TARGET_FILE_DIR:LaserCAD>)

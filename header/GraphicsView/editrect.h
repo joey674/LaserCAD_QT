@@ -18,6 +18,7 @@
 #include <cmath>
 #include <memory>
 #include <vector>
+#include "scenecontroller.h"
 
 const int HandleSize = 8;
 const int DisplayPadding = 10;
@@ -66,14 +67,27 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget * = nullptr) override {
         painter->setRenderHint(QPainter::Antialiasing);
         QPen pen(Qt::gray, 1, Qt::DashLine);
+        pen.setCosmetic(true);
         painter->setPen(pen);
         painter->setBrush(Qt::NoBrush);
-        QRectF displayRect = m_editRect.adjusted(-DisplayPadding, -DisplayPadding, DisplayPadding, DisplayPadding);
+        QRectF displayRect = m_editRect.adjusted(-DisplayPadding,
+                             -DisplayPadding,
+                             DisplayPadding,
+                             DisplayPadding);
         painter->drawRect(displayRect);
+        // editrect的编辑边框和handle在缩放时不发生变化
+        qreal scale = SceneController::getIns().getSceneScale().first;
+        DEBUG_VAR(scale);
+        qreal handleSize = 8.0 / scale;
         painter->setPen(Qt::NoPen);
         for (int i = 0; i < 6; ++i) {
             painter->setBrush(getHandleColor(i));
-            painter->drawRect(handleRect(i));
+            QRectF rect = handleRect(i);
+            QPointF center = rect.center();
+            QRectF fixedRect(center.x() - handleSize / 2,
+                             center.y() - handleSize / 2,
+                             handleSize, handleSize);
+            painter->drawRect(fixedRect);
         }
     }
 
@@ -342,44 +356,40 @@ private:
     }
     /// \brief applyRotateToGraphicsItem
     /// \param item
-    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center)
-    {
+    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center) {
         qreal radians = qDegreesToRadians(deltaRotationDeg);
-
         // 旋转所有顶点
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
             QPointF vec = vertex.point - center;
-
             qreal xNew = vec.x() * std::cos(radians) - vec.y() * std::sin(radians);
             qreal yNew = vec.x() * std::sin(radians) + vec.y() * std::cos(radians);
-
             QPointF rotatedPos = center + QPointF(xNew, yNew);
             item.setVertexInScene(i, Vertex{rotatedPos, vertex.angle});
         }
-
         // 通用角度归一化函数
         auto normalizeAngle = [](double angle) {
-            while (angle < 0.0)
+            while (angle < 0.0) {
                 angle += 360.0;
-            while (angle >= 360.0)
+            }
+            while (angle >= 360.0) {
                 angle -= 360.0;
+            }
             return angle;
         };
-
         // 特殊类型：更新其 angle 属性
         if (item.type() == GraphicsItemType::Ellipse) {
-            if (auto ellipse = dynamic_cast<EllipseItem *>(&item)) {
+            if (auto ellipse = dynamic_cast < EllipseItem * > (&item)) {
                 double oldAngle = ellipse->getRotateAngle();
                 ellipse->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
             }
         } else if (item.type() == GraphicsItemType::Polygon) {
-            if (auto polygon = dynamic_cast<PolygonItem *>(&item)) {
+            if (auto polygon = dynamic_cast < PolygonItem * > (&item)) {
                 double oldAngle = polygon->getRotateAngle();
                 polygon->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
             }
         } else if (item.type() == GraphicsItemType::Spiral) {
-            if (auto spiral = dynamic_cast<SpiralItem *>(&item)) {
+            if (auto spiral = dynamic_cast < SpiralItem * > (&item)) {
                 double oldAngle = spiral->getRotateAngle();
                 spiral->setRotateAngle(normalizeAngle(oldAngle + deltaRotationDeg));
             }
@@ -391,8 +401,7 @@ private:
     void applyScaleToGraphicsItem(GraphicsItem &item,
                                   qreal scaleX,
                                   qreal scaleY,
-                                  const QPointF &center)
-    {
+                                  const QPointF &center) {
         // 顶点缩放（中心点）
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
@@ -401,35 +410,30 @@ private:
             QPointF finalPos = center + scaledVec;
             item.setVertexInScene(i, Vertex{finalPos, vertex.angle});
         }
-
         // 针对各类图元做半径/尺寸缩放
         qreal uniformScale = scaleX; // 默认统一缩放比例，X/Y 一致才合理
-
         if (item.type() == GraphicsItemType::Circle) {
-            auto circle = dynamic_cast<CircleItem *>(&item);
+            auto circle = dynamic_cast < CircleItem * > (&item);
             if (circle) {
                 double oldRadius = circle->getRadius();
                 circle->setRadius(oldRadius * uniformScale);
             }
-
         } else if (item.type() == GraphicsItemType::Ellipse) {
-            auto ellipse = dynamic_cast<EllipseItem *>(&item);
+            auto ellipse = dynamic_cast < EllipseItem * > (&item);
             if (ellipse) {
                 double oldRadiusX = ellipse->getRadiusX();
                 double oldRadiusY = ellipse->getRadiusY();
                 ellipse->setRadiusX(oldRadiusX * uniformScale);
                 ellipse->setRadiusY(oldRadiusY * uniformScale);
             }
-
         } else if (item.type() == GraphicsItemType::Polygon) {
-            auto polygon = dynamic_cast<PolygonItem *>(&item);
+            auto polygon = dynamic_cast < PolygonItem * > (&item);
             if (polygon) {
                 double oldRadius = polygon->getRadius();
                 polygon->setRadius(oldRadius * uniformScale);
             }
-
         } else if (item.type() == GraphicsItemType::Spiral) {
-            auto spiral = dynamic_cast<SpiralItem *>(&item);
+            auto spiral = dynamic_cast < SpiralItem * > (&item);
             if (spiral) {
                 double oldR0 = spiral->getStartRadius();
                 double oldR1 = spiral->getEndRadius();

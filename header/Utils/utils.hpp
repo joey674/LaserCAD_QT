@@ -4,13 +4,11 @@
 #include <QString>
 #include <QUuid>
 #include <QVariant>
-#include <magic_enum.hpp>
 #include <QRegularExpression>
 #include <QGraphicsScene>
 #include "logger.h"
 #include "protocol.h"
 #include <QPainter>
-
 
 inline QString GenerateUUID() {
     QUuid uuid = QUuid::createUuid();

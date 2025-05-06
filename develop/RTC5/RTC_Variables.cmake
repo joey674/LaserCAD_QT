@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.7)
 	
 set (RTC_FILES_DIR 
-	"${CMAKE_CURRENT_SOURCE_DIR}/../RTC5 Files") 
+	"${CMAKE_CURRENT_SOURCE_DIR}/../RTC5/RTC5LIB") 
 
 set (X86_X64 )
 
