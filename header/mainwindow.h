@@ -95,7 +95,7 @@ private slots: //图层按钮
 /// TreeViewModel的右键菜单栏
 private:
     QAction *addGroupAction = nullptr;
-    QAction *dismissGroupAction = nullptr;
+    QAction *deleteGroupAction = nullptr;
     QAction *selectAllItemsInGroupAction = nullptr;
 private slots:
     void onTreeViewModelShowContextMenu(const QPoint &pos);

@@ -250,33 +250,15 @@ void EditController::onTreeViewModelAddGroup() {
     }
 }
 
-void EditController::onTreeViewModelDismissGroup() {
-    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    // // 提取选中的节点列表
-    // const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    // auto mimeList = model->mimeData(nodeIndexList);
-    // // //在目标处创建group节点
-    // QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    // // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
-    // if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
-    //     return;
-    // }
-    // const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
-    // QString name = "Group";
-    // QString type = "Group";
-    // Manager::getIns().addItem( name, type, groupIndex);
-    // // 把节点列表移动到group节点下
-    // model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
-    // // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
-    // for (const QModelIndex &nodeIndex : nodeIndexList) {
-    //     auto node = model->getNode(nodeIndex);
-    //     auto parentNode = node->parent();
-    //     auto parentNodeIndex = model->getIndex(parentNode);
-    //     model->removeRows(node->indexInParent(), 1, parentNodeIndex);
-    // }
-    // onTreeViewModelUpdateActions();
+void EditController::onTreeViewModelDeleteGroup() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // 提取选中的节点
+    const auto groupIndex
+        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes()[0];
+    auto groupNode = model->getNode(groupIndex);
+    auto groupUuid = groupNode->property(TreeNodePropertyIndex::UUID).toString();
+    Manager::getIns().deleteItem(groupUuid);
 }
-
 EditController &EditController::getIns() {
     return ins;
 }

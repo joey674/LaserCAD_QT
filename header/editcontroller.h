@@ -555,7 +555,7 @@ public:
     ///
     void onTreeViewModelSelectAllItemsInGroup();
     void onTreeViewModelAddGroup();
-    void onTreeViewModelDismissGroup();
+    void onTreeViewModelDeleteGroup();
 
 /// ********************
 /// 单例初始化

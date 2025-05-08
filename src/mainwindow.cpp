@@ -1153,16 +1153,16 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     }
     QMenu contextMenu(this);
     this->addGroupAction = new QAction("Add group", &contextMenu);
-    this->dismissGroupAction = new QAction("Dismiss group", &contextMenu);
+    this->deleteGroupAction = new QAction("Delete group", &contextMenu);
     this->selectAllItemsInGroupAction = new QAction("Select all items in this group", &contextMenu);
     contextMenu.addAction(this->addGroupAction);
-    contextMenu.addAction(this->dismissGroupAction);
+    contextMenu.addAction(this->deleteGroupAction);
     contextMenu.addAction(this->selectAllItemsInGroupAction);// 暂时只给group做这个功能 不给layer做
     connect(this->addGroupAction, &QAction::triggered, this, [ = ]() {
         EditController::getIns().onTreeViewModelAddGroup();
     });
-    connect(this->dismissGroupAction, &QAction::triggered, this, [ = ]() {
-        EditController::getIns().onTreeViewModelDismissGroup();
+    connect(this->deleteGroupAction, &QAction::triggered, this, [ = ]() {
+        EditController::getIns().onTreeViewModelDeleteGroup();
     });
     connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, [ = ]() {
         EditController::getIns().onTreeViewModelSelectAllItemsInGroup ();
@@ -1177,7 +1177,6 @@ void MainWindow::onTreeViewModelUpdateActions() {
         = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
     if (nodeIndexList.empty()) {
         this->addGroupAction->setEnabled(false);
-        this->dismissGroupAction->setEnabled(false);
         this->selectAllItemsInGroupAction->setEnabled(true);
         return;
     }
@@ -1185,22 +1184,22 @@ void MainWindow::onTreeViewModelUpdateActions() {
     QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
     if (type == "Layer") { // layer已经被限制无法选中
         this->addGroupAction->setEnabled(false);
-        this->dismissGroupAction->setEnabled(false);
+        this->deleteGroupAction->setEnabled(false);
         this->selectAllItemsInGroupAction->setEnabled(false);
         return;
     } else if (type == "Group" && nodeIndexList.size () == 1 ) {
         this->addGroupAction->setEnabled(false);
-        this->dismissGroupAction->setEnabled(true);
+        this->deleteGroupAction->setEnabled(true);
         this->selectAllItemsInGroupAction->setEnabled(true);
         return;
     } else if (type == "Item" && nodeIndexList.size () > 1) {
         this->addGroupAction->setEnabled(true);
-        this->dismissGroupAction->setEnabled(false);
+        this->deleteGroupAction->setEnabled(false);
         this->selectAllItemsInGroupAction->setEnabled(false);
         return;
     } else {
         this->addGroupAction->setEnabled(false);
-        this->dismissGroupAction->setEnabled(false);
+        this->deleteGroupAction->setEnabled(false);
         this->selectAllItemsInGroupAction->setEnabled(false);
         return;
     }
