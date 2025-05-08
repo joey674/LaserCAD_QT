@@ -5,6 +5,11 @@
 #include "polylineitem.h"
 #include "scenecontroller.h"
 #include "treenode.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+#include <QDebug>
 
 using namespace Qt::StringLiterals;
 
@@ -322,6 +327,7 @@ void TreeModel::setupDefaultModelData() {
     auto uuid = Manager::getIns().addItem("Layer1", "Layer", getIndex(layer1));
     SceneController::getIns().initLayerUuid(uuid);
 }
+
 void TreeModel::setupModelData(const QList < QStringView > &lines) {
     // struct ParentIndentation
     // {
@@ -592,4 +598,36 @@ void TreeModel::setNodeProperty(const QModelIndex & nodeIndex, const TreeNodePro
         FATAL_MSG("nodeindex not found");
     }
     node->setProperty(propertyIndex, value);
+}
+
+static QJsonObject serializeTreeNode(TreeNode *node) {
+    QJsonObject obj;
+    obj["name"] = node->property(TreeNodePropertyIndex::Name).toString();
+    obj["type"] = node->property(TreeNodePropertyIndex::Type).toString();
+    obj["uuid"] = node->property(TreeNodePropertyIndex::UUID).toString();
+    QJsonArray childrenArray;
+    for (int i = 0; i < node->childCount(); ++i) {
+        TreeNode *child = node->child(i);
+        childrenArray.append(serializeTreeNode(child));
+    }
+    obj["children"] = childrenArray;
+    return obj;
+}
+bool TreeModel::saveTreeToJson(const QString &filePath) const {
+    if (!m_rootItem) {
+        qWarning() << "TreeModel::saveTreeToJson: rootItem is null";
+        return false;
+    }
+    QJsonObject rootObj;
+    rootObj["modelName"] = m_rootItem->property(TreeNodePropertyIndex::Name).toString();
+    rootObj["tree"] = serializeTreeNode(m_rootItem.get());
+    QJsonDocument doc(rootObj);
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "TreeModel::saveTreeToJson: Failed to open file:" << filePath;
+        return false;
+    }
+    file.write(doc.toJson(QJsonDocument::Indented));
+    file.close();
+    return true;
 }

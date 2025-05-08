@@ -72,6 +72,10 @@ public:
     void update();
     void setupExemplarModelData();
     void setupDefaultModelData();
+
+    ///
+    /// 保存树结构到 JSON 文件
+    bool saveTreeToJson(const QString &filePath) const;
 private:
     void setupModelData(const QList < QStringView > &lines);
     void serializeNodeToStream(TreeNode *item, QDataStream &stream, int currentLevel) const;
