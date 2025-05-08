@@ -66,7 +66,6 @@ private slots: // 编辑工具按钮
     void onCenterButtonClicked();
     void onMirrorHorizontalButtonClicked();
     void onMirrorVerticalButtonClicked();
-    void onAlignButtonClicked();
     //
     void onDragSceneButtonClicked();
     //

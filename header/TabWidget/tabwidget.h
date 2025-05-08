@@ -15,6 +15,9 @@
 #include "protocol.h"
 #include "utils.hpp"
 #include <polylinecombine.hpp>
+#include <QGroupBox>
+#include <QRadioButton>
+#include <QButtonGroup>
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -211,45 +214,41 @@ public:
     void addDelayParamsTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto params = item->getDelayParams();
-        //
-        QWidget* delayTab = new QWidget();
-        QVBoxLayout* mainLayout = new QVBoxLayout(delayTab);
-        QGridLayout* gridLayout = new QGridLayout();
-        // 左列
+        QWidget* tab = new QWidget();
+        QVBoxLayout* tabLayout = new QVBoxLayout(tab);
+        QScrollArea* scrollArea = new QScrollArea();
+        scrollArea->setWidgetResizable(true);
+        QWidget* content = new QWidget();
+        QVBoxLayout* layout = new QVBoxLayout(content);
+        layout->setAlignment(Qt::AlignTop);
+        layout->setSpacing(10);
+        QFormLayout* formLayout = new QFormLayout();
         QSpinBox* startDelaySpin = new QSpinBox();
         startDelaySpin->setRange(0, 1000000);
         startDelaySpin->setValue(params.startDelay);
-        gridLayout->addWidget(new QLabel("Start Delay:"), 0, 0);
-        gridLayout->addWidget(startDelaySpin, 0, 1);
+        formLayout->addRow("Start Delay:", startDelaySpin);
         QSpinBox* endDelaySpin = new QSpinBox();
         endDelaySpin->setRange(0, 1000000);
         endDelaySpin->setValue(params.endDelay);
-        gridLayout->addWidget(new QLabel("End Delay:"), 1, 0);
-        gridLayout->addWidget(endDelaySpin, 1, 1);
+        formLayout->addRow("End Delay:", endDelaySpin);
         QSpinBox* polygonDelaySpin = new QSpinBox();
         polygonDelaySpin->setRange(0, 1000000);
         polygonDelaySpin->setValue(params.polygonDelay);
-        gridLayout->addWidget(new QLabel("Polygo Delay:"), 2, 0);
-        gridLayout->addWidget(polygonDelaySpin, 2, 1);
-        // 右列
+        formLayout->addRow("Polygon Delay:", polygonDelaySpin);
         QSpinBox* markDelaySpin = new QSpinBox();
         markDelaySpin->setRange(0, 1000000);
         markDelaySpin->setValue(params.markDelay);
-        gridLayout->addWidget(new QLabel("Mark Delay:"), 0, 2);
-        gridLayout->addWidget(markDelaySpin, 0, 3);
+        formLayout->addRow("Mark Delay:", markDelaySpin);
         QSpinBox* jumpDelaySpin = new QSpinBox();
         jumpDelaySpin->setRange(0, 1000000);
         jumpDelaySpin->setValue(params.jumpDelay);
-        gridLayout->addWidget(new QLabel("Jump Delay:"), 1, 2);
-        gridLayout->addWidget(jumpDelaySpin, 1, 3);
-        // 添加布局
-        mainLayout->addLayout(gridLayout);
-        // 确认按钮
+        formLayout->addRow("Jump Delay:", jumpDelaySpin);
+        layout->addLayout(formLayout);
         QPushButton* confirmBtn = new QPushButton("Confirm");
-        mainLayout->addWidget(confirmBtn);
-        // 点击事件绑定
-        connect(confirmBtn, &QPushButton::clicked, delayTab, [ = ]() {
-            DelayParams params = DelayParams{
+        confirmBtn->setFixedWidth(100);
+        layout->addWidget(confirmBtn, 0, Qt::AlignCenter);
+        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
+            DelayParams params = {
                 startDelaySpin->value(),
                 endDelaySpin->value(),
                 polygonDelaySpin->value(),
@@ -258,7 +257,10 @@ public:
             };
             EditController::getIns().onTabWidgetDelayParamsTab(params);
         });
-        this->addTab(delayTab, "DelayParams");
+        content->setLayout(layout);
+        scrollArea->setWidget(content);
+        tabLayout->addWidget(scrollArea);
+        this->addTab(tab, "DelayParams");
     }
 
     void addArcGeometryTab(const UUID uuid) {
@@ -703,6 +705,7 @@ public:
         this->addTab(polygonTab, "Geometry");
     }
 
+
     ///
     /// \brief addMultiItemsEditTab
     void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
@@ -812,6 +815,65 @@ public:
         this->addTab(tab, "Multi Edit");
     }
 
+    void addMultiItemsAlignTab(const std::vector < UUID > &) {
+        QWidget* tab = new QWidget();
+        QVBoxLayout* outerLayout = new QVBoxLayout(tab);
+        QScrollArea* scrollArea = new QScrollArea();
+        scrollArea->setWidgetResizable(true);
+        QWidget* scrollContent = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(scrollContent);
+        mainLayout->setAlignment(Qt::AlignTop);
+        mainLayout->setSpacing(10);
+        QButtonGroup* hAlignGroup = new QButtonGroup(tab);
+        QButtonGroup* vAlignGroup = new QButtonGroup(tab);
+        // 水平对齐选项
+        QGroupBox* hGroup = new QGroupBox("Horizontal Align");
+        QVBoxLayout* hLayout = new QVBoxLayout(hGroup);
+        QRadioButton* alignLeft = new QRadioButton("left");
+        QRadioButton* alignHCenter = new QRadioButton("center");
+        QRadioButton* alignRight = new QRadioButton("right");
+        hAlignGroup->addButton(alignLeft, 0);
+        hAlignGroup->addButton(alignHCenter, 1);
+        hAlignGroup->addButton(alignRight, 2);
+        hLayout->addWidget(alignLeft);
+        hLayout->addWidget(alignHCenter);
+        hLayout->addWidget(alignRight);
+        // 垂直对齐选项
+        QGroupBox* vGroup = new QGroupBox("Vertical Align");
+        QVBoxLayout* vLayout = new QVBoxLayout(vGroup);
+        QRadioButton* alignTop = new QRadioButton("top");
+        QRadioButton* alignVCenter = new QRadioButton("center");
+        QRadioButton* alignBottom = new QRadioButton("bottom");
+        vAlignGroup->addButton(alignTop, 0);
+        vAlignGroup->addButton(alignVCenter, 1);
+        vAlignGroup->addButton(alignBottom, 2);
+        vLayout->addWidget(alignTop);
+        vLayout->addWidget(alignVCenter);
+        vLayout->addWidget(alignBottom);
+        // 添加到主 layout 中
+        mainLayout->addWidget(hGroup);
+        mainLayout->addWidget(vGroup);
+        // 确认按钮
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        confirmBtn->setFixedWidth(100);
+        confirmBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        mainLayout->addWidget(confirmBtn, 0, Qt::AlignCenter);
+        scrollContent->setLayout(mainLayout);
+        scrollArea->setWidget(scrollContent);
+        outerLayout->addWidget(scrollArea);
+        // 信号
+        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
+            int hAlign = hAlignGroup->checkedId();
+            int vAlign = vAlignGroup->checkedId();
+            qDebug() << "horizontal:" << hAlign;
+            qDebug() << "vertical:" << vAlign;
+            EditController::getIns().onTabWidgetMultiItemsAlignTab(hAlign, vAlign);
+        });
+        this->addTab(tab, "Align");
+    }
+
+    ///
+    /// \brief addDuoItemsBoolOpTab
     void addDuoItemsBoolOpTab(const std::vector < UUID > &uuids) {
         if (uuids.size() != 2) {
             return;

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1798</width>
+    <width>1807</width>
     <height>940</height>
    </rect>
   </property>
@@ -158,13 +158,6 @@
           <widget class="QToolButton" name="mirrorVerticalButton">
            <property name="text">
             <string>mirrorVerticalButton</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QToolButton" name="alignButton">
-           <property name="text">
-            <string>alignButton</string>
            </property>
           </widget>
          </item>
@@ -545,7 +538,7 @@
          <property name="minimumSize">
           <size>
            <width>400</width>
-           <height>400</height>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -567,7 +560,7 @@
          <property name="minimumSize">
           <size>
            <width>400</width>
-           <height>200</height>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
@@ -575,6 +568,9 @@
            <width>400</width>
            <height>1000</height>
           </size>
+         </property>
+         <property name="currentIndex">
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -599,7 +595,7 @@
          <property name="minimumSize">
           <size>
            <width>400</width>
-           <height>200</height>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">

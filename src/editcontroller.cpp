@@ -13,70 +13,6 @@
 EditController EditController::ins;
 
 ///
-/// \brief EditController::editItem
-/// \param pointCoordscene
-/// \param event
-///
-void EditController::editItemInScene(QPointF pointCoordscene, MouseEvent event) {
-    //
-    // if (this->m_currentEditItemGroup.empty() || this->m_currentEditItemGroup.size() > 1) {
-    //     return;
-    // }
-    // auto curEditItem = this->m_currentEditItemGroup[0];
-    //
-    // 处理scene中编辑
-    // switch (curEditItem->type()) {
-    //     case GraphicsItemType::Polyline: {
-    //             PolylineItem *item = static_cast < PolylineItem * > (curEditItem.get());
-    //             this->editPolyline(pointCoordscene, item, event);
-    //             break;
-    //         }
-    //     case GraphicsItemType::Arc: {
-    //             ArcItem *item = static_cast < ArcItem * > (curEditItem.get());
-    //             this->editArc(pointCoordscene, item, event);
-    //             break;
-    //         }
-    //     case GraphicsItemType::Line: {
-    //             break;
-    //         }
-    //         // TODO
-    // };
-}
-
-///
-/// \brief EditController::editArc
-/// \param pointCoordscene
-/// \param item
-/// \param event
-///
-void EditController::editArc(QPointF pointCoordscene, ArcItem* item, MouseEvent event) {
-}
-
-void EditController::editPolyline(QPointF pointCoordscene, PolylineItem* item, MouseEvent event) {
-    if (!item) {
-        return;
-    }
-    // 图形上直接编辑操作点
-    if (this->currentEditPolylineVertexIndex == -1 && event == MouseEvent::LeftRelease) {
-        double minDistance = 50;
-        for (int i = 0; i < item->getVertexCount(); ++i) {
-            double distance = QLineF(pointCoordscene, item->getVertexInScene(i).point).length();
-            if (distance <= 10.0 && distance < minDistance) {
-                minDistance = distance;
-                this->currentEditPolylineVertexIndex = i;
-                DEBUG_MSG("set vertex index" +  QString::number(this->currentEditPolylineVertexIndex));
-            }
-        }
-    } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::MouseMove) {
-        double angle = item->getVertexInScene(this->currentEditPolylineVertexIndex).angle;
-        item->setVertexInScene(this->currentEditPolylineVertexIndex, Vertex{pointCoordscene, angle});
-        // 注意这里输入的是绝对坐标 所以要减去相对坐标！
-    } else if (this->currentEditPolylineVertexIndex != -1 && event == MouseEvent::LeftRelease) {
-        this->currentEditPolylineVertexIndex = -1;
-    }
-}
-
-///
 /// \brief EditController::updateTabWidget
 ///
 void EditController::updateTabWidget() {
@@ -131,6 +67,7 @@ void EditController::updateTabWidget() {
             uuids.push_back(item->getUUID());
         }
         UiManager::getIns().UI()->tabWidget->addMultiItemsEditTab(uuids);
+        UiManager::getIns().UI()->tabWidget->addMultiItemsAlignTab(uuids);
         UiManager::getIns().UI()->tabWidget->addDuoItemsBoolOpTab(uuids);
     }
 }

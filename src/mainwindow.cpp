@@ -410,17 +410,6 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(mirrorVerticalButton);
     connect(mirrorVerticalButton, &QToolButton::clicked,
             this, &MainWindow::onMirrorVerticalButtonClicked);
-    //
-    QToolButton *alignButton = UiManager::getIns().UI()->alignButton;
-    alignButton->setIcon(QIcon(":/button/alignButton.png"));
-    alignButton->setIconSize(QSize(30, 30));
-    alignButton->setStyleSheet(buttonStyle);
-    alignButton->setCheckable(true);
-    alignButton->setAutoExclusive(false);
-    alignButton->setToolTip("");
-    UiManager::getIns().registerToolButton(alignButton);
-    connect(alignButton, &QToolButton::clicked,
-            this, &MainWindow::onAlignButtonClicked);
 }
 
 void MainWindow::initLayerButton() {
@@ -676,7 +665,6 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     if (KeyboardManager::getIns().IsMouseLeftButtonHold == false && KeyboardManager::getIns().IsMouseRightButtonHold == false) {
         switch (SceneController::getIns().m_currentOperationEvent) {
             case OperationEvent::EditProperty: {
-                    EditController::getIns().editItemInScene(pointCoordscene, event);
                     break;
                 }
             case OperationEvent::DrawCircle: {
@@ -746,7 +734,6 @@ void MainWindow::onGraphicsviewMouseLeftPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -801,7 +788,6 @@ void MainWindow::onGraphicsviewMouseRightPressed(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -851,7 +837,6 @@ void MainWindow::onGraphicsviewMouseLeftReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -901,7 +886,6 @@ void MainWindow::onGraphicsviewMouseRightReleased(QPoint pointCoordView) {
                 break;
             }
         case OperationEvent:: EditProperty: {
-                EditController::getIns().editItemInScene(pointCoordscene, event );
                 break;
             }
         case OperationEvent::DrawCircle: {
@@ -1086,11 +1070,6 @@ void MainWindow::onMirrorHorizontalButtonClicked() {
 void MainWindow::onMirrorVerticalButtonClicked() {
     setEditMode();
     EditController::getIns().onMirrorVerticalTriggered();
-}
-
-void MainWindow::onAlignButtonClicked() {
-    setEditMode();
-    EditController::getIns().onAlignTriggered();
 }
 
 void MainWindow::onDeleteButtonClicked() {

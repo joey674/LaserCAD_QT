@@ -159,25 +159,23 @@ public:
         }
         this->updateEditRect();
     }
-    void onTabWidgetRectGeometryTab(QPointF leftTop, QPointF rightBottom)
-    {
+    void onTabWidgetRectGeometryTab(QPointF leftTop, QPointF rightBottom) {
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
-        RectItem *item = static_cast<RectItem *>(curEditItem.get());
+        RectItem *item = static_cast < RectItem * > (curEditItem.get());
         double left = leftTop.x();
         double top = leftTop.y();
         double right = rightBottom.x();
         double bottom = rightBottom.y();
-        std::array<QPointF, 5> points = {
+        std::array < QPointF, 5 > points = {
             QPointF(left, top),     // 0 左上
             QPointF(right, top),    // 1 右上
             QPointF(right, bottom), // 2 右下
             QPointF(left, bottom),  // 3 左下
             QPointF(left, top)      // 4 回到左上闭合
         };
-
         for (int i = 0; i < 5; ++i) {
             item->setVertexInScene(i, Vertex{points[i], 0});
         }
@@ -186,52 +184,44 @@ public:
     void onTabWidgetEllipseGeometryTab(QPointF center,
                                        double radiusX,
                                        double radiusY,
-                                       double rotateAngle)
-    {
+                                       double rotateAngle) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
         //
-        EllipseItem *item = static_cast<EllipseItem *>(curEditItem.get());
+        EllipseItem *item = static_cast < EllipseItem * > (curEditItem.get());
         item->setVertexInScene(0, Vertex{center, 0});
         item->setRadiusX(radiusX);
         item->setRadiusY(radiusY);
         item->setRotateAngle(rotateAngle);
         this->updateEditRect();
     }
-    void onTabWidgetPolygonGeometryTab(QPointF center, double radius, uint edgeCount, double angle)
-    {
+    void onTabWidgetPolygonGeometryTab(QPointF center, double radius, uint edgeCount, double angle) {
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
-        PolygonItem *item = static_cast<PolygonItem *>(curEditItem.get());
-
+        PolygonItem *item = static_cast < PolygonItem * > (curEditItem.get());
         item->setVertexInScene(0, Vertex{center, 0});
         item->setRadius(radius);
         item->setEdgeCount(edgeCount);
         item->setRotateAngle(angle);
-
         this->updateEditRect();
     }
     void onTabWidgetSpiralGeometryTab(
-        QPointF center, double r0, double r1, double turns, double stepDeg)
-    {
+        QPointF center, double r0, double r1, double turns, double stepDeg) {
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-
         auto &curEditItem = this->m_currentEditItemGroup[0];
-        SpiralItem *item = static_cast<SpiralItem *>(curEditItem.get());
-
+        SpiralItem *item = static_cast < SpiralItem * > (curEditItem.get());
         item->setVertexInScene(0, Vertex{center, 0});
         item->setStartRadius(r0);
         item->setEndRadius(r1);
         item->setTurns(turns);
         item->setAngleStepDeg(stepDeg);
-
         this->updateEditRect();
     }
 
@@ -286,6 +276,61 @@ public:
         }
         this->updateEditRect();
     }
+    /// \brief onTabWidgetMultiItemsAlignTab
+    ///
+    void onTabWidgetMultiItemsAlignTab(int hAlign, int vAlign) {
+        if (m_currentEditItemGroup.empty()) {
+            return;
+        }
+        auto refItem = m_currentEditItemGroup.back();
+        QPointF refCenter = refItem->getCenterInScene();
+        QRectF refRect = refItem->getBoundingRectBasis();
+        double refLeft = refCenter.x() - refRect.width() / 2.0;
+        double refRight = refCenter.x() + refRect.width() / 2.0;
+        double refTop = refCenter.y() - refRect.height() / 2.0;
+        double refBottom = refCenter.y() + refRect.height() / 2.0;
+        for (auto& item : m_currentEditItemGroup) {
+            if (item == refItem) {
+                continue;
+            }
+            QPointF itemCenter = item->getCenterInScene();
+            QRectF itemRect = item->getBoundingRectBasis();
+            double halfWidth = itemRect.width() / 2.0;
+            double halfHeight = itemRect.height() / 2.0;
+            QPointF targetCenter = itemCenter;
+            // 水平对齐
+            switch (hAlign) {
+                case 0: // left
+                    targetCenter.setX(refLeft + halfWidth);
+                    break;
+                case 1: // center
+                    targetCenter.setX(refCenter.x());
+                    break;
+                case 2: // right
+                    targetCenter.setX(refRight - halfWidth);
+                    break;
+                default:
+                    break;
+            }
+            // 垂直对齐
+            switch (vAlign) {
+                case 0: // top
+                    targetCenter.setY(refTop + halfHeight);
+                    break;
+                case 1: // center
+                    targetCenter.setY(refCenter.y());
+                    break;
+                case 2: // bottom
+                    targetCenter.setY(refBottom - halfHeight);
+                    break;
+                default:
+                    break;
+            }
+            item->setCenterInScene(targetCenter);
+        }
+        this->updateEditRect();
+    }
+
     /// \brief onTabWidgetMultiCombineTab
     /// 把两个闭合曲线做boolan Operation
     void onTabWidgetDuoItemsBoolOpTab(cavc::PlineCombineMode mode) {
@@ -351,8 +396,7 @@ public:
         this->updateEditRect();
         this->updateTabWidget();
     }
-    void onMirrorHorizontalTriggered()
-    {
+    void onMirrorHorizontalTriggered() {
         if (EditController::getIns().m_currentEditItemGroup.empty()) {
             return;
         }
@@ -368,18 +412,17 @@ public:
                 item->setVertexInScene(i, newVertex);
             }
             if (item->type() == GraphicsItemType::Ellipse) {
-                auto ellipse = static_cast<EllipseItem *>(item.get());
+                auto ellipse = static_cast < EllipseItem * > (item.get());
                 auto angle = ellipse->getRotateAngle();
                 auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
                 ellipse->setRotateAngle(mirroredAngle);
             } else if (item->type() == GraphicsItemType::Spiral) {
             }
-    }
-    this->updateEditRect();
-    this->updateTabWidget();
+        }
+        this->updateEditRect();
+        this->updateTabWidget();
     };
-    void onMirrorVerticalTriggered()
-    {
+    void onMirrorVerticalTriggered() {
         if (EditController::getIns().m_currentEditItemGroup.empty()) {
             return;
         }
@@ -395,21 +438,11 @@ public:
                 item->setVertexInScene(i, newVertex);
             }
             if (item->type() == GraphicsItemType::Ellipse) {
-                auto ellipse = static_cast<EllipseItem *>(item.get());
+                auto ellipse = static_cast < EllipseItem * > (item.get());
                 auto angle = ellipse->getRotateAngle();
                 auto mirroredAngle = std::fmod(360.0 - angle, 360.0);
                 ellipse->setRotateAngle(mirroredAngle);
             }
-        }
-        this->updateEditRect();
-        this->updateTabWidget();
-    };
-    void onAlignTriggered()
-    {
-        if (EditController::getIns().m_currentEditItemGroup.size() <= 2) {
-            return;
-        }
-        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
         }
         this->updateEditRect();
         this->updateTabWidget();
@@ -517,16 +550,6 @@ public:
     /// 物体上鼠标press事件
     void onGraphicsItemMousePress(UUID uuid) {}
 
-/// ********************
-/// \brief 编辑模式下在scene中编辑对象
-/// \brief editItemInScene     scene中的编辑事件会传入
-/// \param pointCoordscene event 接收的是鼠标坐标事件
-/// ********************
-public:
-    void editItemInScene(QPointF pointCoordscene, MouseEvent event);
-    int currentEditPolylineVertexIndex = -1;
-    void editPolyline(QPointF pointCoordscene, PolylineItem *, MouseEvent event);
-    void editArc(QPointF pointCoordscene, ArcItem *, MouseEvent event);
 /// ********************
 /// 单例初始化
 /// ********************
