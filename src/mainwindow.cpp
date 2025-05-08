@@ -38,12 +38,14 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     ui->setupUi(this);
     UiManager::getIns().setUI(std::move(ui));
     showMaximized();
+    //
     initTitleBar();
     initGraphicsView();
     initDrawToolButton();
     initEditToolButton();
     initLayerButton();
-    initHardwareButton();
+    initSignalButton();
+    initHardWareButton();
     initTreeViewModel();
     // initTableViewModel();
     initStatusBar();
@@ -456,7 +458,7 @@ void MainWindow::initLayerButton() {
     //
 }
 
-void MainWindow::initHardwareButton() {
+void MainWindow::initSignalButton() {
     QString buttonStyle = buttonStyle1;
     QToolButton *digitalInButton = UiManager::getIns().UI()->digitalInButton;
     digitalInButton->setIcon(QIcon(":/button/digitalInButton.png"));
@@ -537,6 +539,22 @@ void MainWindow::initHardwareButton() {
             &MainWindow::onLoopButtonClicked);
 }
 
+void MainWindow::initHardWareButton() {
+    QString buttonStyle = buttonStyle1;
+    //
+    QToolButton *markButton = UiManager::getIns().UI()->markButton;
+    markButton->setIcon(QIcon(":/button/markButton.png"));
+    markButton->setIconSize(QSize(30, 30));
+    markButton->setStyleSheet(buttonStyle1);
+    markButton->setCheckable(false);
+    markButton->setAutoExclusive(false);
+    markButton->setToolTip("");
+    connect(markButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onMarkButtonClicked);
+}
+
 void MainWindow::initStatusBar() {
     this->labelMouseCoordinate = new QLabel("coordinate: ");
     this->labelMouseCoordinate->setMinimumWidth(150);
@@ -600,7 +618,6 @@ void MainWindow::initLaserWorker() {
     QThread* thread = new QThread();
     worker->moveToThread(thread);
     connect(thread, &QThread::started, worker, &LaserWorker::run);
-    connect(this, &MainWindow::sendLaserCommand, worker, &LaserWorker::enqueueCommand);
     thread->start();
 }
 
@@ -1134,6 +1151,10 @@ void MainWindow::onMotionButtonClicked() {
 void MainWindow::onLoopButtonClicked() {
     setEditMode();
     Manager::getIns().addItem("Loop", "Signal");
+}
+
+void MainWindow::onMarkButtonClicked() {
+    DEBUG_MSG(1);
 }
 
 void MainWindow::onAddLayerButtonClicked() {

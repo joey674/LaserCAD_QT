@@ -202,7 +202,7 @@ void EditController::onTreeViewModelSelectionChanged(
         } else if (type == "Item" ) {
             item->setSelected(true);
         } else if (type == "Signal") {
-            // 设置curEditItemGroup,添加item
+            // 设置curEditItemGroup,添加item(因为对于signal来说,无法在场景中选中 从而触发添加进editgroup)
             this->m_currentEditItemGroup.push_back(item);
         }
     }

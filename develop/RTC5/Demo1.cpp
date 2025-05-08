@@ -171,6 +171,10 @@ int _tmain( int     // argc
 
     set_rtc4_mode();            //  for RTC4 compatibility
 
+
+
+
+
     // Initialize the RTC5
     stop_execution();
     //  If the DefaultCard has been used previously by another application 
@@ -215,6 +219,8 @@ int _tmain( int     // argc
 
     set_standby( StandbyHalfPeriod, StandbyPulseWidth );
 
+
+    // 
     // Timing, delay and speed preset
     set_start_list( 1U );
         set_laser_pulses( LaserHalfPeriod, LaserPulseWidth );
@@ -223,7 +229,6 @@ int _tmain( int     // argc
         set_jump_speed( JumpSpeed );
         set_mark_speed( MarkSpeed );
     set_end_of_list();
-
     execute_list( 1U );
 
     // Draw

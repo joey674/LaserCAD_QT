@@ -15,7 +15,7 @@ class GraphicsView: public QGraphicsView {
 public:
     explicit GraphicsView(QWidget *parent = nullptr) {};
     ~GraphicsView() {
-        WARN_MSG( "GraphicsView destructed");
+        INFO_MSG( "GraphicsView destructed");
     }
 
 protected:

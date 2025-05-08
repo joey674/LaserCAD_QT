@@ -28,12 +28,13 @@ private: // 初始化组件./绑定硬件
     void initDrawToolButton();
     void initEditToolButton();
     void initLayerButton();
-    void initHardwareButton();
+    void initSignalButton();
     void initStatusBar();
     void initTreeViewModel();
     void initTableViewModel();
     void initTabWidget();
     void initLaserWorker();
+    void initHardWareButton();
     void test();
 public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
     void setEditMode();
@@ -80,13 +81,15 @@ private slots: // 编辑工具按钮
     void onDrawTestLineButtonClicked() {}
     void onUndoButtonClicked() {}
     void onRedoButtonClicked() {}
-private slots: // 硬件操作按钮
+private slots: // 硬件信号按钮
     void onDigitalInButtonClicked();
     void onDigitalOutButtonClicked();
     void onDoPauseButtonClicked();
     void onDelayTimeButtonClicked();
     void onMotionButtonClicked();
     void onLoopButtonClicked();
+private slots: // 硬件操作按钮
+    void onMarkButtonClicked();
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();

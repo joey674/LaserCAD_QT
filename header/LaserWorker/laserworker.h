@@ -11,45 +11,27 @@ class LaserWorker : public QObject {
     Q_OBJECT
 
 public:
-    LaserWorker() {
-        initRTC5();
-    }
-
-    ~LaserWorker() {
-        terminateRTC5();
-    }
+    LaserWorker();
 
 public slots:
-    void run() {
-        while (true) {
-            QMutexLocker locker(&queueMutex);
-            if (commandQueue.isEmpty()) {
-                queueNotEmpty.wait(&queueMutex);
-                continue;
-            }
-            auto command = commandQueue.dequeue();
-            locker.unlock();
-            processCommand(command);
-        }
-    }
-
-    void enqueueCommand(const QVector < QPoint > & figure) {
-        QMutexLocker locker(&queueMutex);
-        commandQueue.enqueue(figure);
-        queueNotEmpty.wakeAll();
-    }
+    void run();
+    void setCard(int index);
 
 private:
-    QQueue < QVector < QPoint>> commandQueue;
-    QMutex queueMutex;
-    QWaitCondition queueNotEmpty;
+    // 初始化dll并尝试找卡
+    bool initDLL();
+    bool connectCard();
+    void reconnectIfNeeded();
+    void terminateDLL();
 
-    void initRTC5();
+    QMutex mutex;
+    QWaitCondition waitForSettingInput;
 
-    void terminateRTC5();
-
-    void processCommand(const QVector < QPoint > & figure) {
-    }
+    // card
+    int requestedCard = -1;
+    //
+    bool connected = false;
+    bool needReconnect = false;
 };
 
 #endif // LASERWORKER_H

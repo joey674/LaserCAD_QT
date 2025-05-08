@@ -213,12 +213,12 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
         // 如果是Item节点, 不允许接收drop, 但是可以drag和edit
         else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Item")) {
             defaultFlags |= Qt::ItemIsDragEnabled
-                            | Qt::ItemIsEditable
+                            // | Qt::ItemIsEditable
                             | QAbstractItemModel::flags(index);
         } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Group")) {
             defaultFlags |= Qt::ItemIsDragEnabled
                             | Qt::ItemIsDropEnabled
-                            | Qt::ItemIsEditable
+                            // | Qt::ItemIsEditable
                             | QAbstractItemModel::flags(index);
         } else if (node->property(TreeNodePropertyIndex::Type) == QVariant("Signal")) {
             defaultFlags |= Qt::ItemIsDragEnabled

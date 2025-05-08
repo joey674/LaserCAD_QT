@@ -22,6 +22,7 @@ public:
     void initFrom(const GraphicsItem &other) {
         // 拷贝基础字段;  不可以拷贝copyparams/offsetparams; 如果有需要再说
         this->m_uuid = GenerateUUID();
+        this->m_pen = other.getPen();
         this->setFlags(other.flags());
         this->m_markParams = other.m_markParams;
         this->m_delayParams = other.m_delayParams;

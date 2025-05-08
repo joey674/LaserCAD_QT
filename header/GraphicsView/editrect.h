@@ -76,18 +76,19 @@ public:
                              DisplayPadding);
         painter->drawRect(displayRect);
         // editrect的编辑边框和handle在缩放时不发生变化
-        qreal scale = SceneController::getIns().getSceneScale().first;
-        DEBUG_VAR(scale);
-        qreal handleSize = 8.0 / scale;
+        // qreal scale = SceneController::getIns().getSceneScale().first;
+        // DEBUG_VAR(scale);
+        // qreal handleSize = 8.0 / scale;
         painter->setPen(Qt::NoPen);
         for (int i = 0; i < 6; ++i) {
             painter->setBrush(getHandleColor(i));
             QRectF rect = handleRect(i);
-            QPointF center = rect.center();
-            QRectF fixedRect(center.x() - handleSize / 2,
-                             center.y() - handleSize / 2,
-                             handleSize, handleSize);
-            painter->drawRect(fixedRect);
+            painter->drawRect(rect);
+            // QPointF center = rect.center();
+            // QRectF fixedRect(center.x() - handleSize / 2,
+            //                  center.y() - handleSize / 2,
+            //                  handleSize, handleSize);
+            // painter->drawRect(fixedRect);
         }
     }
 
@@ -217,9 +218,20 @@ private:
                 pos.setY(pos.y() + 20);
                 break;
         }
-        return QRectF(pos.x() - HandleSize / 2, pos.y() - HandleSize / 2, HandleSize, HandleSize);
+        auto handleRect = QRectF(pos.x() - HandleSize / 2,
+                                 pos.y() - HandleSize / 2,
+                                 HandleSize,
+                                 HandleSize);
+        //把handle的小矩形scale一下 可以根据scene缩放自动缩放
+        qreal scale = SceneController::getIns().getSceneScale().first;
+        qreal handleSize = 8.0 / scale;
+        QPointF center = handleRect.center();
+        QRectF scaledRect(center.x() - handleSize / 2,
+                          center.y() - handleSize / 2,
+                          handleSize,
+                          handleSize);
+        return scaledRect;
     }
-
     QColor getHandleColor(int index) const {
         if (index <= 3) {
             return Qt::green;
@@ -232,7 +244,7 @@ private:
         }
         return Qt::black;
     }
-    int hitTestHandles(const QPointF &pos) const {
+    int hitTestHandles(const QPointF & pos) const {
         for (int i = 0; i < 6; ++i) {
             if (handleRect(i).contains(pos)) {
                 return i;
@@ -240,10 +252,9 @@ private:
         }
         return -1;
     }
-
     /// \brief applyScale
     /// \param delta
-    void applyScale(const QPointF &delta) {
+    void applyScale(const QPointF & delta) {
         prepareGeometryChange();
         QRectF rect = m_startEditRect;
         QPointF fixedPoint;
@@ -311,16 +322,15 @@ private:
         QRectF newRect(fixedPoint, movingPoint);
         m_editRect = newRect.normalized();
     }
-
     /// \brief applyMove
     /// \param deltaScene
-    void applyMove(const QPointF &deltaScene) {
+    void applyMove(const QPointF & deltaScene) {
         prepareGeometryChange();
         setPos(m_startPos + deltaScene);
     }
     /// \brief applyRotate
     /// \param currentScenePos
-    void applyRotate(const QPointF &currentScenePos) {
+    void applyRotate(const QPointF & currentScenePos) {
         prepareGeometryChange();
         // --- 动态实时计算当前m_editRect在scene中的中心 ---
         QPointF topLeft = mapToScene(m_editRect.topLeft());
@@ -344,10 +354,9 @@ private:
         QPointF offset = centerInScene - afterRotationCenter;
         setPos(pos() + offset);
     }
-
     /// \brief applyMoveToGraphicsItem
     /// \param item
-    void applyMoveToGraphicsItem(GraphicsItem &item, const QPointF &deltaMove) {
+    void applyMoveToGraphicsItem(GraphicsItem & item, const QPointF & deltaMove) {
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
             QPointF movedPos = vertex.point + deltaMove;
@@ -356,7 +365,7 @@ private:
     }
     /// \brief applyRotateToGraphicsItem
     /// \param item
-    void applyRotateToGraphicsItem(GraphicsItem &item, qreal deltaRotationDeg, const QPointF &center) {
+    void applyRotateToGraphicsItem(GraphicsItem & item, qreal deltaRotationDeg, const QPointF & center) {
         qreal radians = qDegreesToRadians(deltaRotationDeg);
         // 旋转所有顶点
         for (int i = 0; i < item.getVertexCount(); ++i) {
@@ -395,13 +404,12 @@ private:
             }
         }
     }
-
     /// \brief applyScaleToGraphicsItem
     /// \param item
-    void applyScaleToGraphicsItem(GraphicsItem &item,
+    void applyScaleToGraphicsItem(GraphicsItem & item,
                                   qreal scaleX,
                                   qreal scaleY,
-                                  const QPointF &center) {
+                                  const QPointF & center) {
         // 顶点缩放（中心点）
         for (int i = 0; i < item.getVertexCount(); ++i) {
             Vertex vertex = item.getVertexInScene(i);
@@ -442,10 +450,9 @@ private:
             }
         }
     }
-
     /// \brief openVertexInputDialog
     /// \param item
-    void openVertexInputDialog(GraphicsItem &item, int index, const Vertex &currentVertex) {
+    void openVertexInputDialog(GraphicsItem & item, int index, const Vertex & currentVertex) {
         QDialog dialog;
         dialog.setWindowTitle("Edit Vertex");
         QFormLayout *form = new QFormLayout(&dialog);
@@ -476,7 +483,6 @@ private:
         }
         setEditItems(m_editItems);
     }
-
 };
 
 #endif // EDITRECT_H
