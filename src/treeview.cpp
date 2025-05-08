@@ -10,7 +10,7 @@ void TreeView::selectionChanged(const QItemSelection &selected, const QItemSelec
         TreeModel *model = qobject_cast < TreeModel * > (this->model());
         for (const QModelIndex &index : selectedIndexes) {
             QString type = model->nodeProperty(index, TreeNodePropertyIndex::Type).toString();
-            if (type == "Layer") {
+            if (type == "Layer") { // layer不可选中
                 selectionModel()->select(index, QItemSelectionModel::Deselect);
             }
         }

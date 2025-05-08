@@ -60,6 +60,12 @@ void SceneController::addLayer() {
     this->m_layerList.push_back(uuid);
     // 统计总共创建过几个layer
     this->m_layerCreatedCount ++;
+    // 设置工作图层为新加的图层
+    this->setCurrentLayer(uuid);
+    // 设置图层颜色
+    QColor selectedColor = kLayerColors[this->m_newLayerExamplarColor];
+    Manager::getIns().itemMapFind(uuid)->setColor(selectedColor);
+    this->m_newLayerExamplarColor = (this->m_newLayerExamplarColor + 1) % kLayerColors.size();
 }
 
 void SceneController::deleteCurrentLayer() {

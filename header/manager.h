@@ -28,7 +28,7 @@ public:
     UUID addItem(std::shared_ptr < GraphicsItem > ptr);
     /// \brief addItem 添加非graphicitem(包括layer node physicItem)
     UUID addItem(QString name, QString type, QModelIndex position = QModelIndex{} );
-    /// \brief deleteItem 删除item
+    /// \brief deleteItem 删除item; 并且会删除其下所有子节点
     void deleteItem(UUID uuid);
     /// \brief copyItem 复制graphicitem
     UUID copyItem(UUID uuid) {

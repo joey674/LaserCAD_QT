@@ -26,6 +26,7 @@ public:
 public:
     UUID m_currentLayer;
     int m_layerCreatedCount = 1;
+    int m_newLayerExamplarColor = 1;
 
     std::vector < UUID > m_layerList;
     /// \brief setCurrentLayer 设置当前layer; 同时还会做一些操作: 设定只有当前图层物体可动,其他不可动; 以及其他图层颜色为display;
@@ -63,4 +64,18 @@ private:
 public:
     static SceneController &getIns();
 };
+
+const QList < QColor > kLayerColors = {
+    QColor("#000000"),   // 黑
+    QColor("#FF0000"),  // 红
+    QColor("#00FF00"),  // 绿
+    QColor("#0000FF"),  // 蓝
+    QColor("#FFFF00"),  // 黄
+    QColor("#FF00FF"),  // 紫
+    QColor("#00FFFF"),  // 青
+    QColor("#FFA500"),  // 橙
+    QColor("#A52A2A"),  // 棕
+    QColor("#808080"),  // 灰
+};
+
 #endif // SCENEMANAGER_H

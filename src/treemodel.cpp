@@ -51,7 +51,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
         if (role == Qt::BackgroundRole && itemType == "Layer") {
             return QBrush(color);
         } else {
-            return QBrush(Qt::white);
+            return QBrush(color);
         }
     }
     return {};
@@ -543,6 +543,45 @@ std::vector < QModelIndex > TreeModel::getAllChildIndexs(const QModelIndex &node
         children.push_back(childIndex);
         auto subChildren = getAllChildIndexs(childIndex);
         children.insert(children.end(), subChildren.begin(), subChildren.end());
+    }
+    return children;
+}
+
+std::vector < TreeNode * > TreeModel::getClosedChildNodes(const QModelIndex &nodeIndex) const {
+    std::vector < TreeNode * > children;
+    // 返回node都返回第0列的
+    auto baseIndex = nodeIndex.sibling(nodeIndex.row(), 0);
+    TreeNode* baseNode = getNode(baseIndex);
+    if (!baseNode) {
+        WARN_MSG("null node");
+        return children;
+    }
+    int childCount = rowCount(baseIndex);
+    for (int row = 0; row < childCount; ++row) {
+        QModelIndex childIndex = index(row, 0, baseIndex);
+        TreeNode* childNode = getNode(childIndex);
+        if (!childNode) {
+            continue;
+        }
+        children.push_back(childNode);
+    }
+    return children;
+}
+
+std::vector < QModelIndex > TreeModel::getClosedChildIndexs(const QModelIndex &nodeIndex) const {
+    std::vector < QModelIndex > children;
+    QModelIndex baseIndex = nodeIndex.sibling(nodeIndex.row(), 0);
+    TreeNode *baseNode = getNode(baseIndex);
+    if (!baseNode) {
+        return children; // 可能是无效索引或错误节点
+    }
+    int childCount = rowCount(baseIndex);
+    for (int row = 0; row < childCount; ++row) {
+        QModelIndex childIndex = this->index(row, 0, baseIndex);
+        if (!childIndex.isValid()) {
+            continue;
+        }
+        children.push_back(childIndex);
     }
     return children;
 }

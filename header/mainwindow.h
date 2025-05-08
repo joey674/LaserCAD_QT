@@ -92,16 +92,13 @@ private slots: // 硬件操作按钮
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();
-private slots: // TreeViewModel的右键菜单栏
+/// TreeViewModel的右键菜单栏
+private:
+    QAction *addGroupAction = nullptr;
+    QAction *dismissGroupAction = nullptr;
+    QAction *selectAllItemsInGroupAction = nullptr;
+private slots:
     void onTreeViewModelShowContextMenu(const QPoint &pos);
-    void onTreeViewModelAddLayer();
-    void onTreeViewModelAddGroup();
-    void onTreeViewModelDeleteNode();
-    void onTreeViewModelCopyNode();
-    void onTreeViewModelSetLayerVisible();
-    void onTreeViewModelSetLayerUnvisible();
-    void onTreeViewModelSelectAllItemsInGroup();
-public slots:
     void onTreeViewModelUpdateActions();
 signals:
     void sendLaserCommand(const QVector < QPoint > & figure);

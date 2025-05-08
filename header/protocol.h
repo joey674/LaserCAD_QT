@@ -57,6 +57,7 @@ enum GraphicsItemType /* 用于识别type */
     Rect = 6276,
     Polygon = 6277,
     Ellipse = 6278,
+    Combined = 6279,
 };
 
 const std::pair < double, double > DisplayPointSize = std::pair < double, double > {1, 1}; /*标准点在x、y方向上的半径*/

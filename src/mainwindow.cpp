@@ -569,11 +569,11 @@ void MainWindow::initTreeViewModel() {
     view->setColumnWidth(2, 60);
     view->setColumnWidth(3, 60);
     ///  contextmenu
-    // view->setContextMenuPolicy(Qt::CustomContextMenu);
-    // connect(view,
-    //         &QWidget::customContextMenuRequested,
-    //         this,
-    //         &MainWindow::onTreeViewModelShowContextMenu);
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(view,
+            &QWidget::customContextMenuRequested,
+            this,
+            &MainWindow::onTreeViewModelShowContextMenu);
     connect(view, &QTreeView::clicked, this, [ = ](const QModelIndex & index) {
         EditController::getIns().onTreeViewModelClicked (index);
     });
@@ -1144,149 +1144,64 @@ void MainWindow::onDeleteLayerButtonClicked() {
     SceneController::getIns().deleteCurrentLayer ();
 }
 
-///
-/// \brief MainWindow::onTreeViewModelShowContextMenu 每次重新生成一个menu到右键点击处
-/// \param pos
-///
+
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     // 获取鼠标点击的位置
-    // QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
-    // if (!index.isValid()) {
-    //     return;
-    // }
-    // QMenu contextMenu(this);
-    // this->addGroupAction = new QAction("Add Group", &contextMenu);
-    // this->deleteNodeAction = new QAction("Delete Node", &contextMenu);// 这里的node包括item和group
-    // this->copyNodeAction = new QAction("Copy Node", &contextMenu);
-    // this->selectAllItemsInGroupAction = new QAction("Select all Items In this Group", &contextMenu);
-    // contextMenu.addAction(this->addGroupAction);
-    // contextMenu.addAction(this->deleteNodeAction);
-    // contextMenu.addAction(this->copyNodeAction);
-    // contextMenu.addAction(this->selectAllItemsInGroupAction);
-    // connect(this->addGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelAddGroup);
-    // connect(this->deleteNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelDeleteNode);
-    // connect(this->copyNodeAction, &QAction::triggered, this, &MainWindow::onTreeViewModelCopyNode);
-    // connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, &MainWindow::onTreeViewModelSelectAllItemsInGroup);
-    // onTreeViewModelUpdateActions();
-    // contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
-}
-
-void MainWindow::onTreeViewModelDeleteNode() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto node = model->getNode(nodeIndex);
-        auto name = node->property(TreeNodePropertyIndex::Name).toString();
-        DEBUG_VAR(name);
-        auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
-        Manager::getIns().deleteItem(uuid);
-    }
-    onTreeViewModelUpdateActions();
-}
-
-void MainWindow::onTreeViewModelCopyNode() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto uuid = model->getNode(nodeIndex)->property(TreeNodePropertyIndex::UUID).toString();
-        Manager::getIns().copyItem(uuid);
-    }
-    onTreeViewModelUpdateActions();
-}
-
-void MainWindow::onTreeViewModelSetLayerVisible() {
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
-    // for (const auto& item : inLayerItems) {
-    //     Manager::getIns().setItemVisible(item, true);
-    // }
-}
-
-void MainWindow::onTreeViewModelSetLayerUnvisible() {
-    // auto inLayerItems = Manager::getIns().getItemsByLayer(SceneController::getIns().getCurrentLayer ());
-    // for (const auto& item : inLayerItems) {
-    //     Manager::getIns().setItemVisible(item, false);
-    // }
-}
-
-void MainWindow::onTreeViewModelSelectAllItemsInGroup() {
-    auto *treeView = UiManager::getIns().UI()->treeView;
-    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
-    const auto nodeIndexList
-        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    if (nodeIndexList.size() > 1) {
+    QModelIndex index = UiManager::getIns().UI()->treeView->indexAt(pos);
+    if (!index.isValid()) {
         return;
     }
-    auto indexList = model->getAllChildIndexs(nodeIndexList[0]);
-    indexList.push_back(nodeIndexList[0]);
-    for (const auto &index : indexList) {
-        treeView->selectionModel()->select(index,
-                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
-    }
-}
-
-void MainWindow::onTreeViewModelAddLayer() {
-    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    // auto layerCount = model->rowCount(QModelIndex());
-    // if (!model->insertRow(layerCount, QModelIndex())) {
-    //     FATAL_MSG("fail insert layer");
-    // }
-    // const QModelIndex layerNodeIndex = model->index(layerCount, 0, QModelIndex());
-    // QString name = "Layer" + QString::number(layerCount + 1);
-    // QString type = "Layer";
-    // Manager::getIns().addItem(layerNodeIndex, name, type);
-    // onTreeViewModelUpdateActions();
-}
-
-void MainWindow::onTreeViewModelAddGroup() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    // 提取选中的节点列表
-    const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    auto mimeList = model->mimeData(nodeIndexList);
-    // //在目标处创建group节点
-    QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
-    // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
-    if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
-        return;
-    }
-    const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
-    QString name = "Group";
-    QString type = "Group";
-    Manager::getIns().addItem( name, type, groupIndex);
-    // 把节点列表移动到group节点下
-    model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
-    // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
-    for (const QModelIndex &nodeIndex : nodeIndexList) {
-        auto node = model->getNode(nodeIndex);
-        auto parentNode = node->parent();
-        auto parentNodeIndex = model->getIndex(parentNode);
-        model->removeRows(node->indexInParent(), 1, parentNodeIndex);
-    }
+    QMenu contextMenu(this);
+    this->addGroupAction = new QAction("Add group", &contextMenu);
+    this->dismissGroupAction = new QAction("Dismiss group", &contextMenu);
+    this->selectAllItemsInGroupAction = new QAction("Select all items in this group", &contextMenu);
+    contextMenu.addAction(this->addGroupAction);
+    contextMenu.addAction(this->dismissGroupAction);
+    contextMenu.addAction(this->selectAllItemsInGroupAction);// 暂时只给group做这个功能 不给layer做
+    connect(this->addGroupAction, &QAction::triggered, this, [ = ]() {
+        EditController::getIns().onTreeViewModelAddGroup();
+    });
+    connect(this->dismissGroupAction, &QAction::triggered, this, [ = ]() {
+        EditController::getIns().onTreeViewModelDismissGroup();
+    });
+    connect(this->selectAllItemsInGroupAction, &QAction::triggered, this, [ = ]() {
+        EditController::getIns().onTreeViewModelSelectAllItemsInGroup ();
+    });
     onTreeViewModelUpdateActions();
+    contextMenu.exec(UiManager::getIns().UI()->treeView->viewport()->mapToGlobal(pos));
 }
 
 void MainWindow::onTreeViewModelUpdateActions() {
-    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
-    // const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    // for (const QModelIndex &nodeIndex : nodeIndexList) {
-    //     QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
-    //     if (type == "Layer") { // layer已经被限制不能参与多选,只能被单选; 所以这里直接返回layer的menu就行
-    //         this->addGroupAction->setEnabled(false);
-    //         this->deleteNodeAction->setEnabled(false);
-    //         this->copyNodeAction->setEnabled(false);
-    //         this->selectAllItemsInGroupAction->setEnabled(false);
-    //         return;
-    //     } else if (type == "Group") {
-    //         this->addGroupAction->setEnabled(true);
-    //         this->deleteNodeAction->setEnabled(true);
-    //         this->copyNodeAction->setEnabled(false);
-    //         this->selectAllItemsInGroupAction->setEnabled(true);
-    //         return;
-    //     } else if (type == "Item") {
-    //         this->addGroupAction->setEnabled(true);
-    //         this->deleteNodeAction->setEnabled(true);
-    //         this->copyNodeAction->setEnabled(true);
-    //         this->selectAllItemsInGroupAction->setEnabled(false);
-    //         return;
-    //     }
-    // }
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    const auto nodeIndexList
+        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    if (nodeIndexList.empty()) {
+        this->addGroupAction->setEnabled(false);
+        this->dismissGroupAction->setEnabled(false);
+        this->selectAllItemsInGroupAction->setEnabled(true);
+        return;
+    }
+    const auto nodeIndex = nodeIndexList[0];
+    QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
+    if (type == "Layer") { // layer已经被限制无法选中
+        this->addGroupAction->setEnabled(false);
+        this->dismissGroupAction->setEnabled(false);
+        this->selectAllItemsInGroupAction->setEnabled(false);
+        return;
+    } else if (type == "Group" && nodeIndexList.size () == 1 ) {
+        this->addGroupAction->setEnabled(false);
+        this->dismissGroupAction->setEnabled(true);
+        this->selectAllItemsInGroupAction->setEnabled(true);
+        return;
+    } else if (type == "Item" && nodeIndexList.size () > 1) {
+        this->addGroupAction->setEnabled(true);
+        this->dismissGroupAction->setEnabled(false);
+        this->selectAllItemsInGroupAction->setEnabled(false);
+        return;
+    } else {
+        this->addGroupAction->setEnabled(false);
+        this->dismissGroupAction->setEnabled(false);
+        this->selectAllItemsInGroupAction->setEnabled(false);
+        return;
+    }
 }

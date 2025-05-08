@@ -136,10 +136,12 @@ void EditController::onTreeViewModelSelectionChanged(
         UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
         auto item = Manager::getIns().itemMapFind(uuid);
         if (type == "Layer") {
+        } else if (type == "Group" ) {
         } else if (type == "Item" ) {
-            item->setSelected(true);
+            item->setSelected(true); // 设置graphicsItem被选中
         } else if (type == "Signal") {
             // 设置curEditItemGroup,添加item(因为对于signal来说,无法在场景中选中 从而触发添加进editgroup)
+            item->setSelected(true);
             this->m_currentEditItemGroup.push_back(item);
         }
     }
@@ -199,6 +201,80 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     this->updateTabWidget();
     this->updateTableViewModel();
     this->updateEditRect();
+}
+
+void EditController::onTreeViewModelSelectAllItemsInGroup() {
+    auto *treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    const auto nodeIndexList
+        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    if (nodeIndexList.size() > 1) {
+        return;
+    }
+    auto indexList = model->getClosedChildIndexs(nodeIndexList[0]);
+    // 先把group取消select,因为设置了group不能和子节点同时选中
+    treeView->selectionModel()->select(nodeIndexList[0],
+                                       QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
+    // 依次选中所有子节点
+    for (const auto &index : indexList) {
+        DEBUG_VAR(index);
+        treeView->selectionModel()->select(index,
+                                           QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
+}
+
+void EditController::onTreeViewModelAddGroup() {
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // 提取选中的节点列表
+    const auto nodeIndexList
+        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    auto mimeList = model->mimeData(nodeIndexList);
+    // //在目标处创建group节点
+    QModelIndex targetIndex = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
+    if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
+        return;
+    }
+    const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
+    QString name = "Group";
+    QString type = "Group";
+    Manager::getIns().addItem(name, type, groupIndex);
+    // 把节点列表移动到group节点下
+    model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
+    // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
+    for (const QModelIndex &nodeIndex : nodeIndexList) {
+        auto node = model->getNode(nodeIndex);
+        auto parentNode = node->parent();
+        auto parentNodeIndex = model->getIndex(parentNode);
+        model->removeRows(node->indexInParent(), 1, parentNodeIndex);
+    }
+}
+
+void EditController::onTreeViewModelDismissGroup() {
+    // TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    // // 提取选中的节点列表
+    // const auto nodeIndexList =  UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+    // auto mimeList = model->mimeData(nodeIndexList);
+    // // //在目标处创建group节点
+    // QModelIndex targetIndex  = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    // // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
+    // if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
+    //     return;
+    // }
+    // const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
+    // QString name = "Group";
+    // QString type = "Group";
+    // Manager::getIns().addItem( name, type, groupIndex);
+    // // 把节点列表移动到group节点下
+    // model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
+    // // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
+    // for (const QModelIndex &nodeIndex : nodeIndexList) {
+    //     auto node = model->getNode(nodeIndex);
+    //     auto parentNode = node->parent();
+    //     auto parentNodeIndex = model->getIndex(parentNode);
+    //     model->removeRows(node->indexInParent(), 1, parentNodeIndex);
+    // }
+    // onTreeViewModelUpdateActions();
 }
 
 EditController &EditController::getIns() {

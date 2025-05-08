@@ -57,8 +57,14 @@ public:
     QModelIndex getIndex(const UUID  uuid) const;
 
     /// \brief getAllChildNodes 获取所有子节点
+    ///
     std::vector < TreeNode * > getAllChildNodes(const QModelIndex &nodeIndex) const;
     std::vector < QModelIndex > getAllChildIndexs(const QModelIndex &nodeIndex) const;
+    /// \brief getClosedChildNodes 只获取下一层子节点
+    /// \param nodeIndex
+    std::vector < TreeNode * > getClosedChildNodes(const QModelIndex &nodeIndex) const;
+    std::vector < QModelIndex > getClosedChildIndexs(const QModelIndex &nodeIndex) const;
+
     void setNodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant &value);
     QVariant nodeProperty(const QModelIndex &nodeIndex, const TreeNodePropertyIndex propertyIndex);
 

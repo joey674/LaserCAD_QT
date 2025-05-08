@@ -550,6 +550,13 @@ public:
     /// 物体上鼠标press事件
     void onGraphicsItemMousePress(UUID uuid) {}
 
+    ///
+    /// \brief onTreeViewModelSelectAllItemsInGroup
+    ///
+    void onTreeViewModelSelectAllItemsInGroup();
+    void onTreeViewModelAddGroup();
+    void onTreeViewModelDismissGroup();
+
 /// ********************
 /// 单例初始化
 /// ********************
