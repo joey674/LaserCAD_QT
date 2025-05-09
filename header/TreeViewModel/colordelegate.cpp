@@ -4,11 +4,28 @@
 #include <QColorDialog>
 #include <QDebug>
 #include <QPainter>
+#include "logger.h"
+#include "treemodel.h"
 
 void ColorDelegate::paint(QPainter *painter,
                           const QStyleOptionViewItem &option,
                           const QModelIndex &index) const
 {
+    auto model = qobject_cast<const TreeModel *>(index.model());
+    if (!model) {
+        WARN_MSG("");
+        return;
+    }
+    TreeNode *node = model->getNode(index);
+    if (!node) {
+        WARN_MSG("");
+        return;
+    }
+    QString type = node->property(TreeNodePropertyIndex::Type).toString();
+    if (type != "Layer") { // 只有layer显示颜色框
+        return;
+    }
+
     QVariant value = index.model()->data(index, Qt::BackgroundRole);
     QColor color = value.value<QColor>();
 

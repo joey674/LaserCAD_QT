@@ -56,7 +56,7 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
         if (role == Qt::BackgroundRole && itemType == "Layer") {
             return QBrush(color);
         } else {
-            return QBrush(color);
+            return {};
         }
     }
     return {};
