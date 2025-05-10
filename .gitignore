@@ -2,6 +2,9 @@
 build/
 **/build/
 
+#
+cache/
+
 # Qt Creator 用户配置文件
 *.user
 

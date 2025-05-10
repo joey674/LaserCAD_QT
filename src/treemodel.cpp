@@ -1,15 +1,17 @@
 #include "treemodel.h"
 #include <QColorDialog>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include "logger.h"
 #include "manager.h"
 #include "polylineitem.h"
 #include "scenecontroller.h"
 #include "treenode.h"
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QFile>
-#include <QDebug>
 
 using namespace Qt::StringLiterals;
 
@@ -600,7 +602,13 @@ void TreeModel::setNodeProperty(const QModelIndex & nodeIndex, const TreeNodePro
     node->setProperty(propertyIndex, value);
 }
 
-static QJsonObject serializeTreeNode(TreeNode *node) {
+///
+/// \brief serializeTreeNode
+/// \param node
+/// \return
+///
+QJsonObject TreeModel::serializeTreeNode(TreeNode *node)
+{
     QJsonObject obj;
     obj["name"] = node->property(TreeNodePropertyIndex::Name).toString();
     obj["type"] = node->property(TreeNodePropertyIndex::Type).toString();
@@ -613,21 +621,108 @@ static QJsonObject serializeTreeNode(TreeNode *node) {
     obj["children"] = childrenArray;
     return obj;
 }
-bool TreeModel::saveTreeToJson(const QString &filePath) const {
+bool TreeModel::saveTreeToJson(const QString &targetPath)
+{
     if (!m_rootItem) {
-        qWarning() << "TreeModel::saveTreeToJson: rootItem is null";
+        WARN_MSG("TreeModel::saveTreeToJson: rootItem is null");
         return false;
     }
+
+    QString filePath = targetPath;
+
+    QFileInfo fileInfo(filePath);
+    if (fileInfo.isDir()) {
+        // 自动生成文件名，如带时间戳的 tree_20240508_1423.json
+        QString timeStr = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+        filePath = QDir(filePath).filePath(QString("tree_%1.json").arg(timeStr));
+    }
+
     QJsonObject rootObj;
     rootObj["modelName"] = m_rootItem->property(TreeNodePropertyIndex::Name).toString();
     rootObj["tree"] = serializeTreeNode(m_rootItem.get());
+
     QJsonDocument doc(rootObj);
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qWarning() << "TreeModel::saveTreeToJson: Failed to open file:" << filePath;
+        WARN_MSG("TreeModel::saveTreeToJson: Failed to open file:" + filePath);
         return false;
     }
+
     file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
+
+    INFO_MSG("Tree saved to:" + filePath);
+    return true;
+}
+
+///
+/// \brief TreeModel::deserializeTreeNode
+/// \param obj
+/// \return
+///
+TreeNode *TreeModel::deserializeTreeNode(const QJsonObject &obj)
+{
+    TreeNode *node = new TreeNode();
+    fillTreeNodeFromJson(node, obj);
+    return node;
+}
+
+void TreeModel::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj)
+{
+    // 1. 设置当前节点属性
+    node->setProperty(TreeNodePropertyIndex::Name, obj["name"].toString());
+    node->setProperty(TreeNodePropertyIndex::Type, obj["type"].toString());
+    node->setProperty(TreeNodePropertyIndex::UUID, obj["uuid"].toString());
+
+    // 2. 获取子节点数组
+    QJsonArray childrenArray = obj["children"].toArray();
+    int childCount = childrenArray.size();
+    if (childCount > 0) {
+        // 3. 插入默认子节点
+        node->insertChilds(0, childCount); // 插入 childCount 个空子节点
+
+        // 4. 递归设置子节点属性
+        for (int i = 0; i < childCount; ++i) {
+            TreeNode *child = node->child(i);
+            QJsonObject childObj = childrenArray.at(i).toObject();
+            fillTreeNodeFromJson(child, childObj); // 递归设置
+        }
+    }
+}
+
+bool TreeModel::loadTreeFromJson(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        WARN_MSG("TreeModel::loadTreeFromJson: Failed to open file:" + filePath);
+        return false;
+    }
+
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        WARN_MSG("TreeModel::loadTreeFromJson: JSON parse error: " + parseError.errorString());
+        return false;
+    }
+
+    QJsonObject rootObj = doc.object();
+    if (!rootObj.contains("tree")) {
+        WARN_MSG("TreeModel::loadTreeFromJson: Missing 'tree' field in JSON.");
+        return false;
+    }
+
+    beginResetModel();
+
+    TreeNode *newRoot = deserializeTreeNode(rootObj["tree"].toObject());
+    newRoot->setProperty(TreeNodePropertyIndex::Name, rootObj["modelName"].toString());
+
+    m_rootItem.reset(newRoot);
+
+    endResetModel();
+
+    INFO_MSG("Tree loaded from: " + filePath);
     return true;
 }

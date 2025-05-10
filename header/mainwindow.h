@@ -77,7 +77,7 @@ private slots: // 编辑工具按钮
     void onCopyButtonClicked();
     void onPasteButtonClicked();
     //
-    void onDrawTestLineButtonClicked() {}
+    void onDrawTestLineButtonClicked();
     void onUndoButtonClicked() {}
     void onRedoButtonClicked() {}
 private slots: // 硬件信号按钮

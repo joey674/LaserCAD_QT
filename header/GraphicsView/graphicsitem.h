@@ -10,10 +10,12 @@
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
 
-class GraphicsItem: /*public QObject,*/ public QGraphicsItem {
+class GraphicsItem : public QGraphicsItem
+{
     // Q_OBJECT
 public:
-    GraphicsItem(/*QObject *parent = nullptr*/) { /*: QObject(parent)*/
+    GraphicsItem()
+    {
         this->m_uuid = GenerateUUID();
         this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     };

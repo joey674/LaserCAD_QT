@@ -1102,6 +1102,14 @@ void MainWindow::onPasteButtonClicked() {
     EditController::getIns().onPasteItemsTriggered();
 }
 
+void MainWindow::onDrawTestLineButtonClicked()
+{
+    DEBUG_MSG("test button clicked");
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    // model->saveTreeToJson("../../cache/");
+    model->loadTreeFromJson("../../cache/tree_20250509_222559.json");
+}
+
 void MainWindow::onDigitalInButtonClicked() {
     setEditMode();
     Manager::getIns().addItem("DigitalIn", "Signal");
@@ -1172,7 +1180,7 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
 }
 
 void MainWindow::onTreeViewModelUpdateActions() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList
         = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
     if (nodeIndexList.empty()) {
