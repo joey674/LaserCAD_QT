@@ -34,6 +34,9 @@
         <file>mirrorVerticalButton.png</file>
         <file>alignButton.png</file>
         <file>markButton.png</file>
+        <file>openProjectButton.png</file>
+        <file>saveProjectButton.png</file>
+        <file>createProjectButton.png</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>

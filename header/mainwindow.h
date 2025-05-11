@@ -35,6 +35,8 @@ private: // 初始化组件./绑定硬件
     void initTabWidget();
     void initLaserWorker();
     void initHardWareButton();
+    void initProjectButton();
+
 public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
     void setEditMode();
     void setDrawMode();
@@ -91,7 +93,11 @@ private slots: // 硬件操作按钮
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();
-/// TreeViewModel的右键菜单栏
+private slots:
+    void onCreateProjectButtonClicked() {};
+    void onOpenProjectButtonClicked() {};
+    void onSaveProjectButtonClicked() {};
+    /// TreeViewModel的右键菜单栏
 private:
     QAction *addGroupAction = nullptr;
     QAction *deleteGroupAction = nullptr;

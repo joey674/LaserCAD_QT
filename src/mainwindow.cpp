@@ -50,18 +50,21 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     UiManager::getIns().setUI(std::move(ui));
     showMaximized();
     //
-    initTitleBar();
     initGraphicsView();
+    initTreeViewModel();
+    initTabWidget();
+    initLaserWorker();
+    //
+    initProjectButton();
     initDrawToolButton();
     initEditToolButton();
     initLayerButton();
     initSignalButton();
     initHardWareButton();
-    initTreeViewModel();
+
     // initTableViewModel();
+    initTitleBar();
     initStatusBar();
-    initTabWidget();
-    initLaserWorker();
 }
 
 MainWindow::~MainWindow() {
@@ -491,7 +494,6 @@ void MainWindow::initSignalButton() {
 }
 
 void MainWindow::initHardWareButton() {
-    QString buttonStyle = buttonStyle1;
     //
     QToolButton *markButton = UiManager::getIns().UI()->markButton;
     markButton->setIcon(QIcon(":/button/markButton.png"));
@@ -504,6 +506,43 @@ void MainWindow::initHardWareButton() {
             &QToolButton::clicked,
             this,
             &MainWindow::onMarkButtonClicked);
+}
+
+void MainWindow::initProjectButton()
+{
+    QString buttonStyle = buttonStyle1;
+    //
+    QToolButton *createProjectButton = UiManager::getIns().UI()->createProjectButton;
+    createProjectButton->setIcon(QIcon(":/button/createProjectButton.png"));
+    createProjectButton->setIconSize(QSize(30, 30));
+    createProjectButton->setStyleSheet(buttonStyle1);
+    createProjectButton->setCheckable(false);
+    createProjectButton->setAutoExclusive(false);
+    createProjectButton->setToolTip("");
+    connect(createProjectButton,
+            &QToolButton::clicked,
+            this,
+            &MainWindow::onCreateProjectButtonClicked);
+    //
+    //
+    QToolButton *openProjectButton = UiManager::getIns().UI()->openProjectButton;
+    openProjectButton->setIcon(QIcon(":/button/openProjectButton.png"));
+    openProjectButton->setIconSize(QSize(30, 30));
+    openProjectButton->setStyleSheet(buttonStyle1);
+    openProjectButton->setCheckable(false);
+    openProjectButton->setAutoExclusive(false);
+    openProjectButton->setToolTip("");
+    connect(openProjectButton, &QToolButton::clicked, this, &MainWindow::onOpenProjectButtonClicked);
+    //
+    //
+    QToolButton *saveProjectButton = UiManager::getIns().UI()->saveProjectButton;
+    saveProjectButton->setIcon(QIcon(":/button/saveProjectButton.png"));
+    saveProjectButton->setIconSize(QSize(30, 30));
+    saveProjectButton->setStyleSheet(buttonStyle1);
+    saveProjectButton->setCheckable(false);
+    saveProjectButton->setAutoExclusive(false);
+    saveProjectButton->setToolTip("");
+    connect(saveProjectButton, &QToolButton::clicked, this, &MainWindow::onSaveProjectButtonClicked);
 }
 
 void MainWindow::initStatusBar() {
