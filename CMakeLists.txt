@@ -86,6 +86,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/scenecontroller.h                                               src/scenecontroller.cpp
         header/drawcontroller.h                                                 src/drawcontroller.cpp
         header/GraphicsView/combineditem.h header/GraphicsView/combineditem.cpp
+        header/projectmanager.h header/projectmanager.cpp
+        src/css.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

@@ -529,9 +529,6 @@ public:
     ///  这里的selection不用考虑,因为选中对应graphicsItem的时候, graphicsItem的选中回调会自己排序编辑队列
     void onTreeViewModelSelectionChanged(const QItemSelection &selected,
                                          const QItemSelection &deselected);
-    /// \brief onSceneSelectionChanged
-    /// Scene的整体变动回调; 全局的管控
-    void onSceneSelectionChanged() {}
     /// \brief onGraphicsItemPositionHasChanged
     /// 单个物体位置变换后的回调
     void onGraphicsItemPositionHasChanged(UUID uuid) {

@@ -7,6 +7,8 @@
 #include "protocol.h"
 
 class SceneController {
+    friend class ProjectManager;
+
 public:
     /// scene
     ///

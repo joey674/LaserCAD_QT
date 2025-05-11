@@ -35,7 +35,6 @@ private: // 初始化组件./绑定硬件
     void initTabWidget();
     void initLaserWorker();
     void initHardWareButton();
-    void test();
 public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
     void setEditMode();
     void setDrawMode();

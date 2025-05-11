@@ -16,18 +16,29 @@
 // #include "utils.h"
 #include "logger.h"
 // #include "titlebar.h"
+#include <QThread>
 #include "colordelegate.h"
 #include "drawcontroller.h"
 #include "editcontroller.h"
 #include "keyboardmanager.h"
+#include "laserworker.h"
 #include "manager.h"
+#include "projectmanager.h"
 #include "scenecontroller.h"
 #include "tablemodel.h"
 #include "treemodel.h"
 #include "uimanager.h"
-#include "laserworker.h"
 #include <polyline.hpp>
-#include <QThread>
+
+void MainWindow::onDrawTestLineButtonClicked()
+{
+    DEBUG_MSG("test button clicked");
+    // TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    // model->saveTreeToJson("../../cache/");
+    // model->loadTreeFromJson("../../cache/tree_20250509_222559.json");
+
+    ProjectManager::getIns().createNewProject();
+}
 
 ///
 /// \brief MainWindow::MainWindow
@@ -51,12 +62,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initStatusBar();
     initTabWidget();
     initLaserWorker();
-    //
-    connect(SceneController::getIns().scene, &QGraphicsScene::selectionChanged, [ = ]() {
-        EditController::getIns().onSceneSelectionChanged();
-    });
-    //
-    test();
 }
 
 MainWindow::~MainWindow() {
@@ -77,77 +82,13 @@ void MainWindow::initTitleBar() {
 }
 
 void MainWindow::initGraphicsView() {
-    SceneController::getIns().scene = new QGraphicsScene();
-    UiManager::getIns().UI()->graphicsView->setScene(SceneController::getIns().scene);
-    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
-    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
-    UiManager::getIns().UI()->graphicsView->setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
-    UiManager::getIns().UI()->graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
-    UiManager::getIns().UI()->graphicsView->setResizeAnchor(QGraphicsView::NoAnchor);
-    UiManager::getIns().UI()->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    UiManager::getIns().UI()->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    UiManager::getIns().UI()->graphicsView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
-    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
-    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
-    SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(100, this, []() {
-        SceneController::getIns().setSceneScale(10, 10);
-    });
-    QPen pen = []() {
-        QPen pen(Qt::red, 1);
-        pen.setCosmetic(true);
-        return pen;
-    }
-    ();
-    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
-    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
-    xAxis->setPen(pen);
-    xAxis->setPos(0, 0);
-    yAxis->setPen(pen);
-    yAxis->setPos(0, 0);
-    SceneController::getIns().scene->addItem(xAxis);
-    SceneController::getIns().scene->addItem(yAxis);
-    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(90, 10, 100, 0);
-    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(90, -10, 100, 0);
-    xArrowL->setPen(pen);
-    xArrowR->setPen(pen);
-    SceneController::getIns().scene->addItem(xArrowL);
-    SceneController::getIns().scene->addItem(xArrowR);
-    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(10, 90, 0, 100);
-    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-10, 90, 0, 100);
-    yArrowL->setPen(pen);
-    yArrowR->setPen(pen);
-    SceneController::getIns().scene->addItem(yArrowL);
-    SceneController::getIns().scene->addItem(yArrowR);
-    double scale = 4;
-    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * scale,
-        900 * scale,
-        1000 * scale,
-        1000 * scale);
-    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * scale,
-        -1000 * scale,
-        -900 * scale,
-        -900 * scale);
-    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * scale,
-        900 * scale,
-        -1000 * scale,
-        1000 * scale);
-    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * scale,
-        -1000 * scale,
-        900 * scale,
-        -900 * scale);
-    bound1->setPen(pen);
-    bound2->setPen(pen);
-    bound3->setPen(pen);
-    bound4->setPen(pen);
-    SceneController::getIns().scene->addItem(bound1);
-    SceneController::getIns().scene->addItem(bound2);
-    SceneController::getIns().scene->addItem(bound3);
-    SceneController::getIns().scene->addItem(bound4);
-    // connect
-    // graphicsview组件触发鼠标移动时,会通知mainwindow组件;
-    connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseMoved(QPoint)),
-            this, SLOT(onGraphicsviewMouseMoved(QPoint)));
+    //
+    ProjectManager::getIns().newGraphicsView();
+    // 连接组件信号
+    connect(UiManager::getIns().UI()->graphicsView,
+            SIGNAL(mouseMoved(QPoint)),
+            this,
+            SLOT(onGraphicsviewMouseMoved(QPoint)));
     connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseLeftPressed(QPoint)),
             this, SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
     connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseRightPressed(QPoint)),
@@ -160,6 +101,30 @@ void MainWindow::initGraphicsView() {
             this, SLOT(onGraphicsviewMouseRightDoubleClicked(QPoint)));
     connect(UiManager::getIns().UI()->graphicsView, SIGNAL(mouseWheelTriggered(QWheelEvent*)),
             this, SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
+}
+
+void MainWindow::initTreeViewModel()
+{
+    ProjectManager::getIns().newTreeViewModel();
+    // 连接组件信号
+    auto *view = UiManager::getIns().UI()->treeView;
+    //  contextmenu
+    view->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(view,
+            &QWidget::customContextMenuRequested,
+            this,
+            &MainWindow::onTreeViewModelShowContextMenu);
+    //
+    connect(view, &QTreeView::clicked, this, [=](const QModelIndex &index) {
+        EditController::getIns().onTreeViewModelClicked(index);
+    });
+    //
+    connect(view->selectionModel(),
+            &QItemSelectionModel::selectionChanged,
+            this,
+            [=](const QItemSelection &selected, const QItemSelection &deselected) {
+                EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
+            });
 }
 
 void MainWindow::initDrawToolButton() {
@@ -255,9 +220,6 @@ void MainWindow::initDrawToolButton() {
     connect(drawSpiralButton, &QToolButton::clicked, this, &MainWindow::onDrawSpiralButtonClicked);
 }
 
-///
-/// \brief MainWindow::initEditToolButton
-///
 void MainWindow::initEditToolButton() {
     QString buttonStyle = buttonStyle1;
     //
@@ -550,44 +512,6 @@ void MainWindow::initStatusBar() {
     UiManager::getIns().UI()->statusBar->addWidget(this->labelMouseCoordinate);
 }
 
-void MainWindow::initTreeViewModel() {
-    /// \brief model
-    auto* model = new TreeModel("Items Browser", this);
-    auto* view = UiManager::getIns().UI()->treeView;
-    model->setupDefaultModelData();
-    view->setStyleSheet(treeViewModelStyle1);
-    view->setModel(model);
-    view->bindModel();
-    view->expandAll();
-    view->setSelectionMode(QAbstractItemView::ExtendedSelection);
-    view->setDragEnabled(true);
-    view->setAcceptDrops(true);
-    view->setDropIndicatorShown(true);
-    view->setDragDropMode(QAbstractItemView::InternalMove);
-    view->setColumnWidth(0, 200);
-    view->setColumnWidth(1, 60);
-    view->setColumnWidth(2, 60);
-    view->setColumnWidth(3, 60);
-    ///  contextmenu
-    view->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(view,
-            &QWidget::customContextMenuRequested,
-            this,
-            &MainWindow::onTreeViewModelShowContextMenu);
-    connect(view, &QTreeView::clicked, this, [ = ](const QModelIndex & index) {
-        EditController::getIns().onTreeViewModelClicked (index);
-    });
-    connect(view->selectionModel(),
-            &QItemSelectionModel::selectionChanged,
-            this,
-    [ = ](const QItemSelection & selected, const QItemSelection & deselected) {
-        EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
-    });
-    /// 设置自定义颜色编辑器
-    view->setItemDelegateForColumn(3, new ColorDelegate(view));
-    view->setEditTriggers(QAbstractItemView::AllEditTriggers); // 单机弹出颜色框
-}
-
 void MainWindow::initTableViewModel() {
     // auto *model = new TableModel(this);
     // UiManager::getIns().UI()->tableView->setModel(model);
@@ -609,8 +533,6 @@ void MainWindow::initLaserWorker() {
     connect(thread, &QThread::started, worker, &LaserWorker::run);
     thread->start();
 }
-
-void MainWindow::test() {}
 
 ///
 /// \brief MainWindow::keyPressEvent
@@ -1100,14 +1022,6 @@ void MainWindow::onCopyButtonClicked() {
 void MainWindow::onPasteButtonClicked() {
     setEditMode();
     EditController::getIns().onPasteItemsTriggered();
-}
-
-void MainWindow::onDrawTestLineButtonClicked()
-{
-    DEBUG_MSG("test button clicked");
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
-    // model->saveTreeToJson("../../cache/");
-    model->loadTreeFromJson("../../cache/tree_20250509_222559.json");
 }
 
 void MainWindow::onDigitalInButtonClicked() {
