@@ -9,7 +9,7 @@
 
 ProjectManager ProjectManager::ins;
 
-void ProjectManager::createNewProject() {
+void ProjectManager::createProject() {
     // 先重置controller/manager
     resetDrawController();
     resetSceneController();

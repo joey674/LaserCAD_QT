@@ -2,11 +2,10 @@
 #define PROJECTMANAGER_H
 
 #include <qobject.h>
-class ProjectManager
-{
+class ProjectManager {
 public:
-    void createNewProject();
-    void loadProject(const QString &filePath);
+    void createProject();
+    void openProject(const QString &filePath);
     void saveProject(const QString &filePath);
 
     void newGraphicsView();

@@ -29,15 +29,14 @@
 #include "treemodel.h"
 #include "uimanager.h"
 #include <polyline.hpp>
+#include <QFileDialog>
 
-void MainWindow::onDrawTestLineButtonClicked()
-{
+void MainWindow::onDrawTestLineButtonClicked() {
     DEBUG_MSG("test button clicked");
     // TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
     // model->saveTreeToJson("../../cache/");
     // model->loadTreeFromJson("../../cache/tree_20250509_222559.json");
-
-    ProjectManager::getIns().createNewProject();
+    ProjectManager::getIns().createProject();
 }
 
 ///
@@ -61,7 +60,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initLayerButton();
     initSignalButton();
     initHardWareButton();
-
     // initTableViewModel();
     initTitleBar();
     initStatusBar();
@@ -106,8 +104,7 @@ void MainWindow::initGraphicsView() {
             this, SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
 
-void MainWindow::initTreeViewModel()
-{
+void MainWindow::initTreeViewModel() {
     ProjectManager::getIns().newTreeViewModel();
     // 连接组件信号
     auto *view = UiManager::getIns().UI()->treeView;
@@ -118,16 +115,16 @@ void MainWindow::initTreeViewModel()
             this,
             &MainWindow::onTreeViewModelShowContextMenu);
     //
-    connect(view, &QTreeView::clicked, this, [=](const QModelIndex &index) {
+    connect(view, &QTreeView::clicked, this, [ = ](const QModelIndex & index) {
         EditController::getIns().onTreeViewModelClicked(index);
     });
     //
     connect(view->selectionModel(),
             &QItemSelectionModel::selectionChanged,
             this,
-            [=](const QItemSelection &selected, const QItemSelection &deselected) {
-                EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
-            });
+    [ = ](const QItemSelection & selected, const QItemSelection & deselected) {
+        EditController::getIns().onTreeViewModelSelectionChanged(selected, deselected);
+    });
 }
 
 void MainWindow::initDrawToolButton() {
@@ -508,8 +505,7 @@ void MainWindow::initHardWareButton() {
             &MainWindow::onMarkButtonClicked);
 }
 
-void MainWindow::initProjectButton()
-{
+void MainWindow::initProjectButton() {
     QString buttonStyle = buttonStyle1;
     //
     QToolButton *createProjectButton = UiManager::getIns().UI()->createProjectButton;
@@ -1105,6 +1101,34 @@ void MainWindow::onDeleteLayerButtonClicked() {
     SceneController::getIns().deleteCurrentLayer ();
 }
 
+void MainWindow::onCreateProjectButtonClicked() {
+    ProjectManager::getIns().createProject();
+}
+
+void MainWindow::onOpenProjectButtonClicked() {
+    QString path = QFileDialog::getOpenFileName(this,
+                   tr("Open Project File"),
+                   tr("../../tmp"),
+                   tr("File Type (*.json);; (*)"));
+    if (!path.isEmpty()) {
+        DEBUG_MSG(path);
+        // ProjectManager::getIns().openProject(path);
+    }
+}
+
+void MainWindow::onSaveProjectButtonClicked() {
+    QString path = QFileDialog::getSaveFileName(
+                       this,
+                       tr("Save Project File"),
+                       "../../tmp/Default.json",
+                       tr("File Type (*.json);; (*)"));
+    if (!path.isEmpty()) {
+        if (!path.endsWith(".json")) {
+            path += ".json";
+        }
+        // ProjectManager::getIns().saveProject(path);
+    }
+}
 
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     // 获取鼠标点击的位置
@@ -1133,7 +1157,7 @@ void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
 }
 
 void MainWindow::onTreeViewModelUpdateActions() {
-    TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList
         = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
     if (nodeIndexList.empty()) {

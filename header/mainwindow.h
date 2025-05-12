@@ -94,9 +94,9 @@ private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();
 private slots:
-    void onCreateProjectButtonClicked() {};
-    void onOpenProjectButtonClicked() {};
-    void onSaveProjectButtonClicked() {};
+    void onCreateProjectButtonClicked();
+    void onOpenProjectButtonClicked();
+    void onSaveProjectButtonClicked();
     /// TreeViewModel的右键菜单栏
 private:
     QAction *addGroupAction = nullptr;
