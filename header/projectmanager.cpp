@@ -39,6 +39,24 @@ std::shared_ptr < GraphicsItem > ProjectManager::createGraphicsItemFromJson(
     std::shared_ptr < GraphicsItem > item;
     if (type == "ArcItem") {
         item = ArcItem().createFromJson(propertyObj);
+    } else if (type == "CircleItem") {
+        item = CircleItem().createFromJson(propertyObj);
+    } else if (type == "EllipseItem") {
+        item = EllipseItem().createFromJson(propertyObj);
+    } else if (type == "LineItem") {
+        item = LineItem().createFromJson(propertyObj);
+    } else if (type == "PointItem") {
+        item = PointItem().createFromJson(propertyObj);
+    } else if (type == "PolygonItem") {
+        item = PolygonItem().createFromJson(propertyObj);
+    } else if (type == "PolylineItem") {
+        item = PolylineItem().createFromJson(propertyObj);
+    } else if (type == "RectItem") {
+        item = RectItem().createFromJson(propertyObj);
+    } else if (type == "SpiralItem") {
+        item = SpiralItem().createFromJson(propertyObj);
+    } else {
+        WARN_MSG("new type need to define");
     }
     return item;
 }

@@ -15,6 +15,30 @@ public:
         item->animate();
         return item;
     }
+    std::shared_ptr < GraphicsItem > createFromJson(QJsonObject obj) override {
+        auto item = std::make_shared < PointItem > ();
+        // 加载基类参数
+        item->cloneBaseParamsFromJson(obj);
+        if (obj.contains("v0") && obj.contains("v1")) {
+            QJsonObject v0 = obj["v0"].toObject();
+            item->m_vertex.point = QPointF(v0["x"].toDouble(), v0["y"].toDouble());
+            item->m_vertex.angle = v0["angle"].toDouble();
+        }
+        item->animate();
+        return item;
+    }
+    QJsonObject saveToJson() const override {
+        // 保存基类参数
+        QJsonObject obj = saveBaseParamsToJson();
+        // 保存子类参数 m_vertexPair
+        obj["type"] = getName();
+        QJsonObject v0;
+        v0["x"] = m_vertex.point.x ();
+        v0["y"] = m_vertex.point.y();
+        v0["angle"] = m_vertex.angle;
+        obj["v0"] = v0;
+        return obj;
+    }
 public:
     bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index >= 1) {

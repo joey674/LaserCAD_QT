@@ -7,6 +7,8 @@
 #include <polylineoffset.hpp>
 #include <vector.hpp>
 
+
+// TODO
 class CombinedItem : public GraphicsItem {
 public:
     CombinedItem() {};

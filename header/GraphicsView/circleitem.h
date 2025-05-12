@@ -18,6 +18,36 @@ public:
         item->animate();
         return item;
     }
+    std::shared_ptr < GraphicsItem > createFromJson(QJsonObject obj) override {
+        auto item = std::make_shared < CircleItem > ();
+        item->cloneBaseParamsFromJson(obj);
+        if (obj.contains("center")) {
+            QJsonObject center = obj["center"].toObject();
+            item->m_center.point = QPointF(center["x"].toDouble(), center["y"].toDouble());
+            item->m_center.angle = center["angle"].toDouble();
+        }
+        if (obj.contains("radius")) {
+            item->m_radius = obj["radius"].toDouble();
+        }
+        item->animate();
+        return item;
+    }
+
+    QJsonObject saveToJson() const override {
+        // 保存基类参数
+        QJsonObject obj = saveBaseParamsToJson();
+        // 保存子类参数
+        obj["type"] = getName();
+        //
+        QJsonObject center;
+        center["x"] = m_center.point.x();
+        center["y"] = m_center.point.y();
+        center["angle"] = m_center.angle;
+        obj["center"] = center;
+        //
+        obj["radius"] = m_radius;
+        return obj;
+    }
 public:
     /// 编辑圆心
     bool setVertexInScene(const int index, const Vertex vertex) override {

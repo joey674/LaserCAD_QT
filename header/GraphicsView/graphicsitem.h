@@ -35,9 +35,10 @@ public:
     QJsonObject saveBaseParamsToJson() const;
 
     virtual std::shared_ptr < GraphicsItem > createFromJson(QJsonObject) {
+        WARN_MSG("undefined");
     };
     virtual QJsonObject saveToJson() const {
-        return QJsonObject();
+        WARN_MSG("undefined");
     };
 /// ********************
 /// \brief control

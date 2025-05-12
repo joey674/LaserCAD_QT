@@ -22,6 +22,44 @@ public:
         item->animate();
         return item;
     }
+    std::shared_ptr < GraphicsItem > createFromJson(QJsonObject obj) override {
+        auto item = std::make_shared < EllipseItem > ();
+        item->cloneBaseParamsFromJson(obj);
+        if (obj.contains("center")) {
+            QJsonObject center = obj["center"].toObject();
+            item->m_center.point = QPointF(center["x"].toDouble(), center["y"].toDouble());
+            item->m_center.angle = center["angle"].toDouble();
+        }
+        if (obj.contains("radiusX")) {
+            item->m_radiusX = obj["radiusX"].toDouble();
+        }
+        if (obj.contains("radiusY")) {
+            item->m_radiusY = obj["radiusY"].toDouble();
+        }
+        if (obj.contains("rotateAngle")) {
+            item->m_rotateAngle = obj["rotateAngle"].toDouble();
+        }
+        item->animate();
+        return item;
+    }
+
+    QJsonObject saveToJson() const override {
+        // 保存基类参数
+        QJsonObject obj = saveBaseParamsToJson();
+        // 保存子类参数
+        obj["type"] = getName();
+        //
+        QJsonObject center;
+        center["x"] = m_center.point.x();
+        center["y"] = m_center.point.y();
+        center["angle"] = m_center.angle;
+        obj["center"] = center;
+        //
+        obj["radiusX"] = m_radiusX;
+        obj["radiusY"] = m_radiusY;
+        obj["rotateAngle"] = m_rotateAngle;
+        return obj;
+    }
 public:
     /// 编辑圆心
     bool setVertexInScene(const int index, const Vertex vertex) override {
@@ -284,8 +322,7 @@ public:
         return input;
     }
 
-    Vertex getVertexInScene(const int index = 0) const override
-    {
+    Vertex getVertexInScene(const int index = 0) const override {
         if (index > 1) {
             assert("false index:only 0");
         }
@@ -295,28 +332,38 @@ public:
         return Vertex{pos, angle};
     }
 
-    QPointF getCenterInScene() const override
-    {
+    QPointF getCenterInScene() const override {
         auto posOffset = this->pos();
         auto centerPos = this->m_center.point + posOffset;
         // DEBUG_VAR(centerPos);
         return centerPos;
     }
 
-    QString getName() const override { return "EllipseItem"; }
+    QString getName() const override {
+        return "EllipseItem";
+    }
 
-    double getRadiusX() { return this->m_radiusX; }
+    double getRadiusX() {
+        return this->m_radiusX;
+    }
 
-    double getRadiusY() { return this->m_radiusY; }
+    double getRadiusY() {
+        return this->m_radiusY;
+    }
 
-    double getRotateAngle() { return this->m_rotateAngle; }
+    double getRotateAngle() {
+        return this->m_rotateAngle;
+    }
 
-    uint getVertexCount() const override { return 1; }
+    uint getVertexCount() const override {
+        return 1;
+    }
 
-    int type() const override { return GraphicsItemType::Ellipse; }
+    int type() const override {
+        return GraphicsItemType::Ellipse;
+    }
 
-    QRectF getBoundingRectBasis() const override
-    {
+    QRectF getBoundingRectBasis() const override {
         if (!this->m_paintItem) {
             return QRectF();
         }

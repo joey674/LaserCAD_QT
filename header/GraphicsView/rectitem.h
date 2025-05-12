@@ -5,6 +5,7 @@
 #include "graphicsitem.h"
 #include "logger.h"
 #include "polylineitem.h"
+#include <QJsonArray>
 
 class RectItem : public GraphicsItem {
 public:
@@ -16,6 +17,41 @@ public:
         item->animate();
         return item;
     }
+    std::shared_ptr < GraphicsItem > createFromJson(QJsonObject obj) override {
+        auto item = std::make_shared < RectItem > ();
+        item->cloneBaseParamsFromJson(obj);
+        // 加载 vertexList
+        if (obj.contains("vertexList")) {
+            QJsonArray vertexArray = obj["vertexList"].toArray();
+            item->m_vertexList.clear();
+            for (const auto &val : vertexArray) {
+                QJsonObject v = val.toObject();
+                Vertex vert;
+                vert.point = QPointF(v["x"].toDouble(), v["y"].toDouble());
+                vert.angle = v["angle"].toDouble();
+                item->m_vertexList.push_back(vert);
+            }
+        }
+        item->animate();
+        return item;
+    }
+
+    QJsonObject saveToJson() const override {
+        QJsonObject obj = saveBaseParamsToJson();
+        obj["type"] = getName();
+        // 保存 vertexList
+        QJsonArray vertexArray;
+        for (const auto &v : m_vertexList) {
+            QJsonObject vert;
+            vert["x"] = v.point.x();
+            vert["y"] = v.point.y();
+            vert["angle"] = v.angle;
+            vertexArray.append(vert);
+        }
+        obj["vertexList"] = vertexArray;
+        return obj;
+    }
+
 public:
     /// 编辑vertex; 0是左上坐标,2是右下坐标: 0,1,2,3,4
     bool setVertexInScene(const int index, const Vertex vertex) override {
