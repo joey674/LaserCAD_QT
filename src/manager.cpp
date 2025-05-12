@@ -190,7 +190,8 @@ void Manager::deleteItem(QString uuid) {
             }
             // 删去目标节点;
             auto parentNodeIndex = model->getIndex(node->parent());
-            if (!model->removeRows(node->indexInParent(), 1, parentNodeIndex)) {
+            auto indexInParent = node->indexInParent();
+            if (!model->removeRows(indexInParent, 1, parentNodeIndex)) {
                 FATAL_MSG("fail to removeRow from parentNode");
             }
             /// TODO-------------------------------------

@@ -3,7 +3,7 @@ build/
 **/build/
 
 #
-cache/
+tmp/
 
 # Qt Creator 用户配置文件
 *.user
