@@ -89,9 +89,9 @@ public:
 /// 更新函数 不能主动调用update；都在animate中调用
 /// ********************
 protected:
-    /// \brief updateOffsetItem
+    /// \brief updateParallelOffsetItem
     /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
-    virtual bool updateOffsetItem() = 0;
+    virtual bool updateParallelOffsetItem() = 0;
     /// \brief updatePaintItem
     /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
     virtual bool updatePaintItem() = 0;
@@ -104,7 +104,7 @@ protected:
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->updatePaintItem();
         // 更新offsetitem
-        this->updateOffsetItem();
+        this->updateParallelOffsetItem();
         // 更新copiedItem
         this->updateCopiedItem();
         // 通知qt boundingRect变化 更新区域

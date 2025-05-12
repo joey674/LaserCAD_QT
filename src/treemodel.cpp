@@ -327,6 +327,7 @@ void TreeModel::setupDefaultModelData() {
     m_rootItem->insertChilds(m_rootItem->childCount(), 1);
     auto layer1 = m_rootItem->child(m_rootItem->childCount() - 1);
     auto uuid = Manager::getIns().addItem("Layer1", "Layer", getIndex(layer1));
+    DEBUG_MSG(uuid);
     SceneController::getIns().initLayerUuid(uuid);
 }
 
@@ -607,8 +608,7 @@ void TreeModel::setNodeProperty(const QModelIndex & nodeIndex, const TreeNodePro
 /// \param node
 /// \return
 ///
-QJsonObject TreeModel::serializeTreeNode(TreeNode *node)
-{
+QJsonObject TreeModel::serializeTreeNode(TreeNode *node) {
     QJsonObject obj;
     obj["name"] = node->property(TreeNodePropertyIndex::Name).toString();
     obj["type"] = node->property(TreeNodePropertyIndex::Type).toString();
@@ -621,36 +621,29 @@ QJsonObject TreeModel::serializeTreeNode(TreeNode *node)
     obj["children"] = childrenArray;
     return obj;
 }
-bool TreeModel::saveTreeToJson(const QString &targetPath)
-{
+bool TreeModel::saveTreeToJson(const QString &targetPath) {
     if (!m_rootItem) {
         WARN_MSG("TreeModel::saveTreeToJson: rootItem is null");
         return false;
     }
-
     QString filePath = targetPath;
-
     QFileInfo fileInfo(filePath);
     if (fileInfo.isDir()) {
         // 自动生成文件名，如带时间戳的 tree_20240508_1423.json
         QString timeStr = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
         filePath = QDir(filePath).filePath(QString("tree_%1.json").arg(timeStr));
     }
-
     QJsonObject rootObj;
     rootObj["modelName"] = m_rootItem->property(TreeNodePropertyIndex::Name).toString();
     rootObj["tree"] = serializeTreeNode(m_rootItem.get());
-
     QJsonDocument doc(rootObj);
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         WARN_MSG("TreeModel::saveTreeToJson: Failed to open file:" + filePath);
         return false;
     }
-
     file.write(doc.toJson(QJsonDocument::Indented));
     file.close();
-
     INFO_MSG("Tree saved to:" + filePath);
     return true;
 }
@@ -660,27 +653,23 @@ bool TreeModel::saveTreeToJson(const QString &targetPath)
 /// \param obj
 /// \return
 ///
-TreeNode *TreeModel::deserializeTreeNode(const QJsonObject &obj)
-{
+TreeNode *TreeModel::deserializeTreeNode(const QJsonObject &obj) {
     TreeNode *node = new TreeNode();
     fillTreeNodeFromJson(node, obj);
     return node;
 }
 
-void TreeModel::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj)
-{
+void TreeModel::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj) {
     // 1. 设置当前节点属性
     node->setProperty(TreeNodePropertyIndex::Name, obj["name"].toString());
     node->setProperty(TreeNodePropertyIndex::Type, obj["type"].toString());
     node->setProperty(TreeNodePropertyIndex::UUID, obj["uuid"].toString());
-
     // 2. 获取子节点数组
     QJsonArray childrenArray = obj["children"].toArray();
     int childCount = childrenArray.size();
     if (childCount > 0) {
         // 3. 插入默认子节点
         node->insertChilds(0, childCount); // 插入 childCount 个空子节点
-
         // 4. 递归设置子节点属性
         for (int i = 0; i < childCount; ++i) {
             TreeNode *child = node->child(i);
@@ -690,39 +679,30 @@ void TreeModel::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj)
     }
 }
 
-bool TreeModel::loadTreeFromJson(const QString &filePath)
-{
+bool TreeModel::loadTreeFromJson(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         WARN_MSG("TreeModel::loadTreeFromJson: Failed to open file:" + filePath);
         return false;
     }
-
     QByteArray jsonData = file.readAll();
     file.close();
-
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(jsonData, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
         WARN_MSG("TreeModel::loadTreeFromJson: JSON parse error: " + parseError.errorString());
         return false;
     }
-
     QJsonObject rootObj = doc.object();
     if (!rootObj.contains("tree")) {
         WARN_MSG("TreeModel::loadTreeFromJson: Missing 'tree' field in JSON.");
         return false;
     }
-
     beginResetModel();
-
     TreeNode *newRoot = deserializeTreeNode(rootObj["tree"].toObject());
     newRoot->setProperty(TreeNodePropertyIndex::Name, rootObj["modelName"].toString());
-
     m_rootItem.reset(newRoot);
-
     endResetModel();
-
     INFO_MSG("Tree loaded from: " + filePath);
     return true;
 }

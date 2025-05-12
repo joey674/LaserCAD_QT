@@ -20,6 +20,7 @@
 
 
 class Manager {
+    friend class ProjectManager;
 private:
     std::unordered_map < UUID, std::shared_ptr < GraphicsItem>> m_itemMap;
     std::vector < std::shared_ptr < GraphicsItem>> m_deletedItemList;

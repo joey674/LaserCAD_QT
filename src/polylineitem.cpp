@@ -2,7 +2,7 @@
 #include <polyline.hpp>
 #include <polylineoffset.hpp>
 
-bool PolylineItem::updateOffsetItem()
+bool PolylineItem::updateParallelOffsetItem()
 {
     if (m_vertexList.size() < 2) {
         return false;

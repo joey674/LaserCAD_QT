@@ -9,19 +9,18 @@
 
 ProjectManager ProjectManager::ins;
 
-void ProjectManager::createNewProject()
-{
-    // 先重置controller
+void ProjectManager::createNewProject() {
+    // 先重置controller/manager
     resetDrawController();
     resetSceneController();
     resetManager();
-
+    // 再重置view和model; 按照程序自身的启动生成顺序;
+    // 因为在tree初始化的时候有调用manager
     newGraphicsView();
     newTreeViewModel();
 }
 
-void ProjectManager::resetSceneController()
-{
+void ProjectManager::resetSceneController() {
     auto &sceneController = SceneController::getIns();
     //
     sceneController.m_currentOperationEvent = None;
@@ -32,21 +31,24 @@ void ProjectManager::resetSceneController()
     sceneController.m_layerList.clear();
     //
     sceneController.m_dragScenePoint = QPointF(0, 0);
+    // view是不删的 要重置一下
     UiManager::getIns().UI()->graphicsView->scale(1 / sceneController.m_sceneScale.first,
-                                                  1 / sceneController.m_sceneScale.second);
+            1 / sceneController.m_sceneScale.second);
     sceneController.m_sceneScale = {1, 1};
 }
 
-void ProjectManager::resetDrawController()
-{
+void ProjectManager::resetDrawController() {
     auto &drawController = DrawController::getIns();
     drawController.resetTmpItemStatus();
 }
 
-void ProjectManager::resetManager() {}
+void ProjectManager::resetManager() {
+    auto &manager = Manager::getIns();
+    manager.m_itemMap.clear();
+    manager.m_deletedItemList.clear();
+}
 
-void ProjectManager::newGraphicsView()
-{
+void ProjectManager::newGraphicsView() {
     SceneController::getIns().scene = new QGraphicsScene();
     UiManager::getIns().UI()->graphicsView->setScene(SceneController::getIns().scene);
     UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
@@ -62,12 +64,15 @@ void ProjectManager::newGraphicsView()
     UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
     UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(100, []() { SceneController::getIns().setSceneScale(10, 10); });
+    QTimer::singleShot(100, []() {
+        SceneController::getIns().setSceneScale(10, 10);
+    });
     QPen pen = []() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
         return pen;
-    }();
+    }
+    ();
     QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
     QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
     xAxis->setPen(pen);
@@ -90,21 +95,21 @@ void ProjectManager::newGraphicsView()
     SceneController::getIns().scene->addItem(yArrowR);
     double scale = 4;
     QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * scale,
-                                                      900 * scale,
-                                                      1000 * scale,
-                                                      1000 * scale);
+        900 * scale,
+        1000 * scale,
+        1000 * scale);
     QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * scale,
-                                                      -1000 * scale,
-                                                      -900 * scale,
-                                                      -900 * scale);
+        -1000 * scale,
+        -900 * scale,
+        -900 * scale);
     QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * scale,
-                                                      900 * scale,
-                                                      -1000 * scale,
-                                                      1000 * scale);
+        900 * scale,
+        -1000 * scale,
+        1000 * scale);
     QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * scale,
-                                                      -1000 * scale,
-                                                      900 * scale,
-                                                      -900 * scale);
+        -1000 * scale,
+        900 * scale,
+        -900 * scale);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
@@ -115,15 +120,15 @@ void ProjectManager::newGraphicsView()
     SceneController::getIns().scene->addItem(bound4);
 }
 
-void ProjectManager::newTreeViewModel()
-{
-    /// \brief model
+void ProjectManager::newTreeViewModel() {
+    /// \brief model 初始化
     auto *model = new TreeModel("Items Browser");
     auto *view = UiManager::getIns().UI()->treeView;
-    model->setupDefaultModelData();
-    view->setStyleSheet(treeViewModelStyle1);
     view->setModel(model);
+    model->setupDefaultModelData();
     view->bindModel();
+    //
+    view->setStyleSheet(treeViewModelStyle1);
     view->expandAll();
     view->setSelectionMode(QAbstractItemView::ExtendedSelection);
     view->setDragEnabled(true);
@@ -139,7 +144,6 @@ void ProjectManager::newTreeViewModel()
     view->setEditTriggers(QAbstractItemView::AllEditTriggers); // 单机弹出颜色框
 }
 
-ProjectManager &ProjectManager::getIns()
-{
+ProjectManager &ProjectManager::getIns() {
     return ins;
 }

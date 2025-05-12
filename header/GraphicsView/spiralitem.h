@@ -116,7 +116,7 @@ public:
     };
 
 protected:
-    bool updateOffsetItem() override
+    bool updateParallelOffsetItem() override
     {
         //
         if (this->m_offsetParams.offset == 0 || this->m_offsetParams.offsetCount == 0) {

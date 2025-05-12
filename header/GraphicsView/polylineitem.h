@@ -89,7 +89,7 @@ public:
         return result;
     };
 protected:
-    bool updateOffsetItem() override;
+    bool updateParallelOffsetItem() override;
     bool updatePaintItem() override {
         if (m_vertexList.size() < 2) {
             return false;

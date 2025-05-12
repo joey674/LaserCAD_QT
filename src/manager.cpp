@@ -100,8 +100,7 @@ std::vector < UUID > Manager::getChildItems(UUID uuid) {
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     if (!itemMapExist(uuid)) {
-        WARN_VAR(uuid);
-        FATAL_MSG("fail to find item by uuid");
+        FATAL_MSG("fail to find item by uuid: " + uuid);
     }
     return m_itemMap.find(uuid)->second;
 }
@@ -112,8 +111,7 @@ void Manager::itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr) {
 
 void Manager::itemMapErase(UUID uuid) {
     if (!itemMapExist(uuid)) {
-        WARN_VAR(uuid);
-        FATAL_MSG("fail to find item by uuid");
+        FATAL_MSG("fail to find item by uuid: " + uuid);
     }
     m_itemMap.erase(uuid);
 }
@@ -121,7 +119,6 @@ void Manager::itemMapErase(UUID uuid) {
 bool Manager::itemMapExist(UUID uuid) {
     auto it = m_itemMap.find(uuid);
     if (it == m_itemMap.end()) {
-        WARN_VAR(uuid);
         return false;
     }
     return true;

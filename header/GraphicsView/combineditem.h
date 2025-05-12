@@ -74,7 +74,7 @@ public:
     };
 
 protected:
-    bool updateOffsetItem() override {
+    bool updateParallelOffsetItem() override {
         return true;
     };
     bool updatePaintItem() override {
