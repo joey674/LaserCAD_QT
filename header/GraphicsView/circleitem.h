@@ -12,7 +12,7 @@ public:
     CircleItem(const CircleItem &other) {}
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < CircleItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_center = this->m_center;
         item->m_radius = this->m_radius;
         item->animate();

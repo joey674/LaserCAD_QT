@@ -66,7 +66,7 @@ UUID Manager::addItem(QString name, QString type, QModelIndex position) {
         }
         position = model->index(layerNode->childCount () - 1, 0, layerIndex);//
     }
-    auto item = std::make_shared < PolylineItem > ();
+    auto item = std::make_shared < ArcItem > ();
     model->setNodeProperty(position, TreeNodePropertyIndex::Name, name);
     model->setNodeProperty(position, TreeNodePropertyIndex::Type, type);
     model->setNodeProperty(position, TreeNodePropertyIndex::UUID, item.get()->getUUID());

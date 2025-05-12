@@ -11,7 +11,7 @@ public:
     RectItem() {};
     std::shared_ptr < GraphicsItem > clone() const  override {
         auto item = std::make_shared < RectItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_vertexList = this->m_vertexList;
         item->animate();
         return item;

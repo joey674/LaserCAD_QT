@@ -9,27 +9,36 @@
 #include <polylineoffset.hpp>
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
+#include <QJsonObject>
 
-class GraphicsItem : public QGraphicsItem
-{
+class GraphicsItem : public QGraphicsItem {
     // Q_OBJECT
 public:
-    GraphicsItem()
-    {
+    GraphicsItem() {
         this->m_uuid = GenerateUUID();
         this->setFlag(QGraphicsItem::ItemSendsGeometryChanges);
     };
     GraphicsItem(const GraphicsItem &) = delete;
     GraphicsItem &operator=(const GraphicsItem &) = delete;
-    void initFrom(const GraphicsItem &other) {
+    //
+    void cloneBaseParams(const GraphicsItem &other) {
         // 拷贝基础字段;  不可以拷贝copyparams/offsetparams; 如果有需要再说
         this->m_uuid = GenerateUUID();
-        this->m_pen = other.getPen();
+        this->m_color = other.getColor();
         this->setFlags(other.flags());
         this->m_markParams = other.m_markParams;
         this->m_delayParams = other.m_delayParams;
     }
     virtual std::shared_ptr < GraphicsItem > clone() const = 0;
+    //
+    void cloneBaseParamsFromJson(const QJsonObject &obj);
+    QJsonObject saveBaseParamsToJson() const;
+
+    virtual std::shared_ptr < GraphicsItem > createFromJson(QJsonObject) {
+    };
+    virtual QJsonObject saveToJson() const {
+        return QJsonObject();
+    };
 /// ********************
 /// \brief control
 /// 直接修改 控制对象
@@ -72,7 +81,7 @@ public:
     /// \brief setPen
     /// \param
     bool setColor(QColor color) {
-        this->m_pen.setColor(color);
+        this->m_color = color;
         this->animate();
         return true;
     };
@@ -129,10 +138,12 @@ public:
     virtual QString getName() const;
     const QString getUUID() const;
     const QColor getColor() const {
-        return this->m_pen.color();
+        return this->m_color;
     }
     const QPen getPen() const {
-        return this->m_pen;
+        QPen pen(this->m_color, 1);
+        pen.setCosmetic(true);
+        return pen;
     }
     virtual uint getVertexCount() const = 0;
     virtual QRectF getBoundingRectBasis() const = 0;
@@ -164,11 +175,7 @@ protected:
 /// ********************
 protected:
     QString m_uuid;
-    QPen m_pen = []() {
-        QPen pen(Qt::black, 1);
-        pen.setCosmetic(true);
-        return pen;
-    }();
+    QColor m_color = Qt::black;
     MarkParams m_markParams;
     DelayParams m_delayParams;
     OffsetParams m_offsetParams  = OffsetParams {0, 0};

@@ -11,15 +11,49 @@
 class ArcItem: public GraphicsItem {
 public:
     ArcItem() {}
+    ArcItem(UUID uuid) {
+        this->m_uuid = uuid;
+    }
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < ArcItem > ();
         // 拷贝基类字段
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         // 拷贝 ArcItem 自己的字段
         item->m_vertexPair = this->m_vertexPair;
         // 构建paintItem/copyItem/offsetItem
         item->animate();
         return item;
+    }
+    std::shared_ptr < GraphicsItem > createFromJson(QJsonObject obj) override {
+        auto item = std::make_shared < ArcItem > ();
+        // 加载基类参数
+        item->cloneBaseParamsFromJson(obj);
+        if (obj.contains("v0") && obj.contains("v1")) {
+            QJsonObject v0 = obj["v0"].toObject();
+            QJsonObject v1 = obj["v1"].toObject();
+            item->m_vertexPair[0].point = QPointF(v0["x"].toDouble(), v0["y"].toDouble());
+            item->m_vertexPair[0].angle = v0["angle"].toDouble();
+            item->m_vertexPair[1].point = QPointF(v1["x"].toDouble(), v1["y"].toDouble());
+            item->m_vertexPair[1].angle = v1["angle"].toDouble();
+        }
+        item->animate();
+        return item;
+    }
+    QJsonObject saveToJson() const override {
+        // 保存基类参数
+        QJsonObject obj = saveBaseParamsToJson();
+        // 保存子类参数 m_vertexPair
+        obj["type"] = getName();
+        QJsonObject v0, v1;
+        v0["x"] = m_vertexPair[0].point.x ();
+        v0["y"] = m_vertexPair[0].point.y();
+        v0["angle"] = m_vertexPair[0].angle;
+        v1["x"] = m_vertexPair[1].point.x();
+        v1["y"] = m_vertexPair[1].point.y();
+        v1["angle"] = m_vertexPair[1].angle;
+        obj["v0"] = v0;
+        obj["v1"] = v1;
+        return obj;
     }
 public:
     bool setVertexInScene(const int index, const Vertex vertex) override {

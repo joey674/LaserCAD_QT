@@ -1101,9 +1101,34 @@ void MainWindow::onDeleteLayerButtonClicked() {
     SceneController::getIns().deleteCurrentLayer ();
 }
 
+#include <QMessageBox>
 void MainWindow::onCreateProjectButtonClicked() {
+    // QMessageBox::StandardButton reply = QMessageBox::question(
+    //                                         this,
+    //                                         tr("Save Current Project"),
+    //                                         tr("save current project before open new project?"),
+    //                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
+    //                                     );
+    // if (reply == QMessageBox::Yes) {
+    //     QString path = QFileDialog::getSaveFileName(
+    //                        this,
+    //                        tr("保存项目文件"),
+    //                        "../../tmp/Default.json",
+    //                        tr("项目文件 (*.json);;所有文件 (*)")
+    //                    );
+    //     if (path.isEmpty()) {
+    //         return;
+    //     }
+    //     if (!path.endsWith(".json", Qt::CaseInsensitive)) {
+    //         path += ".json";
+    //     }
+    //     ProjectManager::getIns().saveProject(path);
+    // } else if (reply == QMessageBox::Cancel) {
+    //     return; // 用户取消，不创建新项目
+    // }
     ProjectManager::getIns().createProject();
 }
+
 
 void MainWindow::onOpenProjectButtonClicked() {
     QString path = QFileDialog::getOpenFileName(this,
@@ -1112,21 +1137,25 @@ void MainWindow::onOpenProjectButtonClicked() {
                    tr("File Type (*.json);; (*)"));
     if (!path.isEmpty()) {
         DEBUG_MSG(path);
-        // ProjectManager::getIns().openProject(path);
+        ProjectManager::getIns().openProject(path);
     }
 }
 
 void MainWindow::onSaveProjectButtonClicked() {
+    QString timeStr = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
+    QString fileName = QString("laserCAD_%1.json").arg(timeStr);
+    QString fullPath = QDir("../../tmp/").filePath(fileName);
+    //
     QString path = QFileDialog::getSaveFileName(
                        this,
                        tr("Save Project File"),
-                       "../../tmp/Default.json",
+                       fullPath,
                        tr("File Type (*.json);; (*)"));
     if (!path.isEmpty()) {
         if (!path.endsWith(".json")) {
             path += ".json";
         }
-        // ProjectManager::getIns().saveProject(path);
+        ProjectManager::getIns().saveProject(path);
     }
 }
 
@@ -1160,18 +1189,19 @@ void MainWindow::onTreeViewModelUpdateActions() {
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
     const auto nodeIndexList
         = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
-    if (nodeIndexList.empty()) {
+    if (nodeIndexList.empty()) { // layer已经被限制无法选中, 所以右键直接是空选,也就是转到这里 不是下面
         this->addGroupAction->setEnabled(false);
-        this->selectAllItemsInGroupAction->setEnabled(true);
+        this->deleteGroupAction->setEnabled(false);
+        this->selectAllItemsInGroupAction->setEnabled(false);
         return;
     }
     const auto nodeIndex = nodeIndexList[0];
     QString type = model->nodeProperty(nodeIndex, TreeNodePropertyIndex::Type).toString();
     if (type == "Layer") { // layer已经被限制无法选中
-        this->addGroupAction->setEnabled(false);
-        this->deleteGroupAction->setEnabled(false);
-        this->selectAllItemsInGroupAction->setEnabled(false);
-        return;
+        // this->addGroupAction->setEnabled(false);
+        // this->deleteGroupAction->setEnabled(false);
+        // this->selectAllItemsInGroupAction->setEnabled(false);
+        // return;
     } else if (type == "Group" && nodeIndexList.size () == 1 ) {
         this->addGroupAction->setEnabled(false);
         this->deleteGroupAction->setEnabled(true);

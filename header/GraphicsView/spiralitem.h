@@ -13,7 +13,7 @@ public:
     std::shared_ptr<GraphicsItem> clone() const override
     {
         auto item = std::make_shared<SpiralItem>();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_center = this->m_center;
         item->m_startRadius = this->m_startRadius;
         item->m_endRadius = this->m_endRadius;

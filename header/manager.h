@@ -27,7 +27,8 @@ private:
 public:
     /// \brief addItem 添加graphicitem
     UUID addItem(std::shared_ptr < GraphicsItem > ptr);
-    /// \brief addItem 添加非graphicitem(包括layer node physicItem)
+    /// \brief addItem 添加非graphicitem(包括layer node physicItem);
+    /// 如果positon是valid代表已经在tree中创建好了, 如果invalid就说明没创建 会在这个函数里创建
     UUID addItem(QString name, QString type, QModelIndex position = QModelIndex{} );
     /// \brief deleteItem 删除item; 并且会删除其下所有子节点
     void deleteItem(UUID uuid);

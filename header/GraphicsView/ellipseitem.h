@@ -12,7 +12,7 @@ public:
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < EllipseItem > ();
         // 拷贝基类字段
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         // 拷贝 ArcItem 自己的字段
         item->m_center = this->m_center;
         item->m_radiusX = this->m_radiusX;

@@ -11,7 +11,7 @@ public:
     LineItem(const LineItem &other) {}
     std::shared_ptr < GraphicsItem > clone() const  override {
         auto item = std::make_shared < LineItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_vertexPair = this->m_vertexPair;
         item->animate();
         return item;

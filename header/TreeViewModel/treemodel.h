@@ -11,7 +11,7 @@
 
 class TreeModel : public QAbstractItemModel {
     Q_OBJECT
-
+    friend class ProjectManager;
 public:
     Q_DISABLE_COPY_MOVE(TreeModel)
 
@@ -73,13 +73,13 @@ public:
     void setupExemplarModelData();
     void setupDefaultModelData();
 
-    ///
-    /// 保存树结构到 JSON 文件/从文件加载
-    bool saveTreeToJson(const QString &filePath);
-    bool loadTreeFromJson(const QString &filePath);
-    TreeNode *deserializeTreeNode(const QJsonObject &obj);
-    QJsonObject serializeTreeNode(TreeNode *node);
-    void fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj);
+    // ///
+    // /// 保存树结构到 JSON 文件/从文件加载
+    // bool saveTreeToJson(const QString &filePath);
+    // bool loadTreeFromJson(const QString &filePath);
+    // TreeNode *deserializeTreeNode(const QJsonObject &obj);
+    // QJsonObject serializeTreeNode(TreeNode *node);
+    // void fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj);
 
 private:
     void setupModelData(const QList < QStringView > &lines);

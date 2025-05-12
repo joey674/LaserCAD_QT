@@ -12,7 +12,7 @@ public:
     PolylineItem() {};
     std::shared_ptr < GraphicsItem > clone() const override  {
         auto item = std::make_shared < PolylineItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_vertexList = this->m_vertexList;
         item->animate();
         return item;

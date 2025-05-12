@@ -2,11 +2,13 @@
 #define PROJECTMANAGER_H
 
 #include <qobject.h>
+#include "treenode.h"
+#include "graphicsitem.h"
 class ProjectManager {
 public:
     void createProject();
-    void openProject(const QString &filePath);
-    void saveProject(const QString &filePath);
+    bool openProject(const QString &filePath);
+    bool saveProject(const QString &filePath);
 
     void newGraphicsView();
     void newTreeViewModel();
@@ -15,8 +17,11 @@ public:
     void resetDrawController();
 
 private:
-    // void clearScene();
-    // void clearModel();
+    void fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj);
+    TreeNode *deserializeTreeNode(const QJsonObject &obj);
+    QJsonObject serializeTreeNode(TreeNode *node);
+    std::shared_ptr < GraphicsItem > createGraphicsItemFromJson(const QJsonObject &obj);
+
 
 private:
     static ProjectManager ins;

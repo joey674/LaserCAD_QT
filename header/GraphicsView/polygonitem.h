@@ -13,7 +13,7 @@ public:
     std::shared_ptr<GraphicsItem> clone() const override
     {
         auto item = std::make_shared<PolygonItem>();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_center = this->m_center;
         item->m_edgeCount = this->m_edgeCount;
         item->m_radius = this->m_radius;

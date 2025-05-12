@@ -1,0 +1,33 @@
+{
+    "modelName": "Items Browser",
+    "tree": {
+        "children": [
+            {
+                "children": [
+                ],
+                "name": "Layer1",
+                "property": {
+                },
+                "type": "Layer"
+            },
+            {
+                "children": [
+                ],
+                "name": "Layer2",
+                "property": {
+                },
+                "type": "Layer"
+            },
+            {
+                "children": [
+                ],
+                "name": "Layer3",
+                "property": {
+                },
+                "type": "Layer"
+            }
+        ],
+        "name": "Items Browser",
+        "type": "UndefinedType"
+    }
+}

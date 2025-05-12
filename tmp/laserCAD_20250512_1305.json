@@ -1,0 +1,432 @@
+{
+    "modelName": "Items Browser",
+    "tree": {
+        "children": [
+            {
+                "children": [
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem1",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": -56,
+                                "y": 166
+                            },
+                            "v1": {
+                                "angle": 314.21880734857507,
+                                "x": -91,
+                                "y": 108
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    },
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem2",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": 31,
+                                "y": 131
+                            },
+                            "v1": {
+                                "angle": 294.2659496729656,
+                                "x": 21,
+                                "y": 52
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    },
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem3",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": 120,
+                                "y": 102
+                            },
+                            "v1": {
+                                "angle": 234.32626112518062,
+                                "x": 204,
+                                "y": -5
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    }
+                ],
+                "name": "Layer1",
+                "property": {
+                },
+                "type": "Layer"
+            },
+            {
+                "children": [
+                ],
+                "name": "Layer2",
+                "property": {
+                },
+                "type": "Layer"
+            },
+            {
+                "children": [
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem1",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": -216,
+                                "y": -218
+                            },
+                            "v1": {
+                                "angle": 324.70018166504286,
+                                "x": -236,
+                                "y": -272
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    },
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem2",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": -109,
+                                "y": -154
+                            },
+                            "v1": {
+                                "angle": 322.6373846238306,
+                                "x": -170,
+                                "y": -210
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    },
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem3",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": 37,
+                                "y": -162
+                            },
+                            "v1": {
+                                "angle": 281.2547617660183,
+                                "x": -14,
+                                "y": -251
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    },
+                    {
+                        "children": [
+                        ],
+                        "name": "ArcItem4",
+                        "property": {
+                            "delayParams": {
+                                "endDelay": 120,
+                                "jumpDelay": 20,
+                                "markDelay": 10,
+                                "polygonDelay": 0,
+                                "startDelay": 100
+                            },
+                            "markParams": {
+                                "frequency": 100000,
+                                "jumpSpeed": 3000,
+                                "markSpeed": 1000,
+                                "power": 0,
+                                "pulseWidth": 2,
+                                "repetTime": 1,
+                                "wobelAml": 0,
+                                "wobelFreq": 100
+                            },
+                            "matrixCopyParams": {
+                                "copiedOrder": 0,
+                                "hCount": 0,
+                                "hSpacing": 0,
+                                "hVecX": 0,
+                                "hVecY": 0,
+                                "vCount": 0,
+                                "vSpacing": 0,
+                                "vVecX": 0,
+                                "vVecY": 0
+                            },
+                            "offsetParams": {
+                                "offset": 0,
+                                "offsetCount": 0
+                            },
+                            "type": "ArcItem",
+                            "v0": {
+                                "angle": 0,
+                                "x": 116,
+                                "y": -149
+                            },
+                            "v1": {
+                                "angle": 234.55714419521672,
+                                "x": 160,
+                                "y": -268
+                            },
+                            "vectorCopyParams": {
+                                "count": 0,
+                                "dirX": 0,
+                                "dirY": 0,
+                                "spacing": 0
+                            }
+                        },
+                        "type": "Item"
+                    }
+                ],
+                "name": "Layer3",
+                "property": {
+                },
+                "type": "Layer"
+            }
+        ],
+        "name": "Items Browser",
+        "type": "UndefinedType"
+    }
+}

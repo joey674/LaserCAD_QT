@@ -10,7 +10,7 @@ public:
     PointItem() {}
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < PointItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_vertex = this->m_vertex;
         item->animate();
         return item;

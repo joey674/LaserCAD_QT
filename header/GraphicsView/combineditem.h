@@ -12,7 +12,7 @@ public:
     CombinedItem() {};
     std::shared_ptr < GraphicsItem > clone() const override {
         auto item = std::make_shared < CombinedItem > ();
-        item->initFrom(*this);
+        item->cloneBaseParams(*this);
         item->m_itemList = this->m_itemList;
         item->animate();
         return item;

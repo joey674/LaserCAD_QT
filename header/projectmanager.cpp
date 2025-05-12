@@ -6,9 +6,19 @@
 #include "drawcontroller.h"
 #include "treemodel.h"
 #include "uimanager.h"
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 ProjectManager ProjectManager::ins;
 
+///
+/// \brief ProjectManager::createProject
+///
 void ProjectManager::createProject() {
     // 先重置controller/manager
     resetDrawController();
@@ -20,6 +30,147 @@ void ProjectManager::createProject() {
     newTreeViewModel();
 }
 
+///
+/// \brief ProjectManager::openProject
+///
+std::shared_ptr < GraphicsItem > ProjectManager::createGraphicsItemFromJson(
+    const QJsonObject &propertyObj) {
+    QString type = propertyObj["type"].toString();
+    std::shared_ptr < GraphicsItem > item;
+    if (type == "ArcItem") {
+        item = ArcItem().createFromJson(propertyObj);
+    }
+    return item;
+}
+void ProjectManager::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj) {
+    // 设置当前节点属性
+    node->setProperty(TreeNodePropertyIndex::Name, obj["name"].toString());
+    node->setProperty(TreeNodePropertyIndex::Type, obj["type"].toString());
+    // 设置item并创建item
+    auto propertyObj = obj["property"].toObject();
+    std::shared_ptr < GraphicsItem > item;
+    if (obj["type"] == "Item") {
+        item = createGraphicsItemFromJson(propertyObj);
+    } else if (obj["type"] == "Layer") {
+        SceneController::getIns().addLayer();
+        UUID uuid = SceneController::getIns().getCurrentLayer();
+        item = Manager::getIns().itemMapFind(uuid);
+        item->setColor(QColor(propertyObj["color"].toString ()));// 设置图层颜色
+    } else {
+        item = std::make_shared < ArcItem > ();
+    }
+    node->setProperty(TreeNodePropertyIndex::UUID, item->getUUID()); // 设置节点uuid
+    // 添加到 scene
+    //
+    if (obj["type"].toString() == "Item") {
+        SceneController::getIns().scene->addItem(item.get());
+    }
+    // 注册到 Manager
+    //
+    Manager::getIns().addItem(item);
+    // 添加到 tree
+    //
+    QJsonArray childrenArray = obj["children"].toArray(); // 获取子节点数组
+    int childCount = childrenArray.size();
+    if (childCount > 0) { // 插入默认子节点
+        node->insertChilds(0, childCount); // 插入 childCount 个空子节点
+        for (int i = 0; i < childCount; ++i) { // 递归设置子节点属性
+            TreeNode *child = node->child(i);
+            QJsonObject childObj = childrenArray.at(i).toObject();
+            fillTreeNodeFromJson(child, childObj); // 递归设置
+        }
+    }
+}
+
+TreeNode *ProjectManager::deserializeTreeNode(const QJsonObject &obj) {
+    TreeNode *node = new TreeNode();
+    fillTreeNodeFromJson(node, obj);
+    return node;
+}
+
+bool ProjectManager::openProject(const QString &filePath) {
+    // 打开文件要重置一下内容
+    this->resetSceneController();
+    //
+    auto treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    //
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        WARN_MSG("Failed to open file:" + filePath);
+        return false;
+    }
+    QByteArray jsonData = file.readAll();
+    file.close();
+    QJsonParseError parseError;
+    QJsonDocument doc = QJsonDocument::fromJson(jsonData, &parseError);
+    if (parseError.error != QJsonParseError::NoError) {
+        WARN_MSG("JSON parse error: " + parseError.errorString());
+        return false;
+    }
+    QJsonObject rootObj = doc.object();
+    if (!rootObj.contains("tree")) {
+        WARN_MSG("Missing 'tree' field in JSON.");
+        return false;
+    }
+    model->beginResetModel();
+    TreeNode *newRoot = deserializeTreeNode(rootObj["tree"].toObject());
+    newRoot->setProperty(TreeNodePropertyIndex::Name, rootObj["modelName"].toString());
+    model->m_rootItem.reset(newRoot);
+    model->endResetModel();
+    INFO_MSG("Tree loaded from: " + filePath);
+    // 打开项目后设置一下
+    SceneController::getIns().setCurrentLayer(SceneController::getIns().getCurrentLayer());
+    return true;
+}
+
+///
+/// \brief ProjectManager::saveProject
+///
+QJsonObject ProjectManager::serializeTreeNode(TreeNode *node) {
+    QJsonObject obj;
+    obj["name"] = node->property(TreeNodePropertyIndex::Name).toString();
+    obj["type"] = node->property(TreeNodePropertyIndex::Type).toString();
+    auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
+    DEBUG_MSG("uuid find use here");
+    if (Manager::getIns().itemMapExist(uuid)) {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        obj["property"] = item->saveToJson();
+    }
+    QJsonArray childrenArray;
+    for (int i = 0; i < node->childCount(); ++i) {
+        TreeNode *child = node->child(i);
+        childrenArray.append(serializeTreeNode(child));
+    }
+    obj["children"] = childrenArray;
+    return obj;
+}
+
+bool ProjectManager::saveProject(const QString &filePath) {
+    auto treeView = UiManager::getIns().UI()->treeView;
+    TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
+    if (!model || !model->m_rootItem) {
+        WARN_MSG("rootItem is null");
+        return false;
+    }
+    QJsonObject rootObj;
+    rootObj["modelName"] = model->m_rootItem->property(TreeNodePropertyIndex::Name).toString();
+    rootObj["tree"] = serializeTreeNode(model->m_rootItem.get());
+    QJsonDocument doc(rootObj);
+    QFile file(filePath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        WARN_MSG("Failed to open file:" + filePath);
+        return false;
+    }
+    file.write(doc.toJson(QJsonDocument::Indented));
+    file.close();
+    INFO_MSG("Project saved to: " + filePath);
+    return true;
+}
+
+///
+/// \brief ProjectManager::resetSceneController
+///
 void ProjectManager::resetSceneController() {
     auto &sceneController = SceneController::getIns();
     //
@@ -144,6 +295,9 @@ void ProjectManager::newTreeViewModel() {
     view->setEditTriggers(QAbstractItemView::AllEditTriggers); // 单机弹出颜色框
 }
 
+///
+/// \brief ProjectManager::getIns
+///
 ProjectManager &ProjectManager::getIns() {
     return ins;
 }
