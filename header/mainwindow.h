@@ -8,19 +8,12 @@
 #include <QTreeView>
 #include "titlebar.h"
 
-// QT_BEGIN_NAMESPACE
-// namespace Ui {
-//     class MainWindow;
-// }
-// QT_END_NAMESPACE
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 private: // 初始化组件./绑定硬件
-    TitleBar *titleBar;
     QLabel *labelMouseCoordinate;
     void initTitleBar();
     void initGraphicsView();

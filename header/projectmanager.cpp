@@ -236,9 +236,36 @@ void ProjectManager::newGraphicsView() {
     UiManager::getIns().graphicsView->setMouseTracking(true);
     // 在窗口缩放时对准坐标中心
     UiManager::getIns().graphicsView->translate(100, 100);
-    SceneController::getIns().setSceneScale(0.1, 0.1);
-    QTimer::singleShot(100, []() {
-        SceneController::getIns().setSceneScale(10, 10);
+    SceneController::getIns().setSceneScale(0.1615, 0.1615);
+    QTimer::singleShot(12, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(14, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(16, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(18, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(20, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(22, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(24, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(26, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(28, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
+    });
+    QTimer::singleShot(30, []() {
+        SceneController::getIns().setSceneScale(1.2, 1.2);
     });
     // 绘制坐标轴
     QPen pen = []() {
