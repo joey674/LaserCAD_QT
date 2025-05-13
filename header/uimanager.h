@@ -70,66 +70,94 @@ public:
         QGridLayout *gridLayout = new QGridLayout(central);
         parent->setLayout(new QVBoxLayout());
         parent->layout()->addWidget(central);
-        // 项目+图层按钮行
-        QHBoxLayout *projectLayout = new QHBoxLayout();
-        openProjectButton = new QToolButton(central);
-        projectLayout->addWidget(openProjectButton);
-        saveProjectButton = new QToolButton(central);
-        projectLayout->addWidget(saveProjectButton);
+        /// 第一行
+        ///
+        QHBoxLayout *firstHLayout = new QHBoxLayout();
+        // projectButton
         createProjectButton = new QToolButton(central);
-        projectLayout->addWidget(createProjectButton);
+        firstHLayout->addWidget(createProjectButton);
+        openProjectButton = new QToolButton(central);
+        firstHLayout->addWidget(openProjectButton);
+        saveProjectButton = new QToolButton(central);
+        firstHLayout->addWidget(saveProjectButton);
+        QFrame *splitLine1 = new QFrame(central);// 插入分隔线
+        splitLine1->setFrameShape(QFrame::VLine);
+        splitLine1->setFrameShadow(QFrame::Sunken);
+        firstHLayout->addWidget(splitLine1);
+        // layerButton
         addLayerButton = new QToolButton(central);
-        projectLayout->addWidget(addLayerButton);
+        firstHLayout->addWidget(addLayerButton);
         deleteLayerButton = new QToolButton(central);
-        projectLayout->addWidget(deleteLayerButton);
-        projectLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        gridLayout->addLayout(projectLayout, 0, 0, 1, 3);
-        // 工具 + 硬件按钮行
-        QHBoxLayout *toolLayout = new QHBoxLayout();
-        breakCopiedItemButton = new QToolButton(central);
-        toolLayout->addWidget(breakCopiedItemButton);
-        breakOffsetItemButton = new QToolButton(central);
-        toolLayout->addWidget(breakOffsetItemButton);
-        centerButton = new QToolButton(central);
-        toolLayout->addWidget(centerButton);
+        firstHLayout->addWidget(deleteLayerButton);
+        firstHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        QFrame *splitLine2 = new QFrame(central);// 插入分隔线
+        splitLine2->setFrameShape(QFrame::VLine);
+        splitLine2->setFrameShadow(QFrame::Sunken);
+        firstHLayout->addWidget(splitLine2);
+        gridLayout->addLayout(firstHLayout, 0, 0, 1, 3);
+        /// 第二行
+        ///
+        QHBoxLayout *secondHLayout = new QHBoxLayout();
+        // copy/pasteButton
         copyButton = new QToolButton(central);
-        toolLayout->addWidget(copyButton);
+        secondHLayout->addWidget(copyButton);
         cutButton = new QToolButton(central);
-        toolLayout->addWidget(cutButton);
-        deleteButton = new QToolButton(central);
-        toolLayout->addWidget(deleteButton);
-        dragSceneButton = new QToolButton(central);
-        toolLayout->addWidget(dragSceneButton);
-        drawTestLineButton = new QToolButton(central);
-        toolLayout->addWidget(drawTestLineButton);
-        editButton = new QToolButton(central);
-        toolLayout->addWidget(editButton);
-        mirrorHorizontalButton = new QToolButton(central);
-        toolLayout->addWidget(mirrorHorizontalButton);
-        mirrorVerticalButton = new QToolButton(central);
-        toolLayout->addWidget(mirrorVerticalButton);
+        secondHLayout->addWidget(cutButton);
         pasteButton = new QToolButton(central);
-        toolLayout->addWidget(pasteButton);
+        secondHLayout->addWidget(pasteButton);
+        deleteButton = new QToolButton(central);
+        secondHLayout->addWidget(deleteButton);
+        QFrame *splitLine3 = new QFrame(central);// 插入分隔线
+        splitLine3->setFrameShape(QFrame::VLine);
+        splitLine3->setFrameShadow(QFrame::Sunken);
+        secondHLayout->addWidget(splitLine3);
+        // toolButton
+        editButton = new QToolButton(central);
+        secondHLayout->addWidget(editButton);
+        mirrorHorizontalButton = new QToolButton(central);
+        secondHLayout->addWidget(mirrorHorizontalButton);
+        mirrorVerticalButton = new QToolButton(central);
+        secondHLayout->addWidget(mirrorVerticalButton);
+        breakCopiedItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakCopiedItemButton);
+        breakOffsetItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakOffsetItemButton);
+        centerButton = new QToolButton(central);
+        secondHLayout->addWidget(centerButton);
+        QFrame *splitLine4 = new QFrame(central);// 插入分隔线
+        splitLine4->setFrameShape(QFrame::VLine);
+        splitLine4->setFrameShadow(QFrame::Sunken);
+        secondHLayout->addWidget(splitLine4);
+        // utilsButton
+        dragSceneButton = new QToolButton(central);
+        secondHLayout->addWidget(dragSceneButton);
+        drawTestLineButton = new QToolButton(central);
+        secondHLayout->addWidget(drawTestLineButton);
         redoButton = new QToolButton(central);
-        toolLayout->addWidget(redoButton);
+        secondHLayout->addWidget(redoButton);
         undoButton = new QToolButton(central);
-        toolLayout->addWidget(undoButton);
+        secondHLayout->addWidget(undoButton);
+        QFrame *splitLine5 = new QFrame(central);// 插入分隔线
+        splitLine5->setFrameShape(QFrame::VLine);
+        splitLine5->setFrameShadow(QFrame::Sunken);
+        secondHLayout->addWidget(splitLine5);
+        // hardWareButton
         delayTimeButton = new QToolButton(central);
-        toolLayout->addWidget(delayTimeButton);
+        secondHLayout->addWidget(delayTimeButton);
         digitalInButton = new QToolButton(central);
-        toolLayout->addWidget(digitalInButton);
+        secondHLayout->addWidget(digitalInButton);
         digitalOutButton = new QToolButton(central);
-        toolLayout->addWidget(digitalOutButton);
+        secondHLayout->addWidget(digitalOutButton);
         doPauseButton = new QToolButton(central);
-        toolLayout->addWidget(doPauseButton);
+        secondHLayout->addWidget(doPauseButton);
         loopButton = new QToolButton(central);
-        toolLayout->addWidget(loopButton);
+        secondHLayout->addWidget(loopButton);
         markButton = new QToolButton(central);
-        toolLayout->addWidget(markButton);
+        secondHLayout->addWidget(markButton);
         motionButton = new QToolButton(central);
-        toolLayout->addWidget(motionButton);
-        toolLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        gridLayout->addLayout(toolLayout, 1, 0, 1, 3);
+        secondHLayout->addWidget(motionButton);
+        secondHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        gridLayout->addLayout(secondHLayout, 1, 0, 1, 3);
         // 主控件布局
         QHBoxLayout *mainLayout = new QHBoxLayout(central);
         treeView = new TreeView(central); // 左：TreeView，占比 1
