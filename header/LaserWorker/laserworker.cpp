@@ -14,30 +14,6 @@ LaserWorker::LaserWorker() {
 
 void LaserWorker::run() {
     while (true) {
-        // 断连重连机制
-        mutex.lock();
-        if (requestedCard == -1) {
-            waitForSettingInput.wait(&mutex);
-        }
-        int card = requestedCard;
-        mutex.unlock();
-        if (connectCard()) {
-        } else {
-            QThread::sleep(2);
-            continue;
-        }
-        // 连接成功后进入运行状态
-        while (true) {
-            //打标逻辑TODO
-            // 等之后完成了再把sleep删掉
-            //
-            if (n_get_last_error(card)) {
-                WARN_MSG("connect fail, will reconnect");
-                connected = false;
-                break;
-            }
-            QThread::msleep(500);
-        }
     }
 }
 
@@ -70,7 +46,6 @@ bool LaserWorker::initDLL() {
         terminateDLL();
         WARN_MSG("RTC5DLLx64.DLL not found");
     }
-    // 出错了, 找具体错误原因
     if (init_rtc5_dll() != 0U) {
         UINT count = rtc5_count_cards();
         if (count > 0) {

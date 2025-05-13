@@ -17,7 +17,7 @@ Manager &Manager::getIns() {
 /// \param ptr
 ///
 UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     UUID layerUuid = SceneController::getIns().getCurrentLayer();
     QString name = ptr->getName();
     QString uuid = ptr->getUUID();
@@ -41,7 +41,7 @@ UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     auto rowCount = model->rowCount(layerNodeIndex);
     name = name + QString::number(rowCount + 1);
     if (!model->insertRow(rowCount, layerNodeIndex)) {
-        FATAL_MSG("insert  child fail");
+        WARN_MSG("insert  child fail");
     }
     const QModelIndex childNodeIndex = model->index(rowCount, 0, layerNodeIndex);
     model->setNodeProperty(childNodeIndex, TreeNodePropertyIndex::Name, name);
@@ -55,14 +55,14 @@ UUID Manager::addItem(std::shared_ptr < GraphicsItem > ptr) {
 }
 
 UUID Manager::addItem(QString name, QString type, QModelIndex position) {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns(). treeView->model());
     if (!position.isValid()) {
         WARN_MSG("position is not valid, will add to current layer");
         auto layerUuid = SceneController::getIns().getCurrentLayer();
         auto layerIndex = model->getIndex(layerUuid);
         auto layerNode = model->getNode(layerIndex);
         if (!model->insertRow(layerNode->childCount (), layerIndex)) {
-            FATAL_MSG("fail insert layer");
+            WARN_MSG("fail insert layer");
         }
         position = model->index(layerNode->childCount () - 1, 0, layerIndex);//
     }
@@ -77,7 +77,7 @@ UUID Manager::addItem(QString name, QString type, QModelIndex position) {
 }
 
 std::vector < UUID > Manager::getChildItems(UUID uuid) {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns(). treeView->model());
     // model->update();
     QModelIndex nodeIndex;
     std::vector < UUID > uuidGroup;
@@ -100,7 +100,7 @@ std::vector < UUID > Manager::getChildItems(UUID uuid) {
 
 std::shared_ptr < GraphicsItem > Manager::itemMapFind(UUID uuid) {
     if (!itemMapExist(uuid)) {
-        FATAL_MSG("fail to find item by uuid: " + uuid);
+        WARN_MSG("fail to find item by uuid: " + uuid);
     }
     return m_itemMap.find(uuid)->second;
 }
@@ -111,7 +111,7 @@ void Manager::itemMapInsert(UUID uuid, std::shared_ptr < GraphicsItem > ptr) {
 
 void Manager::itemMapErase(UUID uuid) {
     if (!itemMapExist(uuid)) {
-        FATAL_MSG("fail to find item by uuid: " + uuid);
+        WARN_MSG("fail to find item by uuid: " + uuid);
     }
     m_itemMap.erase(uuid);
 }
@@ -125,17 +125,17 @@ bool Manager::itemMapExist(UUID uuid) {
 }
 
 void Manager::setLayerItemStateSync() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns(). treeView->model());
     int layerCount = model->rowCount(); // 根节点下的所有一层节点
     for (int row = 0; row < layerCount; ++row) {
         QModelIndex layerIndex = model->index(row, 0, QModelIndex());
         TreeNode *layerNode = model->getNode(layerIndex);
         if (!layerNode) {
-            FATAL_MSG("");
+            WARN_MSG("");
             continue;
         }
         if (layerNode->property(TreeNodePropertyIndex::Type) != QVariant("Layer")) {
-            FATAL_MSG("");
+            WARN_MSG("");
             continue;
         }
         // 获取子图形节点
@@ -164,7 +164,7 @@ void Manager::setLayerItemStateSync() {
 /// \param item
 ///
 void Manager::deleteItem(QString uuid) {
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     // 通过遍历所有节点来找到对应节点
     auto allNodes = model->getAllChildNodes(QModelIndex());
@@ -178,7 +178,7 @@ void Manager::deleteItem(QString uuid) {
                 UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
                 auto parentNodeIndex = model->getIndex(childNode->parent());
                 if (!model->removeRow(childNode->indexInParent(), parentNodeIndex)) {
-                    FATAL_MSG("fail to removeRow from childNode");
+                    WARN_MSG("fail to removeRow from childNode");
                 }
                 /// TODO-------------------------------------
                 /// 暂时不释放资源
@@ -192,7 +192,7 @@ void Manager::deleteItem(QString uuid) {
             auto parentNodeIndex = model->getIndex(node->parent());
             auto indexInParent = node->indexInParent();
             if (!model->removeRows(indexInParent, 1, parentNodeIndex)) {
-                FATAL_MSG("fail to removeRow from parentNode");
+                WARN_MSG("fail to removeRow from parentNode");
             }
             /// TODO-------------------------------------
             /// 暂时不释放资源
@@ -207,7 +207,7 @@ void Manager::deleteItem(QString uuid) {
 }
 
 QString Manager::getItem(QModelIndex index) {
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     return model->getNode(index)->property(TreeNodePropertyIndex::UUID).toString();
 }
@@ -218,7 +218,7 @@ QString Manager::getItem(QGraphicsItem *item) {
 }
 
 // std::vector < QString > Manager::getItemsByLayer(UUID layerUuid) {
-//     auto treeView = UiManager::getIns().UI()->treeView;
+//     auto treeView = UiManager::getIns(). treeView;
 //     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
 //     QModelIndex layerNodeIndex = QModelIndex{};
 //     auto itemsGroup = std::vector < QString > ();

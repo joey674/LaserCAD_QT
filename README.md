@@ -34,3 +34,9 @@ https://bo7zwj4hof.larksuite.com/docx/S4YudowaZowtVMxJ7Goua4irsJg?from=from_copy
 
 - 成员变量: m_variableA
 
+## 打包脚本
+copy LaserCAD.exe -> release/
+copy dll -> release/
+windeployqt LaserCAD.exe(in release/)
+
+

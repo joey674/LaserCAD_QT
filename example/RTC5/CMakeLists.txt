@@ -8,25 +8,28 @@ include_directories (
 	.
 	${RTC_FILES_DIR} )
 	
-set (INCS 
-	${RTC_FILES_DIR}/RTC5impl.h ${RTC_FILES_DIR}/RTC5expl.h )
-set (SRCS
-	Demo1.cpp )
+# demo1 隐式连接
+# set (INCS 
+# 	${RTC_FILES_DIR}/RTC5impl.h ${RTC_FILES_DIR}/RTC5expl.h )
+# set (SRCS
+# 	Demo1.cpp )
 	
-add_executable(RTCDemo ${SRCS} ${INCS})
+# add_executable(RTCDemo ${SRCS} ${INCS})
 
-target_link_libraries(RTCDemo ${RTC_LIB})
+# target_link_libraries(RTCDemo ${RTC_LIB})
 
-foreach (RTCFile ${RTC_FILES}) 
-	add_custom_command(TARGET RTCDemo POST_BUILD COMMAND 
-		${CMAKE_COMMAND} -E copy_if_different 
-		${RTCFile} $<TARGET_FILE_DIR:RTCDemo> )
-endforeach (RTCFile) 
-set_vs_debugger_path(RTCDemo)
+# foreach (RTCFile ${RTC_FILES}) 
+# 	add_custom_command(TARGET RTCDemo POST_BUILD COMMAND 
+# 		${CMAKE_COMMAND} -E copy_if_different 
+# 		${RTCFile} $<TARGET_FILE_DIR:RTCDemo> )
+# endforeach (RTCFile) 
+# set_vs_debugger_path(RTCDemo)
 
 
+# demo2-7 显式链接
 set (DEMOS 
-Demo1.cpp Demo2.cpp Demo3.cpp Demo4.cpp Demo5.cpp Demo6.cpp Demo7.cpp )
+# Demo1.cpp  Demo3.cpp Demo4.cpp Demo5.cpp Demo6.cpp Demo7.cpp 
+Demo2.cpp)
 set (RTC_EXPL_SRC
 	${RTC_FILES_DIR}/RTC5expl.c )
 foreach (RTC_Demo ${DEMOS})

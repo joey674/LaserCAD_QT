@@ -13,38 +13,8 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp                    header/Ui/mainwindow.ui
+        src/main.cpp                    header/mainwindow.ui
         src/mainwindow.cpp      header/mainwindow.h
-)
-set(RTC5_SOURCES
-    lib/RTC5/RTC5expl.h           #[[lib/RTC5/RTC5expl.c]] lib/RTC5/RTC5expl.cpp
-    lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
-)
-include_directories(${PROJECT_SOURCE_DIR})
-
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(LaserCAD
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        ${RTC5_SOURCES}
-        ## lib
-        # cavaliercontours
-        lib/CavalierContours/cavaliercontours.cpp
-        lib/CavalierContours/intrcircle2circle2.hpp
-        lib/CavalierContours/intrlineseg2circle2.hpp
-        lib/CavalierContours/intrlineseg2lineseg2.hpp
-        lib/CavalierContours/mathutils.hpp
-        lib/CavalierContours/plinesegment.hpp
-        lib/CavalierContours/polyline.hpp
-        lib/CavalierContours/polylinecombine.hpp
-        lib/CavalierContours/polylineintersects.hpp
-        lib/CavalierContours/polylineoffset.hpp
-        lib/CavalierContours/polylineoffsetislands.hpp
-        lib/CavalierContours/staticspatialindex.hpp
-        lib/CavalierContours/vector.hpp
-        lib/CavalierContours/vector2.hpp
-        lib/CavalierContours/cavaliercontours.h
-        ## header
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
         header/GraphicsView/graphicsitem.h                     src/graphicsitem.cpp
@@ -73,8 +43,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/Utils/titlebar.h                                                    src/titlebar.cpp
         resource/resource.qrc
         # Ui
-        header/Ui/uimanager.h                                                   src/uimanager.cpp
-        header/Ui//css.h
+        header/uimanager.h                                                   src/uimanager.cpp
+        header/Ui/css.h
         # Keyboard
         header/Keyboard/keyboardmanager.h                     src/keyboardmanager.cpp
         # LaserWorker
@@ -88,6 +58,37 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         header/GraphicsView/combineditem.h header/GraphicsView/combineditem.cpp
         header/projectmanager.h header/projectmanager.cpp
         src/css.cpp
+)
+set(RTC5_SOURCES
+    lib/RTC5/RTC5expl.h           #[[lib/RTC5/RTC5expl.c]] lib/RTC5/RTC5expl.cpp
+    lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
+)
+set (CAVC_SOURCES
+  lib/CavalierContours/cavaliercontours.cpp
+  lib/CavalierContours/intrcircle2circle2.hpp
+  lib/CavalierContours/intrlineseg2circle2.hpp
+  lib/CavalierContours/intrlineseg2lineseg2.hpp
+  lib/CavalierContours/mathutils.hpp
+  lib/CavalierContours/plinesegment.hpp
+  lib/CavalierContours/polyline.hpp
+  lib/CavalierContours/polylinecombine.hpp
+  lib/CavalierContours/polylineintersects.hpp
+  lib/CavalierContours/polylineoffset.hpp
+  lib/CavalierContours/polylineoffsetislands.hpp
+  lib/CavalierContours/staticspatialindex.hpp
+  lib/CavalierContours/vector.hpp
+  lib/CavalierContours/vector2.hpp
+  lib/CavalierContours/cavaliercontours.h
+)
+
+include_directories(${PROJECT_SOURCE_DIR})
+
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+    qt_add_executable(LaserCAD
+        MANUAL_FINALIZATION
+        ${PROJECT_SOURCES}
+        ${RTC5_SOURCES}
+        ${CAVC_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -103,6 +104,8 @@ else()
     else()
         add_executable(LaserCAD
             ${PROJECT_SOURCES}
+            ${RTC5_SOURCES}
+            ${CAVC_SOURCES}
         )
     endif()
 endif()

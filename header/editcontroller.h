@@ -242,7 +242,7 @@ public:
                 QVariant delta = param.deltaValue;
                 QVariant finalVal;
                 // 处理加法（支持 int 和 double）
-                if (val.typeId() == QVariant::Double || delta.typeId() == QVariant::Double) {
+                if (val.type() == QVariant::Double || delta.type() == QVariant::Double) {
                     finalVal = val.toDouble() + i * delta.toDouble();
                 } else {
                     finalVal = val.toInt() + static_cast < int > (i) * delta.toInt();

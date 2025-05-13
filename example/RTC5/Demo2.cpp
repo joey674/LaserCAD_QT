@@ -10,9 +10,9 @@
 //      adapted for RTC5: Hermann Waibel, SCANLAB AG
 //
 //  Features
-//      - explicit linking to the RTC5DLL.DLL
-//      - use of the list buffer as a single list like a circular queue 
-//        for continuous data transfer
+//      - explicit linking to the RTC5DLL.DLL 显式动态库链接
+//      - use of the list buffer as a single list like a circular queue  
+//        for continuous data transfer 使用单list作为循环队列操作
 //      - exception handling
 //
 //  Comment
@@ -91,13 +91,13 @@ void PlotFlush();
 void terminateDLL();            //  waits for a keyboard hit to terminate
 
 
-void __cdecl main( void*, void* )
+int main( void*, void* )
 {
     if ( RTC5open() )
     {
         printf( "Error: RTC5DLL.DLL not found\n" );
         terminateDLL();
-        return;
+        return 0;
 
     }
 
@@ -134,16 +134,16 @@ void __cdecl main( void*, void* )
             if ( AccError )
             {
                 terminateDLL();
-                return;
+                return 1;
 
             }
 
         }
         else
         {
-            printf( "Initializing the DLL: Error %d detected\n", ErrorCode );
+            printf( "Initializing the DLL: Error %d detected; no cards;\n", ErrorCode );
             terminateDLL();
-            return;
+            return 1;
 
         }
 
@@ -164,7 +164,7 @@ void __cdecl main( void*, void* )
             {
                 printf( "No acces to card no. %d\n", DefaultCard );
                 terminateDLL();
-                return;
+                return 1;
 
             }
 
@@ -172,7 +172,7 @@ void __cdecl main( void*, void* )
             {
                 printf( "No access to card no. %d\n", DefaultCard );
                 terminateDLL();
-                return;
+                return 1;
 
             }
             else
@@ -199,7 +199,7 @@ void __cdecl main( void*, void* )
     {
         printf( "Program file loading error: %d\n", ErrorCode );
         terminateDLL();
-        return;
+        return 1;
 
     }
 
@@ -210,7 +210,7 @@ void __cdecl main( void*, void* )
     {
         printf( "Correction file loading error: %d\n", ErrorCode );
         terminateDLL();
-        return;
+        return 1;
 
     }
 
@@ -241,6 +241,11 @@ void __cdecl main( void*, void* )
 
     // Turn on the optical pump source
     write_da_x( AnalogOutChannel, AnalogOutValue );
+
+
+
+    //////////////////////////////////////////////////////////////////////////
+
 
     // Timing, delay and speed preset
     set_start_list( 1 );
@@ -460,7 +465,7 @@ void __cdecl main( void*, void* )
     free_rtc5_dll();        //  optional
     RTC5close();
     
-    return;
+    return 0;
 
 }
 

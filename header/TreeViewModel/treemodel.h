@@ -53,7 +53,7 @@ public:
     TreeNode *getNode(const QModelIndex &index) const;
     /// \brief getIndex:获取某个节点的QtModelIndex; column输入0
     /// \param node 要获取的节点的指针
-    QModelIndex getIndex(const TreeNode* node) const;
+    QModelIndex getIndex(TreeNode* node) const;
     QModelIndex getIndex(const UUID  uuid) const;
 
     /// \brief getAllChildNodes 获取所有子节点

@@ -17,7 +17,7 @@ EditController EditController::ins;
 ///
 void EditController::updateTabWidget() {
     // clear
-    TabWidget *tabWidget = UiManager::getIns().UI()->tabWidget;
+    TabWidget *tabWidget = UiManager::getIns(). tabWidget;
     tabWidget->clearAllTabs();
     //
     if (this->m_currentEditItemGroup.empty()) {
@@ -27,54 +27,54 @@ void EditController::updateTabWidget() {
         auto curEditItem = this->m_currentEditItemGroup[0];
         switch (curEditItem->type()) {
             case GraphicsItemType::Arc:
-                UiManager::getIns().UI()->tabWidget->addArcGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addArcGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Circle:
-                UiManager::getIns().UI()->tabWidget->addCircleGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addCircleGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Line:
-                UiManager::getIns().UI()->tabWidget->addLineGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addLineGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Point:
-                UiManager::getIns().UI()->tabWidget->addPointGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addPointGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Polyline:
-                // UiManager::getIns().UI()->tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
+                // UiManager::getIns(). tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Rect:
-                UiManager::getIns().UI()->tabWidget->addRectGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addRectGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Ellipse:
-                UiManager::getIns().UI()->tabWidget->addEllipseGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addEllipseGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Spiral:
-                UiManager::getIns().UI()->tabWidget->addSpiralGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addSpiralGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Polygon:
-                UiManager::getIns().UI()->tabWidget->addPolygonGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). tabWidget->addPolygonGeometryTab(curEditItem->getUUID());
                 break;
             default:
                 break;
         }
-        UiManager::getIns().UI()->tabWidget->addCopyTab(curEditItem->getUUID());
-        UiManager::getIns().UI()->tabWidget->addOffsetTab(curEditItem->getUUID());
-        UiManager::getIns().UI()->tabWidget->addMarkParamsTab(curEditItem->getUUID());
-        UiManager::getIns().UI()->tabWidget->addDelayParamsTab(curEditItem->getUUID());
+        UiManager::getIns(). tabWidget->addCopyTab(curEditItem->getUUID());
+        UiManager::getIns(). tabWidget->addOffsetTab(curEditItem->getUUID());
+        UiManager::getIns(). tabWidget->addMarkParamsTab(curEditItem->getUUID());
+        UiManager::getIns(). tabWidget->addDelayParamsTab(curEditItem->getUUID());
         return;
     } else { // 多个编辑对象
         auto uuids = std::vector < UUID > ();
         for (auto item : this->m_currentEditItemGroup) {
             uuids.push_back(item->getUUID());
         }
-        UiManager::getIns().UI()->tabWidget->addMultiItemsEditTab(uuids);
-        UiManager::getIns().UI()->tabWidget->addMultiItemsAlignTab(uuids);
-        UiManager::getIns().UI()->tabWidget->addDuoItemsBoolOpTab(uuids);
+        UiManager::getIns(). tabWidget->addMultiItemsEditTab(uuids);
+        UiManager::getIns(). tabWidget->addMultiItemsAlignTab(uuids);
+        UiManager::getIns(). tabWidget->addDuoItemsBoolOpTab(uuids);
     }
 }
 
 void EditController::updateTableViewModel() {
     // // clear
-    // TableModel* model = qobject_cast < TableModel * > (UiManager::getIns().UI()->tableView->model());
+    // TableModel* model = qobject_cast < TableModel * > (UiManager::getIns(). tableView->model());
     // model->clear();
     // //
     // if (this->m_currentEditItemGroup.empty()) {
@@ -89,7 +89,7 @@ void EditController::updateTableViewModel() {
 void EditController::onTreeViewModelSelectionChanged(
     const QItemSelection &selected,
     const QItemSelection &deselected) {
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     // 分类出来(注意这里用的是所有选中, selected只是新选中的信号量 不是所有选中目标)
     QSet < QModelIndex > groupIndexes;
@@ -171,7 +171,7 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     // GraphicsItem
     auto item = Manager::getIns().itemMapFind(uuid);
     // TreeViewModel
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
     Q_ASSERT(index.isValid());
@@ -204,10 +204,10 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
 }
 
 void EditController::onTreeViewModelSelectAllItemsInGroup() {
-    auto *treeView = UiManager::getIns().UI()->treeView;
+    auto *treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     const auto nodeIndexList
-        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+        = UiManager::getIns(). treeView->selectionModel()->selectedIndexes();
     if (nodeIndexList.size() > 1) {
         return;
     }
@@ -224,13 +224,13 @@ void EditController::onTreeViewModelSelectAllItemsInGroup() {
 }
 
 void EditController::onTreeViewModelAddGroup() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns(). treeView->model());
     // 提取选中的节点列表
     const auto nodeIndexList
-        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes();
+        = UiManager::getIns(). treeView->selectionModel()->selectedIndexes();
     auto mimeList = model->mimeData(nodeIndexList);
     // //在目标处创建group节点
-    QModelIndex targetIndex = UiManager::getIns().UI()->treeView->selectionModel()->currentIndex();
+    QModelIndex targetIndex = UiManager::getIns(). treeView->selectionModel()->currentIndex();
     // DEBUG_VAR(model->getNode(targetIndex)->property(TreeNodePropertyIndex::Type));
     if (!model->insertRows(targetIndex.row() + 1, 1, targetIndex.parent())) {
         return;
@@ -251,10 +251,10 @@ void EditController::onTreeViewModelAddGroup() {
 }
 
 void EditController::onTreeViewModelDeleteGroup() {
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns(). treeView->model());
     // 提取选中的节点
     const auto groupIndex
-        = UiManager::getIns().UI()->treeView->selectionModel()->selectedIndexes()[0];
+        = UiManager::getIns(). treeView->selectionModel()->selectedIndexes()[0];
     auto groupNode = model->getNode(groupIndex);
     auto groupUuid = groupNode->property(TreeNodePropertyIndex::UUID).toString();
     Manager::getIns().deleteItem(groupUuid);

@@ -9,6 +9,8 @@
 #include "logger.h"
 #include "protocol.h"
 #include <QPainter>
+#include <cmath>
+#include <QtMath>
 
 inline QString GenerateUUID() {
     QUuid uuid = QUuid::createUuid();
@@ -105,7 +107,8 @@ inline void getIntersectPoint(const QPointF &p1,
                               const double &sweepAngle,
                               QPointF &intersectPoint) {
     if (sweepAngle < 0) {
-        FATAL_MSG("intersect angle must be positive");
+        WARN_MSG("intersect angle must be positive");
+        return;
     }
     QPointF center = QPointF{};
     double radius = 0;

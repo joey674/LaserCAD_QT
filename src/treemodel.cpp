@@ -13,7 +13,7 @@
 #include "scenecontroller.h"
 #include "treenode.h"
 
-using namespace Qt::StringLiterals;
+// using namespace std::string_literals;
 
 TreeModel::TreeModel(const QString &modelName, QObject *parent)
     : QAbstractItemModel(parent) {
@@ -270,7 +270,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
     }
     // 其他列
     else {
-        FATAL_MSG("Unknown index column");
+        WARN_MSG("Unknown index column");
     }
     return defaultFlags;
 }
@@ -278,7 +278,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
 QVariant TreeModel::nodeProperty(const QModelIndex & nodeIndex, const TreeNodePropertyIndex propertyIndex) {
     auto node = getNode(nodeIndex);
     if (!node) {
-        FATAL_MSG("nodeindex not found");
+        WARN_MSG("nodeindex not found");
     }
     return node->property(propertyIndex);
 }
@@ -503,9 +503,9 @@ TreeNode *TreeModel::getNode(const QModelIndex &index) const {
     return static_cast < TreeNode * > (ptr);
 }
 
-QModelIndex TreeModel::getIndex(const TreeNode * node) const {
+QModelIndex TreeModel::getIndex(TreeNode * node) const {
     auto index = node->indexInParent();
-    return createIndex(index, 0, node);
+    return createIndex(index, 0, static_cast < void* > (node));
 }
 QModelIndex TreeModel::getIndex(const UUID uuid) const {
     auto allNodes = this->getAllChildNodes(QModelIndex());
@@ -602,7 +602,7 @@ std::vector < QModelIndex > TreeModel::getClosedChildIndexs(const QModelIndex &n
 void TreeModel::setNodeProperty(const QModelIndex & nodeIndex, const TreeNodePropertyIndex propertyIndex, const QVariant & value) {
     auto node = getNode(nodeIndex);
     if (!node) {
-        FATAL_MSG("nodeindex not found");
+        WARN_MSG("nodeindex not found");
     }
     node->setProperty(propertyIndex, value);
 }

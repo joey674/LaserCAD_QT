@@ -17,7 +17,7 @@ std::pair < double, double > SceneController::getSceneScale() {
 
 void SceneController::setCurrentLayer(UUID layerUuid) {
     // 设置所有物体不可选中;
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().treeView->model());
     auto uuids = Manager::getIns().getChildItems("0-0-0-0");
     for (const auto &uuid : uuids) {
         Manager::getIns().setItemSelectable(uuid, false);
@@ -48,9 +48,9 @@ int SceneController::layerCount() {
 
 void SceneController::addLayer() {
     // 添加到treemodel里/manager里
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().treeView->model());
     if (!model->insertRow(this->layerCount(), QModelIndex())) {
-        FATAL_MSG("fail insert layer");
+        WARN_MSG("fail insert layer");
     }
     const QModelIndex layerNodeIndex = model->index(this->layerCount(), 0, QModelIndex());
     QString name = "Layer" + QString::number(this->m_layerCreatedCount + 1);
@@ -74,7 +74,7 @@ void SceneController::deleteCurrentLayer() {
         return;
     }
     // 删除treemodel里/manager里
-    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().UI()->treeView->model());
+    TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().treeView->model());
     auto layerIndex = model->getIndex(this->m_currentLayer);
     Manager::getIns().deleteItem(this->getCurrentLayer());
     // 删除sceneController里
@@ -94,7 +94,7 @@ QColor SceneController::getCurrentLayerColor() const {
 void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
     if (event == MouseEvent::LeftPress) {
         // 设置鼠标光标
-        UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ClosedHandCursor);
+        UiManager::getIns().graphicsView->viewport()->setCursor(Qt::ClosedHandCursor);
         this->m_dragScenePoint = pointCoordView;
     } else if (event == MouseEvent::MouseMove) {
         QPointF oldP  = this->m_dragScenePoint;
@@ -103,11 +103,11 @@ void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
         // DEBUG_VAR(translation);
         translation.setX(translation.x() / SceneController::getIns().getSceneScale().first);
         translation.setY(translation.y() / SceneController::getIns().getSceneScale().second);
-        UiManager::getIns().UI()->graphicsView->translate(translation.x(), translation.y());
+        UiManager::getIns().graphicsView->translate(translation.x(), translation.y());
         this->m_dragScenePoint = pointCoordView;
     } else if (event == MouseEvent::LeftRelease) {
         // 设置鼠标光标
-        UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::OpenHandCursor);
+        UiManager::getIns().graphicsView->viewport()->setCursor(Qt::OpenHandCursor);
     }
 }
 
@@ -116,7 +116,7 @@ void SceneController::setSceneScale(double x, double y) {
         WARN_MSG("worng scene scale");
         return;
     }
-    UiManager::getIns().UI()->graphicsView->scale(x, y);
+    UiManager::getIns().graphicsView->scale(x, y);
     this->m_sceneScale.first *= x;
     this->m_sceneScale.second *= y;
 }

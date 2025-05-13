@@ -26,15 +26,15 @@ do { \
 } while (0)
 
 
-#define FATAL_MSG(var) \
-    do { \
-        qFatal()  << (var); \
-} while (0)
+// #define WARN_MSG(var) \
+// do { \
+//     qFatal("%s", QString(var).toUtf8().constData()); \
+// } while (0)
 
 #define INFO_MSG(var) \
-    do { \
-            qInfo()  << (var); \
-    } while (0)
+do { \
+        qInfo()  << (var); \
+} while (0)
 
 #define DEBUG_MSG(var) \
 do { \

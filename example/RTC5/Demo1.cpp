@@ -38,6 +38,8 @@
 #include <stdio.h>
 #include <tchar.h>
 #include <conio.h>
+#include <limits.h>
+
 
 // RTC5 header file for implicitly linking to the RTC5DLL.DLL
 #include "RTC5impl.h"
@@ -207,6 +209,7 @@ int _tmain( int     // argc
 
     printf( "Polygon Marking with a CO2 laser\n\n" );
 
+    //////////////////////////////////////////////////////////////////////////
     //  Configure list memory, default: config_list(4000,4000)
     config_list(UINT_MAX,           //  use the list space as a single list
                 0U);                //  no space for list 2
@@ -219,6 +222,8 @@ int _tmain( int     // argc
 
     set_standby( StandbyHalfPeriod, StandbyPulseWidth );
 
+
+    //////////////////////////////////////////////////////////////////////////
 
     // 
     // Timing, delay and speed preset

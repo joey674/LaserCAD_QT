@@ -14,7 +14,8 @@ public:
     void bindModel() {
         auto model = this->model();
         if (model == nullptr) {
-            FATAL_MSG("set model before bind");
+            WARN_MSG("set model before bind");
+            return;
         }
     }
     void expandToIndex(const QModelIndex& index) {

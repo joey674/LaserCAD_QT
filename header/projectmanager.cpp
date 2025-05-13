@@ -110,7 +110,7 @@ bool ProjectManager::openProject(const QString &filePath) {
     // 打开文件要重置一下内容
     this->resetSceneController();
     //
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     //
     QFile file(filePath);
@@ -165,7 +165,7 @@ QJsonObject ProjectManager::serializeTreeNode(TreeNode *node) {
 }
 
 bool ProjectManager::saveProject(const QString &filePath) {
-    auto treeView = UiManager::getIns().UI()->treeView;
+    auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     if (!model || !model->m_rootItem) {
         WARN_MSG("rootItem is null");
@@ -201,7 +201,7 @@ void ProjectManager::resetSceneController() {
     //
     sceneController.m_dragScenePoint = QPointF(0, 0);
     // view是不删的 要重置一下
-    UiManager::getIns().UI()->graphicsView->scale(1 / sceneController.m_sceneScale.first,
+    UiManager::getIns(). graphicsView->scale(1 / sceneController.m_sceneScale.first,
             1 / sceneController.m_sceneScale.second);
     sceneController.m_sceneScale = {1, 1};
 }
@@ -219,23 +219,28 @@ void ProjectManager::resetManager() {
 
 void ProjectManager::newGraphicsView() {
     SceneController::getIns().scene = new QGraphicsScene();
-    UiManager::getIns().UI()->graphicsView->setScene(SceneController::getIns().scene);
-    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
-    UiManager::getIns().UI()->graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
-    UiManager::getIns().UI()->graphicsView->setViewportUpdateMode(
+    UiManager::getIns(). graphicsView->setScene(SceneController::getIns().scene);
+    UiManager::getIns(). graphicsView->setRenderHint(QPainter::Antialiasing, true); //设置抗锯齿
+    UiManager::getIns(). graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
+    UiManager::getIns(). graphicsView->setViewportUpdateMode(
         QGraphicsView::SmartViewportUpdate);
-    UiManager::getIns().UI()->graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
-    UiManager::getIns().UI()->graphicsView->setResizeAnchor(QGraphicsView::NoAnchor);
-    UiManager::getIns().UI()->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    UiManager::getIns().UI()->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    UiManager::getIns().UI()->graphicsView->setSizeAdjustPolicy(
+    UiManager::getIns(). graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
+    UiManager::getIns(). graphicsView->setResizeAnchor(QGraphicsView::NoAnchor);
+    UiManager::getIns(). graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UiManager::getIns(). graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    UiManager::getIns(). graphicsView->setSizeAdjustPolicy(
         QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
-    UiManager::getIns().UI()->graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
-    UiManager::getIns().UI()->graphicsView->viewport()->setCursor(Qt::ArrowCursor);
+    UiManager::getIns(). graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
+    UiManager::getIns(). graphicsView->viewport()->setCursor(Qt::ArrowCursor);
+    //
+    UiManager::getIns().graphicsView->setMouseTracking(true);
+    // 在窗口缩放时对准坐标中心
+    UiManager::getIns().graphicsView->translate(100, 100);
     SceneController::getIns().setSceneScale(0.1, 0.1);
     QTimer::singleShot(100, []() {
         SceneController::getIns().setSceneScale(10, 10);
     });
+    // 绘制坐标轴
     QPen pen = []() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
@@ -292,7 +297,7 @@ void ProjectManager::newGraphicsView() {
 void ProjectManager::newTreeViewModel() {
     /// \brief model 初始化
     auto *model = new TreeModel("Items Browser");
-    auto *view = UiManager::getIns().UI()->treeView;
+    auto *view = UiManager::getIns(). treeView;
     view->setModel(model);
     model->setupDefaultModelData();
     view->bindModel();

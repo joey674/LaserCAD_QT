@@ -10,8 +10,8 @@
 //      adapted for RTC5: Hermann Waibel, SCANLAB AG
 //
 //  Features
-//      - explicit linking to the RTC5DLL.DLL
-//      - use of both list buffers for continuous data transfer
+//      - explicit linking to the RTC5DLL.DLL 显式动态库链接
+//      - use of both list buffers for continuous data transfer 使用两个链表的autochange来打
 //      - exception handling
 //
 //  Comment
