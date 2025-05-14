@@ -13,7 +13,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 set(PROJECT_SOURCES
-        src/main.cpp                    header/mainwindow.ui
+        src/main.cpp
         src/mainwindow.cpp      header/mainwindow.h
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
@@ -27,36 +27,36 @@ set(PROJECT_SOURCES
         header/GraphicsView/ellipseitem.h                          src/ellipseitem.cpp
         header/GraphicsView/spiralitem.h                            src/spiralitem.cpp
         header/GraphicsView/polygonitem.h                       src/polygonitem.cpp
-        header/GraphicsView/editrect.h          header/GraphicsView/editrect.cpp# editrect
+        header/GraphicsView/editrect.h                                src/editrect.cpp# editrect
         # TreeViewModel
         header/TreeViewModel/treenode.h                           src/treenode.cpp
         header/TreeViewModel/treemodel.h                        src/treemodel.cpp
         header/TreeViewModel/treeview.h                            src/treeview.cpp
-        header/TreeViewModel/colordelegate.h        header/TreeViewModel/colordelegate.cpp
+        header/TreeViewModel/colordelegate.h                src/colordelegate.cpp
         # TableViewModel
-        header/TableViewModel/tablemodel.h                     src/tablemodel.cpp
+        header/TableViewModel/tablemodel.h                   src/tablemodel.cpp
         # TabWidget
-        header/TabWidget/tabwidget.h                                  src/tabwidget.cpp
+        header/TabWidget/tabwidget.h                                 src/tabwidget.cpp
         # Utils
         header/Utils/logger.h                                                      src/logger.cpp
         header/Utils/utils.hpp                                                     src/utils.cpp
         header/Utils/titlebar.h                                                    src/titlebar.cpp
         resource/resource.qrc
         # Ui
-        header/uimanager.h                                                   src/uimanager.cpp
+        header/uimanager.h                                                        src/uimanager.cpp
         header/Ui/css.h
         # Keyboard
-        header/Keyboard/keyboardmanager.h                     src/keyboardmanager.cpp
+        header/Keyboard/keyboardmanager.h                    src/keyboardmanager.cpp
         # LaserWorker
-        header/LaserWorker/laserworker.h        header/LaserWorker/laserworker.cpp
+        header/LaserWorker/laserworker.h                          header/LaserWorker/laserworker.cpp
         # main
-        header/manager.h                                                           src/manager.cpp
+        header/manager.h                                                            src/manager.cpp
         header/protocol.h
         header/editcontroller.h                                                   src/editcontroller.cpp
         header/scenecontroller.h                                               src/scenecontroller.cpp
         header/drawcontroller.h                                                 src/drawcontroller.cpp
-        header/GraphicsView/combineditem.h header/GraphicsView/combineditem.cpp
-        header/projectmanager.h header/projectmanager.cpp
+        header/GraphicsView/combineditem.h                  src/combineditem.cpp
+        header/projectmanager.h                                             src/projectmanager.cpp
         src/css.cpp
 )
 set(RTC5_SOURCES
