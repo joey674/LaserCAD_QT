@@ -93,8 +93,8 @@ QColor SceneController::getCurrentLayerColor() const {
 
 void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
     if (event == MouseEvent::LeftPress) {
-        // 设置鼠标光标
-        UiManager::getIns().graphicsView->viewport()->setCursor(Qt::ClosedHandCursor);
+        UiManager::getIns().graphicsView->viewport()->setCursor(
+            Qt::ClosedHandCursor); // 设置鼠标光标
         this->m_dragScenePoint = pointCoordView;
     } else if (event == MouseEvent::MouseMove) {
         QPointF oldP  = this->m_dragScenePoint;
@@ -103,12 +103,33 @@ void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
         // DEBUG_VAR(translation);
         translation.setX(translation.x() / SceneController::getIns().getSceneScale().first);
         translation.setY(translation.y() / SceneController::getIns().getSceneScale().second);
+        //
+        UiManager::getIns().graphicsView->setTransformationAnchor(
+            QGraphicsView::NoAnchor); // 设置transform前要设置NoAnchor
         UiManager::getIns().graphicsView->translate(translation.x(), translation.y());
+        UiManager::getIns().graphicsView->setTransformationAnchor(
+            QGraphicsView::AnchorUnderMouse); // 设置transform后要恢复之前的
         this->m_dragScenePoint = pointCoordView;
     } else if (event == MouseEvent::LeftRelease) {
         // 设置鼠标光标
         UiManager::getIns().graphicsView->viewport()->setCursor(Qt::OpenHandCursor);
     }
+}
+
+void SceneController::setSceneToCenter()
+{
+    // UiManager::getIns().graphicsView->centerOn(QPointF(0, 0));
+    // SceneController::getIns().setSceneScale(0.1615, 0.1615);
+    // QTimer::singleShot(12, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(14, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(16, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(18, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(20, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(22, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(24, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(26, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(28, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(30, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
 }
 
 void SceneController::setSceneScale(double x, double y) {

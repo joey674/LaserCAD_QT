@@ -43,8 +43,8 @@ void LaserWorker::setCard(int index) {
 bool LaserWorker::initDLL() {
     INFO_MSG("Initializing the RTC5 DLL");
     if (RTC5open()) {
-        terminateDLL();
         WARN_MSG("RTC5DLLx64.DLL not found");
+        terminateDLL();
     }
     if (init_rtc5_dll() != 0U) {
         UINT count = rtc5_count_cards();

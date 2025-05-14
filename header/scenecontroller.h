@@ -1,10 +1,11 @@
 #ifndef SCENEMANAGER_H
 #define SCENEMANAGER_H
 
-#include <QGraphicsScene>
 #include <QGraphicsItem>
-#include <utility>
+#include <QGraphicsScene>
+#include <QTimer>
 #include "protocol.h"
+#include <utility>
 
 class SceneController {
     friend class ProjectManager;
@@ -57,6 +58,8 @@ public:
     /// \brief dragScene 拖动scene事件 供
     /// \param pointCoordView
     void dragScene(QPointF pointCoordView,  MouseEvent event);
+    void setSceneToCenter();
+
 private:
     static SceneController ins;
     SceneController() {};

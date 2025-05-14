@@ -90,10 +90,6 @@ public:
         deleteLayerButton = new QToolButton(central);
         firstHLayout->addWidget(deleteLayerButton);
         firstHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        QFrame *splitLine2 = new QFrame(central);// 插入分隔线
-        splitLine2->setFrameShape(QFrame::VLine);
-        splitLine2->setFrameShadow(QFrame::Sunken);
-        firstHLayout->addWidget(splitLine2);
         gridLayout->addLayout(firstHLayout, 0, 0, 1, 3);
         /// 第二行
         ///

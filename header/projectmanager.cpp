@@ -224,49 +224,23 @@ void ProjectManager::newGraphicsView() {
     UiManager::getIns(). graphicsView->setRenderHint(QPainter::SmoothPixmapTransform, true);
     UiManager::getIns(). graphicsView->setViewportUpdateMode(
         QGraphicsView::SmartViewportUpdate);
-    UiManager::getIns(). graphicsView->setTransformationAnchor(QGraphicsView::NoAnchor);
-    UiManager::getIns(). graphicsView->setResizeAnchor(QGraphicsView::NoAnchor);
+    UiManager::getIns().graphicsView->setTransformationAnchor(
+        /* QGraphicsView::NoAnchor*/ //但是当要用transform的时候好像得设置NoAnchor
+        QGraphicsView::AnchorUnderMouse
+        /*QGraphicsView::AnchorViewCenter*/); // 设置当缩放scene的时候,以什么为中心(无/鼠标位置/view中心);
+    UiManager::getIns().graphicsView->setResizeAnchor(
+        /*QGraphicsView::NoAnchor*/
+        QGraphicsView::AnchorViewCenter); // 设置当窗口变化时(view也同时变化),view对应的scene中心
+    // UiManager::getIns(). graphicsView->setSizeAdjustPolicy(
+    //     QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
     UiManager::getIns(). graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     UiManager::getIns(). graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    UiManager::getIns(). graphicsView->setSizeAdjustPolicy(
-        QAbstractScrollArea::AdjustIgnored); // 设置画面缩放时不调整view大小
     UiManager::getIns(). graphicsView->setDragMode(QGraphicsView::NoDrag); // 设置初始为没有选框
     UiManager::getIns(). graphicsView->viewport()->setCursor(Qt::ArrowCursor);
     //
     UiManager::getIns().graphicsView->setMouseTracking(true);
     // 在窗口缩放时对准坐标中心
-    UiManager::getIns().graphicsView->translate(100, 100);
-    SceneController::getIns().setSceneScale(0.1615, 0.1615);
-    QTimer::singleShot(12, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(14, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(16, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(18, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(20, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(22, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(24, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(26, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(28, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
-    QTimer::singleShot(30, []() {
-        SceneController::getIns().setSceneScale(1.2, 1.2);
-    });
+    SceneController::getIns().setSceneToCenter();
     // 绘制坐标轴
     QPen pen = []() {
         QPen pen(Qt::red, 1);
