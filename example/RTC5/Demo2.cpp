@@ -108,7 +108,7 @@ int main( void*, void* )
     //  This function must be called at the very first
     ErrorCode = init_rtc5_dll();    
 
-    if ( ErrorCode )
+    if ( ErrorCode )// =1
     {
         const UINT RTC5CountCards = rtc5_count_cards();   //  number of cards found
         
@@ -139,7 +139,7 @@ int main( void*, void* )
             }
 
         }
-        else
+        else 
         {
             printf( "Initializing the DLL: Error %d detected; no cards;\n", ErrorCode );
             terminateDLL();
@@ -148,7 +148,7 @@ int main( void*, void* )
         }
 
     }
-    else
+    else  // =0
     {
         if ( DefaultCard != select_rtc( DefaultCard ) )     //  use card no. 1 as default, 
         {
@@ -218,6 +218,9 @@ int main( void*, void* )
 
     //  stop_execution might have created a RTC5_TIMEOUT error
     reset_error( -1 );    //  clear all previous error codes
+
+
+    //////////////////////////////////////////////////////////////////////////////
 
 	printf( "Lissajous figures\n\n" );
 

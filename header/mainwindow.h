@@ -25,7 +25,6 @@ private: // 初始化组件./绑定硬件
     void initTreeViewModel();
     void initTableViewModel();
     void initTabWidget();
-    void initLaserWorker();
     void initHardWareButton();
     void initProjectButton();
 

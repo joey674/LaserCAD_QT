@@ -1,37 +1,65 @@
 #ifndef LASERWORKER_H
 #define LASERWORKER_H
-#include <QObject>
-#include <QMutexLocker>
-#include <QWaitCondition>
-#include <QQueue>
 #include <QList>
+#include <QMutexLocker>
+#include <QObject>
 #include <QPoint>
+#include <QQueue>
+#include <QWaitCondition>
+#include <any>
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+#include <thread>
 
-class LaserWorker : public QObject {
-    Q_OBJECT
+enum class LaserCommandType;
+struct LaserCommand;
 
+class LaserWorker
+{
 public:
-    LaserWorker();
-
-public slots:
     void run();
-    void setCard(int index);
+    void stop();
+    void postCommand(const LaserCommand &cmd);
 
 private:
-    // 初始化dll并尝试找卡
-    bool initDLL();
-    bool connectCard();
-    void reconnectIfNeeded();
-    void terminateDLL();
+    void threadMain();
+    void handleCommand(const LaserCommand &cmd);
+    void loadDLL();
+    void connectCard();
+    std::thread _thread;
+    std::atomic<bool> _workerIsRunning{false};
+    std::once_flag _startOnce;
+    std::mutex _mutex;
+    std::queue<LaserCommand> _commandQueue;
+    std::condition_variable _cv;
+    std::atomic<bool> _cardIsConnected{false};
 
-    QMutex mutex;
-    QWaitCondition waitForSettingInput;
+private:
+    static LaserWorker ins;
+    LaserWorker() {};
+    LaserWorker(const LaserWorker &);
+    ~LaserWorker();
+    LaserWorker &operator=(const LaserWorker &);
 
-    // card
-    int requestedCard = -1;
-    //
-    bool connected = false;
-    bool needReconnect = false;
+public:
+    static LaserWorker &getIns();
+};
+
+enum class LaserCommandType {
+    ConnectCard,
+    SetParams,
+    Execute,
+    Pause,
+    Resume,
+    Stop,
+};
+
+struct LaserCommand
+{
+    LaserCommandType type;
+    std::any data; // 携带参数，如 LaserParams 或点集
 };
 
 #endif // LASERWORKER_H

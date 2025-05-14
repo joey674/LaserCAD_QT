@@ -1,14 +1,13 @@
 #include "logger.h"
+#include <QDateTime>
+#include <QDebug>
+#include <QFileInfo>
 
 void initLogger()
 {
     qInstallMessageHandler(MessageHandler);
     INFO_MSG("Logger init success");
 }
-
-#include <QFileInfo>
-#include <QDebug>
-#include <QDateTime>
 
 void MessageHandler(QtMsgType type,
                     const QMessageLogContext &context,

@@ -16,7 +16,10 @@
 // #include "utils.h"
 #include "logger.h"
 // #include "titlebar.h"
+#include <QFileDialog>
+#include <QStatusBar>
 #include <QThread>
+#include <QToolButton>
 #include "colordelegate.h"
 #include "drawcontroller.h"
 #include "editcontroller.h"
@@ -29,22 +32,15 @@
 #include "treemodel.h"
 #include "uimanager.h"
 #include <polyline.hpp>
-#include <QFileDialog>
-
 
 void MainWindow::onDrawTestLineButtonClicked() {
-    DEBUG_MSG("test button clicked");
-    // TreeModel *model = qobject_cast<TreeModel *>(UiManager::getIns(). treeView->model());
-    // model->saveTreeToJson("../../cache/");
-    // model->loadTreeFromJson("../../cache/tree_20250509_222559.json");
-    ProjectManager::getIns().createProject();
+    // LaserWorker::getIns().stop();
+    LaserWorker::getIns().postCommand(LaserCommand{LaserCommandType::ConnectCard, 0});
 }
 
 ///
 /// \brief MainWindow::MainWindow
 ///
-#include <QToolButton>
-#include <QStatusBar>
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     QWidget *container = new QWidget(this); // 容器交给 UiManager 布局使用
     UiManager::getIns().initLayout(container);
@@ -53,7 +49,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initGraphicsView();
     initTreeViewModel();
     initTabWidget();
-    initLaserWorker();
     //
     initProjectButton();
     initDrawToolButton();
@@ -561,15 +556,6 @@ void MainWindow::initTableViewModel() {
 void MainWindow::initTabWidget() {
     UiManager::getIns(). tabWidget->clearAllTabs();
 }
-
-void MainWindow::initLaserWorker() {
-    LaserWorker* worker = new LaserWorker();
-    QThread* thread = new QThread();
-    worker->moveToThread(thread);
-    connect(thread, &QThread::started, worker, &LaserWorker::run);
-    thread->start();
-}
-
 ///
 /// \brief MainWindow::keyPressEvent
 /// \param event
