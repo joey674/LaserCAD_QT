@@ -17,6 +17,7 @@
 #include "logger.h"
 // #include "titlebar.h"
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QStatusBar>
 #include <QThread>
 #include <QToolButton>
@@ -34,7 +35,20 @@
 #include <polyline.hpp>
 
 void MainWindow::onDrawTestLineButtonClicked() {
-    // LaserWorker::getIns().stopLaserWorker();
+    auto layerUuid = SceneController::getIns().getCurrentLayer();
+    auto treeView = UiManager::getIns().treeView;
+    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
+    QModelIndex layerIndex = model->getIndex(layerUuid);
+    auto childNodeList = model->getAllChildNodes(layerIndex);
+    // 把所有命令加载好
+    for (const auto &childNode : childNodeList) {
+        if (childNode->property(TreeNodePropertyIndex::Type).toString() == "Item") {
+            UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
+            auto commandList = Manager::getIns().itemMapFind(childUuid)->getRTC5Command();
+            LaserWorker::getIns().enqueueCommand(commandList);
+        }
+    }
+    LaserWorker::getIns().setState(RTC5State::Working);
 }
 
 ///
@@ -1072,8 +1086,43 @@ void MainWindow::onLoopButtonClicked() {
     Manager::getIns().addItem("Loop", "Signal");
 }
 
-void MainWindow::onMarkButtonClicked() {
-    DEBUG_MSG(1);
+void MainWindow::onMarkButtonClicked()
+{
+    QDialog dialog(this);
+    dialog.setWindowTitle("panel");
+    enum class ExecState { Ready, Running, Paused };
+    ExecState state = ExecState::Ready;
+    QPushButton *toggleButton = new QPushButton("start");
+    QPushButton *stopButton = new QPushButton("abort");
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(toggleButton);
+    layout->addWidget(stopButton);
+    dialog.setLayout(layout);
+    connect(toggleButton, &QPushButton::clicked, [&]() {
+        if (state == ExecState::Ready) {
+            DEBUG_MSG("start execute RTC5Command");
+            LaserWorker::getIns().setState(RTC5State::Working);
+            onDrawTestLineButtonClicked();
+            toggleButton->setText("stop");
+            state = ExecState::Running;
+        } else if (state == ExecState::Paused) {
+            DEBUG_MSG("resume execute RTC5Command");
+            LaserWorker::getIns().setState(RTC5State::Working);
+            toggleButton->setText("stop");
+            state = ExecState::Running;
+        } else if (state == ExecState::Running) {
+            DEBUG_MSG("pause execute RTC5Command");
+            LaserWorker::getIns().setState(RTC5State::Paused);
+            toggleButton->setText("resume");
+            state = ExecState::Paused;
+        }
+    });
+    connect(stopButton, &QPushButton::clicked, [&]() {
+        DEBUG_MSG("abort execute RTC5Command");
+        LaserWorker::getIns().setState(RTC5State::Stopped);
+        dialog.accept();
+    });
+    dialog.exec();
 }
 
 void MainWindow::onAddLayerButtonClicked() {
@@ -1084,7 +1133,6 @@ void MainWindow::onDeleteLayerButtonClicked() {
     SceneController::getIns().deleteCurrentLayer ();
 }
 
-#include <QMessageBox>
 void MainWindow::onCreateProjectButtonClicked() {
     // QMessageBox::StandardButton reply = QMessageBox::question(
     //                                         this,

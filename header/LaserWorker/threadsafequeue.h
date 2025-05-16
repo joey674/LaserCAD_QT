@@ -14,6 +14,13 @@ public:
         queue_.push(value);
     }
 
+    void push(const std::vector<T> &vec)
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (const T &item : vec)
+            queue_.push(item);
+    }
+
     bool try_pop(T &value)
     {
         std::lock_guard<std::mutex> lock(mutex_);

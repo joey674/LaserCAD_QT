@@ -22,6 +22,10 @@ public:
     void startLaserWorker();
     void stopLaserWorker();
     void enqueueCommand(const RTC5Command &cmd) { m_RTC5CommandQueue.push(cmd); }
+    void enqueueCommand(const std::vector<RTC5Command> &cmdList)
+    {
+        m_RTC5CommandQueue.push(cmdList);
+    }
     void setState(RTC5State state) { m_RTC5State.store(state); }
 
 private:
@@ -30,6 +34,7 @@ private:
     bool connectCard();
     bool checkCard();
     bool executeRTC5Command(const RTC5Command &cmd);
+    bool pauseRTC5Command();
     std::thread m_thread;
     std::once_flag m_startOnce;
     std::atomic<bool> m_workerIsRunning{false};
