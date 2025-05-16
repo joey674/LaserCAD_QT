@@ -1,69 +1,66 @@
 #include "laserworker.h"
-#include "logger.h"
-#include <RTC5expl.h>
 #include <QThread>
 
-void LaserWorker::run()
+#include "logger.h"
+#include <RTC5expl.h>
+
+void LaserWorker::startLaserWorker()
 {
-    std::call_once(_startOnce, [this]() {
-        _workerIsRunning = true;
-        _thread = std::thread(&LaserWorker::threadMain, this);
+    std::call_once(m_startOnce, [this]() {
+        m_workerIsRunning = true;
+        m_thread = std::thread(&LaserWorker::threadMain, this);
         INFO_MSG("laserworker thread start");
     });
 }
 
-void LaserWorker::stop()
+void LaserWorker::stopLaserWorker()
 {
-    _workerIsRunning = false;
+    m_workerIsRunning = false;
     RTC5close();
 }
 
-void LaserWorker::postCommand(const LaserCommand &cmd)
+///
+/// \brief LaserWorker::loadDLL
+///
+void LaserWorker::threadMain()
 {
-    INFO_MSG("post command start");
-    {
-        std::lock_guard<std::mutex> lock(_mutex);
-        _commandQueue.push(cmd);
-    }
-    _cv.notify_one();
-    INFO_MSG("post command end");
-}
+    // 先加载dll/连接卡
+    loadDLL();
+    connectCard();
+    while (m_workerIsRunning) {
+        RTC5State state = m_RTC5State.load();
 
-// Definition of "pi"
-const double Pi = 3.14159265358979323846;
-// Change these values according to your system
-const UINT DefaultCard = 1;     //  number of default card
-const UINT ListMemory = 10000;  //  size of list 1 memory (default 4000)
-const UINT LaserMode = 1;       //  YAG 1 mode
-const UINT LaserControl = 0x18; //  Laser signals LOW active (Bits #3 and #4)
-const UINT StartGap = 1000;     //  gap ahead between input_pointer and out_pointer
-const UINT LoadGap = 100;       //  gap ahead between out_pointer and input_pointer
-const UINT PointerCount = 0x3F; //  pointer mask for checking the gap
-// RTC4 compatibility mode assumed
-const UINT AnalogOutChannel = 1;       //  AnalogOut Channel 1 used
-const UINT AnalogOutValue = 640;       //  Standard Pump Source Value
-const UINT AnalogOutStandby = 0;       //  Standby Pump Source Value
-const UINT WarmUpTime = 2000000 / 10;  //    2  s [10 us]
-const UINT LaserHalfPeriod = 50 * 8;   //   50 us [1/8 us] must be at least 13
-const UINT LaserPulseWidth = 5 * 8;    //    5 us [1/8 us]
-const UINT FirstPulseKiller = 200 * 8; //  200 us [1/8 us]
-const long LaserOnDelay = 100 * 1;     //  100 us [1 us]
-const UINT LaserOffDelay = 100 * 1;    //  100 us [1 us]
-const UINT JumpDelay = 250 / 10;       //  250 us [10 us]
-const UINT MarkDelay = 100 / 10;       //  100 us [10 us]
-const UINT PolygonDelay = 50 / 10;     //   50 us [10 us]
-const double MarkSpeed = 250.0;        //  [16 Bits/ms]
-const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
-// Spiral Parameters
-const double Amplitude = 10000.0;
-const double Period = 512.0; // amount of vectors per turn
-const double Omega = 2.0 * Pi / Period;
-// End Locus of a Line
-struct locus
-{
-    long xval, yval;
-};
-const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
+        if (state == RTC5State::Working) {
+            RTC5Command cmd;
+            if (m_RTC5CommandQueue.try_pop(cmd)) {
+                while (executeRTC5Command(cmd) == false) {
+                    // 这里返回false可能是rtc5的list满了, 需要等待;
+                    WARN_MSG("can not execute rtc5 command; will try again");
+                    // 如果在等待的时候有紧急命令也可以响应
+                    if (state == RTC5State::Paused) {
+                        pause_list();
+                        break;
+                    }
+
+                    if (state == RTC5State::Stopped) {
+                        break;
+                    }
+                };
+            }
+            continue;
+        }
+
+        // 正常打完点时出现的紧急命令响应
+        if (state == RTC5State::Paused) {
+            pause_list();
+            continue;
+        }
+
+        if (state == RTC5State::Stopped) {
+            continue;
+        }
+    }
+}
 
 void LaserWorker::loadDLL()
 {
@@ -74,145 +71,213 @@ void LaserWorker::loadDLL()
     INFO_MSG("RTC5DLL.DLL is loaded");
 }
 
-void LaserWorker::connectCard()
+bool LaserWorker::connectCard()
 {
-    _cardIsConnected = false;
-
-    UINT ErrorCode;
-    //  This function must be called at the very first
-    ErrorCode = init_rtc5_dll();
-
-    if (ErrorCode) // =1
-    {
-        const UINT RTC5CountCards = rtc5_count_cards(); //  number of cards found
-
-        if (RTC5CountCards) {
+    // 判断rtc dll初始化是否成功
+    UINT ErrorCode = init_rtc5_dll();
+    if (ErrorCode != RTC5_NO_ERROR) {
+        if (ErrorCode & RTC5_NO_CARD) {
+            PRINT_RTC5_ERROR_INFO(ErrorCode);
+        } else {
+            const UINT RTC5CountCards = rtc5_count_cards(); //  number of cards found
             UINT AccError(0);
-
             //  Error analysis in detail
             for (UINT i = 1; i <= RTC5CountCards; i++) {
                 const UINT Error = n_get_last_error(i);
 
-                if (Error != 0) {
+                if (Error != RTC5_NO_ERROR) {
                     AccError |= Error;
-                    WARN_MSG("card no." + QString::number(i));
-                    WARN_MSG("error:" + QString::number(DefaultCard));
+                    PRINT_RTC5_ERROR_INFO(Error);
                     n_reset_error(i, Error);
                 }
             }
-
-            if (AccError) {
-                free_rtc5_dll();
-                return;
-            } else {
-                INFO_MSG("success??");
+            if (AccError != RTC5_NO_ERROR) {
+                PRINT_RTC5_ERROR_INFO(AccError);
             }
+        }
+        free_rtc5_dll();
+        return false;
+    }
 
+    // 说明选择卡是否成功
+    if (DefaultCard != select_rtc(DefaultCard)) {
+        ErrorCode = n_get_last_error(DefaultCard);
+        if (ErrorCode & RTC5_VERSION_MISMATCH) {
+            //  In this case load_program_file(0) would not work.
+            ErrorCode = n_load_program_file(DefaultCard, 0); //  current working path
         } else {
-            WARN_MSG(" no card deteceted");
+            PRINT_RTC5_ERROR_INFO(ErrorCode);
             free_rtc5_dll();
-            return;
+            return false;
         }
 
-    } else // =0
-    {
-        if (DefaultCard != select_rtc(DefaultCard)) //  use card no. 1 as default,
-        {
-            ErrorCode = n_get_last_error(DefaultCard);
-
-            if (ErrorCode & 256) //  RTC5_VERSION_MISMATCH
-            {
-                //  In this case load_program_file(0) would not work.
-                ErrorCode = n_load_program_file(DefaultCard, 0); //  current working path
-
-            } else {
-                WARN_MSG("No acces to card no." + QString::number(DefaultCard));
-                free_rtc5_dll();
-                return;
-            }
-
-            if (ErrorCode) {
-                WARN_MSG("No acces to card no." + QString::number(DefaultCard));
-                free_rtc5_dll();
-                return;
-
-            } else { //  n_load_program_file was successfull
-                (void) select_rtc(DefaultCard);
-                INFO_MSG("success??");
-            }
+        if (ErrorCode != RTC5_NO_ERROR) {
+            PRINT_RTC5_ERROR_INFO(ErrorCode);
+            free_rtc5_dll();
+            return false;
+        } else { //  n_load_program_file was successfull
+            (void) select_rtc(DefaultCard);
         }
     }
 
+    //
     set_rtc4_mode(); //  for RTC4 compatibility
-
     // Initialize the RTC5
     stop_execution();
     //  If the DefaultCard has been used previously by another application
     //  a list might still be running. This would prevent load_program_file
     //  and load_correction_file from being executed.
     ErrorCode = load_program_file(0); //  path = current working path
-
     if (ErrorCode) {
-        WARN_MSG("Program file loading error:" + QString::number(ErrorCode));
+        printf("Program file loading error: %d\n", ErrorCode);
         free_rtc5_dll();
-        return;
+        return false;
     }
-
     ErrorCode = load_correction_file(0,  // initialize like "D2_1to1.ct5",
                                      1,  // table; #1 is used by default
                                      2); // use 2D only
     if (ErrorCode) {
-        WARN_MSG("Correction file loading error:" + QString::number(ErrorCode));
+        printf("Correction file loading error: %d\n", ErrorCode);
         free_rtc5_dll();
-        return;
+        return false;
     }
-
     select_cor_table(1, 0); //  table #1 at primary connector (default)
-
     //  stop_execution might have created a RTC5_TIMEOUT error
     reset_error(-1); //  clear all previous error codes
-
-    _cardIsConnected = true;
-    INFO_MSG("RTC5 card is connected.");
+    //  Configure list memory, default: config_list( 4000, 4000 ).
+    //  One list only
+    config_list(ListMemory, 0);
+    //  input_list_pointer and out_list_pointer will jump automatically
+    //  from the end of the list onto position 0 each without using
+    //  set_end_of_list. auto_change won't be executed.
+    //  RTC4::set_list_mode( 1 ) is no more supported
+    set_laser_mode(LaserMode);
+    set_firstpulse_killer(FirstPulseKiller);
+    //  This function must be called at least once to activate laser
+    //  signals. Later on enable/disable_laser would be sufficient.
+    set_laser_control(LaserControl);
+    // Activate a home jump and specify the beam dump
+    home_position(BeamDump.xval, BeamDump.yval);
+    // Turn on the optical pump source
+    write_da_x(AnalogOutChannel, AnalogOutValue);
+    INFO_MSG("connect success");
+    return true;
 }
 
-void LaserWorker::threadMain()
+bool LaserWorker::checkCard()
 {
-    // 先加载dll
-    loadDLL();
-    //
-    while (_workerIsRunning) {
-        // 取出命令
-        LaserCommand cmd;
-        {
-            std::unique_lock<std::mutex> lock(_mutex);
-            _cv.wait(lock, [&] {
-                return !_commandQueue.empty() || !_workerIsRunning;
-            }); // 等待有命令或退出
-            if (!_workerIsRunning && _commandQueue.empty())
-                break;
-            cmd = std::move(_commandQueue.front());
-            _commandQueue.pop();
-        }
-        // 执行命令(每次执行前连接一下卡判断卡有没有连接上,没有连接就跳过执行)
-        connectCard();
-        if (!_cardIsConnected) {
-            WARN_MSG("can not connect card");
-            continue;
-        }
-        handleCommand(cmd);
+    UINT errorCode = n_get_last_error(DefaultCard);
+    if (errorCode != RTC5_NO_ERROR) {
+        WARN_MSG("RTC5 has error");
+        PRINT_RTC5_ERROR_INFO(errorCode);
+        free_rtc5_dll();
+        return false;
+    } else {
+        INFO_MSG("RTC5 has no error");
+        return true;
     }
-    INFO_MSG("laserworker thread end");
 }
 
-void LaserWorker::handleCommand(const LaserCommand &cmd)
+bool LaserWorker::executeRTC5Command(const RTC5Command &cmd)
 {
-    INFO_MSG("handle command start");
-    if (cmd.type == LaserCommandType::ConnectCard) {
-        connectCard();
-        return;
+    static UINT startFlags = 2;
+    // OutPos是执行位置,InPos是写入位置
+    UINT InPos = get_input_pointer();
+    UINT OutPos, Busy;
+
+    // ----------- list 状态控制 ----------
+    if ((InPos & PointerCount) == PointerCount) {
+        get_status(&Busy, &OutPos);
+
+        //  Busy & 0x0001: list is still executing, may be paused via pause_list
+        //  Busy & 0x00fe: list has finished, but home_jumping is still active
+        //  Busy & 0xff00: && (Busy & 0x00ff) = 0: set_wait
+        //                 && (Busy & 0x00ff) > 0: pause_list
+        //
+        //  List is running and not paused, no home_jumping
+        if (Busy == 0x0001) {
+            //  If OutPos comes too close to InPos it would overtake. Let the list wait.
+            if (((InPos >= OutPos) && (InPos - OutPos < StartGap / 2))
+                || ((InPos < OutPos) && (InPos + ListMemory - OutPos < StartGap / 2))) {
+                //  *start & 4: Set_wait already pending
+                //  *start & 8: Final flushing requested, the out_pointer MUST
+                //              come very close to the last input_pointer.
+                if (!(startFlags & 4) && !(startFlags & 8)) {
+                    startFlags |= 4;
+                    set_wait(1);
+                    InPos = get_input_pointer();
+                }
+            }
+        }
+        //  List not running and not paused, no home_jumping
+        if (!Busy && !(startFlags & 2)) {
+            if (((InPos > OutPos) && (InPos - OutPos > StartGap))
+                || ((InPos < OutPos) && (InPos + ListMemory - OutPos > StartGap))) {
+                execute_list_pos(1, (OutPos + 1) % ListMemory); // 从特定位置开始一直执行
+            }
+        }
+        //  List not running and not home_jumping, but paused via set_wait
+        if (!(Busy & 0x00ff) && (Busy & 0xff00)) {
+            if (startFlags & 4) {
+                if (((InPos > OutPos) && (InPos - OutPos > StartGap))
+                    || ((InPos < OutPos) && (InPos + ListMemory - OutPos > StartGap))) {
+                    release_wait();
+                    startFlags &= ~4;
+                }
+            }
+        }
     }
-    INFO_MSG("handle command end");
+
+    // ----------- 写命令 ----------
+    get_status(&Busy, &OutPos);
+    if (((InPos > OutPos) && (ListMemory - InPos + OutPos > LoadGap))
+        || ((InPos < OutPos) && (InPos + LoadGap < OutPos))) {
+        std::visit(
+            [](const auto &cmd) {
+                using T = std::decay_t<decltype(cmd)>;
+
+                if constexpr (std::is_same_v<T, JumpCommand>) {
+                    INFO_MSG(" jump_abs");
+                    jump_abs(cmd.pos.xval, cmd.pos.yval);
+                } else if constexpr (std::is_same_v<T, MarkCommand>) {
+                    INFO_MSG(" mark_abs");
+                    mark_abs(cmd.pos.xval, cmd.pos.yval);
+                } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
+                    INFO_MSG(" set_laser_pulses");
+                    set_laser_pulses(cmd.halfPeriod, cmd.pulseWidth);
+                } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
+                    INFO_MSG(" set_scanner_delays");
+                    set_scanner_delays(cmd.jumpDelay, cmd.markDelay, cmd.polygonDelay);
+                } else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
+                    INFO_MSG(" set_laser_delays");
+                    set_laser_delays(cmd.laserOnDelay, cmd.laserOffDelay);
+                } else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
+                    INFO_MSG(" set_jump_speed");
+                    set_jump_speed(cmd.jumpSpeed);
+                } else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
+                    INFO_MSG(" set_mark_speed");
+                    set_mark_speed(cmd.markSpeed);
+                } else if constexpr (std::is_same_v<T, LongDelayCommand>) {
+                    INFO_MSG(" long_delay");
+                    long_delay(cmd.time);
+                }
+                // } else if constexpr (std::is_same_v<T, SetWaitCommand>) {
+                //     set_wait(1);
+                // } else if constexpr (std::is_same_v<T, ReleaseWaitCommand>) {
+                //     release_wait();
+                // }
+            },
+            cmd);
+
+        return true;
+    }
+
+    // ----------- 写入失败：flush 或等待状态 ----------
+    if (Busy && !(startFlags & 8) && abs((int) InPos - (int) OutPos) < (LoadGap / 10)) {
+        printf("WARNING: In = %d Out = %d\n", InPos, OutPos);
+    }
+
+    return false; // 等待下一次调用重试
 }
 
 ///
@@ -227,8 +292,8 @@ LaserWorker &LaserWorker::getIns()
 
 LaserWorker::~LaserWorker()
 {
-    stop();
-    if (_thread.joinable()) {
-        _thread.join();
+    stopLaserWorker();
+    if (m_thread.joinable()) {
+        m_thread.join();
     }
 }

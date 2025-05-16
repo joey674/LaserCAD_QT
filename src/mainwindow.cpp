@@ -34,8 +34,7 @@
 #include <polyline.hpp>
 
 void MainWindow::onDrawTestLineButtonClicked() {
-    // LaserWorker::getIns().stop();
-    LaserWorker::getIns().postCommand(LaserCommand{LaserCommandType::ConnectCard, 0});
+    // LaserWorker::getIns().stopLaserWorker();
 }
 
 ///

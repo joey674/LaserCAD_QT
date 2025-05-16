@@ -49,6 +49,7 @@ set(PROJECT_SOURCES
         header/Keyboard/keyboardmanager.h                    src/keyboardmanager.cpp
         # LaserWorker
         header/LaserWorker/laserworker.h                          header/LaserWorker/laserworker.cpp
+        header/LaserWorker/RTC5protocol.h
         # main
         header/manager.h                                                            src/manager.cpp
         header/protocol.h
@@ -106,6 +107,8 @@ else()
             ${PROJECT_SOURCES}
             ${RTC5_SOURCES}
             ${CAVC_SOURCES}
+            header/LaserWorker/threadsafequeue.h header/LaserWorker/threadsafequeue.cpp
+
         )
     endif()
 endif()

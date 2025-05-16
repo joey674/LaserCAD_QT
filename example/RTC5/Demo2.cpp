@@ -108,7 +108,7 @@ int main( void*, void* )
     //  This function must be called at the very first
     ErrorCode = init_rtc5_dll();    
 
-    if ( ErrorCode )// =1
+    if ( ErrorCode )
     {
         const UINT RTC5CountCards = rtc5_count_cards();   //  number of cards found
         
@@ -148,7 +148,7 @@ int main( void*, void* )
         }
 
     }
-    else  // =0
+    else  
     {
         if ( DefaultCard != select_rtc( DefaultCard ) )     //  use card no. 1 as default, 
         {
@@ -314,7 +314,7 @@ int main( void*, void* )
         point.xval = (long) ( Amplitude * sin( Omega * (double) i ) );
         point.yval = (long) ( Amplitude * sin( FrequencyFactor * Omega * (double) i ) );
 
-        while ( !PlotLine( point, &start ) )
+        while ( !PlotLine( point, &start ) )// 返回false就是给rtc5失败了 就会进入循环一直重试, 同时看有无键盘输入; 如果成功了就打下一个点(但是这里有问题 如果plot一直成功 就不会接收用户输入)
         {
             if ( kbhit() )
             {

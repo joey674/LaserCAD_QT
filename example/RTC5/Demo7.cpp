@@ -219,6 +219,10 @@ void __cdecl main( void*, void* )
     //  stop_execution might have created an RTC5_TIMEOUT error
     reset_error( -1 );    //  Clear all previous error codes
 
+
+    /////////////////////////////////////////////////////////////////////
+
+
     printf( "Press any key to start " );
     while ( !kbhit() );
     (void) getch();

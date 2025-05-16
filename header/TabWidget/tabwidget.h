@@ -196,16 +196,16 @@ public:
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         // 点击事件绑定
-        connect(confirmBtn, &QPushButton::clicked, markTab, [ = ]() {
+        connect(confirmBtn, &QPushButton::clicked, markTab, [=]() {
             MarkParams params = MarkParams{
                 markSpeedSpin->value(),
                 jumpSpeedSpin->value(),
-                frequencySpin->value(),
-                repetTimeSpin->value(),
+                static_cast<unsigned int>(frequencySpin->value()),
+                static_cast<unsigned int>(repetTimeSpin->value()),
                 powerSpin->value(),
-                pulseWidthSpin->value(),
-                wobelAmlSpin->value(),
-                wobelFreqSpin->value(),
+                static_cast<unsigned int>(pulseWidthSpin->value()),
+                static_cast<unsigned int>(wobelAmlSpin->value()),
+                static_cast<unsigned int>(wobelFreqSpin->value()),
             };
             EditController::getIns().onTabWidgetMarkParamsTab(params);
         });
@@ -225,11 +225,11 @@ public:
         QFormLayout* formLayout = new QFormLayout();
         QSpinBox* startDelaySpin = new QSpinBox();
         startDelaySpin->setRange(0, 1000000);
-        startDelaySpin->setValue(params.startDelay);
+        startDelaySpin->setValue(params.laserOnDelay);
         formLayout->addRow("Start Delay:", startDelaySpin);
         QSpinBox* endDelaySpin = new QSpinBox();
         endDelaySpin->setRange(0, 1000000);
-        endDelaySpin->setValue(params.endDelay);
+        endDelaySpin->setValue(params.laserOffDelay);
         formLayout->addRow("End Delay:", endDelaySpin);
         QSpinBox* polygonDelaySpin = new QSpinBox();
         polygonDelaySpin->setRange(0, 1000000);
@@ -247,14 +247,12 @@ public:
         QPushButton* confirmBtn = new QPushButton("Confirm");
         confirmBtn->setFixedWidth(100);
         layout->addWidget(confirmBtn, 0, Qt::AlignCenter);
-        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
-            DelayParams params = {
-                startDelaySpin->value(),
-                endDelaySpin->value(),
-                polygonDelaySpin->value(),
-                markDelaySpin->value(),
-                jumpDelaySpin->value()
-            };
+        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
+            DelayParams params = {static_cast<unsigned int>(startDelaySpin->value()),
+                                  static_cast<unsigned int>(endDelaySpin->value()),
+                                  static_cast<unsigned int>(polygonDelaySpin->value()),
+                                  static_cast<unsigned int>(markDelaySpin->value()),
+                                  static_cast<unsigned int>(jumpDelaySpin->value())};
             EditController::getIns().onTabWidgetDelayParamsTab(params);
         });
         content->setLayout(layout);
@@ -788,8 +786,8 @@ public:
         addField("MarkParams: pulseWidth", 0);
         addField("MarkParams: wobelAml", 0);
         addField("MarkParams: wobelFreq", 0);
-        addField("DelayParams: startDelay", 0);
-        addField("DelayParams: endDelay", 0);
+        addField("DelayParams: laserOnDelay", 0);
+        addField("DelayParams: laserOffDelay", 0);
         addField("DelayParams: markDelay", 0);
         addField("DelayParams: jumpDelay", 0);
         addField("DelayParams: polygonDelay", 0);

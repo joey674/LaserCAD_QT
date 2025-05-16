@@ -20,8 +20,8 @@ void GraphicsItem::cloneBaseParamsFromJson(const QJsonObject &obj) {
     // m_delayParams
     if (obj.contains("delayParams")) {
         QJsonObject d = obj["delayParams"].toObject();
-        m_delayParams.startDelay = d["startDelay"].toInt();
-        m_delayParams.endDelay = d["endDelay"].toInt();
+        m_delayParams.laserOnDelay = d["laserOnDelay"].toInt();
+        m_delayParams.laserOffDelay = d["laserOffDelay"].toInt();
         m_delayParams.markDelay = d["markDelay"].toInt();
         m_delayParams.jumpDelay = d["jumpDelay"].toInt();
         m_delayParams.polygonDelay = d["polygonDelay"].toInt();
@@ -58,22 +58,22 @@ QJsonObject GraphicsItem::saveBaseParamsToJson() const {
     obj["color"] = m_color.name ();
     // --- MarkParams ---
     QJsonObject mark;
-    mark["markSpeed"] = m_markParams.markSpeed;
+    mark["markSpeed"] = QJsonValue(static_cast<int>(m_markParams.markSpeed));
     mark["jumpSpeed"] = m_markParams.jumpSpeed;
-    mark["frequency"] = m_markParams.frequency;
-    mark["repetTime"] = m_markParams.repetTime;
+    mark["frequency"] = QJsonValue(static_cast<int>(m_markParams.frequency));
+    mark["repetTime"] = QJsonValue(static_cast<int>(m_markParams.repetTime));
     mark["power"] = m_markParams.power;
-    mark["pulseWidth"] = m_markParams.pulseWidth;
-    mark["wobelAml"] = m_markParams.wobelAml;
-    mark["wobelFreq"] = m_markParams.wobelFreq;
+    mark["pulseWidth"] = QJsonValue(static_cast<int>(m_markParams.pulseWidth));
+    mark["wobelAml"] = QJsonValue(static_cast<int>(m_markParams.wobelAml));
+    mark["wobelFreq"] = QJsonValue(static_cast<int>(m_markParams.wobelFreq));
     obj["markParams"] = mark;
     // --- DelayParams ---
     QJsonObject delay;
-    delay["startDelay"] = m_delayParams.startDelay;
-    delay["endDelay"] = m_delayParams.endDelay;
-    delay["markDelay"] = m_delayParams.markDelay;
-    delay["jumpDelay"] = m_delayParams.jumpDelay;
-    delay["polygonDelay"] = m_delayParams.polygonDelay;
+    delay["laserOnDelay"] = QJsonValue(static_cast<int>(m_delayParams.laserOnDelay));
+    delay["laserOffDelay"] = QJsonValue(static_cast<int>(m_delayParams.laserOffDelay));
+    delay["markDelay"] = QJsonValue(static_cast<int>(m_delayParams.markDelay));
+    delay["jumpDelay"] = QJsonValue(static_cast<int>(m_delayParams.jumpDelay));
+    delay["polygonDelay"] = QJsonValue(static_cast<int>(m_delayParams.polygonDelay));
     obj["delayParams"] = delay;
     // --- OffsetParams ---
     QJsonObject offset;

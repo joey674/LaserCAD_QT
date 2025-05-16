@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
     // logger
     initLogger();
     //
-    LaserWorker::getIns().run();
+    LaserWorker::getIns().startLaserWorker();
     // mainWindow
     QApplication a(argc, argv);
     MainWindow w;

@@ -38,8 +38,8 @@ public:
         m_propertyList.append({ "MarkParams: wobelFreq", mark.wobelFreq });
         // DelayParams
         const DelayParams& delay = item->getDelayParams();
-        m_propertyList.append({ "DelayParams: startDelay", delay.startDelay });
-        m_propertyList.append({ "DelayParams: endDelay", delay.endDelay });
+        m_propertyList.append({ "DelayParams: laserOnDelay", delay.laserOnDelay });
+        m_propertyList.append({ "DelayParams: laserOffDelay", delay.laserOffDelay });
         m_propertyList.append({ "DelayParams: markDelay", delay.markDelay });
         m_propertyList.append({ "DelayParams: jumpDelay", delay.jumpDelay });
         m_propertyList.append({ "DelayParams: polygonDelay", delay.polygonDelay });

@@ -257,7 +257,7 @@ public:
                     mark.set(key, finalVal);
                 }
                 // --- DelayParams ---
-                else if (key == "DelayParams: startDelay" || key == "DelayParams: endDelay"
+                else if (key == "DelayParams: laserOnDelay" || key == "DelayParams: laserOffDelay"
                          || key == "DelayParams: markDelay" || key == "DelayParams: jumpDelay"
                          || key == "DelayParams: polygonDelay") {
                     delay.set(key, finalVal);

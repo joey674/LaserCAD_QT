@@ -72,12 +72,12 @@ using UUID = QString;
 struct MarkParams {
     double markSpeed = 1000;
     double jumpSpeed = 3000;
-    int frequency = 100000;
-    int repetTime = 1;
+    unsigned int frequency = 100000;
+    unsigned int repetTime = 1; // 1代表打1次 n代表打n次
     double power = 0;
-    double pulseWidth = 2;
-    int wobelAml = 0;
-    int wobelFreq = 100;
+    unsigned int pulseWidth = 2;
+    unsigned int wobelAml = 0;
+    unsigned int wobelFreq = 100;
 
     bool set(const QString& key, const QVariant& val) {
         if (key == "markSpeed" || key == "MarkParams: markSpeed")        {
@@ -117,19 +117,19 @@ struct MarkParams {
 };
 
 struct DelayParams {
-    int startDelay = 100;
-    int endDelay = 120;
-    int markDelay = 10;
-    int jumpDelay = 20;
-    int polygonDelay = 0;
+    unsigned int laserOnDelay = 100;
+    unsigned int laserOffDelay = 120;
+    unsigned int markDelay = 10;
+    unsigned int jumpDelay = 20;
+    unsigned int polygonDelay = 0;
 
     bool set(const QString& key, const QVariant& val) {
-        if (key == "startDelay" || key == "DelayParams: startDelay")     {
-            startDelay = val.toInt();
+        if (key == "laserOnDelay" || key == "DelayParams: laserOnDelay")     {
+            laserOnDelay = val.toInt();
             return true;
         }
-        if (key == "endDelay" || key == "DelayParams: endDelay")       {
-            endDelay = val.toInt();
+        if (key == "laserOffDelay" || key == "DelayParams: laserOffDelay")       {
+            laserOffDelay = val.toInt();
             return true;
         }
         if (key == "markDelay" || key == "DelayParams: markDelay")      {

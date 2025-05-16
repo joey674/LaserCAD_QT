@@ -2,14 +2,15 @@
 #define GRAPHICSITEM_H
 
 #include <QDebug.h>
+#include <QJsonObject>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include "laserworker.h"
 #include "protocol.h"
 #include "utils.hpp"
 #include <polylineoffset.hpp>
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
-#include <QJsonObject>
 
 class GraphicsItem : public QGraphicsItem {
     // Q_OBJECT
@@ -157,16 +158,34 @@ public:
     const OffsetParams getOffsetParams() const {
         return this->m_offsetParams;
     }
-    const VectorCopyParams getVectorCopyParams() const {
-        return this->m_vectorCopyParams;
+    const VectorCopyParams getVectorCopyParams() const { return this->m_vectorCopyParams; }
+    const MatrixCopyParams getMatrixCopyParams() const { return this->m_matrixCopyParams; }
+    virtual std::vector<RTC5Command> getRTC5Command() const
+    {
+        std::vector<RTC5Command> commandList;
+
+        auto laserHalfPeriod = static_cast<unsigned int>(1e6 / m_markParams.frequency / 2);
+        auto laserPulseWidth = static_cast<unsigned int>(m_markParams.pulseWidth);
+        commandList.emplace_back(SetLaserPulsesCommand{laserHalfPeriod, laserPulseWidth});
+
+        commandList.emplace_back(SetScannerDelaysCommand{m_delayParams.jumpDelay,
+                                                         m_delayParams.markDelay,
+                                                         m_delayParams.polygonDelay});
+
+        commandList.emplace_back(
+            SetLaserDelaysCommand{m_delayParams.laserOnDelay, m_delayParams.laserOffDelay});
+
+        commandList.emplace_back(
+            SetJumpSpeedCommand{static_cast<unsigned int>(m_markParams.jumpSpeed)});
+        commandList.emplace_back(
+            SetMarkSpeedCommand{static_cast<unsigned int>(m_markParams.markSpeed)});
+
+        return commandList;
     }
-    const MatrixCopyParams getMatrixCopyParams() const {
-        return this->m_matrixCopyParams;
-    }
-/// ********************
-/// \brief overload
-/// 重载基于QGraphicsitem的一些性质
-/// ********************
+    /// ********************
+    /// \brief overload
+    /// 重载基于QGraphicsitem的一些性质
+    /// ********************
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
