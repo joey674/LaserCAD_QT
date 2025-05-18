@@ -278,15 +278,17 @@ public:
     std::vector<RTC5Command> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
+        auto repeatTime = this->getMarkParams().repetTime;
 
         const auto &p0 = m_vertexPair[0];
         const auto &p1 = m_vertexPair[1];
         locus startPos = {static_cast<long>(p0.point.x()), static_cast<long>(p0.point.y())};
         locus endPos = {static_cast<long>(p1.point.x()), static_cast<long>(p1.point.y())};
 
-        commandList.emplace_back(JumpCommand{startPos});
-        commandList.emplace_back(MarkCommand{endPos});
-
+        for (int i = 0; i < repeatTime; i++) {
+            commandList.emplace_back(JumpCommand{startPos});
+            commandList.emplace_back(MarkCommand{endPos});
+        }
         return commandList;
     }
 

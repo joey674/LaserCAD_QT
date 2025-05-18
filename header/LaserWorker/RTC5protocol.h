@@ -82,14 +82,24 @@ const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
 ///
 ///
 ///
+// jump_abs
 struct JumpCommand
 {
     locus pos;
 };
 
+// mark_abs
 struct MarkCommand
 {
     locus pos;
+};
+
+// arc_abs
+struct ArcCommand
+{
+    long x;
+    long y;
+    double angle;
 };
 
 struct SetLaserPulsesCommand
@@ -129,6 +139,7 @@ struct LongDelayCommand
 // RTC5命令; 不考虑list,以及一些初始化命令1, 只负责设置参数和打印命令
 using RTC5Command = std::variant<JumpCommand,
                                  MarkCommand,
+                                 ArcCommand,
                                  SetLaserPulsesCommand,
                                  SetScannerDelaysCommand,
                                  SetLaserDelaysCommand,

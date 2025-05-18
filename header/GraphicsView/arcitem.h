@@ -328,6 +328,21 @@ public:
     std::vector<RTC5Command> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
+        auto repeatTime = this->getMarkParams().repetTime;
+
+        const auto &p0 = m_vertexPair[0];
+        const auto &p1 = m_vertexPair[1];
+        locus startPos = {static_cast<long>(p0.point.x()), static_cast<long>(p0.point.y())};
+        locus endPos = {static_cast<long>(p1.point.x()), static_cast<long>(p1.point.y())};
+        const auto angle = -p1.angle; // RTC5内部是顺时针为正angle; 我们的规范是逆时针为正
+        const long centerX = static_cast<long>(this->getCenterInScene().x());
+        const long centerY = static_cast<long>(this->getCenterInScene().y());
+
+        for (int i = 0; i < repeatTime; i++) {
+            commandList.emplace_back(JumpCommand{startPos});
+            commandList.emplace_back(ArcCommand{centerX, centerY, angle});
+        }
+        return commandList;
     }
 
 protected:
@@ -379,6 +394,7 @@ protected:
         }
     }
 private:
+    // arcItem的angle逆时针是正,顺时针是负
     std::array < Vertex, 2 > m_vertexPair = {Vertex{QPointF{0, 0}, 0}, Vertex{QPointF{0, 0}, 0}};
     // 实时生成的对象
     std::shared_ptr < QGraphicsPathItem > m_paintItem;

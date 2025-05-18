@@ -98,6 +98,10 @@ bool LaserWorker::executeRTC5Command(const RTC5Command &cmd)
                 INFO_MSG(" mark_abs " + QString::number(cmd.pos.xval) + " "
                          + QString::number(cmd.pos.yval));
                 // mark_abs(cmd.pos.xval, cmd.pos.yval);
+            } else if constexpr (std::is_same_v<T, ArcCommand>) {
+                INFO_MSG(" arc_abs " + QString::number(cmd.x) + " " + QString::number(cmd.y) + " "
+                         + QString::number(cmd.angle));
+                // arc_abs(cmd.x, cmd.y,cmd.angle);
             } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
                 INFO_MSG(" set_laser_pulses " + QString::number(cmd.halfPeriod) + " "
                          + QString::number(cmd.pulseWidth));

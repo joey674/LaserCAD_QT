@@ -137,7 +137,7 @@ public:
         splitLine5->setFrameShape(QFrame::VLine);
         splitLine5->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine5);
-        // hardWareButton
+        // signalButton
         delayTimeButton = new QToolButton(central);
         secondHLayout->addWidget(delayTimeButton);
         digitalInButton = new QToolButton(central);
@@ -148,11 +148,17 @@ public:
         secondHLayout->addWidget(doPauseButton);
         loopButton = new QToolButton(central);
         secondHLayout->addWidget(loopButton);
-        markButton = new QToolButton(central);
-        secondHLayout->addWidget(markButton);
         motionButton = new QToolButton(central);
         secondHLayout->addWidget(motionButton);
-        secondHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        secondHLayout->addSpacerItem(
+            new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        QFrame *splitLine6 = new QFrame(central); // 插入分隔线
+        splitLine6->setFrameShape(QFrame::VLine);
+        splitLine6->setFrameShadow(QFrame::Sunken);
+        secondHLayout->addWidget(splitLine6);
+        // hardwareButton
+        markButton = new QToolButton(central);
+        secondHLayout->addWidget(markButton);
         gridLayout->addLayout(secondHLayout, 1, 0, 1, 3);
         // 主控件布局
         QHBoxLayout *mainLayout = new QHBoxLayout(central);
