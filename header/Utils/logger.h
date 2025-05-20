@@ -47,6 +47,7 @@ do { \
 } while (0)
 
 void initLogger();
+void initLogFile();
 void MessageHandler(QtMsgType type,const QMessageLogContext &context,const QString &msg);
 
 #endif // LOGGER_H

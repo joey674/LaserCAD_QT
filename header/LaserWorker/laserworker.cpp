@@ -64,6 +64,7 @@ void LaserWorker::threadMain()
 ///
 /// \brief LaserWorker::test code: 不引入库, 只是用自身框架
 ///
+/*
 void LaserWorker::loadDLL()
 {
     if (RTC5open()) {
@@ -134,8 +135,12 @@ bool LaserWorker::pauseRTC5Command()
 {
     return true;
 }
+*/
 
-/* void LaserWorker::loadDLL()
+///
+/// \brief LaserWorker:: real code
+///
+void LaserWorker::loadDLL()
 {
     if (RTC5open()) {
         WARN_MSG("RTC5DLL.DLL not found");
@@ -157,7 +162,7 @@ bool LaserWorker::connectCard()
             //  Error analysis in detail
             for (UINT i = 1; i <= RTC5CountCards; i++) {
                 const UINT Error = n_get_last_error(i);
-                
+
                 if (Error != RTC5_NO_ERROR) {
                     AccError |= Error;
                     PRINT_RTC5_ERROR_INFO(Error);
@@ -171,7 +176,7 @@ bool LaserWorker::connectCard()
         free_rtc5_dll();
         return false;
     }
-    
+
     // 说明选择卡是否成功
     if (DefaultCard != select_rtc(DefaultCard)) {
         ErrorCode = n_get_last_error(DefaultCard);
@@ -183,7 +188,7 @@ bool LaserWorker::connectCard()
             free_rtc5_dll();
             return false;
         }
-        
+
         if (ErrorCode != RTC5_NO_ERROR) {
             PRINT_RTC5_ERROR_INFO(ErrorCode);
             free_rtc5_dll();
@@ -192,7 +197,7 @@ bool LaserWorker::connectCard()
             (void) select_rtc(DefaultCard);
         }
     }
-    
+
     //
     set_rtc4_mode(); //  for RTC4 compatibility
     // Initialize the RTC5
@@ -257,11 +262,11 @@ bool LaserWorker::executeRTC5Command(const RTC5Command &cmd)
     // OutPos是执行位置,InPos是写入位置
     UINT InPos = get_input_pointer();
     UINT OutPos, Busy;
-    
+
     // ----------- list 状态控制 ----------
     if ((InPos & PointerCount) == PointerCount) {
         get_status(&Busy, &OutPos);
-        
+
         //  Busy & 0x0001: list is still executing, may be paused via pause_list
         //  Busy & 0x00fe: list has finished, but home_jumping is still active
         //  Busy & 0xff00: && (Busy & 0x00ff) = 0: set_wait
@@ -300,7 +305,7 @@ bool LaserWorker::executeRTC5Command(const RTC5Command &cmd)
             }
         }
     }
-    
+
     // ----------- 写命令 ----------
     get_status(&Busy, &OutPos);
     if (((InPos > OutPos) && (ListMemory - InPos + OutPos > LoadGap))
@@ -308,48 +313,52 @@ bool LaserWorker::executeRTC5Command(const RTC5Command &cmd)
         std::visit(
             [](const auto &cmd) {
                 using T = std::decay_t<decltype(cmd)>;
-                
+
                 if constexpr (std::is_same_v<T, JumpCommand>) {
-                    INFO_MSG(" jump_abs");
-                    jump_abs(cmd.pos.xval, cmd.pos.yval);
+                    INFO_MSG(" jump_abs " + QString::number(cmd.pos.xval) + " "
+                             + QString::number(cmd.pos.yval));
+                    // jump_abs(cmd.pos.xval, cmd.pos.yval);
                 } else if constexpr (std::is_same_v<T, MarkCommand>) {
-                    INFO_MSG(" mark_abs");
-                    mark_abs(cmd.pos.xval, cmd.pos.yval);
+                    INFO_MSG(" mark_abs " + QString::number(cmd.pos.xval) + " "
+                             + QString::number(cmd.pos.yval));
+                    // mark_abs(cmd.pos.xval, cmd.pos.yval);
+                } else if constexpr (std::is_same_v<T, ArcCommand>) {
+                    INFO_MSG(" arc_abs " + QString::number(cmd.x) + " " + QString::number(cmd.y) + " "
+                             + QString::number(cmd.angle));
+                    // arc_abs(cmd.x, cmd.y,cmd.angle);
                 } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                    INFO_MSG(" set_laser_pulses");
-                    set_laser_pulses(cmd.halfPeriod, cmd.pulseWidth);
+                    INFO_MSG(" set_laser_pulses " + QString::number(cmd.halfPeriod) + " "
+                             + QString::number(cmd.pulseWidth));
+                    // set_laser_pulses(cmd.halfPeriod, cmd.pulseWidth);
                 } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
-                    INFO_MSG(" set_scanner_delays");
-                    set_scanner_delays(cmd.jumpDelay, cmd.markDelay, cmd.polygonDelay);
+                    INFO_MSG(" set_scanner_delays " + QString::number(cmd.jumpDelay) + " "
+                             + QString::number(cmd.markDelay) + " " + QString::number(cmd.polygonDelay));
+                    // set_scanner_delays(cmd.jumpDelay, cmd.markDelay, cmd.polygonDelay);
                 } else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
-                    INFO_MSG(" set_laser_delays");
-                    set_laser_delays(cmd.laserOnDelay, cmd.laserOffDelay);
+                    INFO_MSG(" set_laser_delays " + QString::number(cmd.laserOnDelay) + " "
+                             + QString::number(cmd.laserOffDelay));
+                    // set_laser_delays(cmd.laserOnDelay, cmd.laserOffDelay);
                 } else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
-                    INFO_MSG(" set_jump_speed");
-                    set_jump_speed(cmd.jumpSpeed);
+                    INFO_MSG(" set_jump_speed " + QString::number(cmd.jumpSpeed));
+                    // set_jump_speed(cmd.jumpSpeed);
                 } else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
-                    INFO_MSG(" set_mark_speed");
-                    set_mark_speed(cmd.markSpeed);
+                    INFO_MSG(" set_mark_speed " + QString::number(cmd.markSpeed));
+                    // set_mark_speed(cmd.markSpeed);
                 } else if constexpr (std::is_same_v<T, LongDelayCommand>) {
-                    INFO_MSG(" long_delay");
-                    long_delay(cmd.time);
+                    INFO_MSG(" long_delay " + QString::number(cmd.time));
+                    // long_delay(cmd.time);
                 }
-                // } else if constexpr (std::is_same_v<T, SetWaitCommand>) {
-                //     set_wait(1);
-                // } else if constexpr (std::is_same_v<T, ReleaseWaitCommand>) {
-                //     release_wait();
-                // }
             },
             cmd);
-        
+
         return true;
     }
-    
+
     // ----------- 写入失败：flush 或等待状态 ----------
     if (Busy && !(startFlags & 8) && abs((int) InPos - (int) OutPos) < (LoadGap / 10)) {
         printf("WARNING: In = %d Out = %d\n", InPos, OutPos);
     }
-    
+
     return false; // 等待下一次调用重试
 }
 
@@ -358,7 +367,7 @@ bool LaserWorker::pauseRTC5Command()
     pause_list();
     return true;
 }
-*/
+
 
 ///
 /// \brief LaserWorker::ins

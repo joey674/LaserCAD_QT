@@ -1144,7 +1144,7 @@ void MainWindow::onCreateProjectButtonClicked() {
     //     QString path = QFileDialog::getSaveFileName(
     //                        this,
     //                        tr("保存项目文件"),
-    //                        "../../tmp/Default.json",
+    //                        "../../static/Default.json",
     //                        tr("项目文件 (*.json);;所有文件 (*)")
     //                    );
     //     if (path.isEmpty()) {
@@ -1175,20 +1175,31 @@ void MainWindow::onOpenProjectButtonClicked() {
 void MainWindow::onSaveProjectButtonClicked() {
     QString timeStr = QDateTime::currentDateTime().toString("yyyyMMdd_HHmmss");
     QString fileName = QString("laserCAD_%1.json").arg(timeStr);
-    QString fullPath = QDir("../../tmp/").filePath(fileName);
-    //
+
+    QString projectDirPath = "projectFile";
+    QDir projectDir(projectDirPath);
+    if (!projectDir.exists()) {
+        if (!projectDir.mkpath(".")) {
+            qWarning() << "Cannot create project directory:" << projectDirPath;
+        }
+    }
+
+    QString defaultFullPath = projectDir.filePath(fileName);
+
     QString path = QFileDialog::getSaveFileName(
-                       this,
-                       tr("Save Project File"),
-                       fullPath,
-                       tr("File Type (*.json);; (*)"));
+        this,
+        tr("Save Project File"),
+        defaultFullPath,
+        tr("Project Files (*.json);;All Files (*)"));
+
     if (!path.isEmpty()) {
-        if (!path.endsWith(".json")) {
+        if (!path.endsWith(".json", Qt::CaseInsensitive)) {
             path += ".json";
         }
         ProjectManager::getIns().saveProject(path);
     }
 }
+
 
 void MainWindow::onTreeViewModelShowContextMenu(const QPoint &pos) {
     // 获取鼠标点击的位置
