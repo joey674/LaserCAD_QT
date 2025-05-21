@@ -160,9 +160,9 @@ public:
     }
     const VectorCopyParams getVectorCopyParams() const { return this->m_vectorCopyParams; }
     const MatrixCopyParams getMatrixCopyParams() const { return this->m_matrixCopyParams; }
-    virtual std::vector<RTC5Command> getRTC5Command() const
+    virtual std::vector<LaserDeviceCommand> getRTC5Command() const
     {
-        std::vector<RTC5Command> commandList;
+        std::vector<LaserDeviceCommand> commandList;
 
         auto laserHalfPeriod = static_cast<unsigned int>(1e6 / m_markParams.frequency / 2);
         auto laserPulseWidth = static_cast<unsigned int>(m_markParams.pulseWidth);

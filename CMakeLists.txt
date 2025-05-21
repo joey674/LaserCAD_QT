@@ -49,7 +49,11 @@ set(PROJECT_SOURCES
         header/Keyboard/keyboardmanager.h                    src/keyboardmanager.cpp
         # LaserWorker
         header/LaserWorker/laserworker.h                          header/LaserWorker/laserworker.cpp
-        header/LaserWorker/RTC5protocol.h
+        header/LaserWorker/laserdeviceprotocol.h
+        header/LaserWorker/threadsafequeue.h                src/threadsafequeue.cpp
+        header/LaserWorker/laserdevice.h                           src/laserdevice.cpp
+        header/LaserWorker/laserdevicertc5.h                   header/LaserWorker/laserdevicertc5.cpp
+        header/LaserWorker/laserdevicetest.h                   header/LaserWorker/laserdevicetest.cpp
         # main
         header/manager.h                                                            src/manager.cpp
         header/protocol.h
@@ -60,9 +64,14 @@ set(PROJECT_SOURCES
         header/projectmanager.h                                             src/projectmanager.cpp
         src/css.cpp
 )
+set(RTC4_SOURCES
+    lib/RTC4/RTC4expl.h            lib/RTC4/RTC4expl.cpp
+)
 set(RTC5_SOURCES
     lib/RTC5/RTC5expl.h           #[[lib/RTC5/RTC5expl.c]] lib/RTC5/RTC5expl.cpp
     lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
+)
+set(RTC6_SOURCES
 )
 set (CAVC_SOURCES
   lib/CavalierContours/cavaliercontours.cpp
@@ -88,7 +97,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
+        ${RTC4_SOURCES}
         ${RTC5_SOURCES}
+        ${RTC6_SOURCES}
         ${CAVC_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
@@ -107,8 +118,6 @@ else()
             ${PROJECT_SOURCES}
             ${RTC5_SOURCES}
             ${CAVC_SOURCES}
-            header/LaserWorker/threadsafequeue.h header/LaserWorker/threadsafequeue.cpp
-
         )
     endif()
 endif()
@@ -125,8 +134,9 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidg
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
 
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
-
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

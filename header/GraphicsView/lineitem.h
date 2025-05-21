@@ -275,7 +275,7 @@ public:
     uint getVertexCount() const override {
         return 2;
     }
-    std::vector<RTC5Command> getRTC5Command() const override
+    std::vector<LaserDeviceCommand> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
         auto repeatTime = this->getMarkParams().repetTime;

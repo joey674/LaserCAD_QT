@@ -21,7 +21,6 @@
 #include <QStatusBar>
 #include <QThread>
 #include <QToolButton>
-#include "colordelegate.h"
 #include "drawcontroller.h"
 #include "editcontroller.h"
 #include "keyboardmanager.h"
@@ -29,9 +28,10 @@
 #include "manager.h"
 #include "projectmanager.h"
 #include "scenecontroller.h"
-#include "tablemodel.h"
 #include "treemodel.h"
 #include "uimanager.h"
+#include "laserdevicertc5.h"
+#include "laserdevicetest.h"
 #include <polyline.hpp>
 
 void MainWindow::onDrawTestLineButtonClicked() {
@@ -40,7 +40,8 @@ void MainWindow::onDrawTestLineButtonClicked() {
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
     QModelIndex layerIndex = model->getIndex(layerUuid);
     auto childNodeList = model->getAllChildNodes(layerIndex);
-    // 把所有命令加载好
+    // 把所有命令加载好; 如果不想先执行 就设置state为stop就行
+    LaserWorker::getIns().setState(LaserWorkerState::Stopped);
     for (const auto &childNode : childNodeList) {
         if (childNode->property(TreeNodePropertyIndex::Type).toString() == "Item") {
             UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
@@ -48,7 +49,9 @@ void MainWindow::onDrawTestLineButtonClicked() {
             LaserWorker::getIns().enqueueCommand(commandList);
         }
     }
-    LaserWorker::getIns().setState(RTC5State::Working);
+    // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC5>());
+    LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
+    LaserWorker::getIns().setState(LaserWorkerState::Working);
 }
 
 ///
@@ -1100,26 +1103,26 @@ void MainWindow::onMarkButtonClicked()
     dialog.setLayout(layout);
     connect(toggleButton, &QPushButton::clicked, [&]() {
         if (state == ExecState::Ready) {
-            DEBUG_MSG("start execute RTC5Command");
-            LaserWorker::getIns().setState(RTC5State::Working);
+            DEBUG_MSG("start execute LaserDeviceCommand");
+            LaserWorker::getIns().setState(LaserWorkerState::Working);
             onDrawTestLineButtonClicked();
             toggleButton->setText("stop");
             state = ExecState::Running;
         } else if (state == ExecState::Paused) {
-            DEBUG_MSG("resume execute RTC5Command");
-            LaserWorker::getIns().setState(RTC5State::Working);
+            DEBUG_MSG("resume execute LaserDeviceCommand");
+            LaserWorker::getIns().setState(LaserWorkerState::Working);
             toggleButton->setText("stop");
             state = ExecState::Running;
         } else if (state == ExecState::Running) {
-            DEBUG_MSG("pause execute RTC5Command");
-            LaserWorker::getIns().setState(RTC5State::Paused);
+            DEBUG_MSG("pauseExecution execute LaserDeviceCommand");
+            LaserWorker::getIns().setState(LaserWorkerState::Paused);
             toggleButton->setText("resume");
             state = ExecState::Paused;
         }
     });
     connect(stopButton, &QPushButton::clicked, [&]() {
-        DEBUG_MSG("abort execute RTC5Command");
-        LaserWorker::getIns().setState(RTC5State::Stopped);
+        DEBUG_MSG("abort execute LaserDeviceCommand");
+        LaserWorker::getIns().setState(LaserWorkerState::Stopped);
         dialog.accept();
     });
     dialog.exec();

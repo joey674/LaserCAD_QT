@@ -6,40 +6,42 @@
 #include <QPoint>
 #include <QQueue>
 #include <QWaitCondition>
-#include "RTC5protocol.h"
+#include "laserdeviceprotocol.h"
 #include "threadsafequeue.h"
 #include <atomic>
 #include <thread>
-#include <variant>
+#include "laserdevice.h"
 
-enum class UserCommandType;
-struct UserCommand;
-enum class RTC5State { Working, Paused, Stopped };
+enum class LaserWorkerState { Working, Paused, Stopped };
 
 class LaserWorker
 {
 public:
     void startLaserWorker();
     void stopLaserWorker();
-    void enqueueCommand(const RTC5Command &cmd) { m_RTC5CommandQueue.push(cmd); }
-    void enqueueCommand(const std::vector<RTC5Command> &cmdList)
+    void enqueueCommand(const LaserDeviceCommand &cmd) { this->m_commandQueue.push(cmd); }
+    void enqueueCommand(const std::vector<LaserDeviceCommand> &cmdList)
     {
-        m_RTC5CommandQueue.push(cmdList);
+        this->m_commandQueue.push(cmdList);
     }
-    void setState(RTC5State state) { m_RTC5State.store(state); }
-
+    void setState(LaserWorkerState state) { m_state.store(state); }
+    void setDevice(std::unique_ptr<LaserDevice> device) {
+        if (this->m_device != nullptr) {
+            this->m_device->disconnectCard();
+            this->m_device->unloadDLL();
+        }
+        this->m_device = std::move(device);
+        this->m_device->loadDLL();
+        this->m_device->connectCard();
+    }
 private:
     void threadMain();
-    void loadDLL();
-    bool connectCard();
-    bool checkCard();
-    bool executeRTC5Command(const RTC5Command &cmd);
-    bool pauseRTC5Command();
     std::thread m_thread;
     std::once_flag m_startOnce;
     std::atomic<bool> m_workerIsRunning{false};
-    ThreadSafeQueue<RTC5Command> m_RTC5CommandQueue;
-    std::atomic<RTC5State> m_RTC5State{RTC5State::Stopped};
+    ThreadSafeQueue<LaserDeviceCommand> m_commandQueue;
+    std::unique_ptr<LaserDevice> m_device;
+    std::atomic<LaserWorkerState> m_state{LaserWorkerState::Stopped};
 
 private:
     static LaserWorker ins;
@@ -50,22 +52,6 @@ private:
 
 public:
     static LaserWorker &getIns();
-};
-
-enum class UserCommandType {
-    // 可以延迟执行
-    Void,
-    SetCardParams, // 设置rtc5参数
-    Execute,       // 开始执行
-    Pause,         // 暂停打标
-    Resume,        // 继续打标
-    Terminate,     // 结束整个打标过程
-};
-
-struct UserCommand
-{
-    UserCommandType type;
-    // data
 };
 
 #endif // LASERWORKER_H

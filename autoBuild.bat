@@ -10,7 +10,7 @@ set "OUTPUT_DIR=output"
 set "QT_ENV=C:\Windows\System32\cmd.exe /A /Q /K E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat"
 
 
-rem 清理旧输出
+rem 清理output文件夹 创建一个新的
 if exist "%OUTPUT_DIR%" (
     echo Removing old output folder...
     rmdir /s /q "%OUTPUT_DIR%"
@@ -39,20 +39,20 @@ if exist "%DLL_PATH%" (
     exit /b 1
 )
 
-rem 打开新终端 自动执行 qtenv2 和 windeployqt 打包
+rem 打开新终端 执行 qtenv2 和 windeployqt 打包
 echo open Qt pack tool windeployqt and start packing software...
 start "" cmd.exe /K "cd /d %cd%\%OUTPUT_DIR% && call E:\Repo\Qt\5.15.18\mingw81_64\bin\qtenv2.bat &&  cd E:\Repo\LaserCAD_QT\output && windeployqt LaserCAD.exe"
 
-rem 暂停 5 秒，等待打包完成
+rem 等待打包完成
 echo Waiting for windeployqt to finish...
 timeout /t 5 >nul
 
-rem 拷贝 output 到 F: 盘
+rem 拷贝 output 到 F盘
 echo Copying output to F:\output ...
 xcopy "%OUTPUT_DIR%" "F:\output" /E /I /Y
 echo Finished copying to F:\output
 
-rem 删除本地 output 文件夹
+rem 删除项目中output 文件夹
 echo Removing local output folder...
 rmdir /s /q "%OUTPUT_DIR%"
 

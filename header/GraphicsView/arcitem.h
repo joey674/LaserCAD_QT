@@ -325,7 +325,7 @@ public:
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
-    std::vector<RTC5Command> getRTC5Command() const override
+    std::vector<LaserDeviceCommand> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
         auto repeatTime = this->getMarkParams().repetTime;
