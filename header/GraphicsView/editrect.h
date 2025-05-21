@@ -20,9 +20,14 @@
 #include <vector>
 #include "scenecontroller.h"
 
-const int HandleSize = 8;
-const int DisplayPadding = 10;
-const qreal MinRectSize = 10.0;
+
+const int EdgeRectPadding = 2;
+const qreal MinRectSize = 1;
+const qreal BoundingRectPadding = 5;
+const qreal VertexInputDialogSize = 2;
+const int HandleSize = 8;// handle会根据scene自动调整; 不需要修改
+const int MoveHandleOffset = 2;
+const int RotateHandleOffset = 2;
 
 enum class EditMode { None, Scale, Move, Rotate };
 
@@ -61,7 +66,7 @@ public:
     }
 
     QRectF boundingRect() const override {
-        return m_editRect.adjusted(-50, -50, 50, 50);
+        return m_editRect.adjusted(-BoundingRectPadding, -BoundingRectPadding, BoundingRectPadding, BoundingRectPadding);
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget * = nullptr) override {
@@ -70,10 +75,10 @@ public:
         pen.setCosmetic(true);
         painter->setPen(pen);
         painter->setBrush(Qt::NoBrush);
-        QRectF displayRect = m_editRect.adjusted(-DisplayPadding,
-                             -DisplayPadding,
-                             DisplayPadding,
-                             DisplayPadding);
+        QRectF displayRect = m_editRect.adjusted(-EdgeRectPadding,
+                             -EdgeRectPadding,
+                             EdgeRectPadding,
+                             EdgeRectPadding);
         painter->drawRect(displayRect);
         // editrect的编辑边框和handle在缩放时不发生变化
         // qreal scale = SceneController::getIns().getSceneScale().first;
@@ -116,7 +121,7 @@ protected:
                         Vertex v = gItem->getVertexInScene(i);
                         QPointF scenePoint = v.point;
                         QPointF localPoint = mapFromScene(scenePoint);
-                        if (QRectF(localPoint - QPointF(5, 5), QSizeF(10, 10))
+                        if (QRectF(localPoint - QPointF(VertexInputDialogSize, VertexInputDialogSize), QSizeF(VertexInputDialogSize*2, VertexInputDialogSize*2))
                                 .contains(event->pos())) {
                             openVertexInputDialog(*gItem, i, v); // 触发输入框
                             event->accept();
@@ -194,7 +199,7 @@ private:
     QCursor m_rotateCursor;
 
     QRectF handleRect(int index) const {
-        QRectF displayRect = m_editRect.adjusted(-DisplayPadding, -DisplayPadding, DisplayPadding, DisplayPadding);
+        QRectF displayRect = m_editRect.adjusted(-EdgeRectPadding, -EdgeRectPadding, EdgeRectPadding, EdgeRectPadding);
         QPointF pos;
         switch (index) {
             case 0:
@@ -209,13 +214,13 @@ private:
             case 3:
                 pos = displayRect.bottomRight();
                 break;
-            case 4:
+            case 4:// move
                 pos = (displayRect.topLeft() + displayRect.topRight()) / 2.0;
-                pos.setY(pos.y() - 20);
+                pos.setY(pos.y() - MoveHandleOffset);
                 break;
-            case 5:
+            case 5: // rotate
                 pos = (displayRect.bottomLeft() + displayRect.bottomRight()) / 2.0;
-                pos.setY(pos.y() + 20);
+                pos.setY(pos.y() + RotateHandleOffset);
                 break;
         }
         auto handleRect = QRectF(pos.x() - HandleSize / 2,
@@ -224,7 +229,7 @@ private:
                                  HandleSize);
         //把handle的小矩形scale一下 可以根据scene缩放自动缩放
         qreal scale = SceneController::getIns().getSceneScale().first;
-        qreal handleSize = 8.0 / scale;
+        qreal handleSize = HandleSize / scale;
         QPointF center = handleRect.center();
         QRectF scaledRect(center.x() - handleSize / 2,
                           center.y() - handleSize / 2,

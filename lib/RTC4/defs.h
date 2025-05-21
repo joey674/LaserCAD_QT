@@ -26,8 +26,8 @@
 #define WP_UPDATETREE	4
 
 #define MAIN_STATE_OK				0
-#define MAIN_STATE_ERROR_RTC		1	
-#define MAIN_STATE_ERROR_LASER		2	
+#define MAIN_STATE_ERROR_RTC		1
+#define MAIN_STATE_ERROR_LASER		2
 
 //Scanner states
 #define DEVICE_STATE_NOT_INSTALLED	 0
@@ -44,160 +44,160 @@
 /*
 enum ScannerCMD{
 
-	///	
-	SetLaserDelays,		//laser on and off delays
-	SetScannerDelay,	//jump,mark and polygon delays
-	SetJumpSpeed,
-	SetMarkSpeed,
-	SetLaserPara,		//freq, p
-	SetWobbel,
-	SPoint,
-	///	
-	SMarkTo,
-	SJumpTo,
-	SArcTo,	
-	SMark3DTo,
-	SJump3DTo,
-	SArc3DTo,
-	SMarkRelTo,
-	SJumpRelTo,	
-	SArcRelTo,
-	SMark3DRelTo,
-	SJump3DRelTo,
-	SArc3DRelTo,
-	///	
-	SParaMarkTo,
-	SParaJumpTo,
-	SParaMark3DTo,
-	SParaJump3DTo,
-	//microvector
-	SMicroVector,
-	SMicroVector3D,
-	SMicroVectorRel,
-	SMicroVectorRel3D,
-	//Bitmap
-	SZPosition,	
-	SSetPixelLine,
-	SSetPixel,
-	SSetNPixel,
-	//LaserControl
-	SLaserOnList,
-	SDelayOnList,
+    ///
+    SetLaserDelays,		//laser on and off delays
+    SetScannerDelay,	//jump,mark and polygon delays
+    SetJumpSpeed,
+    SetMarkSpeed,
+    SetLaserPara,		//freq, p
+    SetWobbel,
+    SPoint,
+    ///
+    SMarkTo,
+    SJumpTo,
+    SArcTo,
+    SMark3DTo,
+    SJump3DTo,
+    SArc3DTo,
+    SMarkRelTo,
+    SJumpRelTo,
+    SArcRelTo,
+    SMark3DRelTo,
+    SJump3DRelTo,
+    SArc3DRelTo,
+    ///
+    SParaMarkTo,
+    SParaJumpTo,
+    SParaMark3DTo,
+    SParaJump3DTo,
+    //microvector
+    SMicroVector,
+    SMicroVector3D,
+    SMicroVectorRel,
+    SMicroVectorRel3D,
+    //Bitmap
+    SZPosition,
+    SSetPixelLine,
+    SSetPixel,
+    SSetNPixel,
+    //LaserControl
+    SLaserOnList,
+    SDelayOnList,
 //	SAnologOut1List,// power
-	SAnologOut1, 
-	SLongDelay,
-	SSetAutoLaserPara,
-	SSetAutoVectorCtrl,	
+    SAnologOut1,
+    SLongDelay,
+    SSetAutoLaserPara,
+    SSetAutoVectorCtrl,
 
-	//SkyWriting
-	SSetSkyWritingMode,
-	SSetSkyWritingPara,
-	//
-	SListContinue,
-	SSetFirstKiller,
+    //SkyWriting
+    SSetSkyWritingMode,
+    SSetSkyWritingPara,
+    //
+    SListContinue,
+    SSetFirstKiller,
 };
 */
 enum DriverCard{
-	CardNULL,
-	cardRTC4,
-	cardRTC5,
-	cardRTC6,
-	cardPMC2,
+    CardNULL,
+    cardRTC4,
+    cardRTC5,
+    cardRTC6,
+    cardPMC2,
 };
 
 
 #define PreViewJpSpeed  1000
-#define PreViewSpeed	1000 
+#define PreViewSpeed	1000
 
-typedef struct _tagGALVOPARA{	
-	float	m_xyfactor;
-	float	m_zfactor;
-	float	m_offsetx;
-	float	m_offsety;
-	float	m_rotationangle;
-	float	m_zoom;
-	float	m_zA;
-	float	m_zB;
-	float	m_zC;
-	int m_lasermode;
+typedef struct _tagGALVOPARA{
+    float	m_xyfactor;
+    float	m_zfactor;
+    float	m_offsetx;
+    float	m_offsety;
+    float	m_rotationangle;
+    float	m_zoom;
+    float	m_zA;
+    float	m_zB;
+    float	m_zC;
+    int m_lasermode;
 }GalvoData;
 
 typedef struct _tagSCANPIXELPARA{
-	unsigned short pixel_mode;
-	unsigned short pixel_period;
-	unsigned short pixel_dx;
-	unsigned short pixel_dy;
+    unsigned short pixel_mode;
+    unsigned short pixel_period;
+    unsigned short pixel_dx;
+    unsigned short pixel_dy;
 
-	unsigned short pulse_width;
-	unsigned short da_value;
-	unsigned short channel;	
+    unsigned short pulse_width;
+    unsigned short da_value;
+    unsigned short channel;
 }PixelData;
 
 
 typedef struct _tagPOWERCURVE{
 
-	double dPower;
-	double dVolt;
+    double dPower;
+    double dVolt;
 }PowerVolt;
 
 
 enum FILLType{
-	NONFill,	
-	CRECTFill,
-	CPARAFill,
-	CTRIFill,
-	BitmapPulseFill,
-	BitmapJumpFill,
-	BitmapLineFill,	
+    NONFill,
+    CRECTFill,
+    CPARAFill,
+    CTRIFill,
+    BitmapPulseFill,
+    BitmapJumpFill,
+    BitmapLineFill,
 };
 
 class AFX_EXT_CLASS CLaserPara
 {
-public:	
-	void Serialize(CArchive &ar);
-	CLaserPara();
+public:
+    void Serialize(CArchive &ar);
+    CLaserPara();
 
-	void SetPara(CLaserPara* pPara);
-	void SetMarkPara(CLaserPara* pPara);
-	void SetDelayPara(CLaserPara* pPara);
-	void IsEqual(CLaserPara* pLaserPara);	
+    void SetPara(CLaserPara* pPara);
+    void SetMarkPara(CLaserPara* pPara);
+    void SetDelayPara(CLaserPara* pPara);
+    void IsEqual(CLaserPara* pLaserPara);
 
-	//skywriting setting
-	int m_iSkywritingMode;
-	double m_dSkywritingTimeleg;
-	double m_dSkywritingLaserOnShift;
-	double m_dSkywritingNprev;
-	double m_dSkywritingNpost;
+    //skywriting setting
+    int m_iSkywritingMode;
+    double m_dSkywritingTimeleg;
+    double m_dSkywritingLaserOnShift;
+    double m_dSkywritingNprev;
+    double m_dSkywritingNpost;
 
-	//////	
-	BOOL m_bVectorDepend;
-	int m_iVectorDependCtrl;
-	double m_dVectorDependValue;
+    //////
+    BOOL m_bVectorDepend;
+    int m_iVectorDependCtrl;
+    double m_dVectorDependValue;
 
-	/////////
-	double m_dPower;	
-	double m_dMarkSpeed;
-	double m_dJumpSpeed;
+    /////////
+    double m_dPower;
+    double m_dMarkSpeed;
+    double m_dJumpSpeed;
 
-	double m_dFrequency;
-	double m_dPulseWidth;
-		
-	double m_dWobelAmpl;
-	double m_dWobelFreq;
+    double m_dFrequency;
+    double m_dPulseWidth;
 
-	double m_dPolygonDelay;
-	double m_dMarkDelay;
-	double m_dJumpDelay;
-		
-	double m_dLaserOnDelay;
-	double m_dLaserOffDelay;
-	
-	virtual ~CLaserPara();
+    double m_dWobelAmpl;
+    double m_dWobelFreq;
+
+    double m_dPolygonDelay;
+    double m_dMarkDelay;
+    double m_dJumpDelay;
+
+    double m_dLaserOnDelay;
+    double m_dLaserOffDelay;
+
+    virtual ~CLaserPara();
 };
 
 
 //typedef CList<CString, CString&> CMyCmdList;
 
 
-#endif 
+#endif
 // !defined(AFX_GALVOSETTINGS_H__5FD94C31_2552_414E_9C4C_E085E12470EC__INCLUDED_4)

@@ -97,7 +97,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        ${RTC4_SOURCES}
+        # ${RTC4_SOURCES}
         ${RTC5_SOURCES}
         ${RTC6_SOURCES}
         ${CAVC_SOURCES}
@@ -134,9 +134,9 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidg
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
 
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
+# target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
-target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
+# target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

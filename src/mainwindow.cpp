@@ -35,6 +35,11 @@
 #include <polyline.hpp>
 
 void MainWindow::onDrawTestLineButtonClicked() {
+        LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC5>());
+        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
+}
+
+void MainWindow::markCurrentLayer() {
     auto layerUuid = SceneController::getIns().getCurrentLayer();
     auto treeView = UiManager::getIns().treeView;
     TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
@@ -49,8 +54,6 @@ void MainWindow::onDrawTestLineButtonClicked() {
             LaserWorker::getIns().enqueueCommand(commandList);
         }
     }
-    // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC5>());
-    LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
     LaserWorker::getIns().setState(LaserWorkerState::Working);
 }
 
@@ -1105,7 +1108,7 @@ void MainWindow::onMarkButtonClicked()
         if (state == ExecState::Ready) {
             DEBUG_MSG("start execute LaserDeviceCommand");
             LaserWorker::getIns().setState(LaserWorkerState::Working);
-            onDrawTestLineButtonClicked();
+             markCurrentLayer();
             toggleButton->setText("stop");
             state = ExecState::Running;
         } else if (state == ExecState::Paused) {

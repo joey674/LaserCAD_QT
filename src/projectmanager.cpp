@@ -248,43 +248,43 @@ void ProjectManager::newGraphicsView() {
         return pen;
     }
     ();
-    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-100, 0, 100, 0);
-    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -100, 0, 100);
+    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-10, 0, 10, 0);
+    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -10, 0, 10);
     xAxis->setPen(pen);
     xAxis->setPos(0, 0);
     yAxis->setPen(pen);
     yAxis->setPos(0, 0);
     SceneController::getIns().scene->addItem(xAxis);
     SceneController::getIns().scene->addItem(yAxis);
-    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(90, 10, 100, 0);
-    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(90, -10, 100, 0);
+    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(9, 1, 10, 0);
+    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(9, -1, 10, 0);
     xArrowL->setPen(pen);
     xArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(xArrowL);
     SceneController::getIns().scene->addItem(xArrowR);
-    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(10, 90, 0, 100);
-    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-10, 90, 0, 100);
+    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(1, 9, 0, 10);
+    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-1, 9, 0, 10);
     yArrowL->setPen(pen);
     yArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(yArrowL);
     SceneController::getIns().scene->addItem(yArrowR);
     double scale = 4;
-    QGraphicsLineItem *bound1 = new QGraphicsLineItem(900 * scale,
-        900 * scale,
-        1000 * scale,
-        1000 * scale);
-    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-1000 * scale,
-        -1000 * scale,
-        -900 * scale,
-        -900 * scale);
-    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-900 * scale,
-        900 * scale,
-        -1000 * scale,
-        1000 * scale);
-    QGraphicsLineItem *bound4 = new QGraphicsLineItem(1000 * scale,
-        -1000 * scale,
-        900 * scale,
-        -900 * scale);
+    QGraphicsLineItem *bound1 = new QGraphicsLineItem(90 * scale,
+        90 * scale,
+        100 * scale,
+        100 * scale);
+    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-100 * scale,
+        -100 * scale,
+        -90 * scale,
+        -90 * scale);
+    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-90 * scale,
+        90 * scale,
+        -100 * scale,
+        100 * scale);
+    QGraphicsLineItem *bound4 = new QGraphicsLineItem(100 * scale,
+        -100 * scale,
+        90 * scale,
+        -90 * scale);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
@@ -293,6 +293,9 @@ void ProjectManager::newGraphicsView() {
     SceneController::getIns().scene->addItem(bound2);
     SceneController::getIns().scene->addItem(bound3);
     SceneController::getIns().scene->addItem(bound4);
+
+    // 缩放到合适的位置
+    SceneController::getIns().setSceneScale(12, 12);
 }
 
 void ProjectManager::newTreeViewModel() {

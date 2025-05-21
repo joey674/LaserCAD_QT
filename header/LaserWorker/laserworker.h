@@ -40,7 +40,7 @@ private:
     std::once_flag m_startOnce;
     std::atomic<bool> m_workerIsRunning{false};
     ThreadSafeQueue<LaserDeviceCommand> m_commandQueue;
-    std::unique_ptr<LaserDevice> m_device;
+    std::unique_ptr<LaserDevice> m_device = nullptr;
     std::atomic<LaserWorkerState> m_state{LaserWorkerState::Stopped};
 
 private:
