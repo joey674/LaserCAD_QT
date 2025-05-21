@@ -8,7 +8,7 @@
  #pragma once
 #endif // _MSC_VER > 1000
 
-// #include "afxtempl.h"
+#include "afxtempl.h"
 
 #define MaxBitRTC (1048576/16)
 #define LASERCONTROL 0x00

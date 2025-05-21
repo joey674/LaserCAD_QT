@@ -178,7 +178,11 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
     auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex index = model->getIndex(uuid);
-    Q_ASSERT(index.isValid());
+    // Q_ASSERT(index.isValid());
+    if (!index.isValid()) {
+        WARN_MSG("index invalid");
+        return;
+    }
     //
     if (selected) {
         // 设置treeview中选中

@@ -706,7 +706,6 @@ public:
         this->addTab(polygonTab, "Geometry");
     }
 
-
     ///
     /// \brief addMultiItemsEditTab
     void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {

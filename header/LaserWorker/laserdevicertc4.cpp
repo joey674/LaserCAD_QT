@@ -5,11 +5,11 @@
 
 bool LaserDeviceRTC4::loadDLL()
 {
-    if (RTC4open()) {
-        WARN_MSG("RTC4DLL.DLL not found");
-        throw std::runtime_error("RTC4 DLL load failed.");
-    }
-    INFO_MSG("RTC4DLL.DLL is loaded");
+    // if (RTC4open()) {
+    //     WARN_MSG("RTC4DLL.DLL not found");
+    //     throw std::runtime_error("RTC4 DLL load failed.");
+    // }
+    // INFO_MSG("RTC4DLL.DLL is loaded");
     return true;
 }
 

@@ -19,26 +19,26 @@
 #define RTC5_VERIFY_ERROR 512
 #define RTC5_TYPE_REJECTED 1024
 
-#define PRINT_RTC5_ERROR_INFO(error) \
-    do { \
-        if ((error) == 0) { \
-            WARN_MSG("没有错误"); \
-        } \
-        if ((error) & RTC5_NO_CARD) \
-            WARN_MSG("未检测到任何板卡 (RTC5_NO_CARD)"); \
-        if ((error) & RTC5_ACCESS_DENIED) \
-            WARN_MSG("访问权限被拒绝 (RTC5_ACCESS_DENIED)"); \
-        if ((error) & RTC5_SEND_ERROR) \
-            WARN_MSG("命令未发送出去，可能是驱动或连接问题 (RTC5_SEND_ERROR)"); \
-        if ((error) & RTC5_TIMEOUT) \
-            WARN_MSG("板卡无响应，可能未加载程序文件 (RTC5_TIMEOUT)"); \
-        if ((error) & RTC5_PARAM_ERROR) \
-            WARN_MSG("命令参数无效 (RTC5_PARAM_ERROR)"); \
-        if ((error) & RTC5_BUSY) \
-            WARN_MSG("当前没有 List 正在运行 (RTC5_BUSY)"); \
-        if ((error) & RTC5_VERSION_MISMATCH) \
-            WARN_MSG("RTC5 DLL 和固件版本不一致 (RTC5_VERSION_MISMATCH)"); \
-    } while (0)
+#define PRINT_RTC5_ERROR_INFO(error, i)                              \
+do {                                                             \
+        if ((error) == 0)                                            \
+        WARN_MSG(QString("Card %1 没有错误").arg(i));           \
+        if ((error) & RTC5_NO_CARD)                                  \
+        WARN_MSG(QString("Card %1 未检测到任何板卡 (RTC5_NO_CARD)").arg(i)); \
+        if ((error) & RTC5_ACCESS_DENIED)                            \
+        WARN_MSG(QString("Card %1 访问权限被拒绝 (RTC5_ACCESS_DENIED)").arg(i)); \
+        if ((error) & RTC5_SEND_ERROR)                               \
+        WARN_MSG(QString("Card %1 命令未发送出去，可能是驱动或连接问题 (RTC5_SEND_ERROR)").arg(i)); \
+        if ((error) & RTC5_TIMEOUT)                                  \
+        WARN_MSG(QString("Card %1 板卡无响应，可能未加载程序文件 (RTC5_TIMEOUT)").arg(i)); \
+        if ((error) & RTC5_PARAM_ERROR)                              \
+        WARN_MSG(QString("Card %1 命令参数无效 (RTC5_PARAM_ERROR)").arg(i)); \
+        if ((error) & RTC5_BUSY)                                     \
+        WARN_MSG(QString("Card %1 当前没有 List 正在运行 (RTC5_BUSY)").arg(i)); \
+        if ((error) & RTC5_VERSION_MISMATCH)                         \
+        WARN_MSG(QString("Card %1 RTC5 DLL 和固件版本不一致 (RTC5_VERSION_MISMATCH)").arg(i)); \
+} while (0)
+
 
 ///
 /// default setting for example

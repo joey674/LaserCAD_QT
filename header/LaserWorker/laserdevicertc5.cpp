@@ -7,7 +7,7 @@ bool LaserDeviceRTC5::loadDLL()
 {
     if (RTC5open()) {
         WARN_MSG("RTC5DLL.DLL not found");
-        throw std::runtime_error("RTC5 DLL load failed.");
+        Q_ASSERT("RTC5 DLL load failed.");
     }
     INFO_MSG("RTC5DLL.DLL is loaded");
     return true;
@@ -27,48 +27,44 @@ bool LaserDeviceRTC5::connectCard()
     UINT ErrorCode = init_rtc5_dll();
     if (ErrorCode != RTC5_NO_ERROR) {
         if (ErrorCode & RTC5_NO_CARD) {
-            PRINT_RTC5_ERROR_INFO(ErrorCode);
+            PRINT_RTC5_ERROR_INFO(ErrorCode,0);// 判断有没有卡
         } else {
-            const UINT RTC5CountCards = rtc5_count_cards(); //  number of cards found
-            UINT AccError(0);
-            //  Error analysis in detail
-            for (UINT i = 1; i <= RTC5CountCards; i++) {
+            const UINT RTC5CountCards = rtc5_count_cards();
+            INFO_VAR("Found "+ QString::number (RTC5CountCards) + "RTC5 cards;");
+            for (UINT i = 1; i <= RTC5CountCards; i++) { //  打印每张板卡的错误
                 const UINT Error = n_get_last_error(i);
-
                 if (Error != RTC5_NO_ERROR) {
-                    AccError |= Error;
-                    PRINT_RTC5_ERROR_INFO(Error);
+                    PRINT_RTC5_ERROR_INFO(Error,i);
                     n_reset_error(i, Error);
                 }
-            }
-            if (AccError != RTC5_NO_ERROR) {
-                PRINT_RTC5_ERROR_INFO(AccError);
             }
         }
         free_rtc5_dll();
         return false;
     }
+    INFO_MSG("connect to card success");
 
-    // 说明选择卡是否成功
+    // 说明选择目标卡后的设置是否成功
     if (DefaultCard != select_rtc(DefaultCard)) {
         ErrorCode = n_get_last_error(DefaultCard);
         if (ErrorCode & RTC5_VERSION_MISMATCH) {
             //  In this case load_program_file(0) would not work.
             ErrorCode = n_load_program_file(DefaultCard, 0); //  current working path
         } else {
-            PRINT_RTC5_ERROR_INFO(ErrorCode);
+            PRINT_RTC5_ERROR_INFO(ErrorCode,DefaultCard);
             free_rtc5_dll();
             return false;
         }
 
         if (ErrorCode != RTC5_NO_ERROR) {
-            PRINT_RTC5_ERROR_INFO(ErrorCode);
+            PRINT_RTC5_ERROR_INFO(ErrorCode,DefaultCard);
             free_rtc5_dll();
             return false;
         } else { //  n_load_program_file was successfull
             (void) select_rtc(DefaultCard);
         }
     }
+    INFO_MSG("set card success");
 
     //
     set_rtc4_mode(); //  for RTC4 compatibility
@@ -110,7 +106,7 @@ bool LaserDeviceRTC5::connectCard()
     home_position(BeamDump.xval, BeamDump.yval);
     // Turn on the optical pump source
     write_da_x(AnalogOutChannel, AnalogOutValue);
-    INFO_MSG("connect success");
+    INFO_MSG("init rtc card success");
     return true;
 }
 
@@ -124,7 +120,7 @@ bool LaserDeviceRTC5::checkCard()
     UINT errorCode = n_get_last_error(DefaultCard);
     if (errorCode != RTC5_NO_ERROR) {
         WARN_MSG("RTC5 has error");
-        PRINT_RTC5_ERROR_INFO(errorCode);
+        PRINT_RTC5_ERROR_INFO(errorCode,DefaultCard);
         free_rtc5_dll();
         return false;
     } else {

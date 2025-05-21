@@ -64,12 +64,12 @@ set(PROJECT_SOURCES
         header/projectmanager.h                                             src/projectmanager.cpp
         src/css.cpp
 )
-set(RTC4_SOURCES
-    lib/RTC4/RTC4expl.h            lib/RTC4/RTC4expl.cpp
-)
-set(RTC5_SOURCES
-    lib/RTC5/RTC5expl.h           #[[lib/RTC5/RTC5expl.c]] lib/RTC5/RTC5expl.cpp
+set(RTC_SOURCES
+    # RTC5
+    lib/RTC5/RTC5expl.h            lib/RTC5/RTC5expl.cpp
     lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
+    # RTC4
+    # lib/RTC4/RTC4expl.h            lib/RTC4/RTC4expl.cpp
 )
 set(RTC6_SOURCES
 )
@@ -97,9 +97,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(LaserCAD
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
-        # ${RTC4_SOURCES}
-        ${RTC5_SOURCES}
-        ${RTC6_SOURCES}
+        ${RTC_SOURCES}
         ${CAVC_SOURCES}
     )
 # Define target properties for Android with Qt 6 as:
@@ -116,7 +114,7 @@ else()
     else()
         add_executable(LaserCAD
             ${PROJECT_SOURCES}
-            ${RTC5_SOURCES}
+            ${RTC_SOURCES}
             ${CAVC_SOURCES}
         )
     endif()
@@ -134,7 +132,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidg
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
 
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
-# target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
 # target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
 
@@ -166,4 +164,9 @@ endif()
 add_custom_command(TARGET LaserCAD POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLLx64.dll
+            $<TARGET_FILE_DIR:LaserCAD>)
+
+add_custom_command(TARGET LaserCAD POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLL.dll
             $<TARGET_FILE_DIR:LaserCAD>)

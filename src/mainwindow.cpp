@@ -33,11 +33,40 @@
 #include "laserdevicertc5.h"
 #include "laserdevicetest.h"
 #include <polyline.hpp>
+#include <QInputDialog>
 
 void MainWindow::onDrawTestLineButtonClicked() {
+    QStringList options;
+    options << "RTC5" << "Test" <<"RTC4"<< "RTC6";
+
+    bool ok = false;
+    QString choice = QInputDialog::getItem(
+        this,
+        "LaserDevice Setting",
+        "Select Laser Device Type",
+        options,
+        0,
+        false,
+        &ok
+        );
+
+    if (!ok) {
+        return;
+    }
+
+    if  (choice == "Test") {
+            LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
+    }else if(choice == "RTC5") {
         LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC5>());
-        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
+    } else if (choice == "RTC4") {
+        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
+    } else if (choice == "RTC6") {
+        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
+    }
+
+    qDebug() << "Set laser device：" << choice;
 }
+
 
 void MainWindow::markCurrentLayer() {
     auto layerUuid = SceneController::getIns().getCurrentLayer();
