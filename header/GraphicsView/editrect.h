@@ -21,13 +21,13 @@
 #include "scenecontroller.h"
 
 
-const int EdgeRectPadding = 2;
-const qreal MinRectSize = 1;
-const qreal BoundingRectPadding = 5;
-const qreal VertexInputDialogSize = 2;
-const int HandleSize = 8;// handle会根据scene自动调整; 不需要修改
-const int MoveHandleOffset = 2;
-const int RotateHandleOffset = 2;
+const double EdgeRectPadding = 1;
+const double MinEdgeRectSize = 1;
+const double BoundingRectPadding = 2;
+const double VertexInputDialogSize = 2;
+const double HandleSize = 8;// handle会根据scene自动调整; 不需要修改
+const double MoveHandleOffset = 0.5;
+const double RotateHandleOffset = 0.5;
 
 enum class EditMode { None, Scale, Move, Rotate };
 
@@ -299,13 +299,13 @@ private:
         // 防止拉动到负宽高（翻转）
         qreal newWidth = std::abs(dx);
         qreal newHeight = std::abs(dy);
-        if (newWidth < MinRectSize) {
-            newWidth = MinRectSize;
-            newHeight = MinRectSize / aspectRatio;
+        if (newWidth < MinEdgeRectSize) {
+            newWidth = MinEdgeRectSize;
+            newHeight = MinEdgeRectSize / aspectRatio;
         }
-        if (newHeight < MinRectSize) {
-            newHeight = MinRectSize;
-            newWidth = MinRectSize * aspectRatio;
+        if (newHeight < MinEdgeRectSize) {
+            newHeight = MinEdgeRectSize;
+            newWidth = MinEdgeRectSize * aspectRatio;
         }
         // 根据handle方向，修正移动点
         QPointF correctedVec;

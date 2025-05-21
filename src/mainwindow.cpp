@@ -573,7 +573,10 @@ void MainWindow::initTableViewModel() {
 }
 
 void MainWindow::initTabWidget() {
-    UiManager::getIns(). tabWidget->clearAllTabs();
+    auto *tabWidget = UiManager::getIns().tabWidget;
+    connect(tabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
+        EditController::getIns().setTabIndex(index);
+    });
 }
 ///
 /// \brief MainWindow::keyPressEvent

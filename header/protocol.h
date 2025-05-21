@@ -60,8 +60,6 @@ enum GraphicsItemType /* 用于识别type */
     Combined = 6279,
 };
 
-const std::pair < double, double > DisplayPointSize = std::pair < double, double > {1, 1}; /*标准点在x、y方向上的半径*/
-const std::pair < double, double > EditPointSize = std::pair < double, double > {4, 4};
 
 /*****************************************************************************
  * Manager

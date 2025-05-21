@@ -19,12 +19,14 @@
 
 class EditController {
     friend class EditRect;
+    friend class ProjectManager;
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
     std::unique_ptr < EditRect > m_editRect;
     std::vector < std::shared_ptr < GraphicsItem> > m_currentCutCopyItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
+    unsigned int m_selectedTabIndex = 0;
     /// ********************
     /// 更新对应的编辑Widget
     /// ********************
@@ -553,6 +555,8 @@ public:
     void onTreeViewModelSelectAllItemsInGroup();
     void onTreeViewModelAddGroup();
     void onTreeViewModelDeleteGroup();
+
+    void setTabIndex(int index) { this->m_selectedTabIndex = index; }
 
 /// ********************
 /// 单例初始化

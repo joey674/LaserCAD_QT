@@ -14,6 +14,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+const double AxisScale = 5;
+
 ProjectManager ProjectManager::ins;
 
 ///
@@ -22,6 +24,7 @@ ProjectManager ProjectManager::ins;
 void ProjectManager::createProject() {
     // 先重置controller/manager
     resetDrawController();
+    resetEditController();
     resetSceneController();
     resetManager();
     // 再重置view和model; 按照程序自身的启动生成顺序;
@@ -211,6 +214,13 @@ void ProjectManager::resetDrawController() {
     drawController.resetTmpItemStatus();
 }
 
+void ProjectManager::resetEditController()
+{
+    EditController::getIns().m_currentEditItemGroup.clear();
+    EditController::getIns().m_editRect = nullptr;
+    EditController::getIns().m_currentCutCopyItemGroup.clear();
+}
+
 void ProjectManager::resetManager() {
     auto &manager = Manager::getIns();
     manager.m_itemMap.clear();
@@ -246,45 +256,43 @@ void ProjectManager::newGraphicsView() {
         QPen pen(Qt::red, 1);
         pen.setCosmetic(true);
         return pen;
-    }
-    ();
-    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-10, 0, 10, 0);
-    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -10, 0, 10);
+    }();
+    QGraphicsLineItem *xAxis = new QGraphicsLineItem(-10*AxisScale, 0, 10*AxisScale, 0);
+    QGraphicsLineItem *yAxis = new QGraphicsLineItem(0, -10*AxisScale, 0, 10*AxisScale);
     xAxis->setPen(pen);
     xAxis->setPos(0, 0);
     yAxis->setPen(pen);
     yAxis->setPos(0, 0);
     SceneController::getIns().scene->addItem(xAxis);
     SceneController::getIns().scene->addItem(yAxis);
-    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(9, 1, 10, 0);
-    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(9, -1, 10, 0);
+    QGraphicsLineItem *xArrowL = new QGraphicsLineItem(9*AxisScale, 1*AxisScale, 10*AxisScale, 0);
+    QGraphicsLineItem *xArrowR = new QGraphicsLineItem(9*AxisScale, -1*AxisScale, 10*AxisScale, 0);
     xArrowL->setPen(pen);
     xArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(xArrowL);
     SceneController::getIns().scene->addItem(xArrowR);
-    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(1, 9, 0, 10);
-    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-1, 9, 0, 10);
+    QGraphicsLineItem *yArrowL = new QGraphicsLineItem(1*AxisScale, 9*AxisScale, 0, 10*AxisScale);
+    QGraphicsLineItem *yArrowR = new QGraphicsLineItem(-1*AxisScale, 9*AxisScale, 0, 10*AxisScale);
     yArrowL->setPen(pen);
     yArrowR->setPen(pen);
     SceneController::getIns().scene->addItem(yArrowL);
     SceneController::getIns().scene->addItem(yArrowR);
-    double scale = 4;
-    QGraphicsLineItem *bound1 = new QGraphicsLineItem(90 * scale,
-        90 * scale,
-        100 * scale,
-        100 * scale);
-    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-100 * scale,
-        -100 * scale,
-        -90 * scale,
-        -90 * scale);
-    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-90 * scale,
-        90 * scale,
-        -100 * scale,
-        100 * scale);
-    QGraphicsLineItem *bound4 = new QGraphicsLineItem(100 * scale,
-        -100 * scale,
-        90 * scale,
-        -90 * scale);
+    QGraphicsLineItem *bound1 = new QGraphicsLineItem(90 * AxisScale,
+        90 * AxisScale,
+        100 * AxisScale,
+        100 * AxisScale);
+    QGraphicsLineItem *bound2 = new QGraphicsLineItem(-100 * AxisScale,
+        -100 * AxisScale,
+        -90 * AxisScale,
+        -90 * AxisScale);
+    QGraphicsLineItem *bound3 = new QGraphicsLineItem(-90 * AxisScale,
+        90 * AxisScale,
+        -100 * AxisScale,
+        100 * AxisScale);
+    QGraphicsLineItem *bound4 = new QGraphicsLineItem(100 * AxisScale,
+        -100 * AxisScale,
+        90 * AxisScale,
+        -90 * AxisScale);
     bound1->setPen(pen);
     bound2->setPen(pen);
     bound3->setPen(pen);
@@ -295,7 +303,7 @@ void ProjectManager::newGraphicsView() {
     SceneController::getIns().scene->addItem(bound4);
 
     // 缩放到合适的位置
-    SceneController::getIns().setSceneScale(12, 12);
+    SceneController::getIns().setSceneScale(6, 6);
 }
 
 void ProjectManager::newTreeViewModel() {

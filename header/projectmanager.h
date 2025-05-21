@@ -15,6 +15,7 @@ public:
     void resetManager();
     void resetSceneController();
     void resetDrawController();
+    void resetEditController();
 
 private:
     void fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj);

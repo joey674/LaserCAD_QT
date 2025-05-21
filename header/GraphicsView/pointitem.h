@@ -5,6 +5,9 @@
 #include "graphicsitem.h"
 #include "logger.h"
 
+const std::pair < double, double > DisplayPointSize = std::pair < double, double > {0.1, 0.1}; /*标准点在x、y方向上的半径*/
+const std::pair < double, double > EditPointSize = std::pair < double, double > {1, 1};
+
 class PointItem: public GraphicsItem {
 public:
     PointItem() {}
@@ -272,7 +275,7 @@ protected:
         // 设置option删去offset线段的选框
         QStyleOptionGraphicsItem optionx(*option);
         optionx.state &= ~QStyle::State_Selected;
-        // 绘制线段
+        // 绘制圆点
         this->m_paintItem->paint(painter, &optionx, widget);
         // 绘制offset
         for (auto &item : this->m_offsetItemList) {

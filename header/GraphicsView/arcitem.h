@@ -373,17 +373,17 @@ protected:
         // 绘制线段
         this->m_paintItem->paint(painter, &optionx, widget);
         // 绘制顶点
-        painter->setPen(Qt::NoPen);
-        painter->setBrush(Qt::red);
-        for (const auto &vertex : m_vertexPair) {
-            if (this->m_offsetParams.offsetCount > 0) {
-                painter->setBrush(Qt::red);
-                painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-            } else {
-                painter->setBrush(Qt::blue);
-                painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-            }
-        }
+        // painter->setPen(Qt::NoPen);
+        // painter->setBrush(Qt::red);
+        // for (const auto &vertex : m_vertexPair) {
+        //     if (this->m_offsetParams.offsetCount > 0) {
+        //         painter->setBrush(Qt::red);
+        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
+        //     } else {
+        //         painter->setBrush(Qt::blue);
+        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
+        //     }
+        // }
         // 绘制offset
         for (auto &item : this->m_offsetItemList) {
             item->paint(painter, &optionx, widget);

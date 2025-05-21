@@ -22,7 +22,6 @@ void EditController::updateTabWidget() {
     //
     if (this->m_currentEditItemGroup.empty()) {
         // WARN_MSG("no edit item");
-        return;
     } else if (this->m_currentEditItemGroup.size() == 1) { // 只有一个编辑对象
         auto curEditItem = this->m_currentEditItemGroup[0];
         switch (curEditItem->type()) {
@@ -60,7 +59,6 @@ void EditController::updateTabWidget() {
         UiManager::getIns(). tabWidget->addOffsetTab(curEditItem->getUUID());
         UiManager::getIns(). tabWidget->addMarkParamsTab(curEditItem->getUUID());
         UiManager::getIns(). tabWidget->addDelayParamsTab(curEditItem->getUUID());
-        return;
     } else { // 多个编辑对象
         auto uuids = std::vector < UUID > ();
         for (auto item : this->m_currentEditItemGroup) {
@@ -69,6 +67,12 @@ void EditController::updateTabWidget() {
         UiManager::getIns(). tabWidget->addMultiItemsEditTab(uuids);
         UiManager::getIns(). tabWidget->addMultiItemsAlignTab(uuids);
         UiManager::getIns(). tabWidget->addDuoItemsBoolOpTab(uuids);
+    }
+
+    // 记录上次手动切换的tab序号; 然后在之后updateTab的时候主动打开
+    auto indexCount = UiManager::getIns().tabWidget->count();
+    if (m_selectedTabIndex <= indexCount - 1) {
+        UiManager::getIns().tabWidget->setCurrentIndex(m_selectedTabIndex);
     }
 }
 
