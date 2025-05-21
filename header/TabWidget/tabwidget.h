@@ -31,6 +31,10 @@ public:
     }
 
     void addCopyTab(const UUID uuid) {
+        auto item = Manager::getIns().itemMapFind(uuid);
+        auto vParams = item->getVectorCopyParams();
+        auto mParams =  item->getMatrixCopyParams();
+        //
         QWidget* copyTab = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(copyTab);
         // 1. 复制方式选择
@@ -46,11 +50,11 @@ public:
         QFormLayout* vectorLayout = new QFormLayout(vectorPage);
         QLineEdit* directionVecEdit = new QLineEdit("1, 0");
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
-        spacingSpin->setRange(0, 9999);
-        spacingSpin->setValue(100);
+        spacingSpin->setRange(0, 99999);
+        spacingSpin->setValue(vParams.spacing);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(1, 9999);
-        countSpin->setValue(10);
+        countSpin->setRange(1, 99999);
+        countSpin->setValue(vParams.count);
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
         vectorLayout->addRow("Direction (x, y):", directionVecEdit);
         vectorLayout->addRow("Spacing:", spacingSpin);
@@ -69,17 +73,17 @@ public:
         QLineEdit* horizontalVecEdit = new QLineEdit("1, 0");
         QLineEdit* verticalVecEdit = new QLineEdit("0, 1");
         QDoubleSpinBox* hSpacingSpin = new QDoubleSpinBox();
-        hSpacingSpin->setRange(0, 9999);
-        hSpacingSpin->setValue(100);
+        hSpacingSpin->setRange(0, 99999);
+        hSpacingSpin->setValue(mParams.hSpacing);
         QDoubleSpinBox* vSpacingSpin = new QDoubleSpinBox();
-        vSpacingSpin->setRange(0, 9999);
-        vSpacingSpin->setValue(100);
+        vSpacingSpin->setRange(0, 99999);
+        vSpacingSpin->setValue(mParams.vSpacing);
         QSpinBox* hCountSpin = new QSpinBox();
-        hCountSpin->setRange(1, 9999);
-        hCountSpin->setValue(10);
+        hCountSpin->setRange(1, 99999);
+        hCountSpin->setValue(mParams.hCount);
         QSpinBox* vCountSpin = new QSpinBox();
-        vCountSpin->setRange(1, 9999);
-        vCountSpin->setValue(10);
+        vCountSpin->setRange(1, 99999);
+        vCountSpin->setValue(mParams.vCount);
         QComboBox* copyOrderCombo = new QComboBox();
         copyOrderCombo->addItem("Zig-Zag by Row", 0);
         copyOrderCombo->addItem("Zig-Zag by Column", 1);
@@ -650,7 +654,6 @@ public:
         });
         this->addTab(spiralTab, "Geometry");
     }
-
     void addPolygonGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < PolygonItem * > (itemptr.get());
