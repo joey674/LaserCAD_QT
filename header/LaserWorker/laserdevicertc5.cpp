@@ -5,8 +5,9 @@
 
 bool LaserDeviceRTC5::loadDLL()
 {
-    if (RTC5open() !=0 ) {
-        WARN_MSG("RTC5DLL.DLL not found; load fail");
+    auto errorCode = RTC5open();
+    if (errorCode !=0 ) {
+        WARN_MSG("RTC5DLL.DLL load fail: " + QString::number (errorCode));
         // Q_ASSERT("RTC5 DLL load failed.");
         return false;
     }else{

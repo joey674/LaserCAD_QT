@@ -922,22 +922,23 @@ STEPPER_WAIT_FP stepper_wait;
 //      -2          Error: file RTC5DLL.DLL or libslrtc5.so is already loaded.
 long RTC5open(void) {
     if(gLibRTC5)
-        return(-2);
+        return(-2);// 说明已经执行过了
 
 ////////////////
-// #ifdef _WIN32
-//     #if !defined(_WIN64)
-//     gLibRTC5 = LoadLibraryA("RTC5DLL.DLL");
-//     #else
-//     gLibRTC5 = LoadLibraryA("RTC5DLLx64.DLL");
-//     #endif // !defined(_WIN64)
-// #else
-//     gLibRTC5 = dlopen("libslrtc5.so",  RTLD_NOW | RTLD_LOCAL );
-// #endif
+#ifdef _WIN32
     gLibRTC5 = LoadLibraryA("RTC5DLL.DLL");
+    // #if !defined(_WIN64)
+    // gLibRTC5 = LoadLibraryA("RTC5DLL.DLL");
+    // #else
+    // gLibRTC5 = LoadLibraryA("RTC5DLLx64.DLL");
+    // #endif // !defined(_WIN64)
+#else
+    gLibRTC5 = dlopen("libslrtc5.so",  RTLD_NOW | RTLD_LOCAL );
+#endif
+
 ////////////////
      if(!gLibRTC5)
-         return(-1);
+         return(-1); // 加载库没有成功
 
      // Get the addresses of the DLL-Functions
      init_rtc5_dll = (INIT_RTC5_DLL_FP) GetProcAddress(gLibRTC5,"init_rtc5_dll");
