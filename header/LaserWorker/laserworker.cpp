@@ -56,8 +56,6 @@ void LaserWorker::threadMain()
     }
 }
 
-
-
 ///
 /// \brief LaserWorker::ins
 ///

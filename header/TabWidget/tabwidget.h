@@ -117,38 +117,132 @@ public:
         mainLayout->addWidget(stackedWidget);
         this->addTab(copyTab, "Copy");
     }
-    void addOffsetTab(const UUID uuid) {
+
+    // void addFillTab(const UUID uuid) {
+    //     auto item = Manager::getIns().itemMapFind(uuid);
+    //     auto offset = item->getOffsetParams ().offset;
+    //     auto offsetCount = item->getOffsetParams ().offsetCount;
+    //     if (offset == 0 && offsetCount == 0) {
+    //         offset = 10;
+    //         offsetCount = 3;
+    //     }
+    //     //
+    //     QWidget* offsetTab = new QWidget();
+    //     QVBoxLayout* mainLayout = new QVBoxLayout(offsetTab);
+    //     // 输入字段
+    //     QFormLayout* formLayout = new QFormLayout();
+    //     QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
+    //     spacingSpin->setRange(-9999, 9999);
+    //     spacingSpin->setValue(offset);
+    //     QSpinBox* countSpin = new QSpinBox();
+    //     countSpin->setRange(0, 9999);
+    //     countSpin->setValue(offsetCount);
+    //     QPushButton* confirmBtn = new QPushButton("Confirm");
+    //     formLayout->addRow("Offset:", spacingSpin);
+    //     formLayout->addRow("Offset Count:", countSpin);
+    //     mainLayout->addLayout(formLayout);
+    //     mainLayout->addWidget(confirmBtn);
+    //     // connect 按钮
+    //     connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
+    //         double offset = spacingSpin->value();
+    //         int offsetNum = countSpin->value();
+    //         EditController::getIns ().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
+    //     });
+    //     this->addTab(offsetTab, "Fill");
+    // }
+    void addFillTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
-        auto offset = item->getOffsetParams ().offset;
-        auto offsetCount = item->getOffsetParams ().offsetCount;
+
+        // 默认值处理
+        auto offset = item->getOffsetParams().offset;
+        auto offsetCount = item->getOffsetParams().offsetCount;
         if (offset == 0 && offsetCount == 0) {
             offset = 10;
             offsetCount = 3;
         }
-        //
-        QWidget* offsetTab = new QWidget();
-        QVBoxLayout* mainLayout = new QVBoxLayout(offsetTab);
-        // 输入字段
-        QFormLayout* formLayout = new QFormLayout();
+
+        auto fillSpacing = item->getFillParams().spacing;
+        auto fillAngle = item->getFillParams().startAngle;
+        auto operateCount = item->getFillParams ().operateCount;
+        if (fillSpacing == 0 && operateCount) {
+            fillSpacing = 1.0;
+            operateCount = 1;
+        }
+
+        QWidget* fillTab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(fillTab);
+
+        // 模式选择
+        QComboBox* modeCombo = new QComboBox();
+        modeCombo->addItem("Parallel Offset");
+        modeCombo->addItem("Fill");
+        mainLayout->addWidget(modeCombo);
+
+        // offset 输入区域
+        QWidget* offsetWidget = new QWidget();
+        QFormLayout* offsetForm = new QFormLayout(offsetWidget);
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(-9999, 9999);
         spacingSpin->setValue(offset);
         QSpinBox* countSpin = new QSpinBox();
         countSpin->setRange(0, 9999);
         countSpin->setValue(offsetCount);
+        offsetForm->addRow("Offset:", spacingSpin);
+        offsetForm->addRow("Offset Count:", countSpin);
+
+        // fill 输入区域
+        QWidget* fillWidget = new QWidget();
+        QFormLayout* fillForm = new QFormLayout(fillWidget);
+        QDoubleSpinBox* fillSpacingSpin = new QDoubleSpinBox();
+        fillSpacingSpin->setRange(0.0, 9999.0);
+        fillSpacingSpin->setValue(fillSpacing);
+        QDoubleSpinBox* fillAngleSpin = new QDoubleSpinBox();
+        fillAngleSpin->setRange(0.0, 360.0);
+        fillAngleSpin->setValue(fillAngle);
+        fillForm->addRow("Spacing:", fillSpacingSpin);
+        fillForm->addRow("Start Angle:", fillAngleSpin);
+
+        // 确认按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
-        formLayout->addRow("Offset:", spacingSpin);
-        formLayout->addRow("Offset Count:", countSpin);
-        mainLayout->addLayout(formLayout);
+
+        // 添加控件
+        mainLayout->addWidget(offsetWidget);
+        mainLayout->addWidget(fillWidget);
         mainLayout->addWidget(confirmBtn);
-        // connect 按钮
-        connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
-            double offset = spacingSpin->value();
-            int offsetNum = countSpin->value();
-            EditController::getIns ().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
+
+        // 默认只显示 offsetWidget
+        fillWidget->setVisible(false);
+
+        // 切换时更新显示
+        connect(modeCombo, &QComboBox::currentTextChanged, fillTab, [=](const QString& text) {
+            if (text == "Parallel Offset") {
+                offsetWidget->setVisible(true);
+                fillWidget->setVisible(false);
+            } else {
+                offsetWidget->setVisible(false);
+                fillWidget->setVisible(true);
+            }
         });
-        this->addTab(offsetTab, "Offset");
+
+        // 确认按钮绑定
+        connect(confirmBtn, &QPushButton::clicked, fillTab, [=]() {
+            if (modeCombo->currentText() == "Parallel Offset") {
+                double offset = spacingSpin->value();
+                int offsetNum = countSpin->value();
+                EditController::getIns().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
+            } else {
+                FillParams fillParams;
+                fillParams.spacing = fillSpacingSpin->value();
+                fillParams.startAngle = fillAngleSpin->value();
+                fillParams.operateCount = 1; // 启用填充
+                EditController::getIns().onTabWidgetOffsetTabFill(fillParams);
+            }
+        });
+
+        this->addTab(fillTab, "Fill");
     }
+
+
     void addMarkParamsTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto params = item->getMarkParams();
@@ -215,6 +309,7 @@ public:
         });
         this->addTab(markTab, "MarkParams");
     }
+
     void addDelayParamsTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto params = item->getDelayParams();
@@ -315,6 +410,7 @@ public:
         });
         this->addTab(arcTab, "Geometry");
     }
+
     void addCircleGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < CircleItem * > (itemptr.get());
@@ -352,6 +448,7 @@ public:
         });
         this->addTab(circleTab, "Geometry");
     }
+
     void addLineGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexInScene(0).point;
@@ -386,6 +483,7 @@ public:
         });
         this->addTab(lineTab, "Geometry");
     }
+
     void addPointGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexInScene(0).point;
@@ -410,6 +508,7 @@ public:
         });
         this->addTab(pointTab, "Geometry");
     }
+
     void addPolylineGeometryTab(const UUID uuid) {
         auto itemPtr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < PolylineItem * > (itemPtr.get());
@@ -499,6 +598,7 @@ public:
         });
         this->addTab(tab, "Geometry");
     }
+
     void addEllipseGeometryTab(const UUID uuid) {
         auto ptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < EllipseItem * > (ptr.get());
@@ -551,6 +651,7 @@ public:
         });
         this->addTab(ellipseTab, "Geometry");
     }
+
     void addRectGeometryTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         QPointF topLeft = item->getVertexInScene(0).point;
@@ -593,6 +694,7 @@ public:
         });
         this->addTab(rectTab, "Geometry");
     }
+
     void addSpiralGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         SpiralItem *item = static_cast < SpiralItem * > (itemptr.get());
@@ -654,6 +756,7 @@ public:
         });
         this->addTab(spiralTab, "Geometry");
     }
+
     void addPolygonGeometryTab(const UUID uuid) {
         auto itemptr = Manager::getIns().itemMapFind(uuid);
         auto item = static_cast < PolygonItem * > (itemptr.get());

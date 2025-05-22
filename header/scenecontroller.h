@@ -72,7 +72,6 @@ public:
 
 const QList < QColor > kLayerColors = {
     QColor("#000000"),   // 黑
-    QColor("#FF0000"),  // 红
     QColor("#00FF00"),  // 绿
     QColor("#0000FF"),  // 蓝
     QColor("#FFFF00"),  // 黄

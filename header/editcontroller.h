@@ -62,14 +62,14 @@ public:
         }
         //
         auto curEditItem = this->m_currentEditItemGroup[0];
-        curEditItem->setCopiedItem(params);
+        curEditItem->setCopiedParams(params);
     }
     void onTabWidgetCopyTabMatrixCopy(MatrixCopyParams params) {
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto curEditItem = this->m_currentEditItemGroup[0];
-        curEditItem->setCopiedItem(params);
+        curEditItem->setCopiedParams(params);
     }
     void onTabWidgetOffsetTabParallelOffset(OffsetParams params) {
         //
@@ -78,7 +78,17 @@ public:
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->setOffsetItem(params);
+        curEditItem->setOffsetParams(params);
+        this->updateTableViewModel();
+    }
+    void onTabWidgetOffsetTabFill(FillParams params) {
+        //
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        //
+        curEditItem->setFillParams(params);
         this->updateTableViewModel();
     }
     void onTabWidgetMarkParamsTab(MarkParams params) {

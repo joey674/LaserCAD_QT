@@ -56,7 +56,7 @@ void EditController::updateTabWidget() {
                 break;
         }
         UiManager::getIns(). tabWidget->addCopyTab(curEditItem->getUUID());
-        UiManager::getIns(). tabWidget->addOffsetTab(curEditItem->getUUID());
+        UiManager::getIns(). tabWidget->addFillTab(curEditItem->getUUID());
         UiManager::getIns(). tabWidget->addMarkParamsTab(curEditItem->getUUID());
         UiManager::getIns(). tabWidget->addDelayParamsTab(curEditItem->getUUID());
     } else { // 多个编辑对象

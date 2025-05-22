@@ -147,14 +147,23 @@ struct DelayParams {
 };
 
 struct OffsetParams {
-    double offset;
-    int offsetCount;
+    double offset=0;
+    int offsetCount=0;
+};
+
+struct FillParams{
+    double spacing = 0; // 填充线段间隔
+    double startAngle = 0;
+    double sideLength = 0;// 填充线段相对于填充多边形的距离
+    // 均匀打印功能: 可以旋转打印填充线段
+    double accumulateAngle = 0;
+    int operateCount = 1; // 填充次数(设置为0就是不填充)
 };
 
 struct VectorCopyParams {
-    QPointF dir;
-    double spacing;
-    int count;
+    QPointF dir = {0,0};
+    double spacing = 0;
+    int count = 0;
 
     void setEmpty() {
         dir = QPointF(0, 0);
@@ -167,13 +176,13 @@ struct VectorCopyParams {
 };
 
 struct MatrixCopyParams {
-    QPointF hVec;
-    QPointF vVec;
-    double hSpacing;
-    double vSpacing;
-    int hCount;
-    int vCount;
-    int copiedOrder;
+    QPointF hVec= {0,0};
+    QPointF vVec= {0,0};
+    double hSpacing = 0;
+    double vSpacing=0;
+    int hCount=0;
+    int vCount=0;
+    int copiedOrder=0;
 
     void setEmpty() {
         hVec = QPointF(0, 0);

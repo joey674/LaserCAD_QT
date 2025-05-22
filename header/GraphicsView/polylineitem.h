@@ -36,8 +36,6 @@ public:
         item->animate();
         return item;
     }
-
-
     QJsonObject saveToJson() const override {
         QJsonObject obj = saveBaseParamsToJson();
         obj["type"] = getName();
@@ -124,6 +122,7 @@ public:
         m_offsetItemList.clear();
         return result;
     };
+
 protected:
     bool updateParallelOffsetItem() override;
     bool updatePaintItem() override {
@@ -257,6 +256,7 @@ protected:
         }
         return false;
     }
+    bool updateFillItem() override;
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
@@ -336,6 +336,7 @@ public:
         }
         return newRect;
     }
+
 public:
     QRectF boundingRect() const override {
         if (this->m_paintItemList.empty()) {
@@ -391,6 +392,10 @@ public:
         for (auto &item : this->m_copiedItemList) {
             item->paint(painter, &optionx, widget);
         }
+        // 绘制fill
+        for (auto &item : this->m_fillItemList) {
+            item->paint(painter, &optionx, widget);
+        }
     }
 
 private:
@@ -398,6 +403,7 @@ private:
     std::vector < std::shared_ptr < QGraphicsItem>> m_paintItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_copiedItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_fillItemList;
 };
 
 inline std::shared_ptr < PolylineItem > FromCavcForm(cavc::Polyline < double > polyline) {

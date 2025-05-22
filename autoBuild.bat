@@ -13,7 +13,7 @@ set "DLL_PATH=lib\RTC5\RTC5DLL.dll"
 set "OUT_PATH=lib\RTC5\RTC5OUT.out"
 set "DAT_PATH=lib\RTC5\RTC5DAT.dat"
 set "RBF_PATH=lib\RTC5\RTC5RBF.rbf"
-set "OUTPUT_DIR=LaserCAD"
+set "OUTPUT_DIR=LaserProgram"
 set "QT_ENV=C:\Windows\System32\cmd.exe /A /Q /K E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat"
 
 
