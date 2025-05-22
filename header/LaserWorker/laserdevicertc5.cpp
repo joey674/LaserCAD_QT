@@ -75,13 +75,13 @@ bool LaserDeviceRTC5::connectCard()
     //  If the DefaultCard has been used previously by another application
     //  a list might still be running. This would prevent load_program_file
     //  and load_correction_file from being executed.
-    ErrorCode = load_program_file(0); //  path = current working path
+    ErrorCode = load_program_file(this->m_programFile); //  path = current working path
     if (ErrorCode) {
         printf("Program file loading error: %d\n", ErrorCode);
         free_rtc5_dll();
         return false;
     }
-    ErrorCode = load_correction_file(0, // initialize like "D2_1to1.ct5",
+    ErrorCode = load_correction_file(this->m_correctionFile, // initialize like "D2_1to1.ct5",
                                      1, // table; #1 is used by default
                                      2); // use 2D only
     if (ErrorCode) {
@@ -99,7 +99,9 @@ bool LaserDeviceRTC5::connectCard()
     //  from the end of the list onto position 0 each without using
     //  set_end_of_list. auto_change won't be executed.
     //  RTC4::set_list_mode( 1 ) is no more supported
-    set_laser_mode(LaserMode);
+    set_laser_mode(this->m_laserMode);
+
+    /////////////////////////////////////
     set_firstpulse_killer(FirstPulseKiller);
     //  This function must be called at least once to activate laser
     //  signals. Later on enable/disable_laser would be sufficient.
@@ -108,6 +110,7 @@ bool LaserDeviceRTC5::connectCard()
     home_position(BeamDump.xval, BeamDump.yval);
     // Turn on the optical pump source
     write_da_x(AnalogOutChannel, AnalogOutValue);
+    ////////////////////////////////////
     return true;
 }
 

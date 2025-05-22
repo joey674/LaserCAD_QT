@@ -128,9 +128,9 @@ void MainWindow::initGraphicsView() {
     //
     ProjectManager::getIns().newGraphicsView();
     auto *view = UiManager::getIns().graphicsView;
-    //
+    // 设置整个view的正方向是右上
     QTransform transform;
-    transform.scale(1, -1);
+    transform.scale(6, -6);
     view->setTransform(transform);
     // 连接组件信号
     connect(view,

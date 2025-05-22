@@ -111,9 +111,9 @@ protected:
             } else if (m_currentHandleIndex <= 3) {
                 m_editMode = EditMode::Scale;
             } else if (m_currentHandleIndex == 4) {
-                m_editMode = EditMode::Move;
-            } else if (m_currentHandleIndex == 5) {
                 m_editMode = EditMode::Rotate;
+            } else if (m_currentHandleIndex == 5) {
+                m_editMode = EditMode::Move;
             }
             if (m_editItems.size() == 1) {
                 if (auto gItem = std::dynamic_pointer_cast < GraphicsItem > (m_editItems[0])) {
@@ -160,22 +160,22 @@ protected:
         int handleIndex = hitTestHandles(event->pos());
         switch (handleIndex) {
             case 0: // 左上角
-                setCursor(Qt::SizeFDiagCursor);
+                setCursor(Qt::SizeBDiagCursor);
                 break;
             case 1: // 右上角
-                setCursor(Qt::SizeBDiagCursor);
-                break;
-            case 2: // 左下角
-                setCursor(Qt::SizeBDiagCursor);
-                break;
-            case 3: // 右下角
                 setCursor(Qt::SizeFDiagCursor);
                 break;
-            case 4: // 移动
-                setCursor(Qt::SizeAllCursor);
+            case 2: // 左下角
+                setCursor(Qt::SizeFDiagCursor);
                 break;
-            case 5: // 旋转
+            case 3: // 右下角
+                setCursor(Qt::SizeBDiagCursor);
+                break;
+            case 4: // 旋转
                 setCursor(m_rotateCursor);
+                break;
+            case 5: // 移动
+                setCursor(Qt::SizeAllCursor);
                 break;
             default:
                 setCursor(Qt::ArrowCursor);
@@ -214,13 +214,13 @@ private:
             case 3:
                 pos = displayRect.bottomRight();
                 break;
-            case 4:// move
+            case 4:// rotate
                 pos = (displayRect.topLeft() + displayRect.topRight()) / 2.0;
-                pos.setY(pos.y() - MoveHandleOffset);
+                pos.setY(pos.y() - RotateHandleOffset);
                 break;
-            case 5: // rotate
+            case 5: // move
                 pos = (displayRect.bottomLeft() + displayRect.bottomRight()) / 2.0;
-                pos.setY(pos.y() + RotateHandleOffset);
+                pos.setY(pos.y() + MoveHandleOffset);
                 break;
         }
         auto handleRect = QRectF(pos.x() - HandleSize / 2,
@@ -242,10 +242,10 @@ private:
             return Qt::green;
         }
         if (index == 4) {
-            return Qt::blue;
+            return Qt::red;
         }
         if (index == 5) {
-            return Qt::red;
+            return Qt::blue;
         }
         return Qt::black;
     }

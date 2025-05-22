@@ -18,6 +18,8 @@
 #include <QGroupBox>
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <QFileDialog>
+#include <QDir>
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -30,6 +32,7 @@ public:
         }
     }
 
+public:
     ///
     /// editTabWidget
     ///
@@ -974,6 +977,7 @@ public:
         this->addTab(tab, "Boolean Op");
     }
 
+public:
     ///
     /// editTabWidget
     ///
@@ -1005,36 +1009,30 @@ public:
         cardStatusLabel->setStyleSheet("background-color: rgb(213, 102, 153); color: white;");
         mainLayout->addWidget(cardStatusLabel);
 
-        // === 卡类型选择时调用 findCard() 并显示返回结果 ===
-        auto updateCardStatus = [cardStatusLabel](const QString& cardType) {
-            // QString result = findCard(cardType);  // 你需要提供这个函数
-            // cardStatusLabel->setText(result);
-        };
-
-        connect(rtc5Radio, &QRadioButton::toggled, [=](bool checked) {
-            if (checked) updateCardStatus("RTC5");
-        });
-        connect(rtc6Radio, &QRadioButton::toggled, [=](bool checked) {
-            if (checked) updateCardStatus("RTC6");
-        });
-        connect(testRadio, &QRadioButton::toggled, [=](bool checked) {
-            if (checked) updateCardStatus("Test");
-        });
-
         // === 其他设置区域 ===
         QFormLayout* formLayout = new QFormLayout();
 
-        QPushButton* loadCorrectionButton = new QPushButton("Load Correction File!");
+        QPushButton* loadCorrectionButton = new QPushButton("Load Correction File");
+        QString* correctionFilePath = new QString();
+
+        connect(loadCorrectionButton, &QPushButton::clicked, [=]() {
+            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.cor *.txt);;All Files (*)");
+            if (!path.isEmpty()) {
+                *correctionFilePath = path;
+                loadCorrectionButton->setText(QFileInfo(path).fileName());
+            }
+        });
+
         QPushButton* powerScaleButton = new QPushButton("Power Scale File");
-        QCheckBox* varPolygonDelayCheck = new QCheckBox("Var Polygon Delay");
-        QPushButton* delayFileButton = new QPushButton("Vary Polygon Delay File");
+        // QCheckBox* varPolygonDelayCheck = new QCheckBox("Var Polygon Delay");
+        // QPushButton* delayFileButton = new QPushButton("Vary Polygon Delay File");
 
         formLayout->addRow("Correct File:", loadCorrectionButton);
-        formLayout->addRow("Power / Voltage:", powerScaleButton);
+        // formLayout->addRow("Power / Voltage:", powerScaleButton);
         QHBoxLayout* delayLayout = new QHBoxLayout();
-        delayLayout->addWidget(varPolygonDelayCheck);
-        delayLayout->addWidget(delayFileButton);
-        formLayout->addRow(delayLayout);
+        // delayLayout->addWidget(varPolygonDelayCheck);
+        // delayLayout->addWidget(delayFileButton);
+        // formLayout->addRow(delayLayout);
 
         mainLayout->addLayout(formLayout);
 
@@ -1052,17 +1050,17 @@ public:
         QCheckBox* flipX = new QCheckBox("FlipX");
         QCheckBox* flipY = new QCheckBox("FlipY");
 
-        paramLayout->addWidget(new QLabel("Scale [bits/mm]:"), 0, 0);
-        paramLayout->addWidget(scaleEdit, 0, 1);
-        paramLayout->addWidget(new QLabel("ScaleCor [%]:"), 0, 2);
-        paramLayout->addWidget(scaleCorX, 0, 3);
-        paramLayout->addWidget(scaleCorY, 0, 4);
+        // paramLayout->addWidget(new QLabel("Scale [bits/mm]:"), 0, 0);
+        // paramLayout->addWidget(scaleEdit, 0, 1);
+        // paramLayout->addWidget(new QLabel("ScaleCor [%]:"), 0, 2);
+        // paramLayout->addWidget(scaleCorX, 0, 3);
+        // paramLayout->addWidget(scaleCorY, 0, 4);
 
-        paramLayout->addWidget(new QLabel("Rotation [deg]:"), 1, 0);
-        paramLayout->addWidget(rotationEdit, 1, 1);
-        paramLayout->addWidget(new QLabel("Offset [mm]:"), 1, 2);
-        paramLayout->addWidget(offsetX, 1, 3);
-        paramLayout->addWidget(offsetY, 1, 4);
+        // paramLayout->addWidget(new QLabel("Rotation [deg]:"), 1, 0);
+        // paramLayout->addWidget(rotationEdit, 1, 1);
+        // paramLayout->addWidget(new QLabel("Offset [mm]:"), 1, 2);
+        // paramLayout->addWidget(offsetX, 1, 3);
+        // paramLayout->addWidget(offsetY, 1, 4);
 
         paramLayout->addWidget(new QLabel("Laser Mode:"), 2, 0);
         paramLayout->addWidget(laserModeBox, 2, 1);
@@ -1072,6 +1070,45 @@ public:
         QGroupBox* paramGroup = new QGroupBox();
         paramGroup->setLayout(paramLayout);
         mainLayout->addWidget(paramGroup);
+
+        // === Apply 按钮 ===
+        QPushButton* applyButton = new QPushButton("Apply");
+        mainLayout->addWidget(applyButton);
+
+        connect(applyButton, &QPushButton::clicked, [=]() {
+            struct RTCSettings {
+                QString cardType;
+                QString correctionFilePath;
+                double scale;
+                double scaleCorX, scaleCorY;
+                double rotation;
+                double offsetX, offsetY;
+                QString laserMode;
+                bool flipX, flipY;
+            };
+
+            RTCSettings settings;
+            if (rtc5Radio->isChecked()) settings.cardType = "RTC5";
+            else if (rtc6Radio->isChecked()) settings.cardType = "RTC6";
+            else settings.cardType = "Test";
+
+            settings.correctionFilePath = *correctionFilePath;
+            settings.scale = scaleEdit->text().toDouble();
+            settings.scaleCorX = scaleCorX->text().toDouble();
+            settings.scaleCorY = scaleCorY->text().toDouble();
+            settings.rotation = rotationEdit->text().toDouble();
+            settings.offsetX = offsetX->text().toDouble();
+            settings.offsetY = offsetY->text().toDouble();
+            settings.laserMode = laserModeBox->currentText();
+            settings.flipX = flipX->isChecked();
+            settings.flipY = flipY->isChecked();
+
+            // 调用laserWoker部分
+            {
+
+                LaserWorker::getIns().setDevice();
+            }
+        });
 
         // 添加到systemTabWidget
         tab->setLayout(mainLayout);

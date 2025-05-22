@@ -63,7 +63,7 @@ enum GraphicsItemType /* 用于识别type */
 
 /*****************************************************************************
  * Manager
- * PropertyMap
+ * editTabWidget
  *****************************************************************************/
 using UUID = QString;
 
@@ -202,6 +202,21 @@ struct MatrixCopyParams {
                vCount == 0 &&
                copiedOrder == 0;
     }
+};
+
+/*****************************************************************************
+ * Hardware
+ * systemTabWidgeet
+ *****************************************************************************/
+struct RTCSettings {
+    QString cardType;
+    QString correctionFilePath;
+    double scale;
+    double scaleCorX, scaleCorY;
+    double rotation;
+    double offsetX, offsetY;
+    QString laserMode;
+    bool flipX, flipY;
 };
 
 /*****************************************************************************

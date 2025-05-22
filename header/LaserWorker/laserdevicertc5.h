@@ -13,6 +13,10 @@ public:
     bool checkCard() override;
     bool executeCommand(const LaserDeviceCommand &cmd) override;
     bool pauseExecution() override;
+public:
+    char* m_correctionFile;
+    char* m_programFile = 0;
+    unsigned int m_laserMode;
 };
 
 #endif // LASERDEVICERTC5_H
