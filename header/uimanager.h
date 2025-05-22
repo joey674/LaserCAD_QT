@@ -62,8 +62,8 @@ public:
     GraphicsView *graphicsView;
     TreeView *treeView;
     QStatusBar *statusBar;
-    TabWidget *tabWidget;
-    // TabWidget *systemTabWidget;
+    TabWidget *editTabWidget;
+    TabWidget *systemTabWidget;
 public:
     void initLayout(QWidget *parent) {
         QWidget *central = new QWidget(parent);
@@ -164,8 +164,18 @@ public:
         QHBoxLayout *mainLayout = new QHBoxLayout(central);
         treeView = new TreeView(central); // 左：TreeView，占比 1
         mainLayout->addWidget(treeView, /*stretch=*/1);
-        tabWidget = new TabWidget(central);// 中：TabWidget，占比 1
-        mainLayout->addWidget(tabWidget, /*stretch=*/1);
+        // tabwidgets
+        // editTabWidget = new TabWidget(central);// 中：TabWidget，占比 1
+        // mainLayout->addWidget(editTabWidget, /*stretch=*/1);
+        // 中间：两个 TabWidget 垂直堆叠，占 1 宽度
+        QWidget *tabContainer = new QWidget(central);
+        QVBoxLayout *tabContainerLayout = new QVBoxLayout(tabContainer);
+        systemTabWidget = new TabWidget(central);        // 上方 TabWidget
+        tabContainerLayout->addWidget(systemTabWidget, /*stretch=*/1);
+        editTabWidget = new TabWidget(central);        // 下方TabWidget
+        tabContainerLayout->addWidget(editTabWidget, /*stretch=*/1);
+        mainLayout->addWidget(tabContainer, /*stretch=*/1);
+        //
         graphicsView = new GraphicsView(central); // 右：GraphicsView，占比 3
         mainLayout->addWidget(graphicsView, /*stretch=*/3);
         QVBoxLayout *drawButtonLayout = new QVBoxLayout();// 最右：绘图按钮栏，占最小固定宽度

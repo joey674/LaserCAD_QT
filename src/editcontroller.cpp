@@ -17,8 +17,8 @@ EditController EditController::ins;
 ///
 void EditController::updateTabWidget() {
     // clear
-    TabWidget *tabWidget = UiManager::getIns(). tabWidget;
-    tabWidget->clearAllTabs();
+    TabWidget *editTabWidget = UiManager::getIns(). editTabWidget;
+    editTabWidget->clearAllTabs();
     //
     if (this->m_currentEditItemGroup.empty()) {
         // WARN_MSG("no edit item");
@@ -26,53 +26,53 @@ void EditController::updateTabWidget() {
         auto curEditItem = this->m_currentEditItemGroup[0];
         switch (curEditItem->type()) {
             case GraphicsItemType::Arc:
-                UiManager::getIns(). tabWidget->addArcGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addArcGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Circle:
-                UiManager::getIns(). tabWidget->addCircleGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addCircleGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Line:
-                UiManager::getIns(). tabWidget->addLineGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addLineGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Point:
-                UiManager::getIns(). tabWidget->addPointGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addPointGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Polyline:
-                // UiManager::getIns(). tabWidget->addPolylineGeometryTab(curEditItem->getUUID());
+                // UiManager::getIns(). editTabWidget->addPolylineGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Rect:
-                UiManager::getIns(). tabWidget->addRectGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addRectGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Ellipse:
-                UiManager::getIns(). tabWidget->addEllipseGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addEllipseGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Spiral:
-                UiManager::getIns(). tabWidget->addSpiralGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addSpiralGeometryTab(curEditItem->getUUID());
                 break;
             case GraphicsItemType::Polygon:
-                UiManager::getIns(). tabWidget->addPolygonGeometryTab(curEditItem->getUUID());
+                UiManager::getIns(). editTabWidget->addPolygonGeometryTab(curEditItem->getUUID());
                 break;
             default:
                 break;
         }
-        UiManager::getIns(). tabWidget->addCopyTab(curEditItem->getUUID());
-        UiManager::getIns(). tabWidget->addFillTab(curEditItem->getUUID());
-        UiManager::getIns(). tabWidget->addMarkParamsTab(curEditItem->getUUID());
-        UiManager::getIns(). tabWidget->addDelayParamsTab(curEditItem->getUUID());
+        UiManager::getIns(). editTabWidget->addCopyTab(curEditItem->getUUID());
+        UiManager::getIns(). editTabWidget->addFillTab(curEditItem->getUUID());
+        UiManager::getIns(). editTabWidget->addMarkParamsTab(curEditItem->getUUID());
+        UiManager::getIns(). editTabWidget->addDelayParamsTab(curEditItem->getUUID());
     } else { // 多个编辑对象
         auto uuids = std::vector < UUID > ();
         for (auto item : this->m_currentEditItemGroup) {
             uuids.push_back(item->getUUID());
         }
-        UiManager::getIns(). tabWidget->addMultiItemsEditTab(uuids);
-        UiManager::getIns(). tabWidget->addMultiItemsAlignTab(uuids);
-        UiManager::getIns(). tabWidget->addDuoItemsBoolOpTab(uuids);
+        UiManager::getIns(). editTabWidget->addMultiItemsEditTab(uuids);
+        UiManager::getIns(). editTabWidget->addMultiItemsAlignTab(uuids);
+        UiManager::getIns(). editTabWidget->addDuoItemsBoolOpTab(uuids);
     }
 
     // 记录上次手动切换的tab序号; 然后在之后updateTab的时候主动打开
-    auto indexCount = UiManager::getIns().tabWidget->count();
+    auto indexCount = UiManager::getIns().editTabWidget->count();
     if (m_selectedTabIndex <= indexCount - 1) {
-        UiManager::getIns().tabWidget->setCurrentIndex(m_selectedTabIndex);
+        UiManager::getIns().editTabWidget->setCurrentIndex(m_selectedTabIndex);
     }
 }
 

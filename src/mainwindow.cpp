@@ -127,29 +127,35 @@ void MainWindow::initTitleBar() {
 void MainWindow::initGraphicsView() {
     //
     ProjectManager::getIns().newGraphicsView();
+    auto *view = UiManager::getIns().graphicsView;
+    //
+    QTransform transform;
+    transform.scale(1, -1);
+    view->setTransform(transform);
     // 连接组件信号
-    connect(UiManager::getIns().graphicsView,
+    connect(view,
             SIGNAL(mouseMoved(QPoint)),
             this,
             SLOT(onGraphicsviewMouseMoved(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseLeftPressed(QPoint)),
+    connect(view, SIGNAL(mouseLeftPressed(QPoint)),
             this, SLOT(onGraphicsviewMouseLeftPressed(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseRightPressed(QPoint)),
+    connect(view, SIGNAL(mouseRightPressed(QPoint)),
             this, SLOT(onGraphicsviewMouseRightPressed(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseLeftReleased(QPoint)),
+    connect(view, SIGNAL(mouseLeftReleased(QPoint)),
             this, SLOT(onGraphicsviewMouseLeftReleased(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseRightReleased(QPoint)),
+    connect(view, SIGNAL(mouseRightReleased(QPoint)),
             this, SLOT(onGraphicsviewMouseRightReleased(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseDoubleClicked(QPoint)),
+    connect(view, SIGNAL(mouseDoubleClicked(QPoint)),
             this, SLOT(onGraphicsviewMouseRightDoubleClicked(QPoint)));
-    connect(UiManager::getIns(). graphicsView, SIGNAL(mouseWheelTriggered(QWheelEvent*)),
+    connect(view, SIGNAL(mouseWheelTriggered(QWheelEvent*)),
             this, SLOT(onGraphicsviewMouseWheelTriggered(QWheelEvent*)));
 }
 
 void MainWindow::initTreeViewModel() {
     ProjectManager::getIns().newTreeViewModel();
-    // 连接组件信号
     auto *view = UiManager::getIns(). treeView;
+    view->setFixedWidth(400);
+    // 连接组件信号
     //  contextmenu
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(view,
@@ -600,10 +606,18 @@ void MainWindow::initTableViewModel() {
 }
 
 void MainWindow::initTabWidget() {
-    auto *tabWidget = UiManager::getIns().tabWidget;
-    connect(tabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
+    //编辑tab
+    auto *editTabWidget = UiManager::getIns().editTabWidget;
+    editTabWidget->setFixedWidth(500);
+    connect(editTabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
         EditController::getIns().setTabIndex(index);
     });
+    // 系统tab/硬件tab
+    auto *systemTabWidget = UiManager::getIns().systemTabWidget;
+    systemTabWidget->setFixedWidth(500);
+    systemTabWidget->addSystemControlTab ();
+    systemTabWidget->addRTCControlTab ();
+    systemTabWidget->addStageControlTab ();
 }
 ///
 /// \brief MainWindow::keyPressEvent

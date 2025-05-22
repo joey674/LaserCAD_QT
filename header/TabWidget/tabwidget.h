@@ -30,6 +30,9 @@ public:
         }
     }
 
+    ///
+    /// editTabWidget
+    ///
     void addCopyTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
         auto vParams = item->getVectorCopyParams();
@@ -118,38 +121,6 @@ public:
         this->addTab(copyTab, "Copy");
     }
 
-    // void addFillTab(const UUID uuid) {
-    //     auto item = Manager::getIns().itemMapFind(uuid);
-    //     auto offset = item->getOffsetParams ().offset;
-    //     auto offsetCount = item->getOffsetParams ().offsetCount;
-    //     if (offset == 0 && offsetCount == 0) {
-    //         offset = 10;
-    //         offsetCount = 3;
-    //     }
-    //     //
-    //     QWidget* offsetTab = new QWidget();
-    //     QVBoxLayout* mainLayout = new QVBoxLayout(offsetTab);
-    //     // 输入字段
-    //     QFormLayout* formLayout = new QFormLayout();
-    //     QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
-    //     spacingSpin->setRange(-9999, 9999);
-    //     spacingSpin->setValue(offset);
-    //     QSpinBox* countSpin = new QSpinBox();
-    //     countSpin->setRange(0, 9999);
-    //     countSpin->setValue(offsetCount);
-    //     QPushButton* confirmBtn = new QPushButton("Confirm");
-    //     formLayout->addRow("Offset:", spacingSpin);
-    //     formLayout->addRow("Offset Count:", countSpin);
-    //     mainLayout->addLayout(formLayout);
-    //     mainLayout->addWidget(confirmBtn);
-    //     // connect 按钮
-    //     connect(confirmBtn, &QPushButton::clicked, offsetTab, [ = ]() {
-    //         double offset = spacingSpin->value();
-    //         int offsetNum = countSpin->value();
-    //         EditController::getIns ().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
-    //     });
-    //     this->addTab(offsetTab, "Fill");
-    // }
     void addFillTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
 
@@ -241,7 +212,6 @@ public:
 
         this->addTab(fillTab, "Fill");
     }
-
 
     void addMarkParamsTab(const UUID uuid) {
         auto item = Manager::getIns().itemMapFind(uuid);
@@ -809,7 +779,6 @@ public:
         this->addTab(polygonTab, "Geometry");
     }
 
-    ///
     /// \brief addMultiItemsEditTab
     void addMultiItemsEditTab(const std::vector < UUID > & /*uuids*/) {
         QWidget* tab = new QWidget();
@@ -975,7 +944,6 @@ public:
         this->addTab(tab, "Align");
     }
 
-    ///
     /// \brief addDuoItemsBoolOpTab
     void addDuoItemsBoolOpTab(const std::vector < UUID > &uuids) {
         if (uuids.size() != 2) {
@@ -1005,6 +973,114 @@ public:
         });
         this->addTab(tab, "Boolean Op");
     }
+
+    ///
+    /// editTabWidget
+    ///
+    void addRTCControlTab() {
+        QWidget* tab = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(tab);
+
+        // === 控制卡类型选择区 ===
+        QGroupBox* cardBox = new QGroupBox("Control Card:");
+        QHBoxLayout* cardLayout = new QHBoxLayout(cardBox);
+
+        QRadioButton* rtc5Radio = new QRadioButton("RTC5");
+        QRadioButton* rtc6Radio = new QRadioButton("RTC6");
+        QRadioButton* testRadio = new QRadioButton("Test");
+        rtc5Radio->setChecked(true);
+
+        cardLayout->addWidget(rtc5Radio);
+        cardLayout->addWidget(rtc6Radio);
+        cardLayout->addWidget(testRadio);
+        cardLayout->addStretch();
+
+        QPushButton* connectButton = new QPushButton("connect");
+        cardLayout->addWidget(connectButton);
+
+        mainLayout->addWidget(cardBox);
+
+        // 卡连接状态显示
+        QLabel* cardStatusLabel = new QLabel("No RTC card connected!");
+        cardStatusLabel->setStyleSheet("background-color: rgb(213, 102, 153); color: white;");
+        mainLayout->addWidget(cardStatusLabel);
+
+        // === 卡类型选择时调用 findCard() 并显示返回结果 ===
+        auto updateCardStatus = [cardStatusLabel](const QString& cardType) {
+            // QString result = findCard(cardType);  // 你需要提供这个函数
+            // cardStatusLabel->setText(result);
+        };
+
+        connect(rtc5Radio, &QRadioButton::toggled, [=](bool checked) {
+            if (checked) updateCardStatus("RTC5");
+        });
+        connect(rtc6Radio, &QRadioButton::toggled, [=](bool checked) {
+            if (checked) updateCardStatus("RTC6");
+        });
+        connect(testRadio, &QRadioButton::toggled, [=](bool checked) {
+            if (checked) updateCardStatus("Test");
+        });
+
+        // === 其他设置区域 ===
+        QFormLayout* formLayout = new QFormLayout();
+
+        QPushButton* loadCorrectionButton = new QPushButton("Load Correction File!");
+        QPushButton* powerScaleButton = new QPushButton("Power Scale File");
+        QCheckBox* varPolygonDelayCheck = new QCheckBox("Var Polygon Delay");
+        QPushButton* delayFileButton = new QPushButton("Vary Polygon Delay File");
+
+        formLayout->addRow("Correct File:", loadCorrectionButton);
+        formLayout->addRow("Power / Voltage:", powerScaleButton);
+        QHBoxLayout* delayLayout = new QHBoxLayout();
+        delayLayout->addWidget(varPolygonDelayCheck);
+        delayLayout->addWidget(delayFileButton);
+        formLayout->addRow(delayLayout);
+
+        mainLayout->addLayout(formLayout);
+
+        // === 参数区域 ===
+        QGridLayout* paramLayout = new QGridLayout();
+        QLineEdit* scaleEdit = new QLineEdit("945.0");
+        QLineEdit* scaleCorX = new QLineEdit("1.0");
+        QLineEdit* scaleCorY = new QLineEdit("1.0");
+        QLineEdit* rotationEdit = new QLineEdit("0.0");
+        QLineEdit* offsetX = new QLineEdit("0.0");
+        QLineEdit* offsetY = new QLineEdit("0.0");
+        QComboBox* laserModeBox = new QComboBox();
+        laserModeBox->addItems({"CO2", "YAG", "Fiber"});
+
+        QCheckBox* flipX = new QCheckBox("FlipX");
+        QCheckBox* flipY = new QCheckBox("FlipY");
+
+        paramLayout->addWidget(new QLabel("Scale [bits/mm]:"), 0, 0);
+        paramLayout->addWidget(scaleEdit, 0, 1);
+        paramLayout->addWidget(new QLabel("ScaleCor [%]:"), 0, 2);
+        paramLayout->addWidget(scaleCorX, 0, 3);
+        paramLayout->addWidget(scaleCorY, 0, 4);
+
+        paramLayout->addWidget(new QLabel("Rotation [deg]:"), 1, 0);
+        paramLayout->addWidget(rotationEdit, 1, 1);
+        paramLayout->addWidget(new QLabel("Offset [mm]:"), 1, 2);
+        paramLayout->addWidget(offsetX, 1, 3);
+        paramLayout->addWidget(offsetY, 1, 4);
+
+        paramLayout->addWidget(new QLabel("Laser Mode:"), 2, 0);
+        paramLayout->addWidget(laserModeBox, 2, 1);
+        paramLayout->addWidget(flipX, 2, 3);
+        paramLayout->addWidget(flipY, 2, 4);
+
+        QGroupBox* paramGroup = new QGroupBox();
+        paramGroup->setLayout(paramLayout);
+        mainLayout->addWidget(paramGroup);
+
+        // 添加到systemTabWidget
+        tab->setLayout(mainLayout);
+        this->addTab(tab, "RTC Control");
+    }
+
+    void addStageControlTab(){};
+
+    void addSystemControlTab(){}
 };
 
 #endif // TABWIDGET_H
