@@ -1,11 +1,15 @@
 @echo off
 setlocal enabledelayedexpansion
 
+rem 设置部署类型
+set "PROJECT_TYPE = Debug"  
+@REM set "PROJECT_TYPE = Release"
+
 rem 设置路径变量
-set "PROJECT_TYPE = Debug"
 set "BUILD_DIR=build"
 set "TARGET_EXE=LaserCAD.exe"
-set "DLL_PATH=lib\RTC5\RTC5DLLx64.dll"
+@REM set "DLL_PATH=lib\RTC5\RTC5DLLx64.dll"
+set "DLL_PATH=lib\RTC5\RTC5DLL.dll"
 set "OUT_PATH=lib\RTC5\RTC5OUT.out"
 set "DAT_PATH=lib\RTC5\RTC5DAT.dat"
 set "RBF_PATH=lib\RTC5\RTC5RBF.rbf"
@@ -20,7 +24,7 @@ if exist "%OUTPUT_DIR%" (
 )
 mkdir "%OUTPUT_DIR%"
 
-rem 查找 Release/Debug 结尾的目录
+rem 查找Build文件夹下 Release/Debug 结尾的目录, 复制构建exe
 for /d %%D in (%BUILD_DIR%\*%PROJECT_TYPE%) do (
     if exist "%%D\%TARGET_EXE%" (
         echo Found: %%D\%TARGET_EXE%
@@ -28,10 +32,8 @@ for /d %%D in (%BUILD_DIR%\*%PROJECT_TYPE%) do (
         goto :found_exe
     )
 )
-
 echo Can not find LaserCAD.exe in Build folder. please build the project in Qt first.
 exit /b 1
-
 :found_exe
 
 rem 拷贝 DLL/
@@ -62,9 +64,9 @@ echo Waiting for windeployqt to finish...
 timeout /t 5 >nul
 
 rem 拷贝 output 到 F盘
-echo Copying output to F:\output ...
-xcopy "%OUTPUT_DIR%" "F:\output" /E /I /Y
-echo Finished copying to F:\output
+echo Copying output to F:\%OUTPUT_DIR% ...
+xcopy "%OUTPUT_DIR%" "F:\%OUTPUT_DIR%" /E /I /Y
+echo Finished copying to F:\%OUTPUT_DIR%
 
 rem 删除项目中output 文件夹
 echo Removing local output folder...

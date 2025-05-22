@@ -31,8 +31,17 @@ public:
             this->m_device->unloadDLL();
         }
         this->m_device = std::move(device);
-        this->m_device->loadDLL();
-        this->m_device->connectCard();
+        bool result;
+        result = this->m_device->loadDLL();
+        if (result == false) {
+            this->m_device = nullptr;
+            return;
+        }
+        result = this->m_device->connectCard();
+        if (result == false) {
+            this->m_device = nullptr;
+            return;
+        }
     }
 private:
     void threadMain();

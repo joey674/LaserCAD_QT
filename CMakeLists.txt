@@ -66,8 +66,7 @@ set(PROJECT_SOURCES
 )
 set(RTC_SOURCES
     # RTC5
-    lib/RTC5/RTC5expl.h            lib/RTC5/RTC5expl.cpp
-    lib/RTC5/RTC5explTest.h    lib/RTC5/RTC5explTest.c
+    lib/RTC5/RTC5expl.h             lib/RTC5/RTC5expl.cpp
     # RTC4
     # lib/RTC4/RTC4expl.h            lib/RTC4/RTC4expl.cpp
 )
@@ -160,11 +159,6 @@ install(TARGETS LaserCAD
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(LaserCAD)
 endif()
-
-add_custom_command(TARGET LaserCAD POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLLx64.dll
-            $<TARGET_FILE_DIR:LaserCAD>)
 
 add_custom_command(TARGET LaserCAD POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

@@ -5,12 +5,14 @@
 
 bool LaserDeviceRTC5::loadDLL()
 {
-    if (RTC5open()) {
-        WARN_MSG("RTC5DLL.DLL not found");
-        Q_ASSERT("RTC5 DLL load failed.");
+    if (RTC5open() !=0 ) {
+        WARN_MSG("RTC5DLL.DLL not found; load fail");
+        // Q_ASSERT("RTC5 DLL load failed.");
+        return false;
+    }else{
+        INFO_MSG("RTC5DLL.DLL is loaded");
+        return true;
     }
-    INFO_MSG("RTC5DLL.DLL is loaded");
-    return true;
 }
 
 bool LaserDeviceRTC5::unloadDLL()
