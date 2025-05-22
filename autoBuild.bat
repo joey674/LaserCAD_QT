@@ -3,19 +3,19 @@ setlocal enabledelayedexpansion
 
 rem 设置部署类型
 set "PROJECT_TYPE = Debug"  
+set "SYSTEM_ARCHITECTURE = 32"
 @REM set "PROJECT_TYPE = Release"
 
 rem 设置路径变量
 set "BUILD_DIR=build"
 set "TARGET_EXE=LaserCAD.exe"
-@REM set "DLL_PATH=lib\RTC5\RTC5DLLx64.dll"
+set "OUTPUT_DIR=LaserProgram"
 set "DLL_PATH=lib\RTC5\RTC5DLL.dll"
 set "OUT_PATH=lib\RTC5\RTC5OUT.out"
 set "DAT_PATH=lib\RTC5\RTC5DAT.dat"
 set "RBF_PATH=lib\RTC5\RTC5RBF.rbf"
-set "OUTPUT_DIR=LaserProgram"
-set "QT_ENV=C:\Windows\System32\cmd.exe /A /Q /K E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat"
-
+rem env是32bit的
+set "QT_ENV=E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat" 
 
 rem 清理output文件夹 创建一个新的
 if exist "%OUTPUT_DIR%" (
@@ -57,7 +57,8 @@ if exist "%DLL_PATH%" (
 
 rem 打开新终端 执行 qtenv2 和 windeployqt 打包
 echo open Qt pack tool windeployqt and start packing software...
-start "" cmd.exe /K "cd /d %cd%\%OUTPUT_DIR% && call E:\Repo\Qt\5.15.18\mingw81_64\bin\qtenv2.bat &&  cd E:\Repo\LaserCAD_QT\%OUTPUT_DIR% && windeployqt LaserCAD.exe"
+@REM start "" cmd.exe /K "cd /d %cd%\%OUTPUT_DIR% && call %QT_ENV% &&  cd E:\Repo\LaserCAD_QT\%OUTPUT_DIR% && windeployqt LaserCAD.exe"
+start "" cmd.exe /C "cd /d %cd%\%OUTPUT_DIR% && call %QT_ENV% && cd E:\Repo\LaserCAD_QT\%OUTPUT_DIR% && windeployqt LaserCAD.exe"
 
 rem 等待打包完成
 echo Waiting for windeployqt to finish...

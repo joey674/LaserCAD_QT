@@ -40,7 +40,7 @@ public:
         }
         result = this->m_device->connectCard();
         if (result == false) {
-            WARN_MSG("fail to load connect card");
+            WARN_MSG("fail to connect card");
             this->m_device = nullptr;
             return;
         }

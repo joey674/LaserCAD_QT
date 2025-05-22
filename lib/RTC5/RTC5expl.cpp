@@ -926,12 +926,11 @@ long RTC5open(void) {
 
 ////////////////
 #ifdef _WIN32
+    #if !defined(_WIN64)
     gLibRTC5 = LoadLibraryA("RTC5DLL.DLL");
-    // #if !defined(_WIN64)
-    // gLibRTC5 = LoadLibraryA("RTC5DLL.DLL");
-    // #else
-    // gLibRTC5 = LoadLibraryA("RTC5DLLx64.DLL");
-    // #endif // !defined(_WIN64)
+    #else
+    gLibRTC5 = LoadLibraryA("RTC5DLLx64.DLL");
+    #endif // !defined(_WIN64)
 #else
     gLibRTC5 = dlopen("libslrtc5.so",  RTLD_NOW | RTLD_LOCAL );
 #endif
