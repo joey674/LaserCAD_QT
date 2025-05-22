@@ -104,17 +104,8 @@ QPointF PolylineItem::getCenterInScene() const {
     if (m_vertexList.empty()) {
         return QPointF(0, 0);
     }
-    qreal minX = std::numeric_limits < int >::max();
-    qreal minY = std::numeric_limits < int >::max();
-    qreal maxX = std::numeric_limits < int >::min();
-    qreal maxY = std::numeric_limits < int >::min();
-    for (auto& item : m_vertexList) {
-        minX = std::min(minX, item.point.x() + this->scenePos().x());
-        minY = std::min(minY, item.point.y() + this->scenePos().y());
-        maxX = std::max(maxX,  item.point.x() + this->scenePos().x());
-        maxY = std::max(maxY,  item.point.y() + this->scenePos().y());
-    }
-    QPointF pos = QPointF((maxX + minX) / 2, (maxY + minY) / 2);
+    auto rect = getBoundingRectBasis ();
+    QPointF pos = rect.center ();
     return pos;
 }
 

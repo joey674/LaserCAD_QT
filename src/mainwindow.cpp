@@ -63,8 +63,6 @@ void MainWindow::onDrawTestLineButtonClicked() {
     } else if (choice == "RTC6") {
         // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
     }
-
-    qDebug() << "Set laser device：" << choice;
 }
 
 

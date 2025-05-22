@@ -34,14 +34,18 @@ public:
         bool result;
         result = this->m_device->loadDLL();
         if (result == false) {
+            WARN_MSG("fail to load dll");
             this->m_device = nullptr;
             return;
         }
         result = this->m_device->connectCard();
         if (result == false) {
+            WARN_MSG("fail to load connect card");
             this->m_device = nullptr;
             return;
         }
+
+        INFO_MSG("set device success");
     }
 private:
     void threadMain();

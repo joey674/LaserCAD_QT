@@ -300,14 +300,9 @@ public:
         return Vertex{pos, angle};
     }
     QPointF getCenterInScene() const override {
-        auto center = QPointF{};
-        double radius = 0;
-        getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point,
-                                       this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
-        auto posOffset = this->pos();
-        auto centerPos = center + posOffset;
-        // DEBUG_VAR(centerPos);
-        return centerPos;
+        auto rect = getBoundingRectBasis ();
+        QPointF pos = rect.center ();
+        return pos;
     }
     QString getName() const override {
         return "ArcItem";

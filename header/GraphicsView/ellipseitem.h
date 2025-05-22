@@ -333,10 +333,14 @@ public:
     }
 
     QPointF getCenterInScene() const override {
-        auto posOffset = this->pos();
-        auto centerPos = this->m_center.point + posOffset;
-        // DEBUG_VAR(centerPos);
-        return centerPos;
+        // auto posOffset = this->pos();
+        // auto centerPos = this->m_center.point + posOffset;
+        // // DEBUG_VAR(centerPos);
+        // return centerPos;
+
+        auto rect = getBoundingRectBasis ();
+        QPointF pos = rect.center ();
+        return pos;
     }
 
     QString getName() const override {
