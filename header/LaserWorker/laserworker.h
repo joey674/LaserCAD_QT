@@ -31,15 +31,13 @@ public:
             this->m_device->unloadDLL();
         }
         this->m_device = std::move(device);
-        bool result;
-        result = this->m_device->loadDLL();
-        if (result == false) {
+
+        if (! this->m_device->loadDLL()) {
             WARN_MSG("fail to load dll");
             this->m_device = nullptr;
             return;
         }
-        result = this->m_device->connectCard();
-        if (result == false) {
+        if (! this->m_device->connectCard()) {
             WARN_MSG("fail to connect card");
             this->m_device = nullptr;
             return;

@@ -11,7 +11,6 @@ public:
     bool connectCard() override;
     bool disconnectCard() override;
     bool checkCard() override;
-    bool executeCommand(const LaserDeviceCommand& cmd) override;
     bool pauseExecution() override;
 };
 

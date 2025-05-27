@@ -10,7 +10,7 @@ class LaserDeviceRTC4: public LaserDevice
         bool connectCard() override;
         bool disconnectCard() override;
         bool checkCard() override;
-        bool executeCommand(const LaserDeviceCommand &cmd) override;
+        bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList) override;
         bool pauseExecution() override;
     };
 

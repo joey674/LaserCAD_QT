@@ -24,7 +24,7 @@
 const double EdgeRectPadding = 1;
 const double MinEdgeRectSize = 1;
 const double BoundingRectPadding = 2;
-const double VertexInputDialogSize = 2;
+const double VertexInputDialogSize = 0.5;
 const double HandleSize = 8;// handle会根据scene自动调整; 不需要修改
 const double MoveHandleOffset = 0.5;
 const double RotateHandleOffset = 0.5;

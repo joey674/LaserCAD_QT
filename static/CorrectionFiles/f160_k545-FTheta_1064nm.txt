@@ -1,0 +1,12 @@
+Program Version: 2.15
+Date: 11.12.03
+Description: 2D Correction File With F-Theta-Lens
+XY-Swap: No
+Head Type: -         
+Scan Angle Calibration [+/- mech. degrees]: 10.7
+Scan Field Calibration K [Bit/mm]: 545
+Max. Field Size [mm] (z=0): 120.25
+F-Theta Lens Focal Length [mm]: 163.1
+Max. Scan Angle Mirror 1 [mech. degrees]: 10.56
+Max. Scan Angle Mirror 2 [mech. degrees]: 11.05
+Filename: D2_281

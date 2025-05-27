@@ -133,7 +133,7 @@ bool LaserDeviceRTC4::checkCard()
     // }
 }
 
-bool LaserDeviceRTC4::executeCommand(const LaserDeviceCommand &cmd)
+bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList)
 {
     // static UINT startFlags = 2;
     // // OutPos是执行位置,InPos是写入位置

@@ -69,11 +69,11 @@ using UUID = QString;
 
 struct MarkParams {
     double markSpeed = 1000;
-    double jumpSpeed = 3000;
-    unsigned int frequency = 100000;
+    double jumpSpeed = 250;
+    unsigned int frequency = 1000;
     unsigned int repetTime = 1; // 1代表打1次 n代表打n次
     double power = 0;
-    unsigned int pulseWidth = 2;
+    unsigned int pulseWidth = 40;
     unsigned int wobelAml = 0;
     unsigned int wobelFreq = 100;
 
@@ -118,8 +118,8 @@ struct DelayParams {
     unsigned int laserOnDelay = 100;
     unsigned int laserOffDelay = 120;
     unsigned int markDelay = 10;
-    unsigned int jumpDelay = 20;
-    unsigned int polygonDelay = 0;
+    unsigned int jumpDelay = 25;
+    unsigned int polygonDelay = 5;
 
     bool set(const QString& key, const QVariant& val) {
         if (key == "laserOnDelay" || key == "DelayParams: laserOnDelay")     {
@@ -208,16 +208,7 @@ struct MatrixCopyParams {
  * Hardware
  * systemTabWidgeet
  *****************************************************************************/
-struct RTCSettings {
-    QString cardType;
-    QString correctionFilePath;
-    double scale;
-    double scaleCorX, scaleCorY;
-    double rotation;
-    double offsetX, offsetY;
-    QString laserMode;
-    bool flipX, flipY;
-};
+
 
 /*****************************************************************************
  * TreeViewModel

@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 
 rem 设置部署类型
-set "PROJECT_TYPE = Debug"  
+set "PROJECT_TYPE = Debug"
 set "SYSTEM_ARCHITECTURE = 32"
 @REM set "PROJECT_TYPE = Release"
 
@@ -11,11 +11,13 @@ set "BUILD_DIR=build"
 set "TARGET_EXE=LaserCAD.exe"
 set "OUTPUT_DIR=LaserProgram"
 set "DLL_PATH=lib\RTC5\RTC5DLL.dll"
-set "OUT_PATH=lib\RTC5\RTC5OUT.out"
-set "DAT_PATH=lib\RTC5\RTC5DAT.dat"
-set "RBF_PATH=lib\RTC5\RTC5RBF.rbf"
+set "OUT_PATH=static\RTC5\RTC5OUT.out"
+set "DAT_PATH=static\RTC5\RTC5DAT.dat"
+set "RBF_PATH=static\RTC5\RTC5RBF.rbf"
+set "CORRECTIONFILE_DIR=static\CorrectionFiles"
+
 rem env是32bit的
-set "QT_ENV=E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat" 
+set "QT_ENV=E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat"
 
 rem 清理output文件夹 创建一个新的
 if exist "%OUTPUT_DIR%" (
@@ -39,7 +41,6 @@ exit /b 1
 rem 拷贝 DLL/
 if exist "%DLL_PATH%" (
     copy "%DLL_PATH%" "%OUTPUT_DIR%\"
-
 ) else (
     echo Can not find RTC5DLLx64.dll,exit.
     exit /b 1
@@ -52,6 +53,14 @@ if exist "%DLL_PATH%" (
     copy "%OUT_PATH%" "%OUTPUT_DIR%\"
 ) else (
     echo Can not find RBF/DATOUT,exit.
+    exit /b 1
+)
+
+rem 拷贝 CorrectionFiles
+if exist "%CORRECTIONFILE_DIR%" (
+    xcopy /E /I /Y "%CORRECTIONFILE_DIR%" "%OUTPUT_DIR%\CorrectionFiles"
+) else (
+    echo CorrectionFiles folder not found.
     exit /b 1
 )
 

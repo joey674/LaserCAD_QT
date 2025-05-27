@@ -179,22 +179,22 @@ public:
         graphicsView = new GraphicsView(central); // 右：GraphicsView，占比 3
         mainLayout->addWidget(graphicsView, /*stretch=*/3);
         QVBoxLayout *drawButtonLayout = new QVBoxLayout();// 最右：绘图按钮栏，占最小固定宽度
-        drawArcButton = new QToolButton(central);
-        drawButtonLayout->addWidget(drawArcButton);
-        drawCircleButton = new QToolButton(central);
-        drawButtonLayout->addWidget(drawCircleButton);
-        drawEllipseButton = new QToolButton(central);
-        drawButtonLayout->addWidget(drawEllipseButton);
-        drawLineButton = new QToolButton(central);
-        drawButtonLayout->addWidget(drawLineButton);
         drawPointButton = new QToolButton(central);
         drawButtonLayout->addWidget(drawPointButton);
-        drawPolygonButton = new QToolButton(central);
-        drawButtonLayout->addWidget(drawPolygonButton);
+        drawLineButton = new QToolButton(central);
+        drawButtonLayout->addWidget(drawLineButton);
+        drawArcButton = new QToolButton(central);
+        drawButtonLayout->addWidget(drawArcButton);
         drawPolylineButton = new QToolButton(central);
         drawButtonLayout->addWidget(drawPolylineButton);
+        drawCircleButton = new QToolButton(central);
+        drawButtonLayout->addWidget(drawCircleButton);
         drawRectButton = new QToolButton(central);
         drawButtonLayout->addWidget(drawRectButton);
+        drawEllipseButton = new QToolButton(central);
+        drawButtonLayout->addWidget(drawEllipseButton);
+        drawPolygonButton = new QToolButton(central);
+        drawButtonLayout->addWidget(drawPolygonButton);
         drawSpiralButton = new QToolButton(central);
         drawButtonLayout->addWidget(drawSpiralButton);
         drawButtonLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));

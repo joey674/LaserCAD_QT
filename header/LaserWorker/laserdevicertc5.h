@@ -3,6 +3,17 @@
 
 #include "laserdevice.h"
 
+struct RTCSettings {
+    QString cardType;
+    QString correctionFilePath;
+    double scale;
+    double scaleCorX, scaleCorY;
+    double rotation;
+    double offsetX, offsetY;
+    QString laserMode;
+    bool flipX, flipY;
+};
+
 class LaserDeviceRTC5: public LaserDevice
 {
 public:
@@ -11,12 +22,12 @@ public:
     bool connectCard() override;
     bool disconnectCard() override;
     bool checkCard() override;
-    bool executeCommand(const LaserDeviceCommand &cmd) override;
+    bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList) override;
     bool pauseExecution() override;
 public:
-    char* m_correctionFile;
-    char* m_programFile = 0;
-    unsigned int m_laserMode;
+    RTCSettings m_settings;
 };
+
+
 
 #endif // LASERDEVICERTC5_H

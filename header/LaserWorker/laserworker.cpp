@@ -24,37 +24,43 @@ void LaserWorker::stopLaserWorker()
 void LaserWorker::threadMain()
 {
     while (m_workerIsRunning) {
-        if (this->m_device == nullptr) {  // 没设置device就空转;
+        if (this->m_device == nullptr) {
             continue;
         }
-
         LaserWorkerState state = m_state.load();
         if (state == LaserWorkerState::Working) {
+            std::vector<LaserDeviceCommand> cmdList;
             LaserDeviceCommand cmd;
-            if (m_commandQueue.try_pop(cmd)) {
-                while (this->m_device->executeCommand(cmd) == false) {  // 这里返回false可能是rtc的list满了, 需要等待;
-                    WARN_MSG("can not execute command; will try again");
-                    if (state == LaserWorkerState::Paused) {  // 如果在等待的时候有紧急命令也可以响应
-                        this->m_device->pauseExecution ();
-                        break;
-                    }
-                    if (state == LaserWorkerState::Stopped) {
-                        break;
-                    }
-                };
+            while (m_commandQueue.try_pop(cmd)) {
+                cmdList.push_back(std::move(cmd));
+            }
+            if (cmdList.empty()) {
+                continue;
+            }
+            // 执行command; 这一步是把cmd推进rtc的list中然后直接返回;如果没推成功,说明rtcList是满的 那这里就持续等待再尝试
+            while (!this->m_device->executeCommand(cmdList)) {
+                WARN_MSG("cannot push command to rtc device; will try again");
+                state = m_state.load();
+                if (state == LaserWorkerState::Paused) {
+                    this->m_device->pauseExecution();
+                    break;
+                }
+                if (state == LaserWorkerState::Stopped) {
+                    break;
+                }
             }
             continue;
         }
-        else if (state == LaserWorkerState::Paused) { // 正常打完点时出现的紧急命令响应
-            this->m_device->pauseExecution ();
+        else if (state == LaserWorkerState::Paused) {
+            this->m_device->pauseExecution();
             continue;
-        } else if (state == LaserWorkerState::Stopped) {
-            continue;
-        } else {
+        }
+        else if (state == LaserWorkerState::Stopped) {
             continue;
         }
     }
 }
+
 
 ///
 /// \brief LaserWorker::ins

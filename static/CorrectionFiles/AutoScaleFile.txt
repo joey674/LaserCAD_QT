@@ -1,0 +1,79 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[AutoLaserCtrlTable0]
+
+;Scale=1 for all
+
+;Scale0	=1.0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PositionCtrlTable0]
+;Scale=1 for all
+Positin0 =0
+Scale0	=1.0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PositionCtrlTable1]
+
+Position0	=0
+Scale0		=0.5
+
+Position1	=50.0
+Scale1		=1.0
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PositionCtrlTable2]
+
+Position0	=0
+Scale0		=0
+
+Position1	=50.0
+Scale1		=0.5
+
+Position2	=100.0
+Scale2		=1.0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PositionCtrlTable3]
+
+Position0	=1
+Scale0		=1;
+
+Position1	=1.0
+Scale1		=1.0
+
+Position2	=150.0
+Scale2		=4.0;
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+[PositionCtrlTable4]
+
+Position0	=0
+Scale0		=0;
+
+Position1	=10.0
+Scale1		=4.0
+
+Position2	=20.0
+Scale2		=1.0
+
+Position3	=30.0
+Scale3		=4.0
+
+Position4	=40.0
+Scale4		=1.0
+
+Position5	=50.0
+Scale5		=4.0
+
+Position6	=60.0
+Scale6		=1.0
+
+Position7	=70.0
+Scale7		=4.0

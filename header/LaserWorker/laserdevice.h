@@ -10,7 +10,7 @@ public:
     virtual bool connectCard() = 0;
     virtual bool checkCard() = 0;
     virtual bool disconnectCard() = 0;
-    virtual bool executeCommand(const LaserDeviceCommand& cmd) = 0;
+    virtual bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList) { return true;};
     virtual bool pauseExecution() = 0;
 };
 

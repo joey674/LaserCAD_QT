@@ -43,16 +43,13 @@ do {                                                             \
 ///
 /// 确认好的protocol params
 ///
+const double Pi = 3.14159265358979323846;
 const unsigned int LaserModeYAG = 1;       //  YAG 1 mode
 const unsigned int LaserModeCO2 = 0;       //  CO2
-
-///
-/// default setting for example
-///
-// Definition of "pi"
-const double Pi = 3.14159265358979323846;
-// Change these values according to your system
 const unsigned int DefaultCard = 1;     //  number of default card
+const long   R(10000L); // 转换系数: 从graphicsView的mm转换到rtc的um
+/// example
+// Change these values according to your system
 const unsigned int ListMemory = 10000;  //  size of list 1 memory (default 4000)
 const unsigned int LaserControl = 0x18; //  Laser signals LOW active (Bits #3 and #4)
 const unsigned int StartGap = 1000;     //  gap ahead between input_pointer and out_pointer
@@ -73,10 +70,7 @@ const unsigned int MarkDelay = 100 / 10;    //  100 us [10 us]
 const unsigned int PolygonDelay = 50 / 10;  //   50 us [10 us]
 const double MarkSpeed = 250.0;        //  [16 Bits/ms]
 const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
-// Spiral Parameters
-const double Amplitude = 10000.0;
-const double Period = 512.0; // amount of vectors per turn
-const double Omega = 2.0 * Pi / Period;
+
 // End Locus of a Line
 struct locus
 {

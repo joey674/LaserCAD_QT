@@ -1,7 +1,8 @@
 #include "laserdevicertc5.h"
 #include "logger.h"
 #include <RTC5expl.h>
-
+#include <QDir>
+#include <vector.hpp>
 
 bool LaserDeviceRTC5::loadDLL()
 {
@@ -68,49 +69,109 @@ bool LaserDeviceRTC5::connectCard()
         }
     }
 
-    //
     set_rtc4_mode(); //  for RTC4 compatibility
-    // Initialize the RTC5
+
     stop_execution();
     //  If the DefaultCard has been used previously by another application
     //  a list might still be running. This would prevent load_program_file
     //  and load_correction_file from being executed.
-    ErrorCode = load_program_file(this->m_programFile); //  path = current working path
-    if (ErrorCode) {
-        printf("Program file loading error: %d\n", ErrorCode);
-        free_rtc5_dll();
-        return false;
-    }
-    ErrorCode = load_correction_file(this->m_correctionFile, // initialize like "D2_1to1.ct5",
-                                     1, // table; #1 is used by default
-                                     2); // use 2D only
-    if (ErrorCode) {
-        printf("Correction file loading error: %d\n", ErrorCode);
-        free_rtc5_dll();
-        return false;
-    }
-    select_cor_table(1, 0); //  table #1 at primary connector (default)
-    //  stop_execution might have created a RTC5_TIMEOUT error
-    reset_error(-1); //  clear all previous error codes
-    //  Configure list memory, default: config_list( 4000, 4000 ).
-    //  One list only
-    config_list(ListMemory, 0);
-    //  input_list_pointer and out_list_pointer will jump automatically
-    //  from the end of the list onto position 0 each without using
-    //  set_end_of_list. auto_change won't be executed.
-    //  RTC4::set_list_mode( 1 ) is no more supported
-    set_laser_mode(this->m_laserMode);
 
-    /////////////////////////////////////
-    set_firstpulse_killer(FirstPulseKiller);
-    //  This function must be called at least once to activate laser
-    //  signals. Later on enable/disable_laser would be sufficient.
-    set_laser_control(LaserControl);
-    // Activate a home jump and specify the beam dump
-    home_position(BeamDump.xval, BeamDump.yval);
-    // Turn on the optical pump source
-    write_da_x(AnalogOutChannel, AnalogOutValue);
-    ////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    int bDirect3DMove=0;
+    int iEdgeLevel=65535;
+    int iMinJumpDelay =10;
+    int iJumpLengthLimit = 10;
+    //
+    QString workPath = QDir::currentPath();
+
+    ErrorCode = load_program_file(workPath.toUtf8().constData());
+    if (ErrorCode) {
+        WARN_MSG("load_program_file");
+        free_rtc5_dll();
+        return false;
+    }
+    QString correctionFilePath = m_settings.correctionFilePath;
+    ErrorCode = load_correction_file(correctionFilePath.toUtf8().constData(), 1, 3);
+    if (ErrorCode) {
+        WARN_MSG("load_correction_file");
+        free_rtc5_dll();
+        return false;
+    }
+
+    // //
+    // if(!m_powercurvefile.IsEmpty())
+    //     LoadPowerCurve(m_powercurvefile);
+
+    select_cor_table(1, 0); //  table #1 at primary connector (default)
+    reset_error(UINT_MAX);
+
+    config_list(-1,-1);
+
+    set_laser_control(0x00);
+
+    config_laser_signals(0x24);
+
+    stop_execution();
+
+    auto xcor = m_settings.scaleCorX;
+    auto ycor = m_settings.scaleCorY;
+    auto xyrotate = m_settings.rotation;
+    auto xoffset = m_settings.offsetX;
+    auto yoffset = m_settings.offsetY;
+    auto scale = m_settings.scale;
+    set_matrix(0, xcor*cos(xyrotate*Pi/180), -xcor*sin(xyrotate*Pi/180), ycor*sin(xyrotate*Pi/180), ycor*cos(xyrotate*Pi/180), 1);
+    set_offset(0, xoffset*scale, yoffset*scale, 1);
+
+    // set_delay_mode(m_bVarPolyDelay, bDirect3DMove, iEdgeLevel, iMinJumpDelay, iJumpLengthLimit*m_Scale);//100
+    // m_Scale=get_head_para(1,1);
+
+    set_default_pixel(0);
+
+    set_port_default(0,0);
+
+    unsigned int lasermode = UINT_MAX;
+    if (m_settings.laserMode == "CO2") lasermode = LaserModeCO2;
+    else if (m_settings.laserMode == "YAG") lasermode = LaserModeYAG;
+    else WARN_MSG("unknow lasermode");
+    set_laser_mode(lasermode);
+
+
+    // //auto laser control;
+    // if(m_bSpeedDepend || m_bPositionDepend)
+    // {
+    //     m_iSpeedDependMode=2; //actual speed mode
+    //     double value=1;
+
+    //     if(!strAutoControlScale.IsEmpty())
+    //         load_auto_laser_control(strAutoControlScale, 1);
+    //     else
+    //         load_auto_laser_control(0, 1);
+
+    //     if(m_bSpeedDepend)	set_auto_laser_control(m_iAutoDependCtrl, value, m_iSpeedDependMode,  m_AdvLaserMin*value, m_AdvLaserMax*value);
+    //     else set_auto_laser_control(m_iAutoDependCtrl, value, 0,  m_AdvLaserMin*value, m_AdvLaserMax*value);
+
+    //     if(m_bPositionDepend)load_position_control(strAutoPosScale, 1);
+    //     else load_position_control(0,1);
+    // }
+    // else
+    //      set_auto_laser_control(0,1,m_iSpeedDependMode,0,1);
+
+    /// testcode 判断到底需不需要    set_start_list( 1U );
+    set_start_list( 1U );
+    set_laser_pulses( LaserHalfPeriod, LaserPulseWidth );
+    set_scanner_delays( JumpDelay, MarkDelay, PolygonDelay );
+    set_laser_delays( LaserOnDelay, LaserOffDelay );
+    set_jump_speed( JumpSpeed );
+    set_mark_speed( MarkSpeed );
+    set_end_of_list();
+    execute_list( 1U );
+
+
+    ErrorCode = n_get_last_error(DefaultCard);
+    if (ErrorCode) {
+        WARN_MSG("'in connect card;may has error");
+    }
     return true;
 }
 
@@ -133,57 +194,111 @@ bool LaserDeviceRTC5::checkCard()
     }
 }
 
-bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd){
-    while ( !load_list( 1U, 0U ) ) {} //  wait for list 1 to be not busy
-    //  load_list( 1, 0 ) returns 1 if successful, otherwise 0
-    //  set_start_list_pos( 1, 0 ) has been executed
+bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdList) {
+    // 等待 list 空闲
+    while (!load_list(1U, 0U)) {}
 
-    std::visit(
-        [](const auto &cmd) {
-            using T = std::decay_t<decltype(cmd)>;
+    // 遍历所有命令并执行
+    for (const auto &cmd : cmdList) {
+        std::visit(
+            [](const auto &c) {
+                using T = std::decay_t<decltype(c)>;
+                if constexpr (std::is_same_v<T, JumpCommand>) {
+                    INFO_MSG(" jump_abs " + QString::number(c.pos.xval) + " " + QString::number(c.pos.yval));
+                    jump_abs(c.pos.xval * R, c.pos.yval * R);// 乘以一个转换系数 不然输入是以mm为单位 但是内部执行是um
+                } else if constexpr (std::is_same_v<T, MarkCommand>) {
+                    INFO_MSG(" mark_abs " + QString::number(c.pos.xval) + " " + QString::number(c.pos.yval));
+                    mark_abs(c.pos.xval  * R, c.pos.yval * R);// 乘以一个转换系数 不然输入是以mm为单位 但是内部执行是um
+                } else if constexpr (std::is_same_v<T, ArcCommand>) {
+                    INFO_MSG(" arc_abs " + QString::number(c.x) + " " + QString::number(c.y) + " " + QString::number(c.angle));
+                    arc_abs(c.x, c.y, c.angle);
+                } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
+                    INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseWidth));
+                    set_laser_pulses(c.halfPeriod, c.pulseWidth);
+                } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
+                    INFO_MSG(" set_scanner_delays " + QString::number(c.jumpDelay) + " " + QString::number(c.markDelay) + " " + QString::number(c.polygonDelay));
+                    set_scanner_delays(c.jumpDelay, c.markDelay, c.polygonDelay);
+                } else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
+                    INFO_MSG(" set_laser_delays " + QString::number(c.laserOnDelay) + " " + QString::number(c.laserOffDelay));
+                    set_laser_delays(c.laserOnDelay, c.laserOffDelay);
+                } else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
+                    INFO_MSG(" set_jump_speed " + QString::number(c.jumpSpeed));
+                    set_jump_speed(c.jumpSpeed);
+                } else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
+                    INFO_MSG(" set_mark_speed " + QString::number(c.markSpeed));
+                    set_mark_speed(c.markSpeed);
+                } else if constexpr (std::is_same_v<T, LongDelayCommand>) {
+                    INFO_MSG(" long_delay " + QString::number(c.time));
+                    // long_delay(c.time);
+                }
+            },
+            cmd
+            );
+    }
+    set_end_of_list();
+    execute_list(1U);
 
-            if constexpr (std::is_same_v<T, JumpCommand>) {
-                INFO_MSG(" jump_abs " + QString::number(cmd.pos.xval) + " "
-                         + QString::number(cmd.pos.yval));
-                jump_abs(cmd.pos.xval, cmd.pos.yval);
-            } else if constexpr (std::is_same_v<T, MarkCommand>) {
-                INFO_MSG(" mark_abs " + QString::number(cmd.pos.xval) + " "
-                         + QString::number(cmd.pos.yval));
-                mark_abs(cmd.pos.xval, cmd.pos.yval);
-            } else if constexpr (std::is_same_v<T, ArcCommand>) {
-                INFO_MSG(" arc_abs " + QString::number(cmd.x) + " " + QString::number(cmd.y)
-                         + " " + QString::number(cmd.angle));
-                arc_abs(cmd.x, cmd.y,cmd.angle);
-            } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                INFO_MSG(" set_laser_pulses " + QString::number(cmd.halfPeriod) + " "
-                         + QString::number(cmd.pulseWidth));
-                set_laser_pulses(cmd.halfPeriod, cmd.pulseWidth);
-            } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
-                INFO_MSG(" set_scanner_delays " + QString::number(cmd.jumpDelay) + " "
-                         + QString::number(cmd.markDelay) + " "
-                         + QString::number(cmd.polygonDelay));
-                set_scanner_delays(cmd.jumpDelay, cmd.markDelay, cmd.polygonDelay);
-            } else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
-                INFO_MSG(" set_laser_delays " + QString::number(cmd.laserOnDelay) + " "
-                         + QString::number(cmd.laserOffDelay));
-                set_laser_delays(cmd.laserOnDelay, cmd.laserOffDelay);
-            } else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
-                INFO_MSG(" set_jump_speed " + QString::number(cmd.jumpSpeed));
-                set_jump_speed(cmd.jumpSpeed);
-            } else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
-                INFO_MSG(" set_mark_speed " + QString::number(cmd.markSpeed));
-                set_mark_speed(cmd.markSpeed);
-            } else if constexpr (std::is_same_v<T, LongDelayCommand>) {
-                INFO_MSG(" long_delay " + QString::number(cmd.time));
-                // long_delay(cmd.time);
-            }
-        },
-        cmd);
+    /*
+    LONG      R(10000L);
+    set_start_list( 1U );
+    set_laser_pulses( LaserHalfPeriod, LaserPulseWidth );
+    set_scanner_delays( JumpDelay, MarkDelay, PolygonDelay );
+    set_laser_delays( LaserOnDelay, LaserOffDelay );
+    set_jump_speed( JumpSpeed );
+    set_mark_speed( MarkSpeed );
+    set_end_of_list();
+    execute_list( 1U );
 
+    while ( !load_list( 1U, 0U ) ) {}
+    jump_abs( 0, 0 );
+    mark_abs(2*R, 2*R);
+    mark_abs(2*R, -2*R);
+    mark_abs(-2*R, 2*R);
+    mark_abs(-2*R, -2*R);
     set_end_of_list();
     execute_list( 1U );
     return true;
+    */
+
+    /*
+    set_start_list( 1U );
+    set_laser_pulses( LaserHalfPeriod, LaserPulseWidth );
+    set_scanner_delays( JumpDelay, MarkDelay, PolygonDelay );
+    set_laser_delays( LaserOnDelay, LaserOffDelay );
+    set_jump_speed( JumpSpeed );
+    set_mark_speed( MarkSpeed );
+    set_end_of_list();
+    execute_list( 1U );
+    struct polygon
+    {
+        LONG xval, yval;
+    };
+    LONG      R(20000L);
+    polygon square[] =
+        {
+            {-R, -R}
+            , {-R,  R}
+            , {R,  R}
+            , {R, -R}
+            , {-R, -R}
+        };
+    if ( sizeof(square)/sizeof(square[0]) )
+    {
+        while ( !load_list( 1U, 0U ) ) {}
+        jump_abs( square->xval, square->yval );
+        size_t i(0U);
+        for (size_t i = 1; i < sizeof(square)/sizeof(square[0]); ++i)
+        {
+            mark_abs(square[i].xval, square[i].yval);
+        }
+        set_end_of_list();
+        execute_list( 1U );
+    }
+*/
+
+    return true;
 }
+
 /* bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd)
 {
     static UINT startFlags = 2;
