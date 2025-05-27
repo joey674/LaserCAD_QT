@@ -282,12 +282,14 @@ public:
 
         const auto &p0 = m_vertexPair[0];
         const auto &p1 = m_vertexPair[1];
-        locus startPos = {static_cast<long>(p0.point.x()), static_cast<long>(p0.point.y())};
-        locus endPos = {static_cast<long>(p1.point.x()), static_cast<long>(p1.point.y())};
+        long startPosX = static_cast<long>(p0.point.x());
+        long startPosY =static_cast<long>(p0.point.y());
+        long endPosX = static_cast<long>(p1.point.x());
+        long endPosY =static_cast<long>(p1.point.y());
 
         for (int i = 0; i < repeatTime; i++) {
-            commandList.emplace_back(JumpCommand{startPos});
-            commandList.emplace_back(MarkCommand{endPos});
+            commandList.emplace_back(JumpCommand{startPosX,startPosY});
+            commandList.emplace_back(MarkCommand{endPosX,endPosY});
         }
         return commandList;
     }

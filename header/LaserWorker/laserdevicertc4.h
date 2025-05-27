@@ -11,7 +11,6 @@ class LaserDeviceRTC4: public LaserDevice
         bool disconnectCard() override;
         bool checkCard() override;
         bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList) override;
-        bool pauseExecution() override;
     };
 
 #endif // LASERDEVICERTC4_H

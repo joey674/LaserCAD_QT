@@ -38,7 +38,7 @@ public:
     /// editTabWidget
     ///
     void addCopyTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         auto vParams = item->getVectorCopyParams();
         auto mParams =  item->getMatrixCopyParams();
         //
@@ -126,7 +126,7 @@ public:
     }
 
     void addFillTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
 
         // 默认值处理
         auto offset = item->getOffsetParams().offset;
@@ -218,7 +218,7 @@ public:
     }
 
     void addMarkParamsTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         auto params = item->getMarkParams();
         //
         QWidget* markTab = new QWidget();
@@ -285,7 +285,7 @@ public:
     }
 
     void addDelayParamsTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         auto params = item->getDelayParams();
         QWidget* tab = new QWidget();
         QVBoxLayout* tabLayout = new QVBoxLayout(tab);
@@ -335,7 +335,7 @@ public:
     }
 
     void addArcGeometryTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexInScene(0).point;
         QPointF v1 = item->getVertexInScene(1).point;
         double angle = item->getVertexInScene(1).angle;
@@ -386,7 +386,7 @@ public:
     }
 
     void addCircleGeometryTab(const UUID uuid) {
-        auto itemptr = Manager::getIns().itemMapFind(uuid);
+        auto itemptr = ItemManager::getIns().itemMapFind(uuid);
         auto item = static_cast < CircleItem * > (itemptr.get());
         QPointF center = item->getVertexInScene(0).point;
         double radius = item->getRadius();
@@ -424,7 +424,7 @@ public:
     }
 
     void addLineGeometryTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexInScene(0).point;
         QPointF v1 = item->getVertexInScene(1).point;
         //
@@ -459,7 +459,7 @@ public:
     }
 
     void addPointGeometryTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         QPointF v0 = item->getVertexInScene(0).point;
         //
         QWidget* pointTab = new QWidget();
@@ -484,7 +484,7 @@ public:
     }
 
     void addPolylineGeometryTab(const UUID uuid) {
-        auto itemPtr = Manager::getIns().itemMapFind(uuid);
+        auto itemPtr = ItemManager::getIns().itemMapFind(uuid);
         auto item = static_cast < PolylineItem * > (itemPtr.get());
         uint count = item->getVertexCount();
         // 创建 scroll 区域
@@ -574,7 +574,7 @@ public:
     }
 
     void addEllipseGeometryTab(const UUID uuid) {
-        auto ptr = Manager::getIns().itemMapFind(uuid);
+        auto ptr = ItemManager::getIns().itemMapFind(uuid);
         auto item = static_cast < EllipseItem * > (ptr.get());
         QPointF center = item->getVertexInScene(0).point;
         double radiusX = item->getRadiusX();
@@ -627,7 +627,7 @@ public:
     }
 
     void addRectGeometryTab(const UUID uuid) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         QPointF topLeft = item->getVertexInScene(0).point;
         QPointF bottomRight = item->getVertexInScene(1).point;
         QWidget *rectTab = new QWidget();
@@ -670,7 +670,7 @@ public:
     }
 
     void addSpiralGeometryTab(const UUID uuid) {
-        auto itemptr = Manager::getIns().itemMapFind(uuid);
+        auto itemptr = ItemManager::getIns().itemMapFind(uuid);
         SpiralItem *item = static_cast < SpiralItem * > (itemptr.get());
         QPointF center = item->getVertexInScene(0).point;
         double r0 = item->getStartRadius();
@@ -732,7 +732,7 @@ public:
     }
 
     void addPolygonGeometryTab(const UUID uuid) {
-        auto itemptr = Manager::getIns().itemMapFind(uuid);
+        auto itemptr = ItemManager::getIns().itemMapFind(uuid);
         auto item = static_cast < PolygonItem * > (itemptr.get());
         QPointF center = item->getVertexInScene(0).point;
         double radius = item->getRadius();
@@ -800,7 +800,7 @@ public:
         QFormLayout* formLayout = new QFormLayout(scrollWidget);
         scrollWidget->setLayout(formLayout);
         scrollArea->setWidget(scrollWidget);
-        scrollArea->setMinimumHeight(300);  // 你可以根据需要设置默认高度
+        scrollArea->setMinimumHeight(300);
         mainLayout->addWidget(scrollArea);
         auto addField = [&](const QString & name, double defaultValue = 0.0) {
             QCheckBox* check = new QCheckBox(name);

@@ -75,7 +75,7 @@ void ProjectManager::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj
     } else if (obj["type"] == "Layer") {
         SceneController::getIns().addLayer();
         UUID uuid = SceneController::getIns().getCurrentLayer();
-        item = Manager::getIns().itemMapFind(uuid);
+        item = ItemManager::getIns().itemMapFind(uuid);
         item->setColor(QColor(propertyObj["color"].toString ()));// 设置图层颜色
     } else {
         item = std::make_shared < ArcItem > ();
@@ -86,9 +86,9 @@ void ProjectManager::fillTreeNodeFromJson(TreeNode *node, const QJsonObject &obj
     if (obj["type"].toString() == "Item") {
         SceneController::getIns().scene->addItem(item.get());
     }
-    // 注册到 Manager
+    // 注册到 ItemManager
     //
-    Manager::getIns().addItem(item);
+    ItemManager::getIns().addItem(item);
     // 添加到 tree
     //
     QJsonArray childrenArray = obj["children"].toArray(); // 获取子节点数组
@@ -154,8 +154,8 @@ QJsonObject ProjectManager::serializeTreeNode(TreeNode *node) {
     obj["type"] = node->property(TreeNodePropertyIndex::Type).toString();
     auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
     DEBUG_MSG("uuid find use here");
-    if (Manager::getIns().itemMapExist(uuid)) {
-        auto item = Manager::getIns().itemMapFind(uuid);
+    if (ItemManager::getIns().itemMapExist(uuid)) {
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         obj["property"] = item->saveToJson();
     }
     QJsonArray childrenArray;
@@ -222,7 +222,7 @@ void ProjectManager::resetEditController()
 }
 
 void ProjectManager::resetManager() {
-    auto &manager = Manager::getIns();
+    auto &manager = ItemManager::getIns();
     manager.m_itemMap.clear();
     manager.m_deletedItemList.clear();
 }

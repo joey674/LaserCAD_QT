@@ -240,7 +240,3 @@ bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList)
     // return false; // 等待下一次调用重试
 }
 
-bool LaserDeviceRTC4::pauseExecution() {
-    // pause_list();
-    return true;
-}

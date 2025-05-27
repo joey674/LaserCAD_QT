@@ -166,7 +166,7 @@ bool LaserDeviceRTC5::connectCard()
     set_mark_speed( MarkSpeed );
     set_end_of_list();
     execute_list( 1U );
-
+    /// testcode 判断到底需不需要    set_start_list( 1U );
 
     ErrorCode = n_get_last_error(DefaultCard);
     if (ErrorCode) {
@@ -195,23 +195,27 @@ bool LaserDeviceRTC5::checkCard()
 }
 
 bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdList) {
-    // 等待 list 空闲
     while (!load_list(1U, 0U)) {}
 
-    // 遍历所有命令并执行
+    // 坐标要乘以一个转换系数R 不然输入是以mm为单位 但是内部执行是um
+    // 同时由于对graphicsview做了matrx transform(坐标右上为正),需要把角度做反再传回去
+    const long  R = 1000; // 转换系数: 从graphicsView的mm转换到rtc的um
+    const long transferParamX = R*(1);
+    const long transferParamY = R*(1);
+    const long transferParamAngle = (-1);
     for (const auto &cmd : cmdList) {
         std::visit(
             [](const auto &c) {
                 using T = std::decay_t<decltype(c)>;
                 if constexpr (std::is_same_v<T, JumpCommand>) {
-                    INFO_MSG(" jump_abs " + QString::number(c.pos.xval) + " " + QString::number(c.pos.yval));
-                    jump_abs(c.pos.xval * R, c.pos.yval * R);// 乘以一个转换系数 不然输入是以mm为单位 但是内部执行是um
+                    INFO_MSG(" jump_abs " + QString::number(c.x) + " " + QString::number(c.y));
+                    jump_abs(c.x * transferParamX, c.y *transferParamY );
                 } else if constexpr (std::is_same_v<T, MarkCommand>) {
-                    INFO_MSG(" mark_abs " + QString::number(c.pos.xval) + " " + QString::number(c.pos.yval));
-                    mark_abs(c.pos.xval  * R, c.pos.yval * R);// 乘以一个转换系数 不然输入是以mm为单位 但是内部执行是um
+                    INFO_MSG(" mark_abs " + QString::number(c.x) + " " + QString::number(c.y));
+                    mark_abs(c.x  * transferParamX, c.y *transferParamY );
                 } else if constexpr (std::is_same_v<T, ArcCommand>) {
                     INFO_MSG(" arc_abs " + QString::number(c.x) + " " + QString::number(c.y) + " " + QString::number(c.angle));
-                    arc_abs(c.x, c.y, c.angle);
+                    arc_abs(c.x * transferParamX, c.y * transferParamY , c.angle *transferParamAngle);
                 } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
                     INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseWidth));
                     set_laser_pulses(c.halfPeriod, c.pulseWidth);
@@ -297,6 +301,18 @@ bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdL
 */
 
     return true;
+}
+
+void LaserDeviceRTC5::resumeExecution() {
+      restart_list();
+}
+
+void LaserDeviceRTC5::pauseExecution() {
+    pause_list();
+}
+
+void LaserDeviceRTC5::abortExecution() {
+    stop_execution();
 }
 
 /* bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd)
@@ -407,7 +423,3 @@ bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdL
 }
 */
 
-bool LaserDeviceRTC5::pauseExecution() {
-    pause_list();
-    return true;
-}

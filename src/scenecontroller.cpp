@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "uimanager.h"
 #include "treemodel.h"
-#include "manager.h"
+#include "itemmanager.h"
 #include <QScrollBar>
 
 SceneController SceneController::ins;
@@ -18,9 +18,9 @@ std::pair < double, double > SceneController::getSceneScale() {
 void SceneController::setCurrentLayer(UUID layerUuid) {
     // 设置所有物体不可选中;
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().treeView->model());
-    auto uuids = Manager::getIns().getChildItems("0-0-0-0");
+    auto uuids = ItemManager::getIns().getChildItems("0-0-0-0");
     for (const auto &uuid : uuids) {
-        Manager::getIns().setItemSelectable(uuid, false);
+        ItemManager::getIns().setItemSelectable(uuid, false);
     }
     // 设置当前图层
     this->m_currentLayer = layerUuid;
@@ -29,7 +29,7 @@ void SceneController::setCurrentLayer(UUID layerUuid) {
     auto inLayerItems = model->getAllChildNodes(layerNodeIndex);
     for (const auto &item : inLayerItems) {
         auto uuid = item->property(TreeNodePropertyIndex::UUID).toString();
-        Manager::getIns().setItemSelectable(uuid, true);
+        ItemManager::getIns().setItemSelectable(uuid, true);
     }
 }
 
@@ -55,7 +55,7 @@ void SceneController::addLayer() {
     const QModelIndex layerNodeIndex = model->index(this->layerCount(), 0, QModelIndex());
     QString name = "Layer" + QString::number(this->m_layerCreatedCount + 1);
     QString type = "Layer";
-    auto uuid = Manager::getIns().addItem( name, type, layerNodeIndex);
+    auto uuid = ItemManager::getIns().addItem( name, type, layerNodeIndex);
     // 添加到sceneController里
     this->m_layerList.push_back(uuid);
     // 统计总共创建过几个layer
@@ -64,7 +64,7 @@ void SceneController::addLayer() {
     this->setCurrentLayer(uuid);
     // 设置图层颜色
     QColor selectedColor = kLayerColors[this->m_newLayerExamplarColor];
-    Manager::getIns().itemMapFind(uuid)->setColor(selectedColor);
+    ItemManager::getIns().itemMapFind(uuid)->setColor(selectedColor);
     this->m_newLayerExamplarColor = (this->m_newLayerExamplarColor + 1) % kLayerColors.size();
 }
 
@@ -76,7 +76,7 @@ void SceneController::deleteCurrentLayer() {
     // 删除treemodel里/manager里
     TreeModel *model = qobject_cast < TreeModel * > (UiManager::getIns().treeView->model());
     auto layerIndex = model->getIndex(this->m_currentLayer);
-    Manager::getIns().deleteItem(this->getCurrentLayer());
+    ItemManager::getIns().deleteItem(this->getCurrentLayer());
     // 删除sceneController里
     auto it = std::find(this->m_layerList.begin(), this->m_layerList.end(), this->m_currentLayer);
     if (it != this->m_layerList.end()) {
@@ -87,7 +87,7 @@ void SceneController::deleteCurrentLayer() {
 
 QColor SceneController::getCurrentLayerColor() const {
     auto uuid = this->m_currentLayer;
-    auto color = Manager::getIns().itemMapFind(uuid)->getColor();
+    auto color = ItemManager::getIns().itemMapFind(uuid)->getColor();
     return color;
 }
 

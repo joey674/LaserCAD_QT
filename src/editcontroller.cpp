@@ -11,6 +11,9 @@
 #include <QModelIndexList>
 
 EditController EditController::ins;
+EditController &EditController::getIns() {
+    return ins;
+}
 
 ///
 /// \brief EditController::updateTabWidget
@@ -138,7 +141,7 @@ void EditController::onTreeViewModelSelectionChanged(
     for (const QModelIndex &idx : selected.indexes()) {
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         if (type == "Layer") {
         } else if (type == "Group" ) {
         } else if (type == "Item" ) {
@@ -156,7 +159,7 @@ void EditController::onTreeViewModelSelectionChanged(
         }
         QString type = model->nodeProperty(idx, TreeNodePropertyIndex::Type).toString();
         UUID uuid = model->nodeProperty(idx, TreeNodePropertyIndex::UUID).toString();
-        auto item = Manager::getIns().itemMapFind(uuid);
+        auto item = ItemManager::getIns().itemMapFind(uuid);
         if (type == "Item" ) {
             item->setSelected(false);
         } else if (type == "Signal") {
@@ -173,7 +176,7 @@ void EditController::onTreeViewModelSelectionChanged(
 
 void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) {
     // GraphicsItem
-    auto item = Manager::getIns().itemMapFind(uuid);
+    auto item = ItemManager::getIns().itemMapFind(uuid);
     // TreeViewModel
     auto treeView = UiManager::getIns(). treeView;
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
@@ -246,7 +249,7 @@ void EditController::onTreeViewModelAddGroup() {
     const QModelIndex groupIndex = model->index(targetIndex.row() + 1, 0, targetIndex.parent());
     QString name = "Group";
     QString type = "Group";
-    Manager::getIns().addItem(name, type, groupIndex);
+    ItemManager::getIns().addItem(name, type, groupIndex);
     // 把节点列表移动到group节点下
     model->dropMimeData(mimeList, Qt::MoveAction, 0, 0, groupIndex);
     // 最后再把之前的节点删除; 一定不能先删除, 不然会影响到插入;
@@ -265,8 +268,6 @@ void EditController::onTreeViewModelDeleteGroup() {
         = UiManager::getIns(). treeView->selectionModel()->selectedIndexes()[0];
     auto groupNode = model->getNode(groupIndex);
     auto groupUuid = groupNode->property(TreeNodePropertyIndex::UUID).toString();
-    Manager::getIns().deleteItem(groupUuid);
+    ItemManager::getIns().deleteItem(groupUuid);
 }
-EditController &EditController::getIns() {
-    return ins;
-}
+

@@ -230,7 +230,7 @@ public:
             btn->setChecked(checked);
         }
     }
-/// Manager Initialization
+/// ItemManager Initialization
 private:
     static UiManager ins;
     UiManager() {};

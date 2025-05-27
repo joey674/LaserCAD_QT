@@ -19,7 +19,7 @@
 #include "scenecontroller.h"
 
 
-class Manager {
+class ItemManager {
     friend class ProjectManager;
 private:
     std::unordered_map < UUID, std::shared_ptr < GraphicsItem>> m_itemMap;
@@ -70,13 +70,13 @@ public:
     void setLayerItemStateSync();
 
 private:
-    static Manager ins;
-    Manager() {};
-    Manager(const Manager &);
-    ~Manager() {};
-    Manager &operator = (const Manager &);
+    static ItemManager ins;
+    ItemManager() {};
+    ItemManager(const ItemManager &);
+    ~ItemManager() {};
+    ItemManager &operator = (const ItemManager &);
 public:
-    static Manager &getIns();
+    static ItemManager &getIns();
 };
 
 #endif // MANAGER_H

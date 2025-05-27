@@ -73,6 +73,10 @@ rem 等待打包完成
 echo Waiting for windeployqt to finish...
 timeout /t 5 >nul
 
+rem 删除 F盘 中旧的outout
+echo Removing  output folder in F:...
+rmdir /s /q "F:\%OUTPUT_DIR%"
+
 rem 拷贝 output 到 F盘
 echo Copying output to F:\%OUTPUT_DIR% ...
 xcopy "%OUTPUT_DIR%" "F:\%OUTPUT_DIR%" /E /I /Y

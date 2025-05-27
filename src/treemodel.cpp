@@ -8,7 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include "logger.h"
-#include "manager.h"
+#include "itemmanager.h"
 #include "polylineitem.h"
 #include "scenecontroller.h"
 #include "treenode.h"
@@ -22,7 +22,7 @@ TreeModel::TreeModel(const QString &modelName, QObject *parent)
     m_rootItem->setProperty(TreeNodePropertyIndex::Type, "Root");
     m_rootItem->setProperty(TreeNodePropertyIndex::UUID, "RootUUID");
     auto item = std::shared_ptr < ArcItem > (new ArcItem("RootUUID"));
-    Manager::getIns().itemMapInsert("RootUUID", item);
+    ItemManager::getIns().itemMapInsert("RootUUID", item);
     // 这里不调用Manager::addItem,因为addItem会在treemodel里加东西
 }
 
@@ -37,8 +37,8 @@ QVariant TreeModel::data(const QModelIndex &nodeIndex, int role) const {
     QString itemName = node->property(TreeNodePropertyIndex::Name).toString();
     QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
     QString itemUUID = node->property(TreeNodePropertyIndex::UUID).toString();
-    bool isVisible = Manager::getIns().itemMapFind(itemUUID)->isVisible();
-    QColor color = Manager::getIns().itemMapFind(itemUUID)->getColor();
+    bool isVisible = ItemManager::getIns().itemMapFind(itemUUID)->isVisible();
+    QColor color = ItemManager::getIns().itemMapFind(itemUUID)->getColor();
     // 第0列显示名称 表示树状结构
     if (nodeIndex.column() == 0) {
         if (role == Qt::DisplayRole || role == Qt::EditRole) {
@@ -79,7 +79,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
     }
     auto uuid = node->property(TreeNodePropertyIndex::UUID).toString();
     QString itemType = node->property(TreeNodePropertyIndex::Type).toString();
-    // auto color = Manager::getIns().itemMapFind(uuid)->getColor();
+    // auto color = ItemManager::getIns().itemMapFind(uuid)->getColor();
     // 第 0 列编辑名字
     if (nodeIndex.column() == 0 && role == Qt::EditRole) {
         bool result = node->setProperty(TreeNodePropertyIndex::Name, value);
@@ -96,7 +96,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
             auto uuid = curNode->property(TreeNodePropertyIndex::UUID).toString();
             DEBUG_VAR(uuid);
             DEBUG_VAR(isVisible);
-            Manager::getIns().setItemVisible(uuid, isVisible);
+            ItemManager::getIns().setItemVisible(uuid, isVisible);
         }
         emit dataChanged(nodeIndex, nodeIndex, {Qt::CheckStateRole});
         return true;
@@ -123,7 +123,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         nodeList.push_back(node);
         for (const auto node : nodeList) {
             auto childUuid = node->property(TreeNodePropertyIndex::UUID).toString();
-            Manager::getIns().itemMapFind(childUuid)->setColor(color);
+            ItemManager::getIns().itemMapFind(childUuid)->setColor(color);
         }
         emit dataChanged(nodeIndex, nodeIndex, {Qt::BackgroundRole});
         return true;
@@ -206,7 +206,7 @@ bool TreeModel::removeRows(int removePosition, int nodeCount, const QModelIndex 
     const bool success = nodeItem->removeChilds(removePosition, nodeCount);
     endRemoveRows();
     //     DEBUG_MSG("after moved");
-    Manager::getIns().setLayerItemStateSync();
+    ItemManager::getIns().setLayerItemStateSync();
     return success;
 }
 Qt::ItemFlags TreeModel::flags(const QModelIndex & index) const {
@@ -331,7 +331,7 @@ void TreeModel::setupExemplarModelData() {
 void TreeModel::setupDefaultModelData() {
     m_rootItem->insertChilds(m_rootItem->childCount(), 1);
     auto layer1 = m_rootItem->child(m_rootItem->childCount() - 1);
-    auto uuid = Manager::getIns().addItem("Layer1", "Layer", getIndex(layer1));
+    auto uuid = ItemManager::getIns().addItem("Layer1", "Layer", getIndex(layer1));
     SceneController::getIns().initLayerUuid(uuid);
 }
 

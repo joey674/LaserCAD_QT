@@ -18,51 +18,50 @@ set(PROJECT_SOURCES
         # GraphicsView
         header/GraphicsView/graphicsview.h                     src/graphicsview.cpp
         header/GraphicsView/graphicsitem.h                     src/graphicsitem.cpp
-        header/GraphicsView/polylineitem.h                       src/polylineitem.cpp
-        header/GraphicsView/arcitem.h                                src/arcitem.cpp
-        header/GraphicsView/lineitem.h                                src/lineitem.cpp
-        header/GraphicsView/pointitem.h                             src/pointitem.cpp
-        header/GraphicsView/circleitem.h                            src/circleitem.cpp
-        header/GraphicsView/rectitem.h                                src/rectitem.cpp
-        header/GraphicsView/ellipseitem.h                          src/ellipseitem.cpp
-        header/GraphicsView/spiralitem.h                            src/spiralitem.cpp
-        header/GraphicsView/polygonitem.h                       src/polygonitem.cpp
-        header/GraphicsView/editrect.h                                src/editrect.cpp# editrect
+        header/GraphicsView/polylineitem.h                     src/polylineitem.cpp
+        header/GraphicsView/arcitem.h                          src/arcitem.cpp
+        header/GraphicsView/lineitem.h                         src/lineitem.cpp
+        header/GraphicsView/pointitem.h                        src/pointitem.cpp
+        header/GraphicsView/circleitem.h                       src/circleitem.cpp
+        header/GraphicsView/rectitem.h                         src/rectitem.cpp
+        header/GraphicsView/ellipseitem.h                      src/ellipseitem.cpp
+        header/GraphicsView/spiralitem.h                       src/spiralitem.cpp
+        header/GraphicsView/polygonitem.h                      src/polygonitem.cpp
+        header/GraphicsView/editrect.h                         src/editrect.cpp # editrect
+        header/GraphicsView/combineditem.h                     src/combineditem.cpp # combineditem
         # TreeViewModel
-        header/TreeViewModel/treenode.h                           src/treenode.cpp
-        header/TreeViewModel/treemodel.h                        src/treemodel.cpp
-        header/TreeViewModel/treeview.h                            src/treeview.cpp
-        header/TreeViewModel/colordelegate.h                src/colordelegate.cpp
+        header/TreeViewModel/treenode.h                        src/treenode.cpp
+        header/TreeViewModel/treemodel.h                       src/treemodel.cpp
+        header/TreeViewModel/treeview.h                        src/treeview.cpp
+        header/TreeViewModel/colordelegate.h                   src/colordelegate.cpp
         # TableViewModel
-        header/TableViewModel/tablemodel.h                   src/tablemodel.cpp
+        header/TableViewModel/tablemodel.h                     src/tablemodel.cpp
         # TabWidget
-        header/TabWidget/tabwidget.h                                 src/tabwidget.cpp
+        header/TabWidget/tabwidget.h                           src/tabwidget.cpp
         # Utils
-        header/Utils/logger.h                                                      src/logger.cpp
-        header/Utils/utils.hpp                                                     src/utils.cpp
-        header/Utils/titlebar.h                                                    src/titlebar.cpp
+        header/Utils/logger.h                                  src/logger.cpp
+        header/Utils/utils.hpp                                 src/utils.cpp
+        header/Utils/titlebar.h                                src/titlebar.cpp
+        header/Utils/css.h                                     src/css.cpp
         resource/resource.qrc
-        # Ui
-        header/uimanager.h                                                        src/uimanager.cpp
-        header/Ui/css.h
         # Keyboard
-        header/Keyboard/keyboardmanager.h                    src/keyboardmanager.cpp
+        header/Keyboard/keyboardmanager.h                      src/keyboardmanager.cpp
         # LaserWorker
-        header/LaserWorker/laserworker.h                          header/LaserWorker/laserworker.cpp
+        header/LaserWorker/laserworker.h                       header/LaserWorker/laserworker.cpp
         header/LaserWorker/laserdeviceprotocol.h
-        header/LaserWorker/threadsafequeue.h                src/threadsafequeue.cpp
-        header/LaserWorker/laserdevice.h                           src/laserdevice.cpp
+        header/LaserWorker/threadsafequeue.h                   src/threadsafequeue.cpp
+        header/LaserWorker/laserdevice.h                       src/laserdevice.cpp
         header/LaserWorker/laserdevicertc5.h                   header/LaserWorker/laserdevicertc5.cpp
         header/LaserWorker/laserdevicetest.h                   header/LaserWorker/laserdevicetest.cpp
         # main
-        header/manager.h                                                            src/manager.cpp
+        header/itemmanager.h                                       src/itemmanager.cpp
+        header/uimanager.h                                     src/uimanager.cpp
         header/protocol.h
-        header/editcontroller.h                                                   src/editcontroller.cpp
-        header/scenecontroller.h                                               src/scenecontroller.cpp
-        header/drawcontroller.h                                                 src/drawcontroller.cpp
-        header/GraphicsView/combineditem.h                  src/combineditem.cpp
-        header/projectmanager.h                                             src/projectmanager.cpp
-        src/css.cpp
+        header/editcontroller.h                                src/editcontroller.cpp
+        header/scenecontroller.h                               src/scenecontroller.cpp
+        header/drawcontroller.h                                src/drawcontroller.cpp
+        header/projectmanager.h                                src/projectmanager.cpp
+
 )
 set(RTC_SOURCES
     # RTC5
@@ -115,6 +114,7 @@ else()
             ${PROJECT_SOURCES}
             ${RTC_SOURCES}
             ${CAVC_SOURCES}
+            header/hardwarecontroller.h header/hardwarecontroller.cpp
         )
     endif()
 endif()

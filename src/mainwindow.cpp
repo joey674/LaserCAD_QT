@@ -25,7 +25,7 @@
 #include "editcontroller.h"
 #include "keyboardmanager.h"
 #include "laserworker.h"
-#include "manager.h"
+#include "itemmanager.h"
 #include "projectmanager.h"
 #include "scenecontroller.h"
 #include "treemodel.h"
@@ -34,6 +34,7 @@
 #include "laserdevicetest.h"
 #include <polyline.hpp>
 #include <QInputDialog>
+#include "hardwarecontroller.h"
 
 void MainWindow::onDrawTestLineButtonClicked() {
     QStringList options;
@@ -63,25 +64,6 @@ void MainWindow::onDrawTestLineButtonClicked() {
     } else if (choice == "RTC6") {
         // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
     }
-}
-
-
-void MainWindow::markCurrentLayer() {
-    auto layerUuid = SceneController::getIns().getCurrentLayer();
-    auto treeView = UiManager::getIns().treeView;
-    TreeModel *model = qobject_cast<TreeModel *>(treeView->model());
-    QModelIndex layerIndex = model->getIndex(layerUuid);
-    auto childNodeList = model->getAllChildNodes(layerIndex);
-    // 把所有命令加载好; 如果不想先执行 就设置state为stop就行
-    LaserWorker::getIns().setState(LaserWorkerState::Stopped);
-    for (const auto &childNode : childNodeList) {
-        if (childNode->property(TreeNodePropertyIndex::Type).toString() == "Item") {
-            UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
-            auto commandList = Manager::getIns().itemMapFind(childUuid)->getRTC5Command();
-            LaserWorker::getIns().enqueueCommand(commandList);
-        }
-    }
-    LaserWorker::getIns().setState(LaserWorkerState::Working);
 }
 
 ///
@@ -655,13 +637,13 @@ void MainWindow::onGraphicsviewMouseMoved(QPoint pointCoordView) {
     // 禁止鼠标左右键同时拖拽
     // if (KeyboardManager::getIns().IsMouseLeftButtonHold == true && KeyboardManager::getIns().IsMouseRightButtonHold == true) {
     //     DrawController::getIns().resetTmpItemStatus();
-    //     auto allItems = Manager::getIns().getItemsByLayer(0);
+    //     auto allItems = ItemManager::getIns().getItemsByLayer(0);
     //     SceneController::getIns().scene->clearSelection();
     //     // 打断一下拖拽过程
     //     for (const auto& item : allItems) {
-    //         Manager::getIns().etItemMovable(item, false);
+    //         ItemManager::getIns().etItemMovable(item, false);
     //         QTimer::singleShot(10, this, [item]() {
-    //             Manager::getIns().etItemMovable(item, false);
+    //             ItemManager::getIns().etItemMovable(item, false);
     //         });
     //     }
     // }
@@ -1018,9 +1000,9 @@ void MainWindow::onDragSceneButtonClicked() {
     DrawController::getIns().resetTmpItemStatus();
     // drag mode/所有物体设置不可动
     UiManager::getIns(). graphicsView->setDragMode(QGraphicsView::NoDrag);
-    auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+    auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
     for (auto item : allItems) {
-        Manager::getIns().setItemSelectable(item, false);
+        ItemManager::getIns().setItemSelectable(item, false);
     }
     //button check
     UiManager::getIns().setAllDrawButtonChecked(false);
@@ -1108,72 +1090,86 @@ void MainWindow::onPasteButtonClicked() {
 
 void MainWindow::onDigitalInButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("DigitalIn", "Signal");
+    ItemManager::getIns().addItem("DigitalIn", "Signal");
 }
 
 void MainWindow::onDigitalOutButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("DigitalOut", "Signal");
+    ItemManager::getIns().addItem("DigitalOut", "Signal");
 }
 
 void MainWindow::onDoPauseButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("DoPause", "Signal");
+    ItemManager::getIns().addItem("DoPause", "Signal");
 }
 
 void MainWindow::onDelayTimeButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("DelayTime", "Signal");
+    ItemManager::getIns().addItem("DelayTime", "Signal");
 }
 
 void MainWindow::onMotionButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("Motion", "Signal");
+    ItemManager::getIns().addItem("Motion", "Signal");
 }
 
 void MainWindow::onLoopButtonClicked() {
     setEditMode();
-    Manager::getIns().addItem("Loop", "Signal");
+    ItemManager::getIns().addItem("Loop", "Signal");
 }
 
 void MainWindow::onMarkButtonClicked()
 {
     QDialog dialog(this);
     dialog.setWindowTitle("panel");
-    enum class ExecState { Ready, Running, Paused };
-    ExecState state = ExecState::Ready;
+
     QPushButton *toggleButton = new QPushButton("start");
-    QPushButton *stopButton = new QPushButton("abort");
+    QPushButton *abortButton = new QPushButton("abort");
+
     QVBoxLayout *layout = new QVBoxLayout;
     layout->addWidget(toggleButton);
-    layout->addWidget(stopButton);
+    layout->addWidget(abortButton);
     dialog.setLayout(layout);
-    connect(toggleButton, &QPushButton::clicked, [&]() {
-        if (state == ExecState::Ready) {
-            DEBUG_MSG("start execute LaserDeviceCommand");
-            LaserWorker::getIns().setState(LaserWorkerState::Working);
-             markCurrentLayer();
-            toggleButton->setText("stop");
-            state = ExecState::Running;
-        } else if (state == ExecState::Paused) {
-            DEBUG_MSG("resume execute LaserDeviceCommand");
-            LaserWorker::getIns().setState(LaserWorkerState::Working);
-            toggleButton->setText("stop");
-            state = ExecState::Running;
-        } else if (state == ExecState::Running) {
-            DEBUG_MSG("pauseExecution execute LaserDeviceCommand");
-            LaserWorker::getIns().setState(LaserWorkerState::Paused);
+
+    // 每 0.5 秒检查一次状态，用于更新按钮状态
+    QTimer *checkDoneTimer = new QTimer(&dialog);
+    checkDoneTimer->setInterval(500);
+    QObject::connect(checkDoneTimer, &QTimer::timeout, [&]() {
+        auto state = LaserWorker::getIns().getDeviceState();
+        if (state == DeviceState::Free) {
+            toggleButton->setText("start");
+        } else if (state == DeviceState::Working) {
+            toggleButton->setText("pause");
+        } else if (state == DeviceState::Paused) {
             toggleButton->setText("resume");
-            state = ExecState::Paused;
         }
     });
-    connect(stopButton, &QPushButton::clicked, [&]() {
-        DEBUG_MSG("abort execute LaserDeviceCommand");
-        LaserWorker::getIns().setState(LaserWorkerState::Stopped);
-        dialog.accept();
+    checkDoneTimer->start();
+
+    QObject::connect(toggleButton, &QPushButton::clicked, [&]() {
+        auto state = LaserWorker::getIns().getDeviceState();
+        if (state == DeviceState::Free) {
+            DEBUG_MSG("start execute LaserDeviceCommand");
+            LaserWorker::getIns().setDeviceWorking();
+            HardwareController::getIns().markCurrentLayer();
+        } else if (state == DeviceState::Paused) {
+            DEBUG_MSG("resume execute LaserDeviceCommand");
+            LaserWorker::getIns().setDeviceWorking(); // resume
+        } else if (state == DeviceState::Working) {
+            DEBUG_MSG("pause execute LaserDeviceCommand");
+            LaserWorker::getIns().setDevicePaused(); // pause
+        }
     });
+
+    QObject::connect(abortButton, &QPushButton::clicked, [&]() {
+        DEBUG_MSG("abort execute LaserDeviceCommand");
+        LaserWorker::getIns().setDeviceAbort();
+    });
+
     dialog.exec();
 }
+
+
 
 void MainWindow::onAddLayerButtonClicked() {
     SceneController::getIns().addLayer();

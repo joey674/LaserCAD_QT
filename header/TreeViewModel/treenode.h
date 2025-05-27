@@ -9,7 +9,7 @@ class TreeModel;
 
 class TreeNode {
     friend class TreeModel;
-    friend class Manager;
+    friend class ItemManager;
     friend class ProjectManager;
 public:
     explicit TreeNode(TreeNode *parent = nullptr);

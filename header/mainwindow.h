@@ -81,7 +81,6 @@ private slots: // 硬件信号按钮
     void onLoopButtonClicked();
 private slots: // 硬件操作按钮
     void onMarkButtonClicked();
-    void markCurrentLayer();
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();

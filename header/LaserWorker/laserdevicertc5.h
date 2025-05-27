@@ -23,7 +23,9 @@ public:
     bool disconnectCard() override;
     bool checkCard() override;
     bool executeCommand(const std::vector<LaserDeviceCommand> &cmdList) override;
-    bool pauseExecution() override;
+    void resumeExecution() override;
+    void pauseExecution() override;
+    void abortExecution() override;
 public:
     RTCSettings m_settings;
 };

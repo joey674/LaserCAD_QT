@@ -11,7 +11,6 @@ public:
     bool connectCard() override;
     bool disconnectCard() override;
     bool checkCard() override;
-    bool pauseExecution() override;
 };
 
 #endif // LASERDEVICETEST_H

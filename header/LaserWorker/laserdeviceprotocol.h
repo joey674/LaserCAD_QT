@@ -47,7 +47,6 @@ const double Pi = 3.14159265358979323846;
 const unsigned int LaserModeYAG = 1;       //  YAG 1 mode
 const unsigned int LaserModeCO2 = 0;       //  CO2
 const unsigned int DefaultCard = 1;     //  number of default card
-const long   R(10000L); // 转换系数: 从graphicsView的mm转换到rtc的um
 /// example
 // Change these values according to your system
 const unsigned int ListMemory = 10000;  //  size of list 1 memory (default 4000)
@@ -72,11 +71,7 @@ const double MarkSpeed = 250.0;        //  [16 Bits/ms]
 const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
 
 // End Locus of a Line
-struct locus
-{
-    long xval, yval;
-};
-const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
+// const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
 
 ///
 ///
@@ -84,13 +79,15 @@ const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
 // jump_abs
 struct JumpCommand
 {
-    locus pos;
+    long x;
+    long y;
 };
 
 // mark_abs
 struct MarkCommand
 {
-    locus pos;
+    long x;
+    long y;
 };
 
 // arc_abs

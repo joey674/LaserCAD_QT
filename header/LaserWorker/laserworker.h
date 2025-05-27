@@ -12,7 +12,7 @@
 #include <thread>
 #include "laserdevice.h"
 
-enum class LaserWorkerState { Working, Paused, Stopped };
+enum class DeviceState {Working,Paused,Free};
 
 class LaserWorker
 {
@@ -24,7 +24,6 @@ public:
     {
         this->m_commandQueue.push(cmdList);
     }
-    void setState(LaserWorkerState state) { m_state.store(state); }
     void setDevice(std::unique_ptr<LaserDevice> device) {
         if (this->m_device != nullptr) {
             this->m_device->disconnectCard();
@@ -45,6 +44,45 @@ public:
 
         INFO_MSG("set device success");
     }
+    /// \brief setDeviceWorking
+    /// 这三个函数是在主线程调用 随时更改device的状态
+    void setDeviceWorking() {
+        DeviceState prev = m_deviceState.load();
+        if (prev == DeviceState::Free) {
+            DEBUG_MSG("Device: Free → Working (start)");
+            m_deviceState = DeviceState::Working;
+        } else if (prev == DeviceState::Paused) {
+            DEBUG_MSG("Device: Paused → Working (resume)");
+            m_deviceState = DeviceState::Working;
+            m_device->resumeExecution();
+        } else {
+            DEBUG_MSG("Device: Already Working, no action");
+        }
+    }
+    void setDevicePaused() {
+        if (m_deviceState == DeviceState::Working) {
+            DEBUG_MSG("Device: Working → Paused (pause)");
+            m_deviceState = DeviceState::Paused;
+            m_device->pauseExecution();
+        } else {
+            DEBUG_MSG("Pause ignored: not in Working state");
+        }
+    }
+    void setDeviceAbort() {
+        DeviceState prev = m_deviceState.exchange(DeviceState::Free);
+        if (prev == DeviceState::Working || prev == DeviceState::Paused) {
+            DEBUG_MSG("Device: " + QString::fromStdString(
+                          (prev == DeviceState::Working ? "Working" : "Paused")) + " → Free (abort)");
+            m_device->abortExecution();
+        } else {
+            DEBUG_MSG("Abort ignored: already Free");
+        }
+    }
+
+    DeviceState getDeviceState () {
+        return this->m_deviceState.load ();
+    }
+
 private:
     void threadMain();
     std::thread m_thread;
@@ -52,7 +90,7 @@ private:
     std::atomic<bool> m_workerIsRunning{false};
     ThreadSafeQueue<LaserDeviceCommand> m_commandQueue;
     std::unique_ptr<LaserDevice> m_device = nullptr;
-    std::atomic<LaserWorkerState> m_state{LaserWorkerState::Stopped};
+    std::atomic<DeviceState> m_deviceState{DeviceState::Free};
 
 private:
     static LaserWorker ins;

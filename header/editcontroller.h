@@ -8,7 +8,7 @@
 #include "arcitem.h"
 #include "editrect.h"
 #include "ellipseitem.h"
-#include "manager.h"
+#include "itemmanager.h"
 #include "polygonitem.h"
 #include "polylineitem.h"
 #include "protocol.h"
@@ -365,7 +365,7 @@ public:
         for (const auto &pline : result.remaining) {
             auto item = FromCavcForm(pline);
             SceneController::getIns().scene->addItem(item.get());
-            Manager::getIns().addItem(item);
+            ItemManager::getIns().addItem(item);
         }
         this->updateEditRect();
     }
@@ -381,8 +381,8 @@ public:
         for (auto &item : offsetItems) {
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
-            Manager::getIns().addItem(std::move(item));
-            Manager::getIns().setItemSelectable(uuid, true);
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
         }
     }
     void onBreakCopiedItemTriggered() {
@@ -394,8 +394,8 @@ public:
         for (auto &item : copiedItems) {
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
-            Manager::getIns().addItem(std::move(item));
-            Manager::getIns().setItemSelectable(uuid, true);
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
         }
     }
     void onCenterToOriginTriggered() {
@@ -473,9 +473,9 @@ public:
         }
         for (const auto &uuid : uuids) {
             // 一个clearSelection的bug,在remove之后还触发了对象的回调 导致空指针
-            auto item = Manager::getIns().itemMapFind(uuid);
+            auto item = ItemManager::getIns().itemMapFind(uuid);
             SceneController::getIns().scene->removeItem(item.get());//  在场景中删除
-            Manager::getIns().deleteItem(uuid);
+            ItemManager::getIns().deleteItem(uuid);
             DEBUG_MSG(uuid + " is deleted");
         }
         // 清除editController中的编辑列表
@@ -525,7 +525,7 @@ public:
             auto newItem = item->clone();
             newItem->setColor(SceneController::getIns().getCurrentLayerColor());
             SceneController::getIns().scene->addItem(newItem.get());
-            Manager::getIns().addItem(std::move (newItem));
+            ItemManager::getIns().addItem(std::move (newItem));
         }
         //
         this->updateEditRect();

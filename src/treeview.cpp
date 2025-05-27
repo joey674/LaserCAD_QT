@@ -22,7 +22,7 @@ void TreeView::dropEvent(QDropEvent *event) {
     QTreeView::dropEvent(event);
     QTimer::singleShot(10, [this]() {
         DEBUG_MSG("after moved");
-        Manager::getIns().setLayerItemStateSync();
+        ItemManager::getIns().setLayerItemStateSync();
     });
 }
 

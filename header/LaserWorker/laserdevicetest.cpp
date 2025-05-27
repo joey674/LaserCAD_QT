@@ -27,9 +27,3 @@ bool LaserDeviceTest::checkCard()
 {
         return true;
 }
-
-bool LaserDeviceTest::pauseExecution() {
-    INFO_MSG(" pause_list ");
-    // pause_list();
-    return true;
-}

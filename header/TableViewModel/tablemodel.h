@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 #include <QRegularExpression>
-#include "manager.h"
+#include "itemmanager.h"
 #include "logger.h"
 #include "utils.hpp"
 
@@ -22,7 +22,7 @@ public:
         }
         this->m_uuid = uuid;
         // 几何属性
-        auto item = Manager::getIns().itemMapFind(this->m_uuid);
+        auto item = ItemManager::getIns().itemMapFind(this->m_uuid);
         m_propertyList.append({"Position", item->getCenterInScene()});
         // OffsetParams
 
@@ -85,11 +85,11 @@ public:
             }
             if (value.canConvert < Vertex > ()) {
                 if (key == "Vertex0") {
-                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexInScene(0).point;
+                    auto pos = ItemManager::getIns().itemMapFind(this->m_uuid)->getVertexInScene(0).point;
                     auto ang = value.value < Vertex > ().angle;
                     return parseVertexToString(Vertex{pos, ang});
                 } else if (key == "Vertex1") {
-                    auto pos = Manager::getIns().itemMapFind(this->m_uuid)->getVertexInScene(1).point;
+                    auto pos = ItemManager::getIns().itemMapFind(this->m_uuid)->getVertexInScene(1).point;
                     auto ang = value.value < Vertex > ().angle;
                     return parseVertexToString(Vertex{pos, ang});
                 }

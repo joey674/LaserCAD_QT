@@ -1,5 +1,5 @@
 #include "drawcontroller.h"
-#include "manager.h"
+#include "itemmanager.h"
 #include "scenecontroller.h"
 #include "keyboardmanager.h"
 #include "protocol.h"
@@ -23,9 +23,9 @@ void DrawController::resetTmpItemStatus() {
 void DrawController::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPolyline && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpPolyline = std::make_shared < PolylineItem > ();
         this->tmpPolyline->setColor(SceneController::getIns().getCurrentLayerColor());
@@ -55,16 +55,16 @@ void DrawController::drawPolyline(QPointF pointCoordscene, MouseEvent event) {
     } else if (this->tmpPolyline && event == MouseEvent::LeftPress) {
         this->tmpPolyline->addVertex(pointCoordscene, 0);
     } else if (this->tmpPolyline && event == MouseEvent::RightPress) {
-        Manager::getIns().addItem(std::move(this->tmpPolyline));
+        ItemManager::getIns().addItem(std::move(this->tmpPolyline));
     }
 }
 
 void DrawController::drawArc(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpArc && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpArc = std::make_shared < ArcItem > ();
         this->tmpArc->setColor(SceneController::getIns().getCurrentLayerColor());
@@ -87,16 +87,16 @@ void DrawController::drawArc(QPointF pointCoordscene, MouseEvent event) {
         getAngleFromThreePoints(p1, p2, p3, angle);
         this->tmpArc->setVertexInScene(1, Vertex{pointCoordscene, angle});
     } else if (this->tmpArc && this->tmpArc->drawStep == 2 && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpArc));
+        ItemManager::getIns().addItem(std::move(this->tmpArc));
     }
 }
 
 void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpLine && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpLine = std::make_shared < LineItem > ();
         this->tmpLine->setColor(SceneController::getIns().getCurrentLayerColor());
@@ -115,31 +115,31 @@ void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
             }
         }
     } else if (this->tmpLine && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpLine));
+        ItemManager::getIns().addItem(std::move(this->tmpLine));
     }
 }
 
 void DrawController::drawPoint(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPoint && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto& item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpPoint = std::make_shared < PointItem > ();
         this->tmpPoint->setColor(SceneController::getIns().getCurrentLayerColor());
         SceneController::getIns().scene->addItem(this->tmpPoint.get());
         this->tmpPoint->setVertexInScene(0, Vertex{pointCoordscene, 0});
-        Manager::getIns().addItem(std::move(this->tmpPoint));
+        ItemManager::getIns().addItem(std::move(this->tmpPoint));
     }
 }
 
 void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpCircle && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpCircle = std::make_shared < CircleItem > ();
         this->tmpCircle->setVertexInScene(0, Vertex{pointCoordscene, 0});
@@ -151,15 +151,15 @@ void DrawController::drawCircle(QPointF pointCoordscene, MouseEvent event) {
         this->tmpCircle->setRadius(radius);
         // this->tmpCircle->setTransformOriginPoint(center);
     } else if (this->tmpCircle && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpCircle));
+        ItemManager::getIns().addItem(std::move(this->tmpCircle));
     }
 }
 
 void DrawController::drawRect(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpRect && event == MouseEvent::LeftPress) {
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpRect = std::make_shared < RectItem > ();
         this->tmpRect->setColor(SceneController::getIns().getCurrentLayerColor());
@@ -176,15 +176,15 @@ void DrawController::drawRect(QPointF pointCoordscene, MouseEvent event) {
         this->tmpRect->setVertexInScene(2, Vertex{QPointF(current.x(), current.y()), 0}); // 右下
         this->tmpRect->setVertexInScene(3, Vertex{QPointF(start.x(), current.y()), 0});
     } else if (this->tmpRect && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpRect));
+        ItemManager::getIns().addItem(std::move(this->tmpRect));
     }
 }
 void DrawController::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpEllipse && event == MouseEvent::LeftPress) {
         // 第一次点击：创建临时椭圆，记录中心点
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpEllipse = std::make_shared < EllipseItem > ();
         this->tmpEllipse->setColor(SceneController::getIns().getCurrentLayerColor());
@@ -217,15 +217,15 @@ void DrawController::drawEllipse(QPointF pointCoordscene, MouseEvent event) {
         this->tmpEllipse->setRadiusY(radiusY);
     } else if (this->tmpEllipse && this->tmpEllipse->drawStep == 1
                && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpEllipse));
+        ItemManager::getIns().addItem(std::move(this->tmpEllipse));
     }
 }
 
 void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpSpiral && event == MouseEvent::LeftPress) {
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpSpiral = std::make_shared < SpiralItem > ();
         this->tmpSpiral->setVertexInScene(0, Vertex{pointCoordscene, 0});
@@ -240,16 +240,16 @@ void DrawController::drawSpiral(QPointF pointCoordscene, MouseEvent event) {
         double radius = QLineF(center, pointCoordscene).length();
         this->tmpSpiral->setEndRadius(radius);
     } else if (this->tmpSpiral && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpSpiral));
+        ItemManager::getIns().addItem(std::move(this->tmpSpiral));
     }
 }
 
 void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
     if (!this->tmpPolygon && event == MouseEvent::LeftPress) {
         // 设置其他元素不可选中
-        auto allItems = Manager::getIns().getChildItems("0-0-0-0");
+        auto allItems = ItemManager::getIns().getChildItems("0-0-0-0");
         for (const auto &item : allItems) {
-            Manager::getIns().setItemSelectable(item, false);
+            ItemManager::getIns().setItemSelectable(item, false);
         }
         this->tmpPolygon = std::make_shared < PolygonItem > ();
         this->tmpPolygon->setVertexInScene(0, Vertex{pointCoordscene, 0});
@@ -261,7 +261,7 @@ void DrawController::drawPolygon(QPointF pointCoordscene, MouseEvent event) {
         this->tmpPolygon->setRadius(radius);
         // this->tmpPolygon->setTransformOriginPoint(center);
     } else if (this->tmpPolygon && event == MouseEvent::LeftPress) {
-        Manager::getIns().addItem(std::move(this->tmpPolygon));
+        ItemManager::getIns().addItem(std::move(this->tmpPolygon));
     }
 }
 
