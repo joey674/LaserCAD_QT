@@ -264,7 +264,7 @@ public:
                 if (key == "MarkParams: markSpeed" || key == "MarkParams: jumpSpeed"
                         || key == "MarkParams: power" || key == "MarkParams: pulseWidth") {
                     mark.set(key, finalVal);
-                } else if (key == "MarkParams: frequency" || key == "MarkParams: repetTime"
+                } else if (key == "MarkParams: frequency" || key == "MarkParams: operateTime"
                            || key == "MarkParams: wobelAml" || key == "MarkParams: wobelFreq") {
                     mark.set(key, finalVal);
                 }

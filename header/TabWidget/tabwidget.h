@@ -21,6 +21,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include "laserdevicertc5.h"
+#include "hardwarecontroller.h"
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -52,10 +53,17 @@ public:
         mainLayout->addWidget(modeCombo);
         // 2. 使用 stacked widget 切换不同输入区域
         QStackedWidget* stackedWidget = new QStackedWidget();
+
         // --- Vector Copy Layout ---
         QWidget* vectorPage = new QWidget();
         QFormLayout* vectorLayout = new QFormLayout(vectorPage);
-        QLineEdit* directionVecEdit = new QLineEdit("1, 0");
+
+        QDoubleSpinBox* directionVecXSpin = new QDoubleSpinBox();
+        directionVecXSpin->setRange(-1000, 1000);
+         directionVecXSpin->setValue(vParams.dir.x ());
+        QDoubleSpinBox* directionVecYSpin = new QDoubleSpinBox();
+        directionVecYSpin->setRange(-1000, 1000);
+        directionVecYSpin->setValue(vParams.dir.y ());
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(0, 99999);
         spacingSpin->setValue(vParams.spacing);
@@ -63,17 +71,19 @@ public:
         countSpin->setRange(1, 99999);
         countSpin->setValue(vParams.count);
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
-        vectorLayout->addRow("Direction (x, y):", directionVecEdit);
+        vectorLayout->addRow("Direction x:", directionVecXSpin);
+        vectorLayout->addRow("Direction y:", directionVecYSpin);
         vectorLayout->addRow("Spacing:", spacingSpin);
         vectorLayout->addRow("Count:", countSpin);
         vectorLayout->addRow("", vectorConfirmBtn);
         // 连接 vectorConfirmBtn 点击事件
         QObject::connect(vectorConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
-            QPointF dir = parseStringToPointF(directionVecEdit->text());
+            QPointF dir = QPointF{directionVecXSpin->value(),directionVecYSpin->value()};
             double spacing = spacingSpin->value();
             int count = countSpin->value();
             EditController::getIns().onTabWidgetCopyTabVectorCopy(VectorCopyParams{dir, spacing, count});
         });
+
         // --- Matrix Copy Layout ---
         QWidget* matrixPage = new QWidget();
         QFormLayout* matrixLayout = new QFormLayout(matrixPage);
@@ -239,7 +249,7 @@ public:
         wobelAmlSpin->setValue(params.wobelAml);
         QSpinBox* repetTimeSpin = new QSpinBox();
         repetTimeSpin->setRange(1, 1000);
-        repetTimeSpin->setValue(params.repetTime);
+        repetTimeSpin->setValue(params.operateTime);
         QDoubleSpinBox* powerSpin = new QDoubleSpinBox();
         powerSpin->setRange(0, 100);
         powerSpin->setDecimals(2);
@@ -859,7 +869,7 @@ public:
         addField("MarkParams: markSpeed", 0);
         addField("MarkParams: jumpSpeed", 0);
         addField("MarkParams: frequency", 0);
-        addField("MarkParams: repetTime", 0);
+        addField("MarkParams: operateTime", 0);
         addField("MarkParams: power", 0);
         addField("MarkParams: pulseWidth", 0);
         addField("MarkParams: wobelAml", 0);
@@ -1086,7 +1096,81 @@ public:
 
     void addStageControlTab(){};
 
-    void addSystemControlTab(){}
+    void addSystemControlTab(){
+        QWidget *tab = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(tab);
+
+        // ========== Hardware Status Group ==========
+        QGroupBox *hardwareStatusGroup = new QGroupBox("Hardware Status");
+        QVBoxLayout *hardwareLayout = new QVBoxLayout(hardwareStatusGroup);
+
+        QHBoxLayout *laserLayout = new QHBoxLayout();
+        QLabel *labelLaser = new QLabel("LaserDevice");
+        QLabel *statusIndicator = new QLabel();
+        statusIndicator->setFixedSize(16, 16);
+        statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+        laserLayout->addWidget(labelLaser);
+        laserLayout->addWidget(statusIndicator);
+        laserLayout->addStretch();
+        hardwareLayout->addLayout(laserLayout);
+
+        QHBoxLayout *motionaxisLayout = new QHBoxLayout();
+        QLabel *labelMotionAxis = new QLabel("MotionAxis");
+        QLabel *statusIndicator1 = new QLabel();
+        statusIndicator1->setFixedSize(16, 16);
+        statusIndicator1->setStyleSheet("background-color: red; border-radius: 8px;");
+        motionaxisLayout->addWidget(labelMotionAxis);
+        motionaxisLayout->addWidget(statusIndicator1);
+        motionaxisLayout->addStretch();
+        hardwareLayout->addLayout(motionaxisLayout);
+
+        mainLayout->addWidget(hardwareStatusGroup);
+
+        // ========== 控制参数输入 ==========
+        QGroupBox *controlGroup = new QGroupBox("Control Parameters");
+        QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
+
+        QLabel *timesLabel = new QLabel("Total Executions:");
+        QLineEdit *timesInput = new QLineEdit();
+        timesInput->setText("1");
+        timesInput->setValidator(new QIntValidator(1, 9999, timesInput));
+
+        QPushButton *applyButton = new QPushButton("Apply");
+        applyButton->setFixedWidth(60);
+
+        controlLayout->addWidget(timesLabel);
+        controlLayout->addWidget(timesInput);
+        controlLayout->addWidget(applyButton);
+        controlLayout->addStretch();
+
+        mainLayout->addWidget(controlGroup);
+
+        // 绑定 Apply 按钮行为
+        QObject::connect(applyButton, &QPushButton::clicked, tab, [=]() {
+            int value = timesInput->text().toInt();
+            if (value <= 0) {
+                WARN_MSG("Invalid execution count");
+                return;
+            }
+            HardwareController::getIns().setOperationTime(value);
+            DEBUG_MSG("Set operation count to: " + QString::number(value));
+        });
+
+        // ========== 状态监控定时器 ==========
+        QTimer *statusTimer = new QTimer(tab);
+        statusTimer->setInterval(1000);
+        connect(statusTimer, &QTimer::timeout, this, [=]() {
+            bool isConnected = LaserWorker::getIns().getDeviceConnectStatus();
+            if (isConnected)
+                statusIndicator->setStyleSheet("background-color: green; border-radius: 8px;");
+            else
+                statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+        });
+        statusTimer->start();
+
+        // ========== 添加 Tab ==========
+        this->addTab(tab, "SystemControl");
+    }
 };
 
 #endif // TABWIDGET_H

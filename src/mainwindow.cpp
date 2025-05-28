@@ -1120,6 +1120,11 @@ void MainWindow::onLoopButtonClicked() {
 
 void MainWindow::onMarkButtonClicked()
 {
+    //
+    if (!LaserWorker::getIns ().getDeviceConnectStatus ()){
+        return;
+    }
+    //
     QDialog dialog(this);
     dialog.setWindowTitle("panel");
 
@@ -1131,9 +1136,9 @@ void MainWindow::onMarkButtonClicked()
     layout->addWidget(abortButton);
     dialog.setLayout(layout);
 
-    // 每 0.5 秒检查一次状态，用于更新按钮状态
+    // 检查一次状态，用于更新按钮状态
     QTimer *checkDoneTimer = new QTimer(&dialog);
-    checkDoneTimer->setInterval(500);
+    checkDoneTimer->setInterval(200);
     QObject::connect(checkDoneTimer, &QTimer::timeout, [&]() {
         auto state = LaserWorker::getIns().getDeviceStatus();
         if (state == DeviceStatus::Free) {

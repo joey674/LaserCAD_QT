@@ -323,7 +323,7 @@ public:
     std::vector<LaserDeviceCommand> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
-        auto repeatTime = this->getMarkParams().repetTime;
+        auto repeatTime = this->getMarkParams().operateTime;
 
         const auto &p0 = m_vertexPair[0];
         const auto &p1 = m_vertexPair[1];

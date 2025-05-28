@@ -31,7 +31,7 @@ public:
         m_propertyList.append({ "MarkParams: markSpeed", mark.markSpeed });
         m_propertyList.append({ "MarkParams: jumpSpeed", mark.jumpSpeed });
         m_propertyList.append({ "MarkParams: frequency", mark.frequency });
-        m_propertyList.append({ "MarkParams: repetTime", mark.repetTime });
+        m_propertyList.append({ "MarkParams: operateTime", mark.operateTime });
         m_propertyList.append({ "MarkParams: power", mark.power });
         m_propertyList.append({ "MarkParams: pulseWidth", mark.pulseWidth });
         m_propertyList.append({ "MarkParams: wobelAml", mark.wobelAml });

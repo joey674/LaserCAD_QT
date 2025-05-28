@@ -278,18 +278,41 @@ public:
     std::vector<LaserDeviceCommand> getRTC5Command() const override
     {
         auto commandList = GraphicsItem::getRTC5Command();
-        auto repeatTime = this->getMarkParams().repetTime;
+        auto operateTime = this->getMarkParams().operateTime;
 
         const auto &p0 = m_vertexPair[0];
         const auto &p1 = m_vertexPair[1];
-        long startPosX = static_cast<long>(p0.point.x());
-        long startPosY =static_cast<long>(p0.point.y());
-        long endPosX = static_cast<long>(p1.point.x());
-        long endPosY =static_cast<long>(p1.point.y());
+        const long startPosX = static_cast<long>(p0.point.x());
+        const long startPosY =static_cast<long>(p0.point.y());
+        const long endPosX = static_cast<long>(p1.point.x());
+        const long endPosY =static_cast<long>(p1.point.y());
 
-        for (int i = 0; i < repeatTime; i++) {
+        for (int i = 0; i < operateTime; i++) {
+            // 打印本体
             commandList.emplace_back(JumpCommand{startPosX,startPosY});
             commandList.emplace_back(MarkCommand{endPosX,endPosY});
+            // 打印copyItem
+            for (const auto copyItem : m_copiedItemList){
+                const auto &cP0 = copyItem->getVertexInScene (0);
+                const auto &cP1 = copyItem->getVertexInScene (1);
+                const long cStartPosX = static_cast<long>(cP0.point.x());
+                const long cStartPosY =static_cast<long>(cP0.point.y());
+                const long cEndPosX = static_cast<long>(cP1.point.x());
+                const long cEndPosY =static_cast<long>(cP1.point.y());
+                commandList.emplace_back(JumpCommand{cStartPosX,cStartPosY});
+                commandList.emplace_back(MarkCommand{cEndPosX,cEndPosY});
+            }
+            // 打印copyItem
+            for (const auto offsetItem : m_offsetItemList){
+                const auto &oP0 = offsetItem->getVertexInScene (0);
+                const auto &oP1 = offsetItem->getVertexInScene (1);
+                const long oStartPosX = static_cast<long>(oP0.point.x());
+                const long oStartPosY =static_cast<long>(oP0.point.y());
+                const long oEndPosX = static_cast<long>(oP1.point.x());
+                const long oEndPosY =static_cast<long>(oP1.point.y());
+                commandList.emplace_back(JumpCommand{oStartPosX,oStartPosY});
+                commandList.emplace_back(MarkCommand{oEndPosX,oEndPosY});
+            }
         }
         return commandList;
     }

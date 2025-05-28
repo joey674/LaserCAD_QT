@@ -54,16 +54,18 @@ public:
             m_deviceStatus = DeviceStatus::Working;
             // 设置状态为working, 主线程就会自动执行缓存指令 不需要主动触发;
 
-            std::function<void()> checker;
-            checker = [&]() {
-                if (m_device->getListStatus () == 0) {
+            // 创建一个周期性定时器检测状态
+            QTimer *timer = new QTimer();
+            timer->setInterval(100);
+            QObject::connect(timer, &QTimer::timeout, [this, timer]() {
+                if (m_device->getListStatus() == 0) {
                     DEBUG_MSG("Device: Working → Free (finish)");
                     m_deviceStatus = DeviceStatus::Free;
-                } else {
-                    QTimer::singleShot(500, checker);
+                    timer->stop();
+                    timer->deleteLater();
                 }
-            };
-            checker();
+            });
+            timer->start();
         } else if (prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: Paused → Working (resume)");
             m_deviceStatus = DeviceStatus::Working;
@@ -91,9 +93,20 @@ public:
             DEBUG_MSG("Abort ignored: already Free");
         }
     }
+
+    /// \brief get
+    ///
+    bool getDeviceConnectStatus(){
+        if (m_device){
+            return true;
+        } else {
+            return false;
+        }
+    }
     DeviceStatus getDeviceStatus () {
         return this->m_deviceStatus.load ();
     }
+
 
 private:
     void threadMain();

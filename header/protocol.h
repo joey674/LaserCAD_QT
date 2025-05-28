@@ -68,10 +68,10 @@ enum GraphicsItemType /* 用于识别type */
 using UUID = QString;
 
 struct MarkParams {
-    double markSpeed = 1000;
+    double markSpeed = 50;
     double jumpSpeed = 250;
     unsigned int frequency = 1000;
-    unsigned int repetTime = 1; // 1代表打1次 n代表打n次
+    unsigned int operateTime = 1; // 1代表打1次 n代表打n次
     double power = 0;
     unsigned int pulseWidth = 40;
     unsigned int wobelAml = 0;
@@ -90,8 +90,8 @@ struct MarkParams {
             frequency = val.toInt();
             return true;
         }
-        if (key == "repetTime" || key == "MarkParams: repetTime")        {
-            repetTime = val.toInt();
+        if (key == "operateTime" || key == "MarkParams: operateTime")        {
+            operateTime = val.toInt();
             return true;
         }
         if (key == "power" || key == "MarkParams: power")            {
