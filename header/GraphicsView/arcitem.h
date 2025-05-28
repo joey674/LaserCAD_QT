@@ -116,25 +116,7 @@ public:
     };
 
 protected:
-    bool updateContourFillItem() override {
-        //
-        if (this->m_offsetParams.offset == 0 || this->m_offsetParams.offsetCount == 0) {
-            return true;
-        }
-        this->m_contourFillItemList.clear();
-        for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
-            // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
-            input.isClosed() = false;
-            std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, (-1)*this->m_offsetParams.offset * offsetIndex);
-            // 获取结果
-            for (const auto& polyline : results) {
-                auto item = FromCavcForm(polyline);
-                this->m_contourFillItemList.push_back(std::move(item));
-            }
-        }
-        return true;
-    }
+    bool updateContourFillItem() override;
     bool updatePaintItem() override {
         //
         this->m_paintItem = nullptr;

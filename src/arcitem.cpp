@@ -4,17 +4,39 @@
 #include <polylineoffset.hpp>
 #include <polylinecombine.hpp>
 
-bool ArcItem::updateHatchFillItem() {
+bool ArcItem::updateContourFillItem()
+{
+    //
+    if (this->m_offsetParams.offset == 0 || this->m_offsetParams.offsetCount == 0) {
+        return true;
+    }
+    this->m_contourFillItemList.clear();
+    for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
+        // 输入cavc库
+        cavc::Polyline<double> input = this->getCavcForm(true);
+        input.isClosed() = false;
+        std::vector<cavc::Polyline<double>> results
+            = cavc::parallelOffset(input, (-1) * this->m_offsetParams.offset * offsetIndex);
+        // 获取结果
+        for (const auto &polyline : results) {
+            auto item = FromCavcForm(polyline);
+            this->m_contourFillItemList.push_back(std::move(item));
+        }
+    }
+    return true;
+}
+
+bool ArcItem::updateHatchFillItem()
+{
     if (m_fillParams.operateCount == 0 || m_fillParams.spacing == 0){
         return true;
     }
     this->m_hatchFillItemList.clear();
 
     // 输入cavc库
-    auto input = this->getCavcForm(false);
+    auto input = this->getCavcForm(true);
     // 自动判断 如果最后一个点与第一个点重合 那么就认为是close;
     auto vertexCount = this->getVertexCount();
-    input.isClosed() = false;
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();
@@ -39,17 +61,18 @@ bool ArcItem::updateHatchFillItem() {
         // 线段两端点
         QPointF p1 = mid + QPointF(-dx * lineLength * 0.5, -dy * lineLength * 0.5);
         QPointF p2 = mid + QPointF(dx * lineLength * 0.5, dy * lineLength * 0.5);
-        // 构造 cavc 线段
-        cavc::Polyline<double> hatch;
-        hatch.addVertex(p1.x(), p1.y(),0);
-        hatch.addVertex(p2.x(), p2.y(),0);
+        // 构造 填充线段
+        cavc::Polyline<double> rawHatch;
+        rawHatch.addVertex(p1.x(), p1.y(),0);
+        rawHatch.addVertex(p2.x(), p2.y(),0);
         // 与 polygon 做布尔交集
         input.isClosed() = true;
-        hatch.isClosed() = true;
+        rawHatch.isClosed() = true;
         // 执行布尔操作
-        cavc::CombineResult < double > result = cavc::combinePolylines(input, hatch, cavc::PlineCombineMode::Intersect);
-        for (const auto &pline : result.remaining) {
-            this->m_hatchFillItemList.push_back(FromCavcForm(pline));
+        cavc::CombineResult < double > result = cavc::combinePolylines(input, rawHatch, cavc::PlineCombineMode::Intersect);
+        for (auto &hatch : result.remaining) {
+            hatch.isClosed () = false;
+            this->m_hatchFillItemList.push_back(FromCavcForm(hatch));
         }
     }
 
