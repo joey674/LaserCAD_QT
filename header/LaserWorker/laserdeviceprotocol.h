@@ -3,9 +3,10 @@
 
 #include "logger.h"
 
-///
-/// RTC5 ERROR
-///
+
+/*****************************************************************************
+* RTC5 ERROR
+ *****************************************************************************/
 #define RTC5_NO_ERROR 0
 #define RTC5_NO_CARD 1
 #define RTC5_ACCESS_DENIED 2
@@ -40,14 +41,37 @@ do {                                                             \
 } while (0)
 
 
-///
-/// 确认好的protocol params
-///
+/*****************************************************************************
+* List Status
+* read_status()  =>   bool = (result & LOAD1)
+* LOAD     代表正在装载某个list 但是还没execute
+* READY  表示装载完毕 可以execute(set_end_of_list()已经被设置)
+* BUSY     表示正在打印; 如果pause了也将保持BUSY
+* USED     执行完成
+ *****************************************************************************/
+const unsigned int LOAD1   = (1 << 0);  // Bit 0
+const unsigned int LOAD2   = (1 << 1);  // Bit 1
+const unsigned int READY1  = (1 << 2);  // Bit 2
+const unsigned int READY2  = (1 << 3);  // Bit 3
+const unsigned int BUSY1   = (1 << 4);  // Bit 4
+const unsigned int BUSY2   = (1 << 5);  // Bit 5
+const unsigned int USED1   = (1 << 6);  // Bit 6
+const unsigned int USED2   = (1 << 7);  // Bit 7
+
+
+
+/*****************************************************************************
+* 确认好的protocol params
+ *****************************************************************************/
 const double Pi = 3.14159265358979323846;
 const unsigned int LaserModeYAG = 1;       //  YAG 1 mode
 const unsigned int LaserModeCO2 = 0;       //  CO2
 const unsigned int DefaultCard = 1;     //  number of default card
-/// example
+
+
+/*****************************************************************************
+* example
+ *****************************************************************************/
 // Change these values according to your system
 const unsigned int ListMemory = 10000;  //  size of list 1 memory (default 4000)
 const unsigned int LaserControl = 0x18; //  Laser signals LOW active (Bits #3 and #4)
@@ -69,13 +93,13 @@ const unsigned int MarkDelay = 100 / 10;    //  100 us [10 us]
 const unsigned int PolygonDelay = 50 / 10;  //   50 us [10 us]
 const double MarkSpeed = 250.0;        //  [16 Bits/ms]
 const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
-
 // End Locus of a Line
 // const locus BeamDump = {-32000, -32000}; //  Beam Dump Location
 
-///
-///
-///
+
+/*****************************************************************************
+* operation abstract command
+ *****************************************************************************/
 // jump_abs
 struct JumpCommand
 {

@@ -10,9 +10,10 @@
 #include "threadsafequeue.h"
 #include <atomic>
 #include <thread>
+#include <QTimer>
 #include "laserdevice.h"
 
-enum class DeviceState {Working,Paused,Free};
+enum class DeviceStatus {Working,Paused,Free};
 
 class LaserWorker
 {
@@ -47,40 +48,51 @@ public:
     /// \brief setDeviceWorking
     /// 这三个函数是在主线程调用 随时更改device的状态
     void setDeviceWorking() {
-        DeviceState prev = m_deviceState.load();
-        if (prev == DeviceState::Free) {
+        DeviceStatus prev = m_deviceStatus.load();
+        if (prev == DeviceStatus::Free) {
             DEBUG_MSG("Device: Free → Working (start)");
-            m_deviceState = DeviceState::Working;
-        } else if (prev == DeviceState::Paused) {
+            m_deviceStatus = DeviceStatus::Working;
+            // 设置状态为working, 主线程就会自动执行缓存指令 不需要主动触发;
+
+            std::function<void()> checker;
+            checker = [&]() {
+                if (m_device->getListStatus () == 0) {
+                    DEBUG_MSG("Device: Working → Free (finish)");
+                    m_deviceStatus = DeviceStatus::Free;
+                } else {
+                    QTimer::singleShot(500, checker);
+                }
+            };
+            checker();
+        } else if (prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: Paused → Working (resume)");
-            m_deviceState = DeviceState::Working;
+            m_deviceStatus = DeviceStatus::Working;
             m_device->resumeExecution();
         } else {
             DEBUG_MSG("Device: Already Working, no action");
         }
     }
     void setDevicePaused() {
-        if (m_deviceState == DeviceState::Working) {
+        if (m_deviceStatus == DeviceStatus::Working) {
             DEBUG_MSG("Device: Working → Paused (pause)");
-            m_deviceState = DeviceState::Paused;
+            m_deviceStatus = DeviceStatus::Paused;
             m_device->pauseExecution();
         } else {
             DEBUG_MSG("Pause ignored: not in Working state");
         }
     }
     void setDeviceAbort() {
-        DeviceState prev = m_deviceState.exchange(DeviceState::Free);
-        if (prev == DeviceState::Working || prev == DeviceState::Paused) {
+        DeviceStatus prev = m_deviceStatus.exchange(DeviceStatus::Free);
+        if (prev == DeviceStatus::Working || prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: " + QString::fromStdString(
-                          (prev == DeviceState::Working ? "Working" : "Paused")) + " → Free (abort)");
+                          (prev == DeviceStatus::Working ? "Working" : "Paused")) + " → Free (abort)");
             m_device->abortExecution();
         } else {
             DEBUG_MSG("Abort ignored: already Free");
         }
     }
-
-    DeviceState getDeviceState () {
-        return this->m_deviceState.load ();
+    DeviceStatus getDeviceStatus () {
+        return this->m_deviceStatus.load ();
     }
 
 private:
@@ -90,7 +102,7 @@ private:
     std::atomic<bool> m_workerIsRunning{false};
     ThreadSafeQueue<LaserDeviceCommand> m_commandQueue;
     std::unique_ptr<LaserDevice> m_device = nullptr;
-    std::atomic<DeviceState> m_deviceState{DeviceState::Free};
+    std::atomic<DeviceStatus> m_deviceStatus{DeviceStatus::Free};
 
 private:
     static LaserWorker ins;

@@ -27,8 +27,8 @@ void LaserWorker::threadMain()
         if (this->m_device == nullptr) {
             continue;
         }
-        DeviceState state = m_deviceState.load();
-        if (state == DeviceState::Working) {
+        DeviceStatus state = m_deviceStatus.load();
+        if (state == DeviceStatus::Working) {
             std::vector<LaserDeviceCommand> cmdList;
             LaserDeviceCommand cmd;
             while (m_commandQueue.try_pop(cmd)) {

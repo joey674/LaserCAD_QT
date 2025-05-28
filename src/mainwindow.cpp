@@ -1135,27 +1135,27 @@ void MainWindow::onMarkButtonClicked()
     QTimer *checkDoneTimer = new QTimer(&dialog);
     checkDoneTimer->setInterval(500);
     QObject::connect(checkDoneTimer, &QTimer::timeout, [&]() {
-        auto state = LaserWorker::getIns().getDeviceState();
-        if (state == DeviceState::Free) {
+        auto state = LaserWorker::getIns().getDeviceStatus();
+        if (state == DeviceStatus::Free) {
             toggleButton->setText("start");
-        } else if (state == DeviceState::Working) {
+        } else if (state == DeviceStatus::Working) {
             toggleButton->setText("pause");
-        } else if (state == DeviceState::Paused) {
+        } else if (state == DeviceStatus::Paused) {
             toggleButton->setText("resume");
         }
     });
     checkDoneTimer->start();
 
     QObject::connect(toggleButton, &QPushButton::clicked, [&]() {
-        auto state = LaserWorker::getIns().getDeviceState();
-        if (state == DeviceState::Free) {
+        auto state = LaserWorker::getIns().getDeviceStatus();
+        if (state == DeviceStatus::Free) {
             DEBUG_MSG("start execute LaserDeviceCommand");
             LaserWorker::getIns().setDeviceWorking();
             HardwareController::getIns().markCurrentLayer();
-        } else if (state == DeviceState::Paused) {
+        } else if (state == DeviceStatus::Paused) {
             DEBUG_MSG("resume execute LaserDeviceCommand");
             LaserWorker::getIns().setDeviceWorking(); // resume
-        } else if (state == DeviceState::Working) {
+        } else if (state == DeviceStatus::Working) {
             DEBUG_MSG("pause execute LaserDeviceCommand");
             LaserWorker::getIns().setDevicePaused(); // pause
         }

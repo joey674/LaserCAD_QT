@@ -5,6 +5,10 @@
 #include "uimanager.h"
 #include "treemodel.h"
 
+///
+/// 主要是用于切割ui和hardware操作
+///
+
 class HardwareController
 {
 public:

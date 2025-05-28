@@ -15,7 +15,7 @@ public:
     virtual void resumeExecution() {};// 继续执行rtc列表
     virtual void pauseExecution() {}; // 暂停rtc列表
     virtual void abortExecution() {};// 清空rtc列表
-    virtual void getListStatus(){};//
+    virtual bool getListStatus(){ return true;};//
 };
 
 #endif // LASERDEVICE_H

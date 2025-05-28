@@ -26,6 +26,7 @@ public:
     void resumeExecution() override;
     void pauseExecution() override;
     void abortExecution() override;
+    bool getListStatus() override;
 public:
     RTCSettings m_settings;
 };

@@ -315,6 +315,17 @@ void LaserDeviceRTC5::abortExecution() {
     stop_execution();
 }
 
+bool LaserDeviceRTC5::getListStatus() {
+    unsigned int result = read_status();
+    if ((result & BUSY1) || (result & BUSY2) ){
+        return true;// 繁忙返回1
+    } else if ((result & USED1) || (result & USED2)){
+        return false; // 结束返回0
+    } else {
+        return false;
+    }
+}
+
 /* bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd)
 {
     static UINT startFlags = 2;
