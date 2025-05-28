@@ -146,12 +146,12 @@ struct DelayParams {
     }
 };
 
-struct OffsetParams {
+struct ContourFillParams {
     double offset=0;
     int offsetCount=0;
 };
 
-struct FillParams{
+struct HatchFillParams{
     double spacing = 0; // 填充线段间隔
     double startAngle = 0;
     double sideLength = 0;// 填充线段相对于填充多边形的距离

@@ -23,7 +23,7 @@
         <file>delayTimeButton.png</file>
         <file>motionButton.png</file>
         <file>breakCopiedItemButton.png</file>
-        <file>breakOffsetItemButton.png</file>
+        <file>breakContourFillItemButton.png</file>
         <file>addLayerButton.png</file>
         <file>deleteLayerButton.png</file>
         <file>cutButton.png</file>
@@ -37,6 +37,7 @@
         <file>openProjectButton.png</file>
         <file>saveProjectButton.png</file>
         <file>createProjectButton.png</file>
+        <file>breakHatchFillItemButton.svg</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>

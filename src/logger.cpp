@@ -81,20 +81,20 @@ void MessageHandler(QtMsgType type,
         break;
     }
 
-    QString consoleMsg = QString("[%1]  [%2]  [%3:%4]  [%5]  %6")
+    QString consoleMsg = QString("[%1]  [%2]  [%3:%4]  []  %6")
                            .arg(QDateTime::currentDateTime().toString("MMdd h:mm:ss"))
                            .arg(colorLevel)
                            .arg(fileName)
                            .arg(context.line)
-                           .arg(context.function)
+                           // .arg(context.function)
                            .arg(msg);
 
-    QString fileMsg = QString("[%1]  [%2]  [%3:%4]  [%5]  %6")
+    QString fileMsg = QString("[%1]  [%2]  [%3:%4]  []  %6")
                           .arg(QDateTime::currentDateTime().toString("MMdd h:mm:ss"))
                           .arg(plainLevel)
                           .arg(fileName)
                           .arg(context.line)
-                          .arg(context.function)
+                          // .arg(context.function)
                           .arg(msg);
 
     // 打印到控制台

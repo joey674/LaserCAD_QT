@@ -59,7 +59,7 @@ public:
             timer->setInterval(100);
             QObject::connect(timer, &QTimer::timeout, [this, timer]() {
                 if (m_device->getListStatus() == 0) {
-                    DEBUG_MSG("Device: Working → Free (finish)");
+                    DEBUG_MSG("Device: Working ==> Free (finish)");
                     m_deviceStatus = DeviceStatus::Free;
                     timer->stop();
                     timer->deleteLater();
@@ -67,7 +67,7 @@ public:
             });
             timer->start();
         } else if (prev == DeviceStatus::Paused) {
-            DEBUG_MSG("Device: Paused → Working (resume)");
+            DEBUG_MSG("Device: Paused ==> Working (resume)");
             m_deviceStatus = DeviceStatus::Working;
             m_device->resumeExecution();
         } else {
@@ -76,7 +76,7 @@ public:
     }
     void setDevicePaused() {
         if (m_deviceStatus == DeviceStatus::Working) {
-            DEBUG_MSG("Device: Working → Paused (pause)");
+            DEBUG_MSG("Device: Working ==> Paused (pause)");
             m_deviceStatus = DeviceStatus::Paused;
             m_device->pauseExecution();
         } else {
@@ -87,7 +87,7 @@ public:
         DeviceStatus prev = m_deviceStatus.exchange(DeviceStatus::Free);
         if (prev == DeviceStatus::Working || prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: " + QString::fromStdString(
-                          (prev == DeviceStatus::Working ? "Working" : "Paused")) + " → Free (abort)");
+                          (prev == DeviceStatus::Working ? "Working" : "Paused")) + " ==> Free (abort)");
             m_device->abortExecution();
         } else {
             DEBUG_MSG("Abort ignored: already Free");

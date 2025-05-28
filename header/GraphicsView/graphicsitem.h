@@ -53,14 +53,13 @@ public:
     /// \brief setCenterInScene
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
     virtual bool setCenterInScene(const QPointF point) = 0;
-    virtual bool setOffsetParams(OffsetParams params) {
+    virtual bool setOffsetParams(ContourFillParams params) {
         this->m_offsetParams = params;
         this->animate();
         return true;
     }
-    virtual bool rotate(const double angle) =0;
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() = 0;
-    virtual std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() = 0;
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() = 0;
     bool setColor(QColor color) {
         this->m_color = color;
         this->animate();
@@ -86,7 +85,7 @@ public:
         this->animate();
         return true;
     };
-    bool setFillParams(FillParams params){
+    bool setFillParams(HatchFillParams params){
         this->m_fillParams = params;
         this->animate ();
         return true;
@@ -97,19 +96,19 @@ public:
 /// 注意 在调用内部paint函数的时候, 是基于锚点绘制的;所以使用的不可以是真实坐标, 而是记录坐标;
 /// ********************
 protected:
-    virtual bool updateParallelOffsetItem() = 0;
+    virtual bool updateContourFillItem() = 0;
     virtual bool updatePaintItem() = 0;
     virtual bool updateCopiedItem() = 0;
-    virtual bool updateFillItem() {}
+    virtual bool updateHatchFillItem() {}
     virtual bool animate() {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->updatePaintItem();
         // 更新offsetitem
-        this->updateParallelOffsetItem();
+        this->updateContourFillItem();
         // 更新copiedItem
         this->updateCopiedItem();
         // 更新copiedItem
-        this->updateFillItem();
+        this->updateHatchFillItem();
         // 通知qt boundingRect变化 更新区域
         prepareGeometryChange();
         update();
@@ -147,10 +146,10 @@ public:
     const DelayParams getDelayParams() const {
         return this->m_delayParams;
     }
-    const OffsetParams getOffsetParams() const {
+    const ContourFillParams getContourFillParams() const {
         return this->m_offsetParams;
     }
-    const FillParams getFillParams() const {
+    const HatchFillParams getFillParams() const {
         return this->m_fillParams;
     }
     const VectorCopyParams getVectorCopyParams() const { return this->m_vectorCopyParams; }
@@ -195,8 +194,8 @@ protected:
     QColor m_color = Qt::black;
     MarkParams m_markParams;
     DelayParams m_delayParams;
-    OffsetParams m_offsetParams;
-    FillParams m_fillParams;
+    ContourFillParams m_offsetParams;
+    HatchFillParams m_fillParams;
     VectorCopyParams m_vectorCopyParams;
     MatrixCopyParams m_matrixCopyParams;
 };

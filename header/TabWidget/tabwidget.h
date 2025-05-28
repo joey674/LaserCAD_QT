@@ -22,6 +22,7 @@
 #include <QDir>
 #include "laserdevicertc5.h"
 #include "hardwarecontroller.h"
+#include "laserdevicetest.h"
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -139,10 +140,10 @@ public:
         auto item = ItemManager::getIns().itemMapFind(uuid);
 
         // 默认值处理
-        auto offset = item->getOffsetParams().offset;
-        auto offsetCount = item->getOffsetParams().offsetCount;
+        auto offset = item->getContourFillParams().offset;
+        auto offsetCount = item->getContourFillParams().offsetCount;
         if (offset == 0 && offsetCount == 0) {
-            offset = 10;
+            offset = 1;
             offsetCount = 3;
         }
 
@@ -159,8 +160,8 @@ public:
 
         // 模式选择
         QComboBox* modeCombo = new QComboBox();
-        modeCombo->addItem("Parallel Offset");
-        modeCombo->addItem("Fill");
+        modeCombo->addItem("Contour Fill");
+        modeCombo->addItem("Hatch Fill");
         mainLayout->addWidget(modeCombo);
 
         // offset 输入区域
@@ -200,7 +201,7 @@ public:
 
         // 切换时更新显示
         connect(modeCombo, &QComboBox::currentTextChanged, fillTab, [=](const QString& text) {
-            if (text == "Parallel Offset") {
+            if (text == "Contour Fill") {
                 offsetWidget->setVisible(true);
                 fillWidget->setVisible(false);
             } else {
@@ -211,12 +212,12 @@ public:
 
         // 确认按钮绑定
         connect(confirmBtn, &QPushButton::clicked, fillTab, [=]() {
-            if (modeCombo->currentText() == "Parallel Offset") {
+            if (modeCombo->currentText() == "Contour Fill") {
                 double offset = spacingSpin->value();
                 int offsetNum = countSpin->value();
-                EditController::getIns().onTabWidgetOffsetTabParallelOffset(OffsetParams{offset, offsetNum});
+                EditController::getIns().onTabWidgetOffsetTabParallelOffset(ContourFillParams{offset, offsetNum});
             } else {
-                FillParams fillParams;
+                HatchFillParams fillParams;
                 fillParams.spacing = fillSpacingSpin->value();
                 fillParams.startAngle = fillAngleSpin->value();
                 fillParams.operateCount = 1; // 启用填充
@@ -1068,10 +1069,6 @@ public:
 
         connect(applyButton, &QPushButton::clicked, [=]() {
             RTCSettings settings;
-
-            if (rtc5Radio->isChecked()) settings.cardType = "RTC5";
-            else if (rtc6Radio->isChecked()) settings.cardType = "RTC6";
-            else settings.cardType = "Test";
             settings.correctionFilePath = *correctionFilePath;
             settings.scale = scaleEdit->text().toDouble();
             settings.scaleCorX = scaleCorX->text().toDouble();
@@ -1080,13 +1077,20 @@ public:
             settings.offsetX = offsetX->text().toDouble();
             settings.offsetY = offsetY->text().toDouble();
             settings.laserMode = laserModeBox->currentText();
-            // settings.flipX = flipX->isChecked();
-            // settings.flipY = flipY->isChecked();
 
-            // 调用laserWoker部分; 默认直接先使用RTC5
-            auto device = std::make_unique<LaserDeviceRTC5> ();
-            device->m_settings = settings;
-             LaserWorker::getIns().setDevice(std::move(device));
+            // 调用laserWoker部分;
+            if (rtc5Radio->isChecked()){
+                auto device = std::make_unique<LaserDeviceRTC5> ();
+                device->m_settings = settings;
+                LaserWorker::getIns().setDevice(std::move(device));
+            } else if (rtc6Radio->isChecked()){
+                // auto device = std::make_unique<LaserDeviceRTC6> ();
+                // device->m_settings = settings;
+                // LaserWorker::getIns().setDevice(std::move(device));
+            } else if (testRadio->isChecked()) {
+                auto device = std::make_unique<LaserDeviceTest> ();
+                LaserWorker::getIns().setDevice(std::move(device));
+            }
         });
 
         // 添加到systemTabWidget

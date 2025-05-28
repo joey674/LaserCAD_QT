@@ -1,13 +1,6 @@
 #include "lineitem.h"
-
-LineItem::LineItem() {}
-
-
-
-
-
-
-
-
+#include <polyline.hpp>
+#include <polylineoffset.hpp>
+#include <polylinecombine.hpp>
 
 

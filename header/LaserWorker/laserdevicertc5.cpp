@@ -199,6 +199,7 @@ bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdL
 
     // 坐标要乘以一个转换系数R 不然输入是以mm为单位 但是内部执行是um
     // 同时由于对graphicsview做了matrx transform(坐标右上为正),需要把角度做反再传回去
+    // 我们这里坐标是(double,double), 用mm做单位; 输入的时候变成(long,long),用bit做单位
     const long  R = 1000; // 转换系数: 从graphicsView的mm转换到rtc的um
     const long transferParamX = R*(1);
     const long transferParamY = R*(1);

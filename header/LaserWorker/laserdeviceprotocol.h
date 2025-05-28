@@ -99,26 +99,27 @@ const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
 
 /*****************************************************************************
 * operation abstract command
+* 先存我们的格式? 最后再转换: 点是用double存mm 最后乘以矩阵系数在转换成long的bit
  *****************************************************************************/
 // jump_abs
 struct JumpCommand
 {
-    long x;
-    long y;
+    double x;
+    double y;
 };
 
 // mark_abs
 struct MarkCommand
 {
-    long x;
-    long y;
+    double x;
+    double y;
 };
 
 // arc_abs
 struct ArcCommand
 {
-    long x;
-    long y;
+    double x;
+    double y;
     double angle;
 };
 

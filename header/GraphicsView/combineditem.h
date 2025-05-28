@@ -48,10 +48,6 @@ public:
         this->animate();
         return true;
     };
-    bool rotate(const double angle) override {
-        return true;
-    }
-
 
     std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
         // // 获取当前最新的copiedItem
@@ -69,14 +65,14 @@ public:
         // m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
         //返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
         return result;
     };
 
 protected:
-    bool updateParallelOffsetItem() override {
+    bool updateContourFillItem() override {
         return true;
     };
     bool updatePaintItem() override {

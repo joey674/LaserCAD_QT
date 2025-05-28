@@ -27,7 +27,7 @@ public:
     QToolButton *deleteLayerButton;
     // ToolButton
     QToolButton *breakCopiedItemButton;
-    QToolButton *breakOffsetItemButton;
+    QToolButton *breakContourFillItemButton;
     QToolButton *centerButton;
     QToolButton *copyButton;
     QToolButton *cutButton;
@@ -116,8 +116,8 @@ public:
         secondHLayout->addWidget(mirrorVerticalButton);
         breakCopiedItemButton = new QToolButton(central);
         secondHLayout->addWidget(breakCopiedItemButton);
-        breakOffsetItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakOffsetItemButton);
+        breakContourFillItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakContourFillItemButton);
         centerButton = new QToolButton(central);
         secondHLayout->addWidget(centerButton);
         QFrame *splitLine4 = new QFrame(central);// 插入分隔线

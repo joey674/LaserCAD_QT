@@ -334,15 +334,15 @@ void MainWindow::initEditToolButton() {
     connect(breakCopiedItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakCopiedItemButtonClicked);
     //
-    QToolButton *breakOffsetItemButton = UiManager::getIns(). breakOffsetItemButton;
-    breakOffsetItemButton->setIcon(QIcon(":/button/breakOffsetItemButton.png"));
-    breakOffsetItemButton->setIconSize(QSize(30, 30));
-    breakOffsetItemButton->setStyleSheet(buttonStyle);
-    breakOffsetItemButton->setCheckable(true);
-    breakOffsetItemButton->setAutoExclusive(false);
-    breakOffsetItemButton->setToolTip("打散offset");
-    UiManager::getIns().registerToolButton(breakOffsetItemButton);
-    connect(breakOffsetItemButton, &QToolButton::clicked,
+    QToolButton *breakContourFillItemButton = UiManager::getIns(). breakContourFillItemButton;
+    breakContourFillItemButton->setIcon(QIcon(":/button/breakContourFillItemButton.png"));
+    breakContourFillItemButton->setIconSize(QSize(30, 30));
+    breakContourFillItemButton->setStyleSheet(buttonStyle);
+    breakContourFillItemButton->setCheckable(true);
+    breakContourFillItemButton->setAutoExclusive(false);
+    breakContourFillItemButton->setToolTip("打散轮廓填充");
+    UiManager::getIns().registerToolButton(breakContourFillItemButton);
+    connect(breakContourFillItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakOffsetItemButtonClicked);
     /// 粘贴 复制 剪切
     ///
@@ -434,7 +434,7 @@ void MainWindow::initLayerButton() {
     // setLayerColorButton->setCheckable(false);
     // setLayerColorButton->setToolTip("");
     // UiManager::getIns().registerToolButton(setLayerColorButton);
-    // connect(breakOffsetItemButton, &QToolButton::clicked,
+    // connect(breakContourFillItemButton, &QToolButton::clicked,
     //         this, &MainWindow::onBreakOffsetItemButtonClicked);
     //
 }

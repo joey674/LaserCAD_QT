@@ -4,7 +4,6 @@
 #include "laserdevice.h"
 
 struct RTCSettings {
-    QString cardType;
     QString correctionFilePath;
     double scale;
     double scaleCorX, scaleCorY;

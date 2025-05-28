@@ -42,7 +42,6 @@ public:
         item->animate();
         return item;
     }
-
     QJsonObject saveToJson() const override {
         // 保存基类参数
         QJsonObject obj = saveBaseParamsToJson();
@@ -60,6 +59,7 @@ public:
         obj["rotateAngle"] = m_rotateAngle;
         return obj;
     }
+
 public:
     /// 编辑圆心
     bool setVertexInScene(const int index, const Vertex vertex) override {
@@ -106,10 +106,6 @@ public:
         this->animate();
         return true;
     }
-    bool rotate(const double angle) override {
-        //TODO
-        return true;
-    }
     std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
         // 获取当前最新的copiedItem
         this->animate();
@@ -126,7 +122,7 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
@@ -134,21 +130,22 @@ public:
         m_offsetParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
-        result.reserve(this->m_offsetItemList.size());
-        for (auto &&item : std::move(this->m_offsetItemList)) {
+        result.reserve(this->m_contourFillItemList.size());
+        for (auto &&item : std::move(this->m_contourFillItemList)) {
             item->setPos(this->pos()); // 把位置也更新了; 作为offsetItem是不会保存这个数据的
             result.emplace_back(std::move(item));
         }
-        m_offsetItemList.clear();
+        m_contourFillItemList.clear();
         return result;
     };
+
 protected:
-    bool updateParallelOffsetItem() override {
+    bool updateContourFillItem() override {
         //
         if (this->m_offsetParams.offset == 0 || this->m_offsetParams.offsetCount == 0) {
             return true;
         }
-        this->m_offsetItemList.clear();
+        this->m_contourFillItemList.clear();
         for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
             // 输入cavc库
             cavc::Polyline < double > input = this->getCavcForm(false);
@@ -157,7 +154,7 @@ protected:
             // 获取结果
             for (const auto& polyline : results) {
                 auto item = FromCavcForm(polyline);
-                this->m_offsetItemList.push_back(std::move(item));
+                this->m_contourFillItemList.push_back(std::move(item));
             }
         }
         return true;
@@ -292,6 +289,8 @@ protected:
         }
         return false;
     }
+    bool updateHatchFillItem() override;
+
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
@@ -321,7 +320,6 @@ public:
         }
         return input;
     }
-
     Vertex getVertexInScene(const int index = 0) const override {
         if (index > 1) {
             assert("false index:only 0");
@@ -331,7 +329,6 @@ public:
         QPointF pos = point + this->scenePos();
         return Vertex{pos, angle};
     }
-
     QPointF getCenterInScene() const override {
         // auto posOffset = this->pos();
         // auto centerPos = this->m_center.point + posOffset;
@@ -342,37 +339,33 @@ public:
         QPointF pos = rect.center ();
         return pos;
     }
-
     QString getName() const override {
         return "EllipseItem";
     }
-
-    double getRadiusX() {
-        return this->m_radiusX;
-    }
-
-    double getRadiusY() {
-        return this->m_radiusY;
-    }
-
-    double getRotateAngle() {
-        return this->m_rotateAngle;
-    }
-
-    uint getVertexCount() const override {
-        return 1;
-    }
-
     int type() const override {
         return GraphicsItemType::Ellipse;
     }
-
+    double getRadiusX() {
+        return this->m_radiusX;
+    }
+    double getRadiusY() {
+        return this->m_radiusY;
+    }
+    double getRotateAngle() {
+        return this->m_rotateAngle;
+    }
+    uint getVertexCount() const override {
+        return 1;
+    }
     QRectF getBoundingRectBasis() const override {
         if (!this->m_paintItem) {
             return QRectF();
         }
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
+    }
+    std::vector<LaserDeviceCommand> getRTC5Command() const override{
+        return std::vector<LaserDeviceCommand>();
     }
 
 protected:
@@ -395,7 +388,6 @@ protected:
         }
         return newRect;
     }
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override {
         Q_UNUSED(widget);
         // 设置option删去offset线段的选框
@@ -404,14 +396,19 @@ protected:
         // 绘制线段
         this->m_paintItem->paint(painter, &optionx, widget);
         // 绘制offset
-        for (auto &item : this->m_offsetItemList) {
+        for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);
         }
         // 绘制copied
         for (auto &item : this->m_copiedItemList) {
             item->paint(painter, &optionx, widget);
         }
+        // 绘制fill
+        for (auto &item : this->m_hatchFillItemList) {
+            item->paint(painter, &optionx, widget);
+        }
     }
+
 private:
     Vertex m_center = Vertex{QPointF{0, 0}, 0};
     double m_radiusX = 0;
@@ -419,8 +416,10 @@ private:
     double m_rotateAngle = 0;
     //
     std::shared_ptr < QGraphicsPathItem > m_paintItem;
-    std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_contourFillItemList;
     std::vector < std::shared_ptr < EllipseItem>> m_copiedItemList;
+        std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;
+
 public:
     int drawStep = 0;
 };

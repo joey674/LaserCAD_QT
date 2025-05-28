@@ -4,6 +4,7 @@
 #include "protocol.h"
 #include "graphicsitem.h"
 #include "logger.h"
+#include "polylineitem.h"
 
 const std::pair < double, double > DisplayPointSize = std::pair < double, double > {0.1, 0.1}; /*标准点在x、y方向上的半径*/
 const std::pair < double, double > EditPointSize = std::pair < double, double > {1, 1};
@@ -42,6 +43,7 @@ public:
         obj["v0"] = v0;
         return obj;
     }
+
 public:
     bool setVertexInScene(const int index, const Vertex vertex) override {
         if (index >= 1) {
@@ -61,9 +63,6 @@ public:
         this->animate();
         return true;
     }
-    bool rotate(const double angle) override { // TODO
-        return true;
-    }
     std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
         // 获取当前最新的copiedItem
         this->animate();
@@ -80,7 +79,7 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
@@ -88,16 +87,17 @@ public:
         m_offsetParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
-        result.reserve(this->m_offsetItemList.size());
-        for (auto &&item : std::move(this->m_offsetItemList)) {
+        result.reserve(this->m_contourFillItemList.size());
+        for (auto &&item : std::move(this->m_contourFillItemList)) {
             item->setPos(this->pos()); // 把位置也更新了; 作为offsetItem是不会保存这个数据的
             result.emplace_back(std::move(item));
         }
-        m_offsetItemList.clear();
+        m_contourFillItemList.clear();
         return result;
     };
+
 protected:
-    bool updateParallelOffsetItem() override {
+    bool updateContourFillItem() override {
         return true;
     }
     bool updatePaintItem() override {
@@ -221,6 +221,8 @@ protected:
         }
         return false;
     }
+    bool updateHatchFillItem() override {return true;};
+
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         return cavc::Polyline < double > ();
@@ -256,6 +258,10 @@ public:
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
+    std::vector<LaserDeviceCommand> getRTC5Command() const override{
+        return std::vector<LaserDeviceCommand>();
+    }
+
 protected:
     QRectF boundingRect() const override {
         if (!this->m_paintItem) {
@@ -278,11 +284,15 @@ protected:
         // 绘制圆点
         this->m_paintItem->paint(painter, &optionx, widget);
         // 绘制offset
-        for (auto &item : this->m_offsetItemList) {
+        for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);
         }
         // 绘制copied
         for (auto &item : this->m_copiedItemList) {
+            item->paint(painter, &optionx, widget);
+        }
+        // 绘制fill
+        for (auto &item : this->m_hatchFillItemList) {
             item->paint(painter, &optionx, widget);
         }
     }
@@ -306,8 +316,9 @@ private:
     bool m_isEditMode = false;
 
     std::shared_ptr < QGraphicsEllipseItem > m_paintItem;
-    std::vector < std::shared_ptr < PointItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < PointItem>> m_contourFillItemList;
     std::vector < std::shared_ptr < PointItem>> m_copiedItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;
 };
 
 #endif // POINTITEM_H

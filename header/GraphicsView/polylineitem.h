@@ -87,9 +87,6 @@ public:
         this->animate();
         return true;
     };
-    bool rotate(const double angle) override {
-        return true;
-    }
     std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
         // 获取当前最新的copiedItem
         this->animate();
@@ -106,7 +103,7 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakOffsetItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
@@ -114,17 +111,17 @@ public:
         m_offsetParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
-        result.reserve(this->m_offsetItemList.size());
-        for (auto &&item : std::move(this->m_offsetItemList)) {
+        result.reserve(this->m_contourFillItemList.size());
+        for (auto &&item : std::move(this->m_contourFillItemList)) {
             item->setPos(this->pos()); // 把位置也更新了; 作为offsetItem是不会保存这个数据的
             result.emplace_back(std::move(item));
         }
-        m_offsetItemList.clear();
+        m_contourFillItemList.clear();
         return result;
     };
 
 protected:
-    bool updateParallelOffsetItem() override;
+    bool updateContourFillItem() override;
     bool updatePaintItem() override {
         if (m_vertexList.size() < 2) {
             return false;
@@ -256,7 +253,8 @@ protected:
         }
         return false;
     }
-    bool updateFillItem() override;
+    bool updateHatchFillItem() override;
+
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
         cavc::Polyline < double > input;
@@ -336,6 +334,35 @@ public:
         }
         return newRect;
     }
+    std::vector<LaserDeviceCommand> getRTC5Command() const override
+    {
+        auto commandList = GraphicsItem::getRTC5Command();
+        auto operateTime = this->getMarkParams().operateTime;
+
+        for (int operateIndex = 0; operateIndex < operateTime; operateIndex++) {
+            // 先打本体 遍历每个点;
+            int count = this->getVertexCount();
+            for (int i = 0; i < count - 1; ++i) {
+                QPointF p1, p2;
+                p1 = this->getVertexInScene(i).point;
+                p2 = this->getVertexInScene(i + 1).point;
+                auto angle = this->m_vertexList[i + 1].angle;
+
+                if (i==0) { // 打第一个点的时候jump; 后面默认是连续 就不用jump
+                    commandList.emplace_back(JumpCommand{p1.x (),p1.y ()});
+                }
+                if (angle != 0){// 是圆弧
+                    QPointF center;double radius;
+                    getCircleFromTwoPointsAndAngle (p1,p2,angle,center,radius);
+                    commandList.emplace_back(ArcCommand{center.x (), center.y (), (-1)*angle}); //如果再前面就修改angle 那么计算的圆心是错的
+                } else { // 是直线
+                    commandList.emplace_back(MarkCommand{p2.x (), p2.y ()});
+                }
+            }
+            // TODO 再打copyitem/contourfill/hatchfill
+        }
+        return commandList;
+    }
 
 public:
     QRectF boundingRect() const override {
@@ -373,19 +400,8 @@ public:
         for (auto &item : this->m_paintItemList) {
             item->paint(painter, &optionx, widget);
         }
-        // 绘制拖拽原点
-        // painter->setPen(Qt::NoPen);
-        // for (const auto &vertex : m_vertexList) {
-        //     if (this->m_offsetParams.offsetCount > 0) {
-        //         painter->setBrush(Qt::red);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     } else {
-        //         painter->setBrush(Qt::blue);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     }
-        // }
         // 绘制offset
-        for (auto &item : this->m_offsetItemList) {
+        for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);
         }
         // 绘制copied
@@ -393,7 +409,7 @@ public:
             item->paint(painter, &optionx, widget);
         }
         // 绘制fill
-        for (auto &item : this->m_fillItemList) {
+        for (auto &item : this->m_hatchFillItemList) {
             item->paint(painter, &optionx, widget);
         }
     }
@@ -401,9 +417,9 @@ public:
 private:
     std::vector < Vertex > m_vertexList;
     std::vector < std::shared_ptr < QGraphicsItem>> m_paintItemList;
-    std::vector < std::shared_ptr < PolylineItem>> m_offsetItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_contourFillItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_copiedItemList;
-    std::vector < std::shared_ptr < PolylineItem>> m_fillItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;
 };
 
 inline std::shared_ptr < PolylineItem > FromCavcForm(cavc::Polyline < double > polyline) {

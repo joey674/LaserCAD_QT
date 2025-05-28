@@ -24,7 +24,7 @@ public:
         // 几何属性
         auto item = ItemManager::getIns().itemMapFind(this->m_uuid);
         m_propertyList.append({"Position", item->getCenterInScene()});
-        // OffsetParams
+        // ContourFillParams
 
         // MarkParams
         const MarkParams& mark = item->getMarkParams();

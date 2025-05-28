@@ -75,7 +75,7 @@ QJsonObject GraphicsItem::saveBaseParamsToJson() const {
     delay["jumpDelay"] = QJsonValue(static_cast<int>(m_delayParams.jumpDelay));
     delay["polygonDelay"] = QJsonValue(static_cast<int>(m_delayParams.polygonDelay));
     obj["delayParams"] = delay;
-    // --- OffsetParams ---
+    // --- ContourFillParams ---
     QJsonObject offset;
     offset["offset"] = m_offsetParams.offset;
     offset["offsetCount"] = m_offsetParams.offsetCount;

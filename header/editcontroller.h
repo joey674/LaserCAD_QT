@@ -71,7 +71,7 @@ public:
         auto curEditItem = this->m_currentEditItemGroup[0];
         curEditItem->setCopiedParams(params);
     }
-    void onTabWidgetOffsetTabParallelOffset(OffsetParams params) {
+    void onTabWidgetOffsetTabParallelOffset(ContourFillParams params) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -81,7 +81,7 @@ public:
         curEditItem->setOffsetParams(params);
         this->updateTableViewModel();
     }
-    void onTabWidgetOffsetTabFill(FillParams params) {
+    void onTabWidgetOffsetTabFill(HatchFillParams params) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -377,7 +377,7 @@ public:
             return;
         }
         auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
-        auto offsetItems = curEditItem->breakOffsetItem();
+        auto offsetItems = curEditItem->breakParallelFillItem();
         for (auto &item : offsetItems) {
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());

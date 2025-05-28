@@ -3,7 +3,7 @@
 #include <polylineoffset.hpp>
 #include <polylinecombine.hpp>
 
-bool PolylineItem::updateParallelOffsetItem()
+bool PolylineItem::updateContourFillItem()
 {
     if (m_vertexList.size() < 2) {
         return false;
@@ -11,7 +11,7 @@ bool PolylineItem::updateParallelOffsetItem()
     if (this->m_offsetParams.offset == 0) {
         return true;
     }
-    this->m_offsetItemList.clear();
+    this->m_contourFillItemList.clear();
     for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavcForm(false);
@@ -27,20 +27,20 @@ bool PolylineItem::updateParallelOffsetItem()
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
-            this->m_offsetItemList.push_back(std::move(item));
+            this->m_contourFillItemList.push_back(std::move(item));
         }
     }
     return true;
 }
 
-bool PolylineItem::updateFillItem() {
+bool PolylineItem::updateHatchFillItem() {
     if (m_vertexList.size() < 2) {
         return false;
     }
     if (m_fillParams.operateCount == 0 || m_fillParams.spacing == 0){
         return true;
     }
-    this->m_fillItemList.clear();
+    this->m_hatchFillItemList.clear();
 
     // 输入cavc库
     auto input = this->getCavcForm(false);
@@ -85,8 +85,7 @@ bool PolylineItem::updateFillItem() {
         // 执行布尔操作
         cavc::CombineResult < double > result = cavc::combinePolylines(input, hatch, cavc::PlineCombineMode::Intersect);
         for (const auto &pline : result.remaining) {
-            this->m_fillItemList.push_back(FromCavcForm(pline));
-            // DEBUG_MSG("fill");
+            this->m_hatchFillItemList.push_back(FromCavcForm(pline));
         }
     }
 
