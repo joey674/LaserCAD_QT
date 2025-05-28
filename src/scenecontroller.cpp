@@ -92,6 +92,10 @@ QColor SceneController::getCurrentLayerColor() const {
 }
 
 void SceneController::dragScene(QPointF pointCoordView, MouseEvent event) {
+    // 由于把画布坐标调右上为正, 这个点的y值是反的;
+    pointCoordView.setX (pointCoordView.x ());
+    pointCoordView.setY (-pointCoordView.y ());
+    //
     if (event == MouseEvent::LeftPress) {
         UiManager::getIns().graphicsView->viewport()->setCursor(
             Qt::ClosedHandCursor); // 设置鼠标光标
