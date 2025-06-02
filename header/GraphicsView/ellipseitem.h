@@ -360,6 +360,9 @@ public:
         this->animate();
         std::vector<std::shared_ptr<QGraphicsItem>> list;
         list.push_back(this->m_paintItem);
+        list.insert(list.end(), m_contourFillItemList.begin(), m_contourFillItemList.end());
+        list.insert(list.end(), m_copiedItemList.begin(), m_copiedItemList.end());
+        list.insert(list.end(), m_hatchFillItemList.begin(), m_hatchFillItemList.end());
         return list;
     }
 
