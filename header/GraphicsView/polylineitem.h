@@ -60,9 +60,8 @@ public:
         return true;
     }
     bool setVertexInScene(const int index, const Vertex vertex) override {
-        QPointF pos = vertex.point - this->scenePos();
-        m_vertexList[index] = Vertex{pos, vertex.angle};
-        animate();
+        m_vertexList[index] = Vertex{vertex.point, vertex.angle};
+        this->animate();
         return true;
     }
     bool deleteVetex(const int index) {
@@ -71,10 +70,8 @@ public:
         return true;
     }
     bool setCenterInScene(const QPointF point) override {
-        DEBUG_MSG("use polyline setCenterInScene");
         QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
-        DEBUG_VAR(point);
         QString msg = QString("curCenter: (%1, %2), offset: (%3, %4), this->pos: (%5, %6)")
                       .arg(currentCenter.x(), 0, 'f', 2)
                       .arg(currentCenter.y(), 0, 'f', 2)
@@ -83,7 +80,9 @@ public:
                       .arg(this->pos().x(), 0, 'f', 2)
                       .arg(this->pos().y(), 0, 'f', 2);
         DEBUG_MSG(msg);
-        this->setPos(this->pos() + offset);
+        for (auto &vertex : this->m_vertexList) {
+            vertex.point = vertex.point + offset;
+        }
         this->animate();
         return true;
     };
@@ -362,6 +361,12 @@ public:
             // TODO 再打copyitem/contourfill/hatchfill
         }
         return commandList;
+    }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list = m_paintItemList;
+        return list;
     }
 
 public:

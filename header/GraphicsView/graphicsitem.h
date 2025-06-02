@@ -176,6 +176,7 @@ public:
 
         return commandList;
     }
+    /// \brief getPaintItemList 服务combinedItem的
     virtual std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList()
     {
         return std::vector<std::shared_ptr<QGraphicsItem>>();

@@ -50,16 +50,15 @@ public:
             WARN_MSG("index can only be 0 for point");
             return false;
         }
-        this->m_vertex.point = vertex.point - this->scenePos();
+        this->m_vertex.point = vertex.point;
         this->m_vertex.angle = vertex.angle;
         animate();
         return true;
     }
     bool setCenterInScene(const QPointF point) override {
-        DEBUG_MSG("use point setCenterInScene");
         QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
+        this->m_vertex.point = this->m_vertex.point + offset;
         this->animate();
         return true;
     }
@@ -233,14 +232,12 @@ public:
         }
         QPointF point = m_vertex.point;
         double angle = m_vertex.angle;
-        QPointF pos = point + this->scenePos();
-        return Vertex{pos, angle};
+        return Vertex{point, angle};
     }
     QPointF getCenterInScene() const override {
         auto center = QPointF{};
         center = m_vertex.point;
-        auto posOffset = this->pos();
-        return center + posOffset;
+        return center;
     }
     QString getName() const override {
         return "PointItem";
@@ -260,6 +257,13 @@ public:
     }
     std::vector<LaserDeviceCommand> getRTC5Command() const override{
         return std::vector<LaserDeviceCommand>();
+    }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.push_back(this->m_paintItem);
+        return list;
     }
 
 protected:

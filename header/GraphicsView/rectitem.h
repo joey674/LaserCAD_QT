@@ -57,7 +57,7 @@ public:
         if (index > 4) {
             return false;
         }
-        this->m_vertexList[index].point = vertex.point - this->scenePos();
+        this->m_vertexList[index].point = vertex.point;
         this->m_vertexList[index].angle = vertex.angle;
         animate();
         return true;
@@ -65,7 +65,9 @@ public:
     bool setCenterInScene(const QPointF point) override {
         QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
+        for (auto &vertex : this->m_vertexList) {
+            vertex.point = vertex.point + offset;
+        }
         this->animate();
         return true;
     }
@@ -298,14 +300,12 @@ public:
         }
         QPointF point = m_vertexList[index].point;
         double angle = m_vertexList[index].angle;
-        QPointF pos = point + this->scenePos();
-        return Vertex{pos, angle};
+        return Vertex{point, angle};
     }
     QPointF getCenterInScene() const override {
-        auto center = QPointF{};
-        center = (m_vertexList[0].point + m_vertexList[2].point) / 2;
-        auto posOffset = this->pos();
-        return center + posOffset;
+        auto rect = getBoundingRectBasis();
+        QPointF pos = rect.center();
+        return pos;
     }
     QString getName() const override {
         return "RectItem";
@@ -332,6 +332,12 @@ public:
     }
     std::vector<LaserDeviceCommand> getRTC5Command() const override{
         return std::vector<LaserDeviceCommand>();
+    }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list = m_paintItemList;
+        return list;
     }
 
 protected:
@@ -370,17 +376,6 @@ protected:
         for (auto &item : this->m_paintItemList) {
             item->paint(painter, &optionx, widget);
         }
-        // 绘制拖拽原点
-        // painter->setPen(Qt::NoPen);
-        // for (const auto &vertex : m_vertexList) {
-        //     if (this->m_offsetParams.offsetCount > 0) {
-        //         painter->setBrush(Qt::red);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     } else {
-        //         painter->setBrush(Qt::blue);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     }
-        // }
         // 绘制offset
         for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);

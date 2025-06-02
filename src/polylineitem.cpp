@@ -94,9 +94,7 @@ bool PolylineItem::updateHatchFillItem() {
 
 Vertex PolylineItem::getVertexInScene(const int index) const
 {
-    QPointF point = m_vertexList[index].point;
-    QPointF pos = point + this->scenePos();
-    return Vertex{pos, m_vertexList[index].angle};
+    return Vertex{m_vertexList[index].point, m_vertexList[index].angle};
 }
 
 QPointF PolylineItem::getCenterInScene() const {

@@ -67,7 +67,7 @@ public:
             WARN_VAR(index);
             return false;
         }
-        QPointF pos = vertex.point - this->scenePos();
+        QPointF pos = vertex.point;
         this->m_center = Vertex{pos, 0};
         animate();
         return true;
@@ -98,11 +98,7 @@ public:
         return true;
     }
     bool setCenterInScene(const QPointF point) override {
-        // DEBUG_MSG("use circle setCenterInScene");
-        // DEBUG_VAR(point);
-        QPointF currentCenter = this->getCenterInScene();
-        QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
+        this->m_center.point = point;
         this->animate();
         return true;
     }
@@ -324,17 +320,9 @@ public:
         if (index > 1) {
             assert("false index:only 0");
         }
-        QPointF point = m_center.point;
-        double angle = m_center.angle;
-        QPointF pos = point + this->scenePos();
-        return Vertex{pos, angle};
+        return Vertex{this->m_center.point, 0};
     }
     QPointF getCenterInScene() const override {
-        // auto posOffset = this->pos();
-        // auto centerPos = this->m_center.point + posOffset;
-        // // DEBUG_VAR(centerPos);
-        // return centerPos;
-
         auto rect = getBoundingRectBasis ();
         QPointF pos = rect.center ();
         return pos;
@@ -366,6 +354,13 @@ public:
     }
     std::vector<LaserDeviceCommand> getRTC5Command() const override{
         return std::vector<LaserDeviceCommand>();
+    }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.push_back(this->m_paintItem);
+        return list;
     }
 
 protected:

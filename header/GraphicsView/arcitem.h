@@ -63,24 +63,21 @@ public:
             WARN_VAR(index);
             return false;
         }
-        QPointF pos = vertex.point - this->scenePos();
+        QPointF pos = vertex.point /*- this->scenePos()*/;
         this->m_vertexPair[index] = Vertex{pos, vertex.angle};
         this->animate();
         return true;
     }
     bool setCenterInScene(const QPointF point) override {
-        DEBUG_MSG("arc set center");
-        //
         auto center = QPointF{};
         double radius = 0;
         getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point,
                                        this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
-        auto posOffset = this->pos();
-        DEBUG_VAR(this->pos());
-        QPointF currentCenter = center + posOffset;
-        //
-        QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
+        auto offset = point - center;
+        for (auto &vertex : this->m_vertexPair) {
+            vertex.point = vertex.point + offset;
+        }
+
         this->animate();
         return true;
     }
@@ -282,7 +279,7 @@ public:
         }
         QPointF point = m_vertexPair[index].point;
         double angle = m_vertexPair[index].angle;
-        QPointF pos = point + this->scenePos();
+        QPointF pos = point /* + this->scenePos()*/;
         return Vertex{pos, angle};
     }
     QPointF getCenterInScene() const override {

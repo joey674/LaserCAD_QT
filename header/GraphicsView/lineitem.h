@@ -52,7 +52,7 @@ public:
         if (index > 1) {
             return false;
         }
-        this->m_vertexPair[index].point = vertex.point - this->scenePos();
+        this->m_vertexPair[index].point = vertex.point;
         this->m_vertexPair[index].angle = vertex.angle;
         animate();
         return true;
@@ -60,7 +60,9 @@ public:
     bool setCenterInScene(const QPointF point) override {
         QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
-        this->setPos(this->pos() + offset);
+        for (auto &vertex : this->m_vertexPair) {
+            vertex.point = vertex.point + offset;
+        }
         this->animate();
         return true;
     }
@@ -253,14 +255,12 @@ public:
         }
         QPointF point = m_vertexPair[index].point;
         double angle = m_vertexPair[index].angle;
-        QPointF pos = point + this->scenePos();
-        return Vertex{pos, angle};
+        return Vertex{point, angle};
     }
     QPointF getCenterInScene() const override {
         auto center = QPointF{};
         center = (m_vertexPair[0].point + m_vertexPair[1].point) / 2;
-        auto posOffset = this->pos();
-        return center + posOffset;
+        return center;
     }
     QString getName() const override {
         return "LineItem";
