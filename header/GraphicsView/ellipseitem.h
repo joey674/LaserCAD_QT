@@ -150,6 +150,7 @@ protected:
             // 获取结果
             for (const auto& polyline : results) {
                 auto item = FromCavcForm(polyline);
+                item->setColor(this->getColor());
                 this->m_contourFillItemList.push_back(std::move(item));
             }
         }

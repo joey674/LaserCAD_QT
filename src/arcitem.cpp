@@ -20,6 +20,7 @@ bool ArcItem::updateContourFillItem()
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
+            item->setColor(this->getColor());
             this->m_contourFillItemList.push_back(std::move(item));
         }
     }
@@ -72,7 +73,9 @@ bool ArcItem::updateHatchFillItem()
         cavc::CombineResult < double > result = cavc::combinePolylines(input, rawHatch, cavc::PlineCombineMode::Intersect);
         for (auto &hatch : result.remaining) {
             hatch.isClosed () = false;
-            this->m_hatchFillItemList.push_back(FromCavcForm(hatch));
+            auto item = FromCavcForm(hatch);
+            item->setColor(this->getColor());
+            this->m_hatchFillItemList.push_back(item);
         }
     }
 

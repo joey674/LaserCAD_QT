@@ -27,6 +27,7 @@ bool PolylineItem::updateContourFillItem()
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
+            item->setColor(this->getColor());
             this->m_contourFillItemList.push_back(std::move(item));
         }
     }
@@ -85,7 +86,9 @@ bool PolylineItem::updateHatchFillItem() {
         // 执行布尔操作
         cavc::CombineResult < double > result = cavc::combinePolylines(input, hatch, cavc::PlineCombineMode::Intersect);
         for (const auto &pline : result.remaining) {
-            this->m_hatchFillItemList.push_back(FromCavcForm(pline));
+            auto item = FromCavcForm(pline);
+            item->setColor(this->getColor());
+            this->m_hatchFillItemList.push_back(item);
         }
     }
 
