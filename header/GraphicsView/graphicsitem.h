@@ -21,13 +21,14 @@ public:
     GraphicsItem(const GraphicsItem &) = delete;
     GraphicsItem &operator=(const GraphicsItem &) = delete;
     void cloneBaseParams(const GraphicsItem &other) {
-        // 拷贝基础字段;  不可以拷贝copyparams(offsetparams暂时不行); 如果有需要再说
+        // 拷贝基础字段;  不可以拷贝copyparams(contourParams暂时不行); 如果有需要再说
         this->m_uuid = GenerateUUID();
         this->m_color = other.getColor();
         this->setFlags(other.flags());
         this->m_markParams = other.m_markParams;
         this->m_delayParams = other.m_delayParams;
-        this->m_fillParams = other.m_fillParams;
+        this->m_contourFillParams = other.m_contourFillParams;
+        this->m_hatchFillParams = other.m_hatchFillParams;
     }
     virtual std::shared_ptr < GraphicsItem > clone() const = 0;
     void cloneBaseParamsFromJson(const QJsonObject &obj);
@@ -54,7 +55,7 @@ public:
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
     virtual bool setCenterInScene(const QPointF point) = 0;
     virtual bool setOffsetParams(ContourFillParams params) {
-        this->m_offsetParams = params;
+        this->m_contourFillParams = params;
         this->animate();
         return true;
     }
@@ -86,7 +87,7 @@ public:
         return true;
     };
     bool setFillParams(HatchFillParams params){
-        this->m_fillParams = params;
+        this->m_hatchFillParams = params;
         this->animate ();
         return true;
     }
@@ -146,12 +147,8 @@ public:
     const DelayParams getDelayParams() const {
         return this->m_delayParams;
     }
-    const ContourFillParams getContourFillParams() const {
-        return this->m_offsetParams;
-    }
-    const HatchFillParams getFillParams() const {
-        return this->m_fillParams;
-    }
+    const ContourFillParams getContourFillParams() const { return this->m_contourFillParams; }
+    const HatchFillParams getFillParams() const { return this->m_hatchFillParams; }
     const VectorCopyParams getVectorCopyParams() const { return this->m_vectorCopyParams; }
     const MatrixCopyParams getMatrixCopyParams() const { return this->m_matrixCopyParams; }
     virtual std::vector<LaserDeviceCommand> getRTC5Command() const
@@ -176,7 +173,7 @@ public:
 
         return commandList;
     }
-    /// \brief getPaintItemList 服务combinedItem的
+    /// \brief getPaintItemList 服务combinedItem的; 需要包括所有copied/fill/paintitem
     virtual std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList()
     {
         return std::vector<std::shared_ptr<QGraphicsItem>>();
@@ -199,8 +196,8 @@ protected:
     QColor m_color = Qt::black;
     MarkParams m_markParams;
     DelayParams m_delayParams;
-    ContourFillParams m_offsetParams;
-    HatchFillParams m_fillParams;
+    ContourFillParams m_contourFillParams;
+    HatchFillParams m_hatchFillParams;
     VectorCopyParams m_vectorCopyParams;
     MatrixCopyParams m_matrixCopyParams;
 };

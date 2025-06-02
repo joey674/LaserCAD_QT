@@ -82,8 +82,8 @@ public:
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
-        m_offsetParams.offset = 0;
-        m_offsetParams.offsetCount = 0;
+        m_contourFillParams.offset = 0;
+        m_contourFillParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
         result.reserve(this->m_contourFillItemList.size());

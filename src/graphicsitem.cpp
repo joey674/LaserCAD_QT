@@ -26,11 +26,11 @@ void GraphicsItem::cloneBaseParamsFromJson(const QJsonObject &obj) {
         m_delayParams.jumpDelay = d["jumpDelay"].toInt();
         m_delayParams.polygonDelay = d["polygonDelay"].toInt();
     }
-    // m_offsetParams
+    // m_contourFillParams
     if (obj.contains("offsetParams")) {
         QJsonObject o = obj["offsetParams"].toObject();
-        m_offsetParams.offset = o["offset"].toDouble();
-        m_offsetParams.offsetCount = o["offsetCount"].toInt();
+        m_contourFillParams.offset = o["offset"].toDouble();
+        m_contourFillParams.offsetCount = o["offsetCount"].toInt();
     }
     // m_vectorCopyParams
     if (obj.contains("vectorCopyParams")) {
@@ -77,8 +77,8 @@ QJsonObject GraphicsItem::saveBaseParamsToJson() const {
     obj["delayParams"] = delay;
     // --- ContourFillParams ---
     QJsonObject offset;
-    offset["offset"] = m_offsetParams.offset;
-    offset["offsetCount"] = m_offsetParams.offsetCount;
+    offset["offset"] = m_contourFillParams.offset;
+    offset["offsetCount"] = m_contourFillParams.offsetCount;
     obj["offsetParams"] = offset;
     // --- VectorCopyParams ---
     QJsonObject vector;

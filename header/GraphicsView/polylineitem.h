@@ -106,8 +106,8 @@ public:
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
-        m_offsetParams.offset = 0;
-        m_offsetParams.offsetCount = 0;
+        m_contourFillParams.offset = 0;
+        m_contourFillParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
         result.reserve(this->m_contourFillItemList.size());
@@ -384,10 +384,10 @@ public:
         }
         // 包含offsetItem
         newRect = newRect.adjusted(
-                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
-                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

@@ -101,8 +101,8 @@ public:
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
-        m_offsetParams.offset = 0;
-        m_offsetParams.offsetCount = 0;
+        m_contourFillParams.offset = 0;
+        m_contourFillParams.offsetCount = 0;
         //获取当前offsetItem  如果没有offsetItem就返回空数组
         std::vector < std::shared_ptr < GraphicsItem>> result;
         result.reserve(this->m_contourFillItemList.size());
@@ -343,6 +343,9 @@ public:
         this->animate();
         std::vector<std::shared_ptr<QGraphicsItem>> list;
         list.push_back(this->m_paintItem);
+        list.insert(list.end(), m_contourFillItemList.begin(), m_contourFillItemList.end());
+        list.insert(list.end(), m_copiedItemList.begin(), m_copiedItemList.end());
+        list.insert(list.end(), m_hatchFillItemList.begin(), m_hatchFillItemList.end());
         return list;
     }
 
@@ -354,10 +357,10 @@ protected:
         QRectF newRect = m_paintItem->boundingRect();
         // 包含offsetItem
         newRect = newRect.adjusted(
-                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                      -abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount - 1,
-                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1,
-                      abs(this->m_offsetParams.offset) * this->m_offsetParams.offsetCount + 1);
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

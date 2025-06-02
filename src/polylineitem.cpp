@@ -8,11 +8,11 @@ bool PolylineItem::updateContourFillItem()
     if (m_vertexList.size() < 2) {
         return false;
     }
-    if (this->m_offsetParams.offset == 0) {
+    if (this->m_contourFillParams.offset == 0) {
         return true;
     }
     this->m_contourFillItemList.clear();
-    for (int offsetIndex = 1; offsetIndex <= this->m_offsetParams.offsetCount; offsetIndex++) {
+    for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavcForm(false);
         // 自动判断 如果最后一个点与第一个点重合 那么就认为是close;
@@ -23,7 +23,7 @@ bool PolylineItem::updateContourFillItem()
             input.isClosed() = false;
         }
         std::vector<cavc::Polyline<double>> results
-            = cavc::parallelOffset(input, this->m_offsetParams.offset * offsetIndex);
+            = cavc::parallelOffset(input, this->m_contourFillParams.offset * offsetIndex);
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
@@ -37,7 +37,7 @@ bool PolylineItem::updateHatchFillItem() {
     if (m_vertexList.size() < 2) {
         return false;
     }
-    if (m_fillParams.operateCount == 0 || m_fillParams.spacing == 0){
+    if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
     this->m_hatchFillItemList.clear();
@@ -60,8 +60,8 @@ bool PolylineItem::updateHatchFillItem() {
     QPointF center = this->getCenterInScene();
     double lineLength = radius * 2.0;
     // 提取角度和间距
-    double angleDeg = -this->m_fillParams.startAngle;
-    double spacing = this->m_fillParams.spacing;
+    double angleDeg = -this->m_hatchFillParams.startAngle;
+    double spacing = this->m_hatchFillParams.spacing;
     // 方向向量（填充线方向）与垂线方向（用于平移）
     double rad = angleDeg * M_PI / 180.0;
     double dx = std::cos(rad), dy = std::sin(rad);

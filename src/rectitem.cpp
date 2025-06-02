@@ -5,7 +5,7 @@
 #include <polylinecombine.hpp>
 
 bool RectItem::updateHatchFillItem() {
-    if (m_fillParams.operateCount == 0 || m_fillParams.spacing == 0){
+    if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
     this->m_hatchFillItemList.clear();
@@ -28,8 +28,8 @@ bool RectItem::updateHatchFillItem() {
     QPointF center = this->getCenterInScene();
     double lineLength = radius * 2.0;
     // 提取角度和间距
-    double angleDeg = -this->m_fillParams.startAngle;
-    double spacing = this->m_fillParams.spacing;
+    double angleDeg = -this->m_hatchFillParams.startAngle;
+    double spacing = this->m_hatchFillParams.spacing;
     // 方向向量（填充线方向）与垂线方向（用于平移）
     double rad = angleDeg * M_PI / 180.0;
     double dx = std::cos(rad), dy = std::sin(rad);
