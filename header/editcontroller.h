@@ -15,6 +15,7 @@
 #include "protocol.h"
 #include "rectitem.h"
 #include "spiralitem.h"
+#include <memory>
 #include <polylinecombine.hpp>
 #include <qgraphicsitem.h>
 
@@ -370,10 +371,10 @@ public: // 编辑回调
     /// \brief 按钮回调 直接操作当前editItemGroup;
     ///
     void onBreakOffsetItemTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
+        auto &curEditItem = this->m_currentEditItemGroup[0];
         auto offsetItems = curEditItem->breakParallelFillItem();
         for (auto &item : offsetItems) {
             auto uuid = item->getUUID();
@@ -383,10 +384,10 @@ public: // 编辑回调
         }
     }
     void onBreakCopiedItemTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.size() != 1) {
+        if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
-        auto &curEditItem = EditController::getIns().m_currentEditItemGroup[0];
+        auto &curEditItem = this->m_currentEditItemGroup[0];
         auto copiedItems = curEditItem->breakCopiedItem();
         for (auto &item : copiedItems) {
             auto uuid = item->getUUID();
@@ -396,20 +397,20 @@ public: // 编辑回调
         }
     }
     void onCenterToOriginTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.empty ()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
-        for (auto& item : EditController::getIns().m_currentEditItemGroup) {
+        for (auto &item : this->m_currentEditItemGroup) {
             item->setCenterInScene(QPointF{0, 0});
         }
         this->updateEditRect();
         this->updateTabWidget();
     }
     void onMirrorHorizontalTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
-        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+        for (auto &item : this->m_currentEditItemGroup) {
             QPointF center = item->getCenterInScene();
             auto vertexCount = item->getVertexCount();
             for (int i = 0; i < vertexCount; i++) {
@@ -432,10 +433,10 @@ public: // 编辑回调
         this->updateTabWidget();
     };
     void onMirrorVerticalTriggered() {
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
-        for (auto &item : EditController::getIns().m_currentEditItemGroup) {
+        for (auto &item : this->m_currentEditItemGroup) {
             QPointF center = item->getCenterInScene();
             auto vertexCount = item->getVertexCount();
             for (int i = 0; i < vertexCount; i++) {
@@ -460,23 +461,20 @@ public: // 编辑回调
     ///
     void onDeleteItemsTriggered() {
         //
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
         // 在manager中删除; 先安全只读,不动 item 对象,最后在一起删除; 这里不要边遍历边删
         std::vector < QString > uuids;
-        for (const auto &item : EditController::getIns().m_currentEditItemGroup) {
+        for (const auto &item : this->m_currentEditItemGroup) {
             uuids.push_back(item->getUUID());
         }
         for (const auto &uuid : uuids) {
-            // 一个clearSelection的bug,在remove之后还触发了对象的回调 导致空指针
-            auto item = ItemManager::getIns().itemMapFind(uuid);
-            SceneController::getIns().scene->removeItem(item.get());//  在场景中删除
             ItemManager::getIns().deleteItem(uuid);
             DEBUG_MSG(uuid + " is deleted");
         }
         // 清除editController中的编辑列表
-        EditController::getIns().m_currentEditItemGroup.clear();
+        this->m_currentEditItemGroup.clear();
         // DEBUG
         const auto &items = SceneController::getIns().scene->items();
         INFO_MSG("Scene has " + QString::number(items.size() - 11) + " items");
@@ -485,7 +483,7 @@ public: // 编辑回调
     }
     void onCutItemsTriggered() {
         //
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
         //
@@ -500,7 +498,7 @@ public: // 编辑回调
     }
     void onCopyItemsTriggered() {
         //
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
         //
@@ -514,7 +512,7 @@ public: // 编辑回调
     }
     void onPasteItemsTriggered() {
         //
-        if (EditController::getIns().m_currentCutCopyItemGroup.empty()) {
+        if (this->m_currentCutCopyItemGroup.empty()) {
             return;
         }
         //
@@ -529,7 +527,7 @@ public: // 编辑回调
     }
     void onCombineItemsTriggered()
     {
-        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+        if (this->m_currentEditItemGroup.empty()) {
             return;
         }
         // 把对象拷贝进combinedGroup里
@@ -543,7 +541,22 @@ public: // 编辑回调
         SceneController::getIns().scene->addItem(itemGroup.get());
         ItemManager::getIns().addItem(std::move(itemGroup));
     }
-    void onBreakItemsTriggered() { DEBUG_MSG("break clicked"); }
+    void onBreakItemsTriggered()
+    {
+        if (this->m_currentEditItemGroup.size() != 1
+            && this->m_currentEditItemGroup[0]->type() != GraphicsItemType::Combined) {
+            return;
+        }
+        auto combinedItem = std::dynamic_pointer_cast<CombinedItem>(this->m_currentEditItemGroup[0]);
+        auto itemList = combinedItem->breakItem();
+        this->onDeleteItemsTriggered();
+        for (auto &item : itemList) {
+            // 这些对象只是指针资源存在 既不在scene中 也不在itemmanager中; 所以同时要设置visible和additem
+            SceneController::getIns().scene->addItem(item.get());
+            item->setVisible(true);
+            ItemManager::getIns().addItem(std::move(item));
+        }
+    }
 
 public: // 在treeView和Scene中控制当前编辑对象的回调
     /// \brief onTreeViewModelClicked

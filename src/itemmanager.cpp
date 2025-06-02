@@ -183,7 +183,9 @@ void ItemManager::deleteItem(QString uuid) {
                 /// TODO-------------------------------------
                 /// 暂时不释放资源
                 auto item = itemMapFind(childUuid);
-                item->setVisible(false);
+                // 一个clearSelection的bug,在remove之后还触发了对象的回调 导致空指针
+                SceneController::getIns().scene->removeItem(item.get()); //  在场景中删除
+                item->setVisible(false);                                 // 并且需要设置unvisible
                 this->itemMapErase(childUuid);
                 this->m_deletedItemList.push_back(std::move (item));
                 /// TODO-------------------------------------
@@ -197,7 +199,9 @@ void ItemManager::deleteItem(QString uuid) {
             /// TODO-------------------------------------
             /// 暂时不释放资源
             auto item = itemMapFind(uuid);
-            item->setVisible(false);
+            // 一个clearSelection的bug,在remove之后还触发了对象的回调 导致空指针
+            SceneController::getIns().scene->removeItem(item.get()); //  在场景中删除
+            item->setVisible(false);                                 // 并且需要设置unvisible
             this->itemMapErase(uuid);
             this->m_deletedItemList.push_back(std::move (item));
             /// TODO-------------------------------------
