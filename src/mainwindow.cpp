@@ -30,40 +30,12 @@
 #include "scenecontroller.h"
 #include "treemodel.h"
 #include "uimanager.h"
-#include "laserdevicertc5.h"
-#include "laserdevicetest.h"
 #include <polyline.hpp>
 #include <QInputDialog>
 #include "hardwarecontroller.h"
 
 void MainWindow::onDrawTestLineButtonClicked() {
-    QStringList options;
-    options << "RTC5" << "Test" <<"RTC4"<< "RTC6";
-
-    bool ok = false;
-    QString choice = QInputDialog::getItem(
-        this,
-        "LaserDevice Setting",
-        "Select Laser Device Type",
-        options,
-        0,
-        false,
-        &ok
-        );
-
-    if (!ok) {
-        return;
-    }
-
-    if  (choice == "Test") {
-            LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceTest>());
-    }else if(choice == "RTC5") {
-        LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC5>());
-    } else if (choice == "RTC4") {
-        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
-    } else if (choice == "RTC6") {
-        // LaserWorker::getIns().setDevice(std::make_unique<LaserDeviceRTC4>());
-    }
+    
 }
 
 ///
@@ -379,6 +351,26 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(pasteButton);
     connect(pasteButton, &QToolButton::clicked,
             this, &MainWindow::onPasteButtonClicked);
+    //
+    QToolButton *combineButton = UiManager::getIns().combineButton;
+    combineButton->setIcon(QIcon(":/button/combineButton.png"));
+    combineButton->setIconSize(QSize(30, 30));
+    combineButton->setStyleSheet(buttonStyle);
+    combineButton->setCheckable(true);
+    combineButton->setAutoExclusive(false);
+    combineButton->setToolTip("");
+    UiManager::getIns().registerToolButton(combineButton);
+    connect(combineButton, &QToolButton::clicked, this, &MainWindow::onCombineButtonClicked);
+    //
+    QToolButton *breakButton = UiManager::getIns().breakButton;
+    breakButton->setIcon(QIcon(":/button/breakButton.png"));
+    breakButton->setIconSize(QSize(30, 30));
+    breakButton->setStyleSheet(buttonStyle);
+    breakButton->setCheckable(true);
+    breakButton->setAutoExclusive(false);
+    breakButton->setToolTip("");
+    UiManager::getIns().registerToolButton(breakButton);
+    connect(breakButton, &QToolButton::clicked, this, &MainWindow::onBreakButtonClicked);
     //
     //
     QToolButton *mirrorHorizontalButton = UiManager::getIns(). mirrorHorizontalButton;
@@ -1086,6 +1078,18 @@ void MainWindow::onCopyButtonClicked() {
 void MainWindow::onPasteButtonClicked() {
     setEditMode();
     EditController::getIns().onPasteItemsTriggered();
+}
+
+void MainWindow::onCombineButtonClicked()
+{
+    setEditMode();
+    EditController::getIns().onCombineItemsTriggered();
+}
+
+void MainWindow::onBreakButtonClicked()
+{
+    setEditMode();
+    EditController::getIns().onBreakItemsTriggered();
 }
 
 void MainWindow::onDigitalInButtonClicked() {

@@ -285,10 +285,10 @@ public:
 
         const auto &p0 = m_vertexPair[0];
         const auto &p1 = m_vertexPair[1];
-        const long startPosX = static_cast<long>(p0.point.x());
-        const long startPosY =static_cast<long>(p0.point.y());
-        const long endPosX = static_cast<long>(p1.point.x());
-        const long endPosY =static_cast<long>(p1.point.y());
+        const auto startPosX = p0.point.x();
+        const auto startPosY = p0.point.y();
+        const auto endPosX = p1.point.x();
+        const auto endPosY = p1.point.y();
 
         for (int i = 0; i < operateTime; i++) {
             // 打印本体
@@ -298,10 +298,10 @@ public:
             for (const auto copyItem : m_copiedItemList){
                 const auto &cP0 = copyItem->getVertexInScene (0);
                 const auto &cP1 = copyItem->getVertexInScene (1);
-                const long cStartPosX = static_cast<long>(cP0.point.x());
-                const long cStartPosY =static_cast<long>(cP0.point.y());
-                const long cEndPosX = static_cast<long>(cP1.point.x());
-                const long cEndPosY =static_cast<long>(cP1.point.y());
+                const auto cStartPosX = cP0.point.x();
+                const auto cStartPosY = cP0.point.y();
+                const auto cEndPosX = cP1.point.x();
+                const auto cEndPosY = cP1.point.y();
                 commandList.emplace_back(JumpCommand{cStartPosX,cStartPosY});
                 commandList.emplace_back(MarkCommand{cEndPosX,cEndPosY});
             }
@@ -309,15 +309,22 @@ public:
             for (const auto offsetItem : m_contourFillItemList){
                 const auto &oP0 = offsetItem->getVertexInScene (0);
                 const auto &oP1 = offsetItem->getVertexInScene (1);
-                const long oStartPosX = static_cast<long>(oP0.point.x());
-                const long oStartPosY =static_cast<long>(oP0.point.y());
-                const long oEndPosX = static_cast<long>(oP1.point.x());
-                const long oEndPosY =static_cast<long>(oP1.point.y());
+                const auto oStartPosX = oP0.point.x();
+                const auto oStartPosY = oP0.point.y();
+                const auto oEndPosX = oP1.point.x();
+                const auto oEndPosY = oP1.point.y();
                 commandList.emplace_back(JumpCommand{oStartPosX,oStartPosY});
                 commandList.emplace_back(MarkCommand{oEndPosX,oEndPosY});
             }
         }
         return commandList;
+    }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.push_back(this->m_paintItem);
+        return list;
     }
 
 protected:

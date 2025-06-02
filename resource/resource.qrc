@@ -38,6 +38,8 @@
         <file>saveProjectButton.png</file>
         <file>createProjectButton.png</file>
         <file>breakHatchFillItemButton.svg</file>
+        <file>breakButton.png</file>
+        <file>combineButton.png</file>
     </qresource>
     <qresource prefix="/cursor">
         <file>rotateCursor.png</file>

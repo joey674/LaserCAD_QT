@@ -68,6 +68,8 @@ private slots: // 编辑工具按钮
     void onCutButtonClicked();
     void onCopyButtonClicked();
     void onPasteButtonClicked();
+    void onCombineButtonClicked();
+    void onBreakButtonClicked();
     //
     void onDrawTestLineButtonClicked();
     void onUndoButtonClicked() {}

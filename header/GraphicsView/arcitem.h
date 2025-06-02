@@ -65,16 +65,18 @@ public:
         }
         QPointF pos = vertex.point - this->scenePos();
         this->m_vertexPair[index] = Vertex{pos, vertex.angle};
-        animate();
+        this->animate();
         return true;
     }
     bool setCenterInScene(const QPointF point) override {
+        DEBUG_MSG("arc set center");
         //
         auto center = QPointF{};
         double radius = 0;
         getCircleFromTwoPointsAndAngle(this->m_vertexPair[0].point,
                                        this->m_vertexPair[1].point, this->m_vertexPair[1].angle, center, radius);
         auto posOffset = this->pos();
+        DEBUG_VAR(this->pos());
         QPointF currentCenter = center + posOffset;
         //
         QPointF offset = point - currentCenter;
@@ -339,6 +341,13 @@ public:
         }
         return commandList;
     }
+    std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
+    {
+        this->animate();
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.push_back(this->m_paintItem);
+        return list;
+    }
 
 protected:
     QRectF boundingRect() const override {
@@ -367,18 +376,6 @@ protected:
         optionx.state &= ~QStyle::State_Selected;
         // 绘制线段
         this->m_paintItem->paint(painter, &optionx, widget);
-        // 绘制顶点
-        // painter->setPen(Qt::NoPen);
-        // painter->setBrush(Qt::red);
-        // for (const auto &vertex : m_vertexPair) {
-        //     if (this->m_offsetParams.offsetCount > 0) {
-        //         painter->setBrush(Qt::red);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     } else {
-        //         painter->setBrush(Qt::blue);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     }
-        // }
         // 绘制offset
         for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);

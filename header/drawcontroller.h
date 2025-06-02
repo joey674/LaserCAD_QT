@@ -20,7 +20,7 @@ public:
     void resetTmpItemStatus();
     // 绘制对象暂存
 
-    std::shared_ptr < PolylineItem > tmpPolyline;
+    std::shared_ptr<PolylineItem> tmpPolyline;
     std::shared_ptr < ArcItem > tmpArc;
     std::shared_ptr < LineItem > tmpLine;
     std::shared_ptr < PointItem > tmpPoint;
@@ -29,6 +29,7 @@ public:
     std::shared_ptr<EllipseItem> tmpEllipse;
     std::shared_ptr<SpiralItem> tmpSpiral;
     std::shared_ptr<PolygonItem> tmpPolygon;
+
     // 绘制逻辑
     void drawPolyline(QPointF pointCoordscene, MouseEvent event);
     void drawArc(QPointF pointCoordscene, MouseEvent event);
@@ -46,6 +47,7 @@ private:
     DrawController(const DrawController &);
     ~DrawController() {};
     DrawController &operator = (const DrawController &);
+
 public:
     static DrawController &getIns();
 };

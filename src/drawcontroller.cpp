@@ -84,6 +84,7 @@ void DrawController::drawArc(QPointF pointCoordscene, MouseEvent event) {
         auto p1 = this->tmpArc->getVertexInScene(0).point;
         auto p2 = this->tmpArc->assistPoint;
         auto p3 = this->tmpArc->getVertexInScene(1).point;
+
         getAngleFromThreePoints(p1, p2, p3, angle);
         this->tmpArc->setVertexInScene(1, Vertex{pointCoordscene, angle});
     } else if (this->tmpArc && this->tmpArc->drawStep == 2 && event == MouseEvent::LeftPress) {
@@ -103,7 +104,7 @@ void DrawController::drawLine(QPointF pointCoordscene, MouseEvent event) {
         SceneController::getIns().scene->addItem(this->tmpLine.get());
         this->tmpLine->setVertexInScene(0, Vertex{pointCoordscene, 0});
         this->tmpLine->setVertexInScene(1, Vertex{pointCoordscene, 0});
-    } else if  (this->tmpLine && event == MouseEvent::MouseMove) {
+    } else if (this->tmpLine && event == MouseEvent::MouseMove) {
         QPointF vertex0 = this->tmpLine->getVertexInScene(0).point;
         if (!KeyboardManager::getIns().IsControlHold) {
             if (KeyboardManager::getIns().IsXHold) {

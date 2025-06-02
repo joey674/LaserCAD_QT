@@ -176,11 +176,15 @@ public:
 
         return commandList;
     }
+    virtual std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList()
+    {
+        return std::vector<std::shared_ptr<QGraphicsItem>>();
+    }
 
-/// ********************
-/// \brief overload
-/// 重载基于QGraphicsitem的一些性质
-/// ********************
+    /// ********************
+    /// \brief overload
+    /// 重载基于QGraphicsitem的一些性质
+    /// ********************
 protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;

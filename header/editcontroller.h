@@ -6,6 +6,7 @@
 #include <QMainWindow>
 #include <QTimer>
 #include "arcitem.h"
+#include "combineditem.h"
 #include "editrect.h"
 #include "ellipseitem.h"
 #include "itemmanager.h"
@@ -20,6 +21,7 @@
 class EditController {
     friend class EditRect;
     friend class ProjectManager;
+
 private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentEditItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
@@ -27,10 +29,8 @@ private:
     std::vector < std::shared_ptr < GraphicsItem> > m_currentCutCopyItemGroup
         = std::vector < std::shared_ptr < GraphicsItem> > ();
     unsigned int m_selectedTabIndex = 0;
-    /// ********************
-    /// 更新对应的编辑Widget
-    /// ********************
-public:
+
+public: // 更新对应的编辑Widget
     void updateTabWidget();
     void updateTableViewModel();
     void updateEditRect() {
@@ -49,10 +49,7 @@ public:
         }
     }
 
-    /// ********************
-    /// 编辑回调
-    /// ********************
-public:
+public: // 编辑回调
     /// \brief onTabWidgetCopyTabVectorCopy
     /// tabWidget单个对象编辑的回调;
     void onTabWidgetCopyTabVectorCopy(VectorCopyParams params) {
@@ -497,7 +494,7 @@ public:
             auto newItem = item->clone();
             this->m_currentCutCopyItemGroup.push_back(newItem);
         }
-        onDeleteItemsTriggered(); // 触发deletetriggered 删除当前编辑对象
+        this->onDeleteItemsTriggered(); // 触发deletetriggered 删除当前编辑对象
         //
         this->updateEditRect();
     }
@@ -530,10 +527,25 @@ public:
         //
         this->updateEditRect();
     }
-/// ********************
-/// 在treeView和Scene中控制当前编辑对象的回调
-/// ********************
-public:
+    void onCombineItemsTriggered()
+    {
+        if (EditController::getIns().m_currentEditItemGroup.empty()) {
+            return;
+        }
+        // 把对象拷贝进combinedGroup里
+        auto itemGroup = std::make_shared<CombinedItem>();
+        itemGroup->combinedItem(this->m_currentEditItemGroup);
+        // 然后删去原对象; 但注意 这些对象只是在itemManager中删除了,在scene中还是有的;隐藏逻辑都在deleteItemsTriggered里
+        this->onDeleteItemsTriggered();
+        // 这里除了设置颜色外 由于是新创建的对象 没有复制原来的flag 这里还要设置一下可选中;注意 不可以移动的逻辑在addItem里
+        itemGroup->setColor(SceneController::getIns().getCurrentLayerColor());
+        itemGroup->setFlag(QGraphicsItem::ItemIsSelectable, true);
+        SceneController::getIns().scene->addItem(itemGroup.get());
+        ItemManager::getIns().addItem(std::move(itemGroup));
+    }
+    void onBreakItemsTriggered() { DEBUG_MSG("break clicked"); }
+
+public: // 在treeView和Scene中控制当前编辑对象的回调
     /// \brief onTreeViewModelClicked
     /// treeView中node点击回调
     void onTreeViewModelClicked(const QModelIndex &index) {}
@@ -559,24 +571,24 @@ public:
     /// 物体上鼠标press事件
     void onGraphicsItemMousePress(UUID uuid) {}
 
-    ///
     /// \brief onTreeViewModelSelectAllItemsInGroup
     ///
     void onTreeViewModelSelectAllItemsInGroup();
     void onTreeViewModelAddGroup();
     void onTreeViewModelDeleteGroup();
 
+public:
+    /// \brief setTabIndex
+    ///  记录上次使用的tab
     void setTabIndex(int index) { this->m_selectedTabIndex = index; }
 
-/// ********************
-/// 单例初始化
-/// ********************
-private:
+private: // 单例初始化
     static EditController ins;
     EditController() {};
     EditController(const EditController &);
     ~EditController() {};
     EditController &operator = (const EditController &);
+
 public:
     static EditController &getIns();
 };

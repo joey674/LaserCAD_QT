@@ -25,21 +25,25 @@ public:
     // LayerButton
     QToolButton *addLayerButton;
     QToolButton *deleteLayerButton;
-    // ToolButton
-    QToolButton *breakCopiedItemButton;
-    QToolButton *breakContourFillItemButton;
-    QToolButton *centerButton;
+    // ItemButton
     QToolButton *copyButton;
     QToolButton *cutButton;
     QToolButton *deleteButton;
-    QToolButton *dragSceneButton;
-    QToolButton *drawTestLineButton;
+    QToolButton *pasteButton;
+    QToolButton *combineButton;
+    QToolButton *breakButton;
+    // ToolButton
     QToolButton *editButton;
+    QToolButton *centerButton;
     QToolButton *mirrorHorizontalButton;
     QToolButton *mirrorVerticalButton;
-    QToolButton *pasteButton;
+    QToolButton *breakCopiedItemButton;
+    QToolButton *breakContourFillItemButton;
+    // SceneButton
+    QToolButton *dragSceneButton;
     QToolButton *redoButton;
     QToolButton *undoButton;
+    QToolButton *drawTestLineButton;
     // HardwareButton
     QToolButton *delayTimeButton;
     QToolButton *digitalInButton;
@@ -58,7 +62,7 @@ public:
     QToolButton *drawPolylineButton;
     QToolButton *drawRectButton;
     QToolButton *drawSpiralButton;
-    //
+    // Widget
     GraphicsView *graphicsView;
     TreeView *treeView;
     QStatusBar *statusBar;
@@ -103,6 +107,10 @@ public:
         secondHLayout->addWidget(pasteButton);
         deleteButton = new QToolButton(central);
         secondHLayout->addWidget(deleteButton);
+        combineButton = new QToolButton(central);
+        secondHLayout->addWidget(combineButton);
+        breakButton = new QToolButton(central);
+        secondHLayout->addWidget(breakButton);
         QFrame *splitLine3 = new QFrame(central);// 插入分隔线
         splitLine3->setFrameShape(QFrame::VLine);
         splitLine3->setFrameShadow(QFrame::Sunken);
@@ -124,9 +132,10 @@ public:
         splitLine4->setFrameShape(QFrame::VLine);
         splitLine4->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine4);
-        // utilsButton
+        // sceneButton
         dragSceneButton = new QToolButton(central);
         secondHLayout->addWidget(dragSceneButton);
+        // utilsButton
         drawTestLineButton = new QToolButton(central);
         secondHLayout->addWidget(drawTestLineButton);
         redoButton = new QToolButton(central);
