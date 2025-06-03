@@ -35,7 +35,7 @@
 #include "hardwarecontroller.h"
 
 void MainWindow::onDrawTestLineButtonClicked() {
-    
+
 }
 
 ///
@@ -1130,47 +1130,40 @@ void MainWindow::onMarkButtonClicked()
     }
     //
     QDialog dialog(this);
-    dialog.setWindowTitle("panel");
+    dialog.setWindowTitle("MarkPanel");
 
-    QPushButton *toggleButton = new QPushButton("start");
+    QPushButton *startButton = new QPushButton("start");
+    QPushButton *pauseButton = new QPushButton("pause");
+    QPushButton *resumeButton = new QPushButton("resume");
     QPushButton *abortButton = new QPushButton("abort");
 
     QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(toggleButton);
+    layout->addWidget(startButton);
+    layout->addWidget(pauseButton);
+    layout->addWidget(resumeButton);
     layout->addWidget(abortButton);
     dialog.setLayout(layout);
 
-    // 检查一次状态，用于更新按钮状态
-    QTimer *checkDoneTimer = new QTimer(&dialog);
-    checkDoneTimer->setInterval(200);
-    QObject::connect(checkDoneTimer, &QTimer::timeout, [&]() {
-        auto state = LaserWorker::getIns().getDeviceStatus();
-        if (state == DeviceStatus::Free) {
-            toggleButton->setText("start");
-        } else if (state == DeviceStatus::Working) {
-            toggleButton->setText("pause");
-        } else if (state == DeviceStatus::Paused) {
-            toggleButton->setText("resume");
-        }
+    QObject::connect(startButton, &QPushButton::clicked,&dialog, [&]() {
+        if (!startButton->isEnabled())
+            return;
+        DEBUG_MSG("start execute LaserDeviceCommand");
+        HardwareController::getIns ().prepareMarkCurrentLayer ();
+        LaserWorker::getIns().setDeviceWorking();
+        startButton->setEnabled(false);
+        QTimer::singleShot(1000, startButton, [startButton]() {
+            startButton->setEnabled(true);
+        });
     });
-    checkDoneTimer->start();
-
-    QObject::connect(toggleButton, &QPushButton::clicked, [&]() {
-        auto state = LaserWorker::getIns().getDeviceStatus();
-        if (state == DeviceStatus::Free) {
-            DEBUG_MSG("start execute LaserDeviceCommand");
-            LaserWorker::getIns().setDeviceWorking();
-            HardwareController::getIns().markCurrentLayer();
-        } else if (state == DeviceStatus::Paused) {
-            DEBUG_MSG("resume execute LaserDeviceCommand");
-            LaserWorker::getIns().setDeviceWorking(); // resume
-        } else if (state == DeviceStatus::Working) {
-            DEBUG_MSG("pause execute LaserDeviceCommand");
-            LaserWorker::getIns().setDevicePaused(); // pause
-        }
+    QObject::connect(pauseButton, &QPushButton::clicked,&dialog, [&]() {
+        DEBUG_MSG("pause execute LaserDeviceCommand");
+        LaserWorker::getIns().setDevicePaused();
     });
-
-    QObject::connect(abortButton, &QPushButton::clicked, [&]() {
+    QObject::connect(resumeButton, &QPushButton::clicked,&dialog, [&]() {
+        DEBUG_MSG("resume execute LaserDeviceCommand");
+        LaserWorker::getIns().setDeviceWorking();
+    });
+    QObject::connect(abortButton, &QPushButton::clicked,&dialog, [&]() {
         DEBUG_MSG("abort execute LaserDeviceCommand");
         LaserWorker::getIns().setDeviceAbort();
     });
@@ -1189,29 +1182,6 @@ void MainWindow::onDeleteLayerButtonClicked() {
 }
 
 void MainWindow::onCreateProjectButtonClicked() {
-    // QMessageBox::StandardButton reply = QMessageBox::question(
-    //                                         this,
-    //                                         tr("Save Current Project"),
-    //                                         tr("save current project before open new project?"),
-    //                                         QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel
-    //                                     );
-    // if (reply == QMessageBox::Yes) {
-    //     QString path = QFileDialog::getSaveFileName(
-    //                        this,
-    //                        tr("保存项目文件"),
-    //                        "../../static/Default.json",
-    //                        tr("项目文件 (*.json);;所有文件 (*)")
-    //                    );
-    //     if (path.isEmpty()) {
-    //         return;
-    //     }
-    //     if (!path.endsWith(".json", Qt::CaseInsensitive)) {
-    //         path += ".json";
-    //     }
-    //     ProjectManager::getIns().saveProject(path);
-    // } else if (reply == QMessageBox::Cancel) {
-    //     return; // 用户取消，不创建新项目
-    // }
     ProjectManager::getIns().createProject();
 }
 

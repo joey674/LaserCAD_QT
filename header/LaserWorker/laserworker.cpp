@@ -38,7 +38,7 @@ void LaserWorker::threadMain()
                 continue;
             }
             // 执行command; 这一步是把cmd推进rtc的list中然后直接返回;如果没推成功,说明rtcList是满的 那这里就持续等待再尝试
-            while (!this->m_device->executeCommand(cmdList)) {
+            while (!this->m_device->executeCommandList(cmdList)) {
                 WARN_MSG("cannot push command to rtc device; will try again");
             }
             continue;

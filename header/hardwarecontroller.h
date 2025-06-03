@@ -12,7 +12,7 @@ private:
 
 public:
     void setOperationTime(int num);
-    void markCurrentLayer();
+    void prepareMarkCurrentLayer();
 
 private:
     static HardwareController ins;

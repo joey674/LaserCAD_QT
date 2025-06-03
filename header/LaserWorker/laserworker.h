@@ -50,48 +50,36 @@ public:
     void setDeviceWorking() {
         DeviceStatus prev = m_deviceStatus.load();
         if (prev == DeviceStatus::Free) {
-            DEBUG_MSG("Device: Free → Working (start)");
+            DEBUG_MSG("Device: Free ==> Working (start)");
             m_deviceStatus = DeviceStatus::Working;
             // 设置状态为working, 主线程就会自动执行缓存指令 不需要主动触发;
-
-            // 创建一个周期性定时器检测状态
-            QTimer *timer = new QTimer();
-            timer->setInterval(100);
-            QObject::connect(timer, &QTimer::timeout, [this, timer]() {
-                if (m_device->getListStatus() == 0) {
-                    DEBUG_MSG("Device: Working ==> Free (finish)");
-                    m_deviceStatus = DeviceStatus::Free;
-                    timer->stop();
-                    timer->deleteLater();
-                }
-            });
-            timer->start();
         } else if (prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: Paused ==> Working (resume)");
             m_deviceStatus = DeviceStatus::Working;
             m_device->resumeExecution();
         } else {
-            DEBUG_MSG("Device: Already Working, no action");
+            DEBUG_MSG("Device: Working ==> Working (unknown)");
         }
     }
+    // 安全措施 不管怎么样 都要pause/abort掉
     void setDevicePaused() {
         if (m_deviceStatus == DeviceStatus::Working) {
             DEBUG_MSG("Device: Working ==> Paused (pause)");
-            m_deviceStatus = DeviceStatus::Paused;
-            m_device->pauseExecution();
         } else {
-            DEBUG_MSG("Pause ignored: not in Working state");
+            DEBUG_MSG("Device: Paused ==> Paused (unknown)");
         }
+        m_deviceStatus = DeviceStatus::Paused;
+        m_device->pauseExecution();
     }
     void setDeviceAbort() {
         DeviceStatus prev = m_deviceStatus.exchange(DeviceStatus::Free);
         if (prev == DeviceStatus::Working || prev == DeviceStatus::Paused) {
             DEBUG_MSG("Device: " + QString::fromStdString(
                           (prev == DeviceStatus::Working ? "Working" : "Paused")) + " ==> Free (abort)");
-            m_device->abortExecution();
         } else {
-            DEBUG_MSG("Abort ignored: already Free");
+            DEBUG_MSG("Device: Free ==> Free (unknown)");
         }
+        m_device->abortExecution();
     }
 
     /// \brief get

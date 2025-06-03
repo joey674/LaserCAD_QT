@@ -195,7 +195,7 @@ public:
         fillForm->addRow("Spacing:", fillSpacingSpin);
         fillForm->addRow("Start Angle:", fillAngleSpin);
         fillForm->addRow("Operate Count:", fillOperateCountSpin);
-        fillForm->addRow ("AccumulateAngle", fillAccumulateAngleSpin);
+        fillForm->addRow ("Accumulate Angle:", fillAccumulateAngleSpin);
 
         // 确认按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
@@ -1066,8 +1066,15 @@ public:
 
         paramLayout->addWidget(new QLabel("Laser Mode:"), 2, 0);
         paramLayout->addWidget(laserModeBox, 2, 1);
-        // paramLayout->addWidget(flipX, 2, 3);
-        // paramLayout->addWidget(flipY, 2, 4);
+
+        // 模式选择
+        QLabel *executeModeLabel = new QLabel("Execute Mode:");
+        QComboBox *executeModeBox = new QComboBox();
+        executeModeBox->addItem("SingleList");
+        executeModeBox->addItem("DoubleLists");
+        executeModeBox->addItem("CircleList");
+        paramLayout->addWidget(executeModeLabel);
+        paramLayout->addWidget(executeModeBox);
 
         QGroupBox* paramGroup = new QGroupBox();
         paramGroup->setLayout(paramLayout);
@@ -1087,6 +1094,7 @@ public:
             settings.offsetX = offsetX->text().toDouble();
             settings.offsetY = offsetY->text().toDouble();
             settings.laserMode = laserModeBox->currentText();
+            settings.executeMode = executeModeBox->currentText();
 
             // 调用laserWoker部分;
             if (rtc5Radio->isChecked()){
@@ -1144,16 +1152,17 @@ public:
         QGroupBox *controlGroup = new QGroupBox("Control Parameters");
         QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
 
+        // 执行次数
         QLabel *timesLabel = new QLabel("Total Executions:");
         QLineEdit *timesInput = new QLineEdit();
         timesInput->setText("1");
         timesInput->setValidator(new QIntValidator(1, 9999, timesInput));
-
-        QPushButton *applyButton = new QPushButton("Apply");
-        applyButton->setFixedWidth(60);
-
         controlLayout->addWidget(timesLabel);
         controlLayout->addWidget(timesInput);
+
+        // apply按钮
+        QPushButton *applyButton = new QPushButton("Apply");
+        applyButton->setFixedWidth(60);
         controlLayout->addWidget(applyButton);
         controlLayout->addStretch();
 
@@ -1161,13 +1170,13 @@ public:
 
         // 绑定 Apply 按钮行为
         QObject::connect(applyButton, &QPushButton::clicked, tab, [=]() {
+            // 执行次数
             int value = timesInput->text().toInt();
             if (value <= 0) {
                 WARN_MSG("Invalid execution count");
                 return;
             }
             HardwareController::getIns().setOperationTime(value);
-            DEBUG_MSG("Set operation count to: " + QString::number(value));
         });
 
         // ========== 状态监控定时器 ==========
@@ -1183,7 +1192,7 @@ public:
         statusTimer->start();
 
         // ========== 添加 Tab ==========
-        this->addTab(tab, "SystemControl");
+        this->addTab(tab, "System Control");
     }
 };
 

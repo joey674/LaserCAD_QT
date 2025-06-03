@@ -10,7 +10,7 @@ void HardwareController::setOperationTime(int num)
     this->m_operationTime = num;
 }
 
-void HardwareController::markCurrentLayer()
+void HardwareController::prepareMarkCurrentLayer()
 {
     auto layerUuid = SceneController::getIns().getCurrentLayer();
     auto treeView = UiManager::getIns().treeView;
@@ -28,7 +28,6 @@ void HardwareController::markCurrentLayer()
             }
         }
     }
-    LaserWorker::getIns().setDeviceWorking();
 }
 
 HardwareController &HardwareController::getIns()

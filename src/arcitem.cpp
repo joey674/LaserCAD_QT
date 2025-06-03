@@ -76,6 +76,17 @@ bool ArcItem::updateHatchFillItem()
         for (auto &hatch : result.remaining) {
             hatch.isClosed () = false;
             auto item = FromCavcForm(hatch);
+            // 确保所有hatch的方向一致
+            const auto v0 = item->getVertexInScene (0);
+            const auto v1 = item->getVertexInScene (1);
+            double vx = v1.point.x() - v0.point.x();
+            double vy = v1.point.y() - v0.point.y();
+            double dot = vx * dx + vy * dy;
+            if (dot < 0) {
+                item->setVertexInScene (0,v1);
+                item->setVertexInScene (1,v0);
+            }
+            //
             item->setColor(this->getColor());
             item->setMarkParams (this->getMarkParams ());
             item->setDelayParams (this->getDelayParams ());

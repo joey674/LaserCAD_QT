@@ -68,10 +68,12 @@ public:
     };
     bool setMarkParams(const MarkParams params) {
         this->m_markParams = params;
+        this->animate();
         return true;
     }
     bool setDelayParams(const DelayParams params) {
         this->m_delayParams = params;
+        this->animate();
         return true;
     }
     bool setCopiedParams(VectorCopyParams params) {

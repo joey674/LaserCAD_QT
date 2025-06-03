@@ -1,4 +1,5 @@
 #include "laserdevicetest.h"
+#include <thread>
 
 bool LaserDeviceTest::loadDLL()
 {
@@ -27,12 +28,13 @@ bool LaserDeviceTest::checkCard()
         return true;
 }
 
-bool LaserDeviceTest::executeCommand(const std::vector<LaserDeviceCommand> &cmdList) {
+bool LaserDeviceTest::executeCommandList(const std::vector<LaserDeviceCommand> &cmdList) {
     const long  R = 1000; // 转换系数: 从graphicsView的mm转换到rtc的um
     const long transferParamX = R*(1);
     const long transferParamY = R*(1);
     const long transferParamAngle = (-1);
     for (const auto &cmd : cmdList) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         std::visit(
             [](const auto &c) {
                 using T = std::decay_t<decltype(c)>;
