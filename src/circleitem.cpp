@@ -48,6 +48,8 @@ bool CircleItem::updateHatchFillItem() {
         for (const auto &pline : result.remaining) {
             auto item = FromCavcForm(pline);
             item->setColor(this->getColor());
+            item->setMarkParams (this->getMarkParams ());
+            item->setDelayParams (this->getDelayParams ());
             this->m_hatchFillItemList.push_back(item);
         }
     }

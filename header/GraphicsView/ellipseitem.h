@@ -151,6 +151,8 @@ protected:
             for (const auto& polyline : results) {
                 auto item = FromCavcForm(polyline);
                 item->setColor(this->getColor());
+                item->setMarkParams (this->getMarkParams ());
+                item->setDelayParams (this->getDelayParams ());
                 this->m_contourFillItemList.push_back(std::move(item));
             }
         }

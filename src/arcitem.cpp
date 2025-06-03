@@ -21,6 +21,8 @@ bool ArcItem::updateContourFillItem()
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
             item->setColor(this->getColor());
+            item->setMarkParams (this->getMarkParams ());
+            item->setDelayParams (this->getDelayParams ());
             this->m_contourFillItemList.push_back(std::move(item));
         }
     }
@@ -75,6 +77,8 @@ bool ArcItem::updateHatchFillItem()
             hatch.isClosed () = false;
             auto item = FromCavcForm(hatch);
             item->setColor(this->getColor());
+            item->setMarkParams (this->getMarkParams ());
+            item->setDelayParams (this->getDelayParams ());
             this->m_hatchFillItemList.push_back(item);
         }
     }

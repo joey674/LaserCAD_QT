@@ -74,6 +74,8 @@ protected:
         for (auto &item : this->m_itemList) {
             // 设置颜色要调用外部接口
             item->setColor(this->getColor());
+            item->setMarkParams (this->getMarkParams ());
+            item->setDelayParams (this->getDelayParams ());
             // 获取paintItem使用接口
             auto sList = item->getPaintItemList();
             this->m_paintItemList.insert(this->m_paintItemList.end(), sList.begin(), sList.end());
