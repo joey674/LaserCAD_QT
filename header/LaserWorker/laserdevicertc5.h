@@ -28,6 +28,8 @@ public:
     bool getListStatus() override;
 public:
     RTCSettings m_settings;
+    unsigned int m_calibrationFactor=0;
+    unsigned int m_focalLength=0;
 };
 
 

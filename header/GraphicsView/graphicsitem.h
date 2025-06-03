@@ -151,7 +151,7 @@ public:
     const HatchFillParams getFillParams() const { return this->m_hatchFillParams; }
     const VectorCopyParams getVectorCopyParams() const { return this->m_vectorCopyParams; }
     const MatrixCopyParams getMatrixCopyParams() const { return this->m_matrixCopyParams; }
-    virtual std::vector<LaserDeviceCommand> getRTC5Command() const
+    virtual std::vector<LaserDeviceCommand> getLaserCommand()
     {
         std::vector<LaserDeviceCommand> commandList;
 

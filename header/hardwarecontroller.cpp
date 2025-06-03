@@ -23,7 +23,7 @@ void HardwareController::markCurrentLayer()
         for (const auto &childNode : childNodeList) {
             if (childNode->property(TreeNodePropertyIndex::Type).toString() == "Item") {
                 UUID childUuid = childNode->property(TreeNodePropertyIndex::UUID).toString();
-                auto commandList = ItemManager::getIns().itemMapFind(childUuid)->getRTC5Command();
+                auto commandList = ItemManager::getIns().itemMapFind(childUuid)->getLaserCommand();
                 LaserWorker::getIns().enqueueCommand(commandList);
             }
         }

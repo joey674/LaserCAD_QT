@@ -333,9 +333,9 @@ public:
         }
         return newRect;
     }
-    std::vector<LaserDeviceCommand> getRTC5Command() const override
+    std::vector<LaserDeviceCommand> getLaserCommand() override
     {
-        auto commandList = GraphicsItem::getRTC5Command();
+        auto commandList = GraphicsItem::getLaserCommand();
         auto operateTime = this->getMarkParams().operateTime;
 
         for (int operateIndex = 0; operateIndex < operateTime; operateIndex++) {

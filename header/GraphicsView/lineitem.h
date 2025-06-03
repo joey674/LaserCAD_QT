@@ -281,9 +281,9 @@ public:
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
-    std::vector<LaserDeviceCommand> getRTC5Command() const override
+    std::vector<LaserDeviceCommand> getLaserCommand() override
     {
-        auto commandList = GraphicsItem::getRTC5Command();
+        auto commandList = GraphicsItem::getLaserCommand();
         auto operateTime = this->getMarkParams().operateTime;
 
         const auto &p0 = m_vertexPair[0];
@@ -358,29 +358,18 @@ protected:
         // 设置option删去offset线段的选框
         QStyleOptionGraphicsItem optionx(*option);
         optionx.state &= ~QStyle::State_Selected;
-        // 绘制线段
+        // 绘制self
         this->m_paintItem->paint(painter, &optionx, widget);
-        // 绘制顶点
-        // painter->setPen(Qt::NoPen);
-        // painter->setBrush(Qt::red);
-        // for (const auto &vertex : m_vertexPair) {
-        //     if (this->m_contourFillParams.offsetCount > 0) {
-        //         painter->setBrush(Qt::red);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     } else {
-        //         painter->setBrush(Qt::blue);
-        //         painter->drawEllipse(vertex.point, DisplayPointSize.first, DisplayPointSize.second);
-        //     }
-        // }
-        // 绘制offset
+        // 绘制contour
         for (auto &item : this->m_contourFillItemList) {
+            item->paint(painter, &optionx, widget);
+        }
+        // 绘制hatch
+        for (auto &item : this->m_hatchFillItemList) {
             item->paint(painter, &optionx, widget);
         }
         // 绘制copied
         for (auto &item : this->m_copiedItemList) {
-            item->paint(painter, &optionx, widget);
-        }
-        for (auto &item : this->m_hatchFillItemList) {
             item->paint(painter, &optionx, widget);
         }
     }

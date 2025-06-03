@@ -149,10 +149,11 @@ public:
 
         auto fillSpacing = item->getFillParams().spacing;
         auto fillAngle = item->getFillParams().startAngle;
-        auto operateCount = item->getFillParams ().operateCount;
-        if (fillSpacing == 0 && operateCount) {
+        auto fillOperateCount = item->getFillParams ().operateCount;
+        auto fillAccumulateAngle = item->getFillParams ().accumulateAngle;
+        if (fillSpacing == 0) {
             fillSpacing = 1.0;
-            operateCount = 1;
+            fillOperateCount= 1;
         }
 
         QWidget* fillTab = new QWidget();
@@ -185,8 +186,16 @@ public:
         QDoubleSpinBox* fillAngleSpin = new QDoubleSpinBox();
         fillAngleSpin->setRange(0.0, 360.0);
         fillAngleSpin->setValue(fillAngle);
+        QSpinBox* fillOperateCountSpin = new QSpinBox();
+        fillOperateCountSpin->setRange(0, 9999);
+        fillOperateCountSpin->setValue(fillOperateCount);
+        QDoubleSpinBox* fillAccumulateAngleSpin = new QDoubleSpinBox();
+        fillAccumulateAngleSpin->setRange(0.0, 360.0);
+        fillAccumulateAngleSpin->setValue(fillAccumulateAngle);
         fillForm->addRow("Spacing:", fillSpacingSpin);
         fillForm->addRow("Start Angle:", fillAngleSpin);
+        fillForm->addRow("Operate Count:", fillOperateCountSpin);
+        fillForm->addRow ("AccumulateAngle", fillAccumulateAngleSpin);
 
         // 确认按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
@@ -220,7 +229,8 @@ public:
                 HatchFillParams fillParams;
                 fillParams.spacing = fillSpacingSpin->value();
                 fillParams.startAngle = fillAngleSpin->value();
-                fillParams.operateCount = 1; // 启用填充
+                fillParams.operateCount = fillOperateCountSpin->value();
+                fillParams.accumulateAngle = fillAccumulateAngleSpin->value();
                 EditController::getIns().onTabWidgetOffsetTabFill(fillParams);
             }
         });
@@ -1030,7 +1040,7 @@ public:
 
         // === 参数区域 ===
         QGridLayout* paramLayout = new QGridLayout();
-        QLineEdit* scaleEdit = new QLineEdit("945.0");
+        QLineEdit* scaleEdit = new QLineEdit("0.1");
         QLineEdit* scaleCorX = new QLineEdit("1.0");
         QLineEdit* scaleCorY = new QLineEdit("1.0");
         QLineEdit* rotationEdit = new QLineEdit("0.0");

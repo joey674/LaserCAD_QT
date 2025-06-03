@@ -14,7 +14,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-const double AxisScale = 5;
+const double AxisScale = 3;
 
 ProjectManager ProjectManager::ins;
 
@@ -302,7 +302,7 @@ void ProjectManager::newGraphicsView() {
     SceneController::getIns().scene->addItem(bound3);
     SceneController::getIns().scene->addItem(bound4);
 
-    // 缩放到合适的位置
+    // 缩放到合适的位置(好像并没有作用 但是会影响到editrect的handle大小 因为handle大小是按照这个来的
     SceneController::getIns().setSceneScale(6, 6);
 }
 

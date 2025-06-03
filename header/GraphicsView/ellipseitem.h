@@ -353,7 +353,7 @@ public:
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
-    std::vector<LaserDeviceCommand> getRTC5Command() const override{
+    std::vector<LaserDeviceCommand> getLaserCommand() override{
         return std::vector<LaserDeviceCommand>();
     }
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override

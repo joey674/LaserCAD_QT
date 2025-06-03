@@ -12,25 +12,22 @@ public:
     CombinedItem() {}
     std::shared_ptr<GraphicsItem> clone() const override
     {
-        auto item = std::make_shared<CombinedItem>();
-        // 拷贝基类字段
-        item->cloneBaseParams(*this);
-        item->animate();
-        return item;
+        // auto item = std::make_shared<CombinedItem>();
+        // // 拷贝基类字段
+        // item->cloneBaseParams(*this);
+        // item->animate();
+        // return item;
     }
     std::shared_ptr<GraphicsItem> createFromJson(QJsonObject obj) override
     {
-        return std::make_shared<CombinedItem>();
+        // return std::make_shared<CombinedItem>();
     }
-    QJsonObject saveToJson() const override { return QJsonObject{}; }
+    QJsonObject saveToJson() const override { /*return QJsonObject{}; */}
 
 public:
     // 功能是设置第n个item的中心的位置
     bool setVertexInScene(const int index, const Vertex vertex) override
     {
-        DEBUG_MSG("index: ");
-        DEBUG_MSG(index);
-        DEBUG_MSG(vertex.point);
         this->m_itemList[index]->setCenterInScene(vertex.point);
         this->animate();
         return true;
@@ -38,6 +35,13 @@ public:
     // 功能是设置整体combinedItem的中心位置
     bool setCenterInScene(const QPointF point) override
     {
+        QPointF combinedCenter = this->getCenterInScene();
+        QPointF offset = point - combinedCenter;
+
+        for (auto &item: this->m_itemList){
+            auto center = item->getCenterInScene ();
+            item->setCenterInScene (center + offset);
+        }
         this->animate();
         return true;
     }
@@ -113,9 +117,18 @@ public:
         }
         return newRect;
     }
-    std::vector<LaserDeviceCommand> getRTC5Command() const override
+    std::vector<LaserDeviceCommand> getLaserCommand() override
     {
-        return std::vector<LaserDeviceCommand>();
+        std::vector<LaserDeviceCommand> commandList;
+        auto repeatTime = this->getMarkParams().operateTime;
+
+        for (int i = 0; i < repeatTime; i++) {
+            for (auto &item: this->m_itemList){
+                auto cmd=item->getLaserCommand ();
+                commandList.insert (commandList.end (),cmd.begin(),cmd.end ());
+            }
+        }
+        return commandList;
     }
 
 protected:

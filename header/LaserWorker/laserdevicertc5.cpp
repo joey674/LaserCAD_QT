@@ -76,8 +76,6 @@ bool LaserDeviceRTC5::connectCard()
     //  a list might still be running. This would prevent load_program_file
     //  and load_correction_file from being executed.
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //
     int bDirect3DMove=0;
     int iEdgeLevel=65535;
     int iMinJumpDelay =10;
@@ -99,6 +97,11 @@ bool LaserDeviceRTC5::connectCard()
         return false;
     }
 
+    this->m_calibrationFactor = get_head_para(1,1);
+    DEBUG_VAR(this->m_calibrationFactor);
+    this->m_focalLength = get_head_para(1,2);
+    DEBUG_VAR(this->m_focalLength);
+
     // //
     // if(!m_powercurvefile.IsEmpty())
     //     LoadPowerCurve(m_powercurvefile);
@@ -117,14 +120,12 @@ bool LaserDeviceRTC5::connectCard()
     auto xcor = m_settings.scaleCorX;
     auto ycor = m_settings.scaleCorY;
     auto xyrotate = m_settings.rotation;
+    set_matrix(0, xcor*cos(xyrotate*Pi/180), -xcor*sin(xyrotate*Pi/180), ycor*sin(xyrotate*Pi/180), ycor*cos(xyrotate*Pi/180), 1);
+
     auto xoffset = m_settings.offsetX;
     auto yoffset = m_settings.offsetY;
-    auto scale = m_settings.scale;
-    set_matrix(0, xcor*cos(xyrotate*Pi/180), -xcor*sin(xyrotate*Pi/180), ycor*sin(xyrotate*Pi/180), ycor*cos(xyrotate*Pi/180), 1);
+    auto scale = m_settings.scale * this->m_calibrationFactor;
     set_offset(0, xoffset*scale, yoffset*scale, 1);
-
-    // set_delay_mode(m_bVarPolyDelay, bDirect3DMove, iEdgeLevel, iMinJumpDelay, iJumpLengthLimit*m_Scale);//100
-    // m_Scale=get_head_para(1,1);
 
     set_default_pixel(0);
 
@@ -164,6 +165,7 @@ bool LaserDeviceRTC5::connectCard()
     set_laser_delays( LaserOnDelay, LaserOffDelay );
     set_jump_speed( JumpSpeed );
     set_mark_speed( MarkSpeed );
+    jump_abs(0,0);
     set_end_of_list();
     execute_list( 1U );
     /// testcode 判断到底需不需要    set_start_list( 1U );
@@ -197,16 +199,16 @@ bool LaserDeviceRTC5::checkCard()
 bool LaserDeviceRTC5::executeCommand(const std::vector<LaserDeviceCommand> &cmdList) {
     while (!load_list(1U, 0U)) {}
 
-    // 坐标要乘以一个转换系数R 不然输入是以mm为单位 但是内部执行是um
+    // 坐标要乘以一个转换系数,这个数从correctionfile中读到; 不然输入是以mm为单位 但是内部执行是bit
     // 同时由于对graphicsview做了matrx transform(坐标右上为正),需要把角度做反再传回去
     // 我们这里坐标是(double,double), 用mm做单位; 输入的时候变成(long,long),用bit做单位
-    const long  R = 1000; // 转换系数: 从graphicsView的mm转换到rtc的um
+    const long R = static_cast<long>(this->m_calibrationFactor * this->m_settings.scale);
     const long transferParamX = R*(1);
     const long transferParamY = R*(1);
     const long transferParamAngle = (-1);
     for (const auto &cmd : cmdList) {
         std::visit(
-            [](const auto &c) {
+            [&](const auto &c) {
                 using T = std::decay_t<decltype(c)>;
                 if constexpr (std::is_same_v<T, JumpCommand>) {
                     INFO_MSG(" jump_abs " + QString::number(c.x) + " " + QString::number(c.y));
