@@ -4,10 +4,10 @@
 #include <polylinecombine.hpp>
 
 bool EllipseItem::updateHatchFillItem() {
+    this->m_hatchFillItemList.clear();
     if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
-    this->m_hatchFillItemList.clear();
 
     // 输入cavc库
     auto input = this->getCavcForm(false);

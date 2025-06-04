@@ -144,11 +144,12 @@ public:
 
 protected:
     bool updateContourFillItem() override {
+        this->m_contourFillItemList.clear();
         //
         if (this->m_contourFillParams.offset == 0 || this->m_contourFillParams.offsetCount == 0) {
             return true;
         }
-        this->m_contourFillItemList.clear();
+
         for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
             // 输入cavc库
             cavc::Polyline < double > input = this->getCavcForm(false);
@@ -292,7 +293,7 @@ protected:
         }
         return false;
     }
-    bool updateHatchFillItem() override{ return true;};
+    bool updateHatchFillItem() override{ return true;}
 
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {

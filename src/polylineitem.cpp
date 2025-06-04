@@ -5,13 +5,13 @@
 
 bool PolylineItem::updateContourFillItem()
 {
+    this->m_contourFillItemList.clear();
     if (m_vertexList.size() < 2) {
         return false;
     }
     if (this->m_contourFillParams.offset == 0) {
         return true;
     }
-    this->m_contourFillItemList.clear();
     for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         auto input = this->getCavcForm(false);
@@ -37,13 +37,13 @@ bool PolylineItem::updateContourFillItem()
 }
 
 bool PolylineItem::updateHatchFillItem() {
+    this->m_hatchFillItemList.clear();
     if (m_vertexList.size() < 2) {
         return false;
     }
     if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
-    this->m_hatchFillItemList.clear();
 
     // 输入cavc库
     auto input = this->getCavcForm(false);

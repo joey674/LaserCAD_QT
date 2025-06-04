@@ -6,11 +6,12 @@
 
 bool ArcItem::updateContourFillItem()
 {
+    this->m_contourFillItemList.clear();
     //
     if (this->m_contourFillParams.offset == 0 || this->m_contourFillParams.offsetCount == 0) {
         return true;
     }
-    this->m_contourFillItemList.clear();
+
     for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
         // 输入cavc库
         cavc::Polyline<double> input = this->getCavcForm(true);
@@ -31,10 +32,10 @@ bool ArcItem::updateContourFillItem()
 
 bool ArcItem::updateHatchFillItem()
 {
+    this->m_hatchFillItemList.clear();
     if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
-    this->m_hatchFillItemList.clear();
 
     // 输入cavc库
     auto input = this->getCavcForm(true);

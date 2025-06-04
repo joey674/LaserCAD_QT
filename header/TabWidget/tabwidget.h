@@ -165,7 +165,7 @@ public:
         modeCombo->addItem("Hatch Fill");
         mainLayout->addWidget(modeCombo);
 
-        // offset 输入区域
+        // CONTOURFILL 输入区域
         QWidget* offsetWidget = new QWidget();
         QFormLayout* offsetForm = new QFormLayout(offsetWidget);
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
