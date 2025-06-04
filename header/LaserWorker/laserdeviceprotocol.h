@@ -123,6 +123,18 @@ struct ArcCommand
     double angle;
 };
 
+//set_ellipse + mark_ellipse_abs
+struct EllipseCommand {
+    double a;       // 半长轴
+    double b;       // 半短轴
+    double phi0;    // 起始角
+    double phi;     // 弧长角
+    double X; // 中心坐标 X
+    double Y; // 中心坐标 Y
+    double Alpha;   // 椭圆主轴与 X 轴夹角
+};
+
+
 struct SetLaserPulsesCommand
 {
     unsigned int halfPeriod;
@@ -161,6 +173,7 @@ struct LongDelayCommand
 using LaserDeviceCommand = std::variant<JumpCommand,
                                  MarkCommand,
                                  ArcCommand,
+                                 EllipseCommand,
                                  SetLaserPulsesCommand,
                                  SetScannerDelaysCommand,
                                  SetLaserDelaysCommand,

@@ -305,6 +305,7 @@ public:
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override
     {
+        this->animate ();
         auto commandList = GraphicsItem::getLaserCommand();
         auto repeatTime = this->getMarkParams().operateTime;
 

@@ -238,7 +238,13 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
             } else if constexpr (std::is_same_v<T, ArcCommand>) {
                 INFO_MSG(" arc_abs " + QString::number(c.x) + " " + QString::number(c.y) + " " + QString::number(c.angle));
                 arc_abs(c.x * transferParamX, c.y * transferParamY , c.angle *transferParamAngle);
-            } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
+            } else if constexpr (std::is_same_v<T, EllipseCommand>) {
+                INFO_MSG("set_ellipse" + QString::number(c.a) + " " + QString::number(c.b) + " " + QString::number(c.phi0)+ " " + QString::number(c.phi));
+                INFO_MSG(" mark_ellipse_abs " + QString::number(c.X) + " " + QString::number(c.Y) + " " + QString::number(c.Alpha));
+                set_ellipse(c.a * transferParamX, c.b * transferParamY , c.phi0 *transferParamAngle, c.phi);
+                mark_ellipse_abs(c.X* transferParamX,c.Y* transferParamY,c.Alpha*transferParamAngle);
+            }
+            else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
                 INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseWidth));
                 set_laser_pulses(c.halfPeriod, c.pulseWidth);
             } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {

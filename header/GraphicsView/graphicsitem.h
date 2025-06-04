@@ -21,7 +21,7 @@ public:
     GraphicsItem(const GraphicsItem &) = delete;
     GraphicsItem &operator=(const GraphicsItem &) = delete;
     void cloneBaseParams(const GraphicsItem &other) {
-        // 拷贝基础字段;  不可以拷贝copyparams(contourParams暂时不行); 如果有需要再说
+        // 拷贝基础字段;  不可以拷贝copyparams
         this->m_uuid = GenerateUUID();
         this->m_color = other.getColor();
         this->setFlags(other.flags());

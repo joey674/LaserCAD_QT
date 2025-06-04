@@ -143,25 +143,25 @@ public:
     };
 
 protected:
-    bool updateContourFillItem() override {
-        this->m_contourFillItemList.clear();
-        //
-        if (this->m_contourFillParams.offset == 0 || this->m_contourFillParams.offsetCount == 0) {
-            return true;
-        }
+    bool updateContourFillItem() override { // 螺旋线没有Contour
+        // this->m_contourFillItemList.clear();
+        // //
+        // if (this->m_contourFillParams.offset == 0 || this->m_contourFillParams.offsetCount == 0) {
+        //     return true;
+        // }
 
-        for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
-            // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
-            input.isClosed() = false;
-            std::vector < cavc::Polyline < double>> results
-                = cavc::parallelOffset(input, this->m_contourFillParams.offset * offsetIndex);
-            // 获取结果
-            for (const auto &polyline : results) {
-                auto item = FromCavcForm(polyline);
-                this->m_contourFillItemList.push_back(std::move(item));
-            }
-        }
+        // for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
+        //     // 输入cavc库
+        //     cavc::Polyline < double > input = this->getCavcForm(false);
+        //     input.isClosed() = false;
+        //     std::vector < cavc::Polyline < double>> results
+        //         = cavc::parallelOffset(input, this->m_contourFillParams.offset * offsetIndex);
+        //     // 获取结果
+        //     for (const auto &polyline : results) {
+        //         auto item = FromCavcForm(polyline);
+        //         this->m_contourFillItemList.push_back(std::move(item));
+        //     }
+        // }
         return true;
     }
     bool updatePaintItem() override {
@@ -293,7 +293,7 @@ protected:
         }
         return false;
     }
-    bool updateHatchFillItem() override{ return true;}
+    bool updateHatchFillItem() override{ return true;} // 螺旋线没有Hatch
 
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
@@ -354,7 +354,57 @@ public:
         QRectF newRect = m_paintItem->boundingRect();
         return newRect;
     }
-    std::vector<LaserDeviceCommand> getLaserCommand() override{}
+    std::vector<LaserDeviceCommand> getLaserCommand() override{
+        this->animate ();
+        auto commandList = GraphicsItem::getLaserCommand();
+        auto repeatTime = this->getMarkParams().operateTime;
+
+        const QPointF center = m_center.point;
+        const double totalAngleDeg = m_turns * 360.0;
+        const double angleStepRad = m_angleStepDeg * M_PI / 180.0;
+        const double totalSteps = totalAngleDeg / m_angleStepDeg;
+        const double radiusStep = (m_endRadius - m_startRadius) / totalSteps;
+        const double baseAngleRad = m_rotateAngle * M_PI / 180.0;
+
+        for (int i = 0; i < repeatTime; i++) {
+            // 打印自身Item
+            bool first = true;
+            for (int i = 0; i <= totalSteps; ++i) {
+                double angle = baseAngleRad + i * angleStepRad;
+                double radius = m_startRadius + radiusStep * i;
+                QPointF p = center + QPointF(std::cos(angle) * radius,
+                                             std::sin(angle) * radius);
+                if (first) {
+                    commandList.emplace_back(JumpCommand{p.x(), p.y()});
+                    first = false;
+                } else {
+                    commandList.emplace_back(MarkCommand{p.x(), p.y()});
+                }
+            }
+            // // 打印 CONTOUR FillItem
+            // for (const auto& contourFillItem : m_contourFillItemList){
+            //     auto cmdList1 = contourFillItem->getLaserCommand ();
+            //     commandList.insert(commandList.end(), cmdList1.begin(), cmdList1.end());
+            // }
+            // // 打印 HATCH FillItem (这里通过更新startAngle来获取累进的hatch,最后再改回去)
+            // auto startAngle = this->m_hatchFillParams.startAngle;
+            // for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+            //     for (const auto& hatchFillItem : m_hatchFillItemList){
+            //         auto cmdList2 = hatchFillItem->getLaserCommand ();
+            //         commandList.insert(commandList.end(), cmdList2.begin(), cmdList2.end());
+            //     }
+            //     this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+            //     this->updateHatchFillItem ();
+            // }
+            // this->m_hatchFillParams.startAngle = startAngle;
+            // 打印COPY Item
+            for (const auto& copyItem : m_copiedItemList){
+                auto cmd = copyItem->getLaserCommand ();
+                commandList.insert (commandList.end (),cmd.begin (),cmd.end ());
+            }
+        }
+        return commandList;
+    }
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
     {
         this->animate();

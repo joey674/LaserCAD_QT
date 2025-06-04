@@ -330,13 +330,7 @@ public:
         QPointF pos = rect.center ();
         return pos;
     }
-    QString getName() const override {
-        return "EllipseItem";
-    }
-    int type() const override {
-        return GraphicsItemType::Ellipse;
-    }
-    double getRadiusX() {
+   double getRadiusX() {
         return this->m_radiusX;
     }
     double getRadiusY() {
@@ -344,6 +338,12 @@ public:
     }
     double getRotateAngle() {
         return this->m_rotateAngle;
+    }
+    QString getName() const override {
+        return "EllipseItem";
+    }
+    int type() const override {
+        return GraphicsItemType::Ellipse;
     }
     uint getVertexCount() const override {
         return 1;
@@ -356,7 +356,48 @@ public:
         return newRect;
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override{
-        return std::vector<LaserDeviceCommand>();
+        this->animate ();
+        auto commandList = GraphicsItem::getLaserCommand();
+        auto repeatTime = this->getMarkParams().operateTime;
+
+        // 获取椭圆参数
+        const auto &center = this->getCenterInScene();
+        const auto a = this->getRadiusX ();
+        const auto b = this->getRadiusY ();
+        const auto phi0 = 0;
+        const auto phi = 360;
+        const auto alpha = -this->getRotateAngle (); // RTC5内部是顺时针为正angle; 我们的规范是逆时针为正
+
+        for (int i = 0; i < repeatTime; i++) {
+            // 打印自身Item
+            commandList.emplace_back(EllipseCommand{
+                a, b, phi0, phi,
+                center.x(), center.y(),
+                alpha
+            });
+            // 打印 CONTOUR FillItem
+            for (const auto& contourFillItem : m_contourFillItemList){
+                auto cmdList1 = contourFillItem->getLaserCommand ();
+                commandList.insert(commandList.end(), cmdList1.begin(), cmdList1.end());
+            }
+            // 打印 HATCH FillItem (这里通过更新startAngle来获取累进的hatch,最后再改回去)
+            auto startAngle = this->m_hatchFillParams.startAngle;
+            for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+                for (const auto& hatchFillItem : m_hatchFillItemList){
+                    auto cmdList2 = hatchFillItem->getLaserCommand ();
+                    commandList.insert(commandList.end(), cmdList2.begin(), cmdList2.end());
+                }
+                this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+                this->updateHatchFillItem ();
+            }
+            this->m_hatchFillParams.startAngle = startAngle;
+            // 打印COPY Item
+            for (const auto& copyItem : m_copiedItemList){
+                auto cmd = copyItem->getLaserCommand ();
+                commandList.insert (commandList.end (),cmd.begin (),cmd.end ());
+            }
+        }
+        return commandList;
     }
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
     {

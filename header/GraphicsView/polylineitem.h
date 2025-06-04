@@ -335,11 +335,12 @@ public:
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override
     {
+        this->animate ();
         auto commandList = GraphicsItem::getLaserCommand();
         auto operateTime = this->getMarkParams().operateTime;
 
         for (int operateIndex = 0; operateIndex < operateTime; operateIndex++) {
-            // 先打本体 遍历每个点;
+            // 打印自身Item
             int count = this->getVertexCount();
             for (int i = 0; i < count - 1; ++i) {
                 QPointF p1, p2;
@@ -358,14 +359,35 @@ public:
                     commandList.emplace_back(MarkCommand{p2.x (), p2.y ()});
                 }
             }
-            // TODO 再打copyitem/contourfill/hatchfill
+            // 打印 CONTOUR FillItem
+            for (const auto& contourFillItem : m_contourFillItemList){
+                auto cmdList1 = contourFillItem->getLaserCommand ();
+                commandList.insert(commandList.end(), cmdList1.begin(), cmdList1.end());
+            }
+            // 打印 HATCH FillItem (这里通过更新startAngle来获取累进的hatch,最后再改回去)
+            auto startAngle = this->m_hatchFillParams.startAngle;
+            for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+                for (const auto& hatchFillItem : m_hatchFillItemList){
+                    auto cmdList2 = hatchFillItem->getLaserCommand ();
+                    commandList.insert(commandList.end(), cmdList2.begin(), cmdList2.end());
+                }
+                this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+                this->updateHatchFillItem ();
+            }
+            this->m_hatchFillParams.startAngle = startAngle;
+            // 打印COPY Item
+            for (const auto& copyItem : m_copiedItemList){
+                auto cmd = copyItem->getLaserCommand ();
+                commandList.insert (commandList.end (),cmd.begin (),cmd.end ());
+            }
         }
         return commandList;
     }
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
     {
         this->animate();
-        std::vector<std::shared_ptr<QGraphicsItem>> list = m_paintItemList;
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.insert(list.end(),this->m_paintItemList.begin(),this->m_paintItemList.end());
         list.insert(list.end(), m_contourFillItemList.begin(), m_contourFillItemList.end());
         list.insert(list.end(), m_copiedItemList.begin(), m_copiedItemList.end());
         list.insert(list.end(), m_hatchFillItemList.begin(), m_hatchFillItemList.end());
@@ -408,7 +430,7 @@ public:
         for (auto &item : this->m_paintItemList) {
             item->paint(painter, &optionx, widget);
         }
-        // 绘制offset
+        // 绘制countour
         for (auto &item : this->m_contourFillItemList) {
             item->paint(painter, &optionx, widget);
         }

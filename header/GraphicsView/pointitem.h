@@ -256,7 +256,37 @@ public:
         return newRect;
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override{
-        return std::vector<LaserDeviceCommand>();
+        this->animate ();
+        auto commandList = GraphicsItem::getLaserCommand();
+        auto repeatTime = this->getMarkParams().operateTime;
+        const auto &p0 = this->getVertexInScene (0);
+        for (int i = 0; i < repeatTime; i++) {
+            // 打印自身Item
+            commandList.emplace_back(JumpCommand{p0.point.x (),p0.point.y ()});
+            commandList.emplace_back(MarkCommand{p0.point.x (),p0.point.y ()});
+            // 打印 CONTOUR FillItem
+            // for (const auto& contourFillItem : m_contourFillItemList){
+            //     auto cmdList1 = contourFillItem->getLaserCommand ();
+            //     commandList.insert(commandList.end(), cmdList1.begin(), cmdList1.end());
+            // }
+            // 打印 HATCH FillItem (这里通过更新startAngle来获取累进的hatch,最后再改回去)
+            // auto startAngle = this->m_hatchFillParams.startAngle;
+            // for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+            //     for (const auto& hatchFillItem : m_hatchFillItemList){
+            //         auto cmdList2 = hatchFillItem->getLaserCommand ();
+            //         commandList.insert(commandList.end(), cmdList2.begin(), cmdList2.end());
+            //     }
+            //     this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+            //     this->updateHatchFillItem ();
+            // }
+            // this->m_hatchFillParams.startAngle = startAngle;
+            // 打印COPY Item
+            for (const auto& copyItem : m_copiedItemList){
+                auto cmd = copyItem->getLaserCommand ();
+                commandList.insert (commandList.end (),cmd.begin (),cmd.end ());
+            }
+        }
+        return commandList;
     }
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
     {

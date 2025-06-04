@@ -10,8 +10,7 @@ bool CircleItem::updateHatchFillItem() {
     }
 
     // 输入cavc库
-    auto input = this->getCavcForm(false);
-    input.isClosed() = true;
+    auto input = this->getCavcForm(true);
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();
@@ -36,17 +35,29 @@ bool CircleItem::updateHatchFillItem() {
         // 线段两端点
         QPointF p1 = mid + QPointF(-dx * lineLength * 0.5, -dy * lineLength * 0.5);
         QPointF p2 = mid + QPointF(dx * lineLength * 0.5, dy * lineLength * 0.5);
-        // 构造 cavc 线段
-        cavc::Polyline<double> hatch;
-        hatch.addVertex(p1.x(), p1.y(),0);
-        hatch.addVertex(p2.x(), p2.y(),0);
+        // 构造 填充线段
+        cavc::Polyline<double> rawHatch;
+        rawHatch.addVertex(p1.x(), p1.y(),0);
+        rawHatch.addVertex(p2.x(), p2.y(),0);
         // 与 polygon 做布尔交集
         input.isClosed() = true;
-        hatch.isClosed() = true;
+        rawHatch.isClosed() = true;
         // 执行布尔操作
-        cavc::CombineResult < double > result = cavc::combinePolylines(input, hatch, cavc::PlineCombineMode::Intersect);
-        for (const auto &pline : result.remaining) {
-            auto item = FromCavcForm(pline);
+        cavc::CombineResult < double > result = cavc::combinePolylines(input, rawHatch, cavc::PlineCombineMode::Intersect);
+        for (auto &hatch : result.remaining) {
+            hatch.isClosed () = false;
+            auto item = FromCavcForm(hatch);
+            // 确保所有hatch的方向一致
+            const auto v0 = item->getVertexInScene (0);
+            const auto v1 = item->getVertexInScene (1);
+            double vx = v1.point.x() - v0.point.x();
+            double vy = v1.point.y() - v0.point.y();
+            double dot = vx * dx + vy * dy;
+            if (dot < 0) {
+                item->setVertexInScene (0,v1);
+                item->setVertexInScene (1,v0);
+            }
+            //
             item->setColor(this->getColor());
             item->setMarkParams (this->getMarkParams ());
             item->setDelayParams (this->getDelayParams ());

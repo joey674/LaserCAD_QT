@@ -39,8 +39,6 @@ bool ArcItem::updateHatchFillItem()
 
     // 输入cavc库
     auto input = this->getCavcForm(true);
-    // 自动判断 如果最后一个点与第一个点重合 那么就认为是close;
-    auto vertexCount = this->getVertexCount();
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();
