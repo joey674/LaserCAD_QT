@@ -141,6 +141,10 @@ public:
         m_contourFillItemList.clear();
         return result;
     };
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        return result;
+    };
 
 protected:
     bool updateContourFillItem() override { // 螺旋线没有Contour

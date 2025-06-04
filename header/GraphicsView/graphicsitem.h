@@ -103,7 +103,7 @@ protected:
     virtual bool updateContourFillItem() = 0;
     virtual bool updatePaintItem() = 0;
     virtual bool updateCopiedItem() = 0;
-    virtual bool updateHatchFillItem() {}
+    virtual bool updateHatchFillItem() = 0;
     virtual bool animate() {
         // 这里实时把vertexlist里的点信息更新到itemlist里；然后paint函数会绘制itemlist里的东西
         this->updatePaintItem();

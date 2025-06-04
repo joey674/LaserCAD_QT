@@ -5,6 +5,7 @@
 #include "logger.h"
 #include "polylineitem.h"
 #include "protocol.h"
+#include "combineditem.h"
 
 class EllipseItem : public GraphicsItem {
 public:
@@ -289,6 +290,30 @@ protected:
         return false;
     }
     bool updateHatchFillItem() override;
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
+        DEBUG_MSG("break hatch");
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        //
+        auto startAngle = this->m_hatchFillParams.startAngle;
+        for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+            this->updateHatchFillItem ();
+            auto combinedItem = std::make_shared<CombinedItem>();
+            // 转换类型
+            std::vector < std::shared_ptr < GraphicsItem>> graphicsItems;
+            graphicsItems.reserve(this->m_hatchFillItemList.size());
+            for (const auto& item : this->m_hatchFillItemList) {
+                graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
+            }
+            // 装进combinedItem,然后装进result
+            combinedItem->combinedItem (graphicsItems);
+            result.push_back (combinedItem);
+            this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+        }
+        DEBUG_VAR(result.size ());
+        this->m_hatchFillParams.startAngle = startAngle;
+        this->m_hatchFillParams.operateCount = 0;
+        return result;
+    };
 
 public:
     cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
