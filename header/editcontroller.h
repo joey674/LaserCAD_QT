@@ -370,15 +370,29 @@ public: // 编辑回调
 
     /// \brief 按钮回调 直接操作当前editItemGroup;
     ///
-    void onBreakOffsetItemTriggered() {
+    void onBreakContourFillItemTriggered() {
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
-        auto offsetItems = curEditItem->breakParallelFillItem();
-        for (auto &item : offsetItems) {
+        auto contourItems = curEditItem->breakContourFillItem();
+        for (auto &item : contourItems) {
             auto uuid = item->getUUID();
             SceneController::getIns().scene->addItem(item.get());
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
+        }
+    }
+    void onBreakHatchFillItemTriggered() {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        auto hatchItems = curEditItem->breakHatchFillItem();
+        for (auto &item : hatchItems) {
+            auto uuid = item->getUUID();
+            SceneController::getIns().scene->addItem(item.get());
+            item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
             ItemManager::getIns().addItem(std::move(item));
             ItemManager::getIns().setItemSelectable(uuid, true);
         }

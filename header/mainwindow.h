@@ -61,15 +61,16 @@ private slots: // 编辑工具按钮
     //
     void onDragSceneButtonClicked();
     //
+    void onCombineButtonClicked();
+    void onBreakButtonClicked();
     void onBreakCopiedItemButtonClicked();
-    void onBreakOffsetItemButtonClicked();
+    void onBreakContourFillItemButtonClicked();
+    void onBreakHatchFillItemButtonClicked();
     //
     void onDeleteButtonClicked();
     void onCutButtonClicked();
     void onCopyButtonClicked();
     void onPasteButtonClicked();
-    void onCombineButtonClicked();
-    void onBreakButtonClicked();
     //
     void onDrawTestLineButtonClicked();
     void onUndoButtonClicked() {}

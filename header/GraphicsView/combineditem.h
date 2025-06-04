@@ -50,7 +50,7 @@ public:
     {
         return std::vector<std::shared_ptr<GraphicsItem>>();
     }
-    std::vector<std::shared_ptr<GraphicsItem>> breakParallelFillItem() override
+    std::vector<std::shared_ptr<GraphicsItem>> breakContourFillItem() override
     {
         return std::vector<std::shared_ptr<GraphicsItem>>();
     };

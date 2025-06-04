@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "utils.hpp"
 #include <polylineoffset.hpp>
+#include "combineditem.h"
 
 class ArcItem: public GraphicsItem {
 public:
@@ -97,8 +98,8 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
-        // 获取当前最新的copiedItem
+    std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() override {
+        // 获取当前最新的Item
         this->animate();
         // 设置Params为空
         m_contourFillParams.offset = 0;
@@ -111,6 +112,30 @@ public:
             result.emplace_back(std::move(item));
         }
         m_contourFillItemList.clear();
+        return result;
+    };
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
+        DEBUG_MSG("break hatch");
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        //
+        auto startAngle = this->m_hatchFillParams.startAngle;
+        for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+            this->updateHatchFillItem ();
+            auto combinedItem = std::make_shared<CombinedItem>();
+            // 转换类型
+            std::vector < std::shared_ptr < GraphicsItem>> graphicsItems;
+            graphicsItems.reserve(this->m_hatchFillItemList.size());
+            for (const auto& item : this->m_hatchFillItemList) {
+                graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
+            }
+            // 装进combinedItem,然后装进result
+            combinedItem->combinedItem (graphicsItems);
+            result.push_back (combinedItem);
+            this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+        }
+        DEBUG_VAR(result.size ());
+        this->m_hatchFillParams.startAngle = startAngle;
+        this->m_hatchFillParams.operateCount = 0;
         return result;
     };
 

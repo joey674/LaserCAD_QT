@@ -72,7 +72,7 @@ UUID ItemManager::addItem(QString name, QString type, QModelIndex position) {
     model->setNodeProperty(position, TreeNodePropertyIndex::UUID, item.get()->getUUID());
     // 插入ItemMap;
     itemMapInsert(item.get()->getUUID(), item);
-    INFO_MSG("item add: " + item->getUUID());
+    // INFO_MSG("item add: " + item->getUUID());
     return item.get()->getUUID();
 }
 

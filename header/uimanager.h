@@ -30,15 +30,17 @@ public:
     QToolButton *cutButton;
     QToolButton *deleteButton;
     QToolButton *pasteButton;
+    // combine/breakButton
     QToolButton *combineButton;
     QToolButton *breakButton;
+    QToolButton *breakCopiedItemButton;
+    QToolButton *breakContourFillItemButton;
+    QToolButton *breakHatchFillItemButton;
     // ToolButton
     QToolButton *editButton;
     QToolButton *centerButton;
     QToolButton *mirrorHorizontalButton;
     QToolButton *mirrorVerticalButton;
-    QToolButton *breakCopiedItemButton;
-    QToolButton *breakContourFillItemButton;
     // SceneButton
     QToolButton *dragSceneButton;
     QToolButton *redoButton;
@@ -68,6 +70,7 @@ public:
     QStatusBar *statusBar;
     TabWidget *editTabWidget;
     TabWidget *systemTabWidget;
+
 public:
     void initLayout(QWidget *parent) {
         QWidget *central = new QWidget(parent);
@@ -107,14 +110,25 @@ public:
         secondHLayout->addWidget(pasteButton);
         deleteButton = new QToolButton(central);
         secondHLayout->addWidget(deleteButton);
-        combineButton = new QToolButton(central);
-        secondHLayout->addWidget(combineButton);
-        breakButton = new QToolButton(central);
-        secondHLayout->addWidget(breakButton);
         QFrame *splitLine3 = new QFrame(central);// 插入分隔线
         splitLine3->setFrameShape(QFrame::VLine);
         splitLine3->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine3);
+        // combined break button
+        combineButton = new QToolButton(central);
+        secondHLayout->addWidget(combineButton);
+        breakButton = new QToolButton(central);
+        secondHLayout->addWidget(breakButton);
+        breakCopiedItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakCopiedItemButton);
+        breakContourFillItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakContourFillItemButton);
+        breakHatchFillItemButton = new QToolButton(central);
+        secondHLayout->addWidget(breakHatchFillItemButton);
+        QFrame *splitLine3_1 = new QFrame(central);// 插入分隔线
+        splitLine3_1->setFrameShape(QFrame::VLine);
+        splitLine3_1->setFrameShadow(QFrame::Sunken);
+        secondHLayout->addWidget(splitLine3_1);
         // toolButton
         editButton = new QToolButton(central);
         secondHLayout->addWidget(editButton);
@@ -122,10 +136,6 @@ public:
         secondHLayout->addWidget(mirrorHorizontalButton);
         mirrorVerticalButton = new QToolButton(central);
         secondHLayout->addWidget(mirrorVerticalButton);
-        breakCopiedItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakCopiedItemButton);
-        breakContourFillItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakContourFillItemButton);
         centerButton = new QToolButton(central);
         secondHLayout->addWidget(centerButton);
         QFrame *splitLine4 = new QFrame(central);// 插入分隔线

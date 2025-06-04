@@ -72,14 +72,14 @@ public:
     bool setCenterInScene(const QPointF point) override {
         QPointF currentCenter = this->getCenterInScene();
         QPointF offset = point - currentCenter;
-        QString msg = QString("curCenter: (%1, %2), offset: (%3, %4), this->pos: (%5, %6)")
-                      .arg(currentCenter.x(), 0, 'f', 2)
-                      .arg(currentCenter.y(), 0, 'f', 2)
-                      .arg(offset.x(), 0, 'f', 2)
-                      .arg(offset.y(), 0, 'f', 2)
-                      .arg(this->pos().x(), 0, 'f', 2)
-                      .arg(this->pos().y(), 0, 'f', 2);
-        DEBUG_MSG(msg);
+        // QString msg = QString("curCenter: (%1, %2), offset: (%3, %4), this->pos: (%5, %6)")
+        //               .arg(currentCenter.x(), 0, 'f', 2)
+        //               .arg(currentCenter.y(), 0, 'f', 2)
+        //               .arg(offset.x(), 0, 'f', 2)
+        //               .arg(offset.y(), 0, 'f', 2)
+        //               .arg(this->pos().x(), 0, 'f', 2)
+        //               .arg(this->pos().y(), 0, 'f', 2);
+        // DEBUG_MSG(msg);
         for (auto &vertex : this->m_vertexList) {
             vertex.point = vertex.point + offset;
         }
@@ -102,7 +102,7 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() override {
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空

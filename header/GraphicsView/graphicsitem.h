@@ -60,7 +60,8 @@ public:
         return true;
     }
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() = 0;
-    virtual std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() = 0;
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() = 0;
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() {};
     bool setColor(QColor color) {
         this->m_color = color;
         this->animate();

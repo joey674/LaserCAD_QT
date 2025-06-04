@@ -315,7 +315,18 @@ void MainWindow::initEditToolButton() {
     breakContourFillItemButton->setToolTip("打散轮廓填充");
     UiManager::getIns().registerToolButton(breakContourFillItemButton);
     connect(breakContourFillItemButton, &QToolButton::clicked,
-            this, &MainWindow::onBreakOffsetItemButtonClicked);
+            this, &MainWindow::onBreakContourFillItemButtonClicked);
+    //
+    QToolButton *breakHatchFillItemButton = UiManager::getIns(). breakHatchFillItemButton;
+    breakHatchFillItemButton->setIcon(QIcon(":/button/breakHatchFillItemButton.png"));
+    breakHatchFillItemButton->setIconSize(QSize(30, 30));
+    breakHatchFillItemButton->setStyleSheet(buttonStyle);
+    breakHatchFillItemButton->setCheckable(true);
+    breakHatchFillItemButton->setAutoExclusive(false);
+    breakHatchFillItemButton->setToolTip("打散线段填充");
+    UiManager::getIns().registerToolButton(breakHatchFillItemButton);
+    connect(breakHatchFillItemButton, &QToolButton::clicked,
+            this, &MainWindow::onBreakHatchFillItemButtonClicked);
     /// 粘贴 复制 剪切
     ///
     ///
@@ -427,7 +438,7 @@ void MainWindow::initLayerButton() {
     // setLayerColorButton->setToolTip("");
     // UiManager::getIns().registerToolButton(setLayerColorButton);
     // connect(breakContourFillItemButton, &QToolButton::clicked,
-    //         this, &MainWindow::onBreakOffsetItemButtonClicked);
+    //         this, &MainWindow::onBreakContourFillItemButtonClicked);
     //
 }
 
@@ -1060,11 +1071,14 @@ void MainWindow::onBreakCopiedItemButtonClicked() {
     EditController::getIns().onBreakCopiedItemTriggered();
 }
 
-void MainWindow::onBreakOffsetItemButtonClicked() {
+void MainWindow::onBreakContourFillItemButtonClicked() {
     setEditMode();
-    EditController::getIns().onBreakOffsetItemTriggered();
+    EditController::getIns().onBreakContourFillItemTriggered();
 }
-
+void MainWindow::onBreakHatchFillItemButtonClicked() {
+    setEditMode();
+    EditController::getIns().onBreakHatchFillItemTriggered();
+}
 void MainWindow::onCutButtonClicked() {
     setEditMode();
     EditController::getIns().onCutItemsTriggered();

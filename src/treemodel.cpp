@@ -94,8 +94,8 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
         nodeList.push_back(node);
         for (const auto &curNode : nodeList) {
             auto uuid = curNode->property(TreeNodePropertyIndex::UUID).toString();
-            DEBUG_VAR(uuid);
-            DEBUG_VAR(isVisible);
+            // DEBUG_VAR(uuid);
+            // DEBUG_VAR(isVisible);
             ItemManager::getIns().setItemVisible(uuid, isVisible);
         }
         emit dataChanged(nodeIndex, nodeIndex, {Qt::CheckStateRole});

@@ -125,7 +125,7 @@ public:
         m_copiedItemList.clear();
         return result;
     }
-    std::vector < std::shared_ptr < GraphicsItem>> breakParallelFillItem() override {
+    std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() override {
         // 获取当前最新的copiedItem
         this->animate();
         // 设置Params为空
