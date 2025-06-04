@@ -275,25 +275,25 @@ void MainWindow::initEditToolButton() {
     UiManager::getIns().registerToolButton(centerButton);
     connect(centerButton, &QToolButton::clicked, this, &MainWindow::onCenterButtonClicked);
     //
-    QToolButton *redoButton = UiManager::getIns(). redoButton;
-    redoButton->setIcon(QIcon(":/button/redoButton.svg"));
-    redoButton->setIconSize(QSize(30, 30));
-    redoButton->setStyleSheet(buttonStyle);
-    redoButton->setCheckable(true);
-    redoButton->setAutoExclusive(false);
-    redoButton->setToolTip("移动对象到中心点");
-    UiManager::getIns().registerToolButton(redoButton);
-    connect(redoButton, &QToolButton::clicked, this, &MainWindow::onRedoButtonClicked);
+    // QToolButton *redoButton = UiManager::getIns(). redoButton;
+    // redoButton->setIcon(QIcon(":/button/redoButton.svg"));
+    // redoButton->setIconSize(QSize(30, 30));
+    // redoButton->setStyleSheet(buttonStyle);
+    // redoButton->setCheckable(true);
+    // redoButton->setAutoExclusive(false);
+    // redoButton->setToolTip("");
+    // UiManager::getIns().registerToolButton(redoButton);
+    // connect(redoButton, &QToolButton::clicked, this, &MainWindow::onRedoButtonClicked);
     //
-    QToolButton *undoButton = UiManager::getIns(). undoButton;
-    undoButton->setIcon(QIcon(":/button/undoButton.svg"));
-    undoButton->setIconSize(QSize(30, 30));
-    undoButton->setStyleSheet(buttonStyle);
-    undoButton->setCheckable(true);
-    undoButton->setAutoExclusive(false);
-    undoButton->setToolTip("移动对象到中心点");
-    UiManager::getIns().registerToolButton(undoButton);
-    connect(undoButton, &QToolButton::clicked, this, &MainWindow::onUndoButtonClicked);
+    // QToolButton *undoButton = UiManager::getIns(). undoButton;
+    // undoButton->setIcon(QIcon(":/button/undoButton.svg"));
+    // undoButton->setIconSize(QSize(30, 30));
+    // undoButton->setStyleSheet(buttonStyle);
+    // undoButton->setCheckable(true);
+    // undoButton->setAutoExclusive(false);
+    // undoButton->setToolTip("");
+    // UiManager::getIns().registerToolButton(undoButton);
+    // connect(undoButton, &QToolButton::clicked, this, &MainWindow::onUndoButtonClicked);
     //
     QToolButton *breakCopiedItemButton = UiManager::getIns(). breakCopiedItemButton;
     breakCopiedItemButton->setIcon(QIcon(":/button/breakCopiedItemButton.png"));

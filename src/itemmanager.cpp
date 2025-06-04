@@ -23,7 +23,7 @@ UUID ItemManager::addItem(std::shared_ptr < GraphicsItem > ptr) {
     QString uuid = ptr->getUUID();
     // 插入ItemMap
     itemMapInsert(uuid, ptr);
-    INFO_MSG("item add: " + ptr->getUUID());
+    // INFO_MSG("item add: " + ptr->getUUID());
     // 插入TreeViewModel 注意 这个要最后做 不然会报bug
     TreeModel *model = qobject_cast < TreeModel * > (treeView->model());
     QModelIndex layerNodeIndex;

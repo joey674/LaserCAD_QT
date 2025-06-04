@@ -138,10 +138,10 @@ public:
         // utilsButton
         drawTestLineButton = new QToolButton(central);
         secondHLayout->addWidget(drawTestLineButton);
-        redoButton = new QToolButton(central);
-        secondHLayout->addWidget(redoButton);
-        undoButton = new QToolButton(central);
-        secondHLayout->addWidget(undoButton);
+        // redoButton = new QToolButton(central);
+        // secondHLayout->addWidget(redoButton);
+        // undoButton = new QToolButton(central);
+        // secondHLayout->addWidget(undoButton);
         QFrame *splitLine5 = new QFrame(central);// 插入分隔线
         splitLine5->setFrameShape(QFrame::VLine);
         splitLine5->setFrameShadow(QFrame::Sunken);

@@ -471,7 +471,7 @@ public: // 编辑回调
         }
         for (const auto &uuid : uuids) {
             ItemManager::getIns().deleteItem(uuid);
-            DEBUG_MSG(uuid + " is deleted");
+            // DEBUG_MSG(uuid + " is deleted");
         }
         // 清除editController中的编辑列表
         this->m_currentEditItemGroup.clear();
