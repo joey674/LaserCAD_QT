@@ -1,4 +1,45 @@
 #include "css.h"
+#include <QApplication>
+#include <QFont>
+
+void initGlobalStyle()
+{
+    // 设置全局字体
+    QFont font("Microsoft YaHei", 10);
+    font.setWeight(QFont::Normal);
+    qApp->setFont(font);
+
+    // 设置全局样式表
+    qApp->setStyleSheet(R"(
+        QPushButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+        QPushButton:hover {
+            background-color: #45A049;
+        }
+        QPushButton:pressed {
+            background-color: #3e8e41;
+        }
+
+        QLabel {
+            color: #222222;
+        }
+
+        QLineEdit {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        QMainWindow {
+            background-color: #F5F5F5;
+        }
+    )");
+}
 
 const QString buttonStyle1 = R"(
         QToolButton {

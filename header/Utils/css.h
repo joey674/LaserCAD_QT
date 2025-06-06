@@ -3,6 +3,8 @@
 
 #include <QString>
 
+void initGlobalStyle();
+
 extern const QString buttonStyle1;
 
 extern const QString buttonStyle2;
