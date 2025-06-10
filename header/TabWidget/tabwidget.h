@@ -74,8 +74,8 @@ public:
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
         vectorLayout->addRow("Direction x:", directionVecXSpin);
         vectorLayout->addRow("Direction y:", directionVecYSpin);
-        vectorLayout->addRow("Spacing:", spacingSpin);
-        vectorLayout->addRow("Count:", countSpin);
+        vectorLayout->addRow("Spacing[mm]:", spacingSpin);
+        vectorLayout->addRow("Count[]:", countSpin);
         vectorLayout->addRow("", vectorConfirmBtn);
         // 连接 vectorConfirmBtn 点击事件
         QObject::connect(vectorConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
@@ -110,10 +110,10 @@ public:
         QPushButton* matrixConfirmBtn = new QPushButton("Confirm");
         matrixLayout->addRow("Horizontal Vector:", horizontalVecEdit);
         matrixLayout->addRow("Vertical Vector:", verticalVecEdit);
-        matrixLayout->addRow("Horizontal Spacing:", hSpacingSpin);
-        matrixLayout->addRow("Vertical Spacing:", vSpacingSpin);
-        matrixLayout->addRow("Horizontal Count:", hCountSpin);
-        matrixLayout->addRow("Vertical Count:", vCountSpin);
+        matrixLayout->addRow("Horizontal Spacing[mm]:", hSpacingSpin);
+        matrixLayout->addRow("Vertical Spacing[mm]:", vSpacingSpin);
+        matrixLayout->addRow("Horizontal Count[]:", hCountSpin);
+        matrixLayout->addRow("Vertical Count[]:", vCountSpin);
         matrixLayout->addRow("Copy Order:", copyOrderCombo);
         matrixLayout->addRow("", matrixConfirmBtn);
         QObject::connect(matrixConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
@@ -161,25 +161,25 @@ public:
 
         // 模式选择
         QComboBox* modeCombo = new QComboBox();
-        modeCombo->addItem("Contour Fill");
         modeCombo->addItem("Hatch Fill");
+        modeCombo->addItem("Contour Fill");
         mainLayout->addWidget(modeCombo);
 
         // CONTOURFILL 输入区域
-        QWidget* offsetWidget = new QWidget();
-        QFormLayout* offsetForm = new QFormLayout(offsetWidget);
+        QWidget* contourWidget = new QWidget();
+        QFormLayout* offsetForm = new QFormLayout(contourWidget);
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
         spacingSpin->setRange(-9999, 9999);
         spacingSpin->setValue(offset);
         QSpinBox* countSpin = new QSpinBox();
         countSpin->setRange(0, 9999);
         countSpin->setValue(offsetCount);
-        offsetForm->addRow("Offset:", spacingSpin);
-        offsetForm->addRow("Offset Count:", countSpin);
+        offsetForm->addRow("Offset[mm]:", spacingSpin);
+        offsetForm->addRow("Offset Count[]:", countSpin);
 
         // fill 输入区域
-        QWidget* fillWidget = new QWidget();
-        QFormLayout* fillForm = new QFormLayout(fillWidget);
+        QWidget* hatchWidget = new QWidget();
+        QFormLayout* fillForm = new QFormLayout(hatchWidget);
         QDoubleSpinBox* fillSpacingSpin = new QDoubleSpinBox();
         fillSpacingSpin->setRange(0.0, 9999.0);
         fillSpacingSpin->setValue(fillSpacing);
@@ -192,30 +192,30 @@ public:
         QDoubleSpinBox* fillAccumulateAngleSpin = new QDoubleSpinBox();
         fillAccumulateAngleSpin->setRange(0.0, 360.0);
         fillAccumulateAngleSpin->setValue(fillAccumulateAngle);
-        fillForm->addRow("Spacing:", fillSpacingSpin);
-        fillForm->addRow("Start Angle:", fillAngleSpin);
-        fillForm->addRow("Operate Count:", fillOperateCountSpin);
-        fillForm->addRow ("Accumulate Angle:", fillAccumulateAngleSpin);
+        fillForm->addRow("Spacing[mm]:", fillSpacingSpin);
+        fillForm->addRow("Operate Count[]:", fillOperateCountSpin);
+        fillForm->addRow("Start Angle[°]:", fillAngleSpin);
+        fillForm->addRow ("Step Angle[°]:", fillAccumulateAngleSpin);
 
         // 确认按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
 
         // 添加控件
-        mainLayout->addWidget(offsetWidget);
-        mainLayout->addWidget(fillWidget);
+        mainLayout->addWidget(contourWidget);
+        mainLayout->addWidget(hatchWidget);
         mainLayout->addWidget(confirmBtn);
 
-        // 默认只显示 offsetWidget
-        fillWidget->setVisible(false);
+        // 默认只显示 hatchWidget
+        contourWidget->setVisible(false);
 
         // 切换时更新显示
         connect(modeCombo, &QComboBox::currentTextChanged, fillTab, [=](const QString& text) {
             if (text == "Contour Fill") {
-                offsetWidget->setVisible(true);
-                fillWidget->setVisible(false);
+                contourWidget->setVisible(true);
+                hatchWidget->setVisible(false);
             } else {
-                offsetWidget->setVisible(false);
-                fillWidget->setVisible(true);
+                contourWidget->setVisible(false);
+                hatchWidget->setVisible(true);
             }
         });
 
@@ -275,14 +275,14 @@ public:
         // Confirm 按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
         // 添加到表单布局
-        formLayout->addRow("Mark Speed:", markSpeedSpin);
-        formLayout->addRow("Jump Speed:", jumpSpeedSpin);
-        formLayout->addRow("Frequency:", frequencySpin);
-        formLayout->addRow("Wobel Aml:", wobelAmlSpin);
-        formLayout->addRow("Repet Time:", repetTimeSpin);
-        formLayout->addRow("Power:", powerSpin);
-        formLayout->addRow("Pulse Width:", pulseWidthSpin);
-        formLayout->addRow("Wobel Freq:", wobelFreqSpin);
+        formLayout->addRow("Mark Speed[mm/s]:", markSpeedSpin);
+        formLayout->addRow("Jump Speed[mm/s]:", jumpSpeedSpin);
+        formLayout->addRow("Power[%]:", powerSpin);
+        formLayout->addRow("Frequency[kHz]:", frequencySpin);
+        formLayout->addRow("Pulse Width[ms]:", pulseWidthSpin);
+        formLayout->addRow("Repet Time[]:", repetTimeSpin);
+        // formLayout->addRow("Wobel Aml:", wobelAmlSpin);
+        // formLayout->addRow("Wobel Freq:", wobelFreqSpin);
         // vector dependent 区域横排
         QHBoxLayout* vectorLayout = new QHBoxLayout();
         formLayout->addRow("", vectorLayout);
@@ -320,23 +320,23 @@ public:
         QSpinBox* startDelaySpin = new QSpinBox();
         startDelaySpin->setRange(0, 1000000);
         startDelaySpin->setValue(params.laserOnDelay);
-        formLayout->addRow("Start Delay:", startDelaySpin);
+        formLayout->addRow("Start Delay[ms]:", startDelaySpin);
         QSpinBox* endDelaySpin = new QSpinBox();
         endDelaySpin->setRange(0, 1000000);
         endDelaySpin->setValue(params.laserOffDelay);
-        formLayout->addRow("End Delay:", endDelaySpin);
+        formLayout->addRow("End Delay[ms]:", endDelaySpin);
         QSpinBox* polygonDelaySpin = new QSpinBox();
         polygonDelaySpin->setRange(0, 1000000);
         polygonDelaySpin->setValue(params.polygonDelay);
-        formLayout->addRow("Polygon Delay:", polygonDelaySpin);
+        formLayout->addRow("Polygon Delay[ms]:", polygonDelaySpin);
         QSpinBox* markDelaySpin = new QSpinBox();
         markDelaySpin->setRange(0, 1000000);
         markDelaySpin->setValue(params.markDelay);
-        formLayout->addRow("Mark Delay:", markDelaySpin);
+        formLayout->addRow("Mark Delay[ms]:", markDelaySpin);
         QSpinBox* jumpDelaySpin = new QSpinBox();
         jumpDelaySpin->setRange(0, 1000000);
         jumpDelaySpin->setValue(params.jumpDelay);
-        formLayout->addRow("Jump Delay:", jumpDelaySpin);
+        formLayout->addRow("Jump Delay[ms]:", jumpDelaySpin);
         layout->addLayout(formLayout);
         QPushButton* confirmBtn = new QPushButton("Confirm");
         confirmBtn->setFixedWidth(100);
@@ -390,7 +390,7 @@ public:
         formLayout->addRow("Start Y:", startY);
         formLayout->addRow("End X:", endX);
         formLayout->addRow("End Y:", endY);
-        formLayout->addRow("Angle:", angleSpin);
+        formLayout->addRow("Angle[°]:", angleSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, arcTab, [ = ]() {
@@ -432,7 +432,7 @@ public:
         // 加入表单
         formLayout->addRow("Center X:", centerX);
         formLayout->addRow("Center Y:", centerY);
-        formLayout->addRow("Radius:", radiusSpin);
+        formLayout->addRow("Radius[mm]:", radiusSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         // 点击事件绑定
@@ -628,9 +628,9 @@ public:
         // 添加到表单
         formLayout->addRow("Center X:", centerX);
         formLayout->addRow("Center Y:", centerY);
-        formLayout->addRow("Radius X:", radiusXSpin);
-        formLayout->addRow("Radius Y:", radiusYSpin);
-        formLayout->addRow("Angle:", angleSpin);
+        formLayout->addRow("Radius X[mm]:", radiusXSpin);
+        formLayout->addRow("Radius Y[mm]:", radiusYSpin);
+        formLayout->addRow("Angle[°]:", angleSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, ellipseTab, [ = ]() {
@@ -731,10 +731,10 @@ public:
         // 加入表单
         formLayout->addRow("Center X:", centerX);
         formLayout->addRow("Center Y:", centerY);
-        formLayout->addRow("Start Radius:", startRadius);
-        formLayout->addRow("End Radius:", endRadius);
-        formLayout->addRow("Turns:", turnsSpin);
-        formLayout->addRow("Angle Step (deg):", stepSpin);
+        formLayout->addRow("Start Radius[°]:", startRadius);
+        formLayout->addRow("End Radius[°]:", endRadius);
+        formLayout->addRow("Turns[]:", turnsSpin);
+        formLayout->addRow("Step Angle[°]:", stepSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, spiralTab, [ = ]() {
@@ -785,9 +785,9 @@ public:
         QPushButton *confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("Center X:", centerX);
         formLayout->addRow("Center Y:", centerY);
-        formLayout->addRow("Radius:", radiusSpin);
-        formLayout->addRow("Edge Count:", edgeCountSpin);
-        formLayout->addRow("Angle (°):", angleSpin);
+        formLayout->addRow("Radius:[mm]", radiusSpin);
+        formLayout->addRow("Edge Count[]:", edgeCountSpin);
+        formLayout->addRow("Angle [°]:", angleSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
         connect(confirmBtn, &QPushButton::clicked, polygonTab, [ = ]() {
