@@ -68,12 +68,12 @@ enum GraphicsItemType /* 用于识别type */
 using UUID = QString;
 
 struct MarkParams {
-    double markSpeed = 50;
-    double jumpSpeed = 250;
+    double markSpeed = 1000;
+    double jumpSpeed = 2000;
     unsigned int frequency = 1000;
     unsigned int operateTime = 1; // 1代表打1次 n代表打n次
-    double power = 0;
-    unsigned int pulseWidth = 40;
+    double power = 20;
+    unsigned int pulseLength = 40;
     unsigned int wobelAml = 0;
     unsigned int wobelFreq = 100;
 
@@ -98,8 +98,8 @@ struct MarkParams {
             power = val.toDouble();
             return true;
         }
-        if (key == "pulseWidth" || key == "MarkParams: pulseWidth")       {
-            pulseWidth = val.toDouble();
+        if (key == "pulseLength" || key == "MarkParams: pulseLength")       {
+            pulseLength = val.toDouble();
             return true;
         }
         if (key == "wobelAml" || key == "MarkParams: wobelAml")         {
@@ -115,11 +115,11 @@ struct MarkParams {
 };
 
 struct DelayParams {
-    unsigned int laserOnDelay = 100;
-    unsigned int laserOffDelay = 120;
-    unsigned int markDelay = 10;
-    unsigned int jumpDelay = 25;
-    unsigned int polygonDelay = 5;
+    unsigned int laserOnDelay = 100; // ms
+    unsigned int laserOffDelay = 120; // ms
+    unsigned int markDelay = 10; // ms
+    unsigned int jumpDelay = 25; // ms
+    unsigned int polygonDelay = 5; // ms
 
     bool set(const QString& key, const QVariant& val) {
         if (key == "laserOnDelay" || key == "DelayParams: laserOnDelay")     {

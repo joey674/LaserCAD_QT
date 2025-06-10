@@ -13,7 +13,7 @@ void GraphicsItem::cloneBaseParamsFromJson(const QJsonObject &obj) {
         m_markParams.frequency = m["frequency"].toInt();
         m_markParams.operateTime = m["operateTime"].toInt();
         m_markParams.power = m["power"].toDouble();
-        m_markParams.pulseWidth = m["pulseWidth"].toDouble();
+        m_markParams.pulseLength = m["pulseLength"].toDouble();
         m_markParams.wobelAml = m["wobelAml"].toInt();
         m_markParams.wobelFreq = m["wobelFreq"].toInt();
     }
@@ -63,7 +63,7 @@ QJsonObject GraphicsItem::saveBaseParamsToJson() const {
     mark["frequency"] = QJsonValue(static_cast<int>(m_markParams.frequency));
     mark["operateTime"] = QJsonValue(static_cast<int>(m_markParams.operateTime));
     mark["power"] = m_markParams.power;
-    mark["pulseWidth"] = QJsonValue(static_cast<int>(m_markParams.pulseWidth));
+    mark["pulseLength"] = QJsonValue(static_cast<int>(m_markParams.pulseLength));
     mark["wobelAml"] = QJsonValue(static_cast<int>(m_markParams.wobelAml));
     mark["wobelFreq"] = QJsonValue(static_cast<int>(m_markParams.wobelFreq));
     obj["markParams"] = mark;

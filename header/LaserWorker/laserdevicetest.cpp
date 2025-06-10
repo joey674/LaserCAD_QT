@@ -48,8 +48,8 @@ bool LaserDeviceTest::executeCommandList(const std::vector<LaserDeviceCommand> &
                     INFO_MSG(" arc_abs " + QString::number(c.x) + " " + QString::number(c.y) + " " + QString::number(c.angle));
                     // arc_abs(c.x * transferParamX, c.y * transferParamY , c.angle *transferParamAngle);
                 } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                    INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseWidth));
-                    // set_laser_pulses(c.halfPeriod, c.pulseWidth);
+                    INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseLength));
+                    // set_laser_pulses(c.halfPeriod, c.pulseLength);
                 } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
                     INFO_MSG(" set_scanner_delays " + QString::number(c.jumpDelay) + " " + QString::number(c.markDelay) + " " + QString::number(c.polygonDelay));
                     // set_scanner_delays(c.jumpDelay, c.markDelay, c.polygonDelay);

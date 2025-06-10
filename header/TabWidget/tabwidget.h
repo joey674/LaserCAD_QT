@@ -268,7 +268,7 @@ public:
         QDoubleSpinBox* pulseWidthSpin = new QDoubleSpinBox();
         pulseWidthSpin->setRange(0, 1000);
         pulseWidthSpin->setDecimals(2);
-        pulseWidthSpin->setValue(params.pulseWidth);
+        pulseWidthSpin->setValue(params.pulseLength);
         QSpinBox* wobelFreqSpin = new QSpinBox();
         wobelFreqSpin->setRange(0, 100000);
         wobelFreqSpin->setValue(params.wobelFreq);
@@ -882,7 +882,7 @@ public:
         addField("MarkParams: frequency", 0);
         addField("MarkParams: operateTime", 0);
         addField("MarkParams: power", 0);
-        addField("MarkParams: pulseWidth", 0);
+        addField("MarkParams: pulseLength", 0);
         addField("MarkParams: wobelAml", 0);
         addField("MarkParams: wobelFreq", 0);
         addField("DelayParams: laserOnDelay", 0);
@@ -1047,7 +1047,7 @@ public:
         QLineEdit* offsetX = new QLineEdit("0.0");
         QLineEdit* offsetY = new QLineEdit("0.0");
         QComboBox* laserModeBox = new QComboBox();
-        laserModeBox->addItems({ "YAG","CO2"});
+        laserModeBox->addItems({ "YAG1","YAG2","YAG3","CO2"});
 
         // QCheckBox* flipX = new QCheckBox("FlipX");
         // QCheckBox* flipY = new QCheckBox("FlipY");
@@ -1070,8 +1070,8 @@ public:
         // 模式选择
         QLabel *executeModeLabel = new QLabel("Execute Mode:");
         QComboBox *executeModeBox = new QComboBox();
-        executeModeBox->addItem("SingleList");
         executeModeBox->addItem("DoubleLists");
+        executeModeBox->addItem("SingleList");
         executeModeBox->addItem("CircleList");
         paramLayout->addWidget(executeModeLabel);
         paramLayout->addWidget(executeModeBox);

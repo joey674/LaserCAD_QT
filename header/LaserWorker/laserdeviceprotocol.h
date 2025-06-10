@@ -64,8 +64,14 @@ const unsigned int USED2   = (1 << 7);  // Bit 7
 * 确认好的protocol params
  *****************************************************************************/
 const double Pi = 3.14159265358979323846;
-const unsigned int LaserModeYAG = 1;       //  YAG 1 mode
-const unsigned int LaserModeCO2 = 0;       //  CO2
+const unsigned int LaserModeCO2 = 0;       //  CO2 mode
+const unsigned int LaserModeYAG1 = 1;       //  YAG 1 mode
+const unsigned int LaserModeYAG2 = 2;       //  YAG 2 mode
+const unsigned int LaserModeYAG3 = 3;       //  YAG 3 mode
+const unsigned int LaserMode4 = 4;       //
+const unsigned int LaserModeYAG5 = 5;       //  YAG 5 mode
+const unsigned int LaserMode6 = 6;       //
+
 const unsigned int DefaultCard = 1;     //  number of default card
 
 
@@ -138,7 +144,7 @@ struct EllipseCommand {
 struct SetLaserPulsesCommand
 {
     unsigned int halfPeriod;
-    unsigned int pulseWidth;
+    unsigned int pulseLength;
 };
 
 struct SetScannerDelaysCommand
@@ -169,6 +175,11 @@ struct LongDelayCommand
     unsigned int time;
 };
 
+struct SetLaserPowerCommand {
+    unsigned int port;
+    unsigned int voltage;
+};
+
 // RTC5命令; 不考虑list,以及一些初始化命令1, 只负责设置参数和打印命令
 using LaserDeviceCommand = std::variant<JumpCommand,
                                  MarkCommand,
@@ -179,5 +190,7 @@ using LaserDeviceCommand = std::variant<JumpCommand,
                                  SetLaserDelaysCommand,
                                  SetJumpSpeedCommand,
                                  SetMarkSpeedCommand,
-                                 LongDelayCommand>;
+                                 LongDelayCommand,
+                                 SetLaserPowerCommand
+                                        >;
 #endif // LASERDEVICEPROTOCOL_H

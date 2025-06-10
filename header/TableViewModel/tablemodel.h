@@ -33,7 +33,7 @@ public:
         m_propertyList.append({ "MarkParams: frequency", mark.frequency });
         m_propertyList.append({ "MarkParams: operateTime", mark.operateTime });
         m_propertyList.append({ "MarkParams: power", mark.power });
-        m_propertyList.append({ "MarkParams: pulseWidth", mark.pulseWidth });
+        m_propertyList.append({ "MarkParams: pulseLength", mark.pulseLength });
         m_propertyList.append({ "MarkParams: wobelAml", mark.wobelAml });
         m_propertyList.append({ "MarkParams: wobelFreq", mark.wobelFreq });
         // DelayParams

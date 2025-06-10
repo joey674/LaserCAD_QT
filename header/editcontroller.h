@@ -260,7 +260,7 @@ public: // 编辑回调
                 const QString& key = param.fieldName;
                 // --- MarkParams ---
                 if (key == "MarkParams: markSpeed" || key == "MarkParams: jumpSpeed"
-                        || key == "MarkParams: power" || key == "MarkParams: pulseWidth") {
+                        || key == "MarkParams: power" || key == "MarkParams: pulseLength") {
                     mark.set(key, finalVal);
                 } else if (key == "MarkParams: frequency" || key == "MarkParams: operateTime"
                            || key == "MarkParams: wobelAml" || key == "MarkParams: wobelFreq") {

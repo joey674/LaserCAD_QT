@@ -158,16 +158,25 @@ public:
     {
         std::vector<LaserDeviceCommand> commandList;
 
-        auto laserHalfPeriod = static_cast<unsigned int>(1e6 / m_markParams.frequency / 2);
-        auto laserPulseWidth = static_cast<unsigned int>(m_markParams.pulseWidth);
-        commandList.emplace_back(SetLaserPulsesCommand{laserHalfPeriod, laserPulseWidth});
+        double period_us = 1000.0 / m_markParams.frequency;
+        uint32_t laserHalfPeriod = static_cast<uint32_t>((period_us / 2.0) * 64);
+        double pulse_us = m_markParams.pulseLength * 1000.0;
+        uint32_t laserPulseLength = static_cast<uint32_t>(pulse_us * 64);
+        commandList.emplace_back(SetLaserPulsesCommand{laserHalfPeriod, laserPulseLength});
 
-        commandList.emplace_back(SetScannerDelaysCommand{m_delayParams.jumpDelay,
-                                                         m_delayParams.markDelay,
-                                                         m_delayParams.polygonDelay});
+        // 设置laserPower; 暂时对1口输出一下; 且输出比率暂时是0-5v(RTC5最高可输出10v)
+        uint32_t voltage =  static_cast<uint32_t>((m_markParams.power / 100 /2) * (4096));
+        commandList.emplace_back (SetLaserPowerCommand{1,voltage});
 
+        // 设置delay
+        auto msToBits = [](double ms) -> uint32_t {
+            return static_cast<uint32_t>(std::round(ms * 2000.0));
+        };
+        commandList.emplace_back(SetScannerDelaysCommand{msToBits(m_delayParams.jumpDelay),
+                                                         msToBits(m_delayParams.markDelay),
+                                                         msToBits(m_delayParams.polygonDelay)});
         commandList.emplace_back(
-            SetLaserDelaysCommand{m_delayParams.laserOnDelay, m_delayParams.laserOffDelay});
+            SetLaserDelaysCommand{msToBits(m_delayParams.laserOnDelay), msToBits(m_delayParams.laserOffDelay)});
 
         commandList.emplace_back(
             SetJumpSpeedCommand{static_cast<unsigned int>(m_markParams.jumpSpeed)});
