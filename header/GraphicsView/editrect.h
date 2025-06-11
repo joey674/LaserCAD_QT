@@ -20,14 +20,14 @@
 #include <vector>
 #include "scenecontroller.h"
 
-
-const double EdgeRectPadding = 1;
-const double MinEdgeRectSize = 1;
-const double BoundingRectPadding = 2;
-const double VertexInputDialogSize = 0.5;
-const double HandleSize = 8;// handle会根据scene自动调整; 不需要修改
-const double MoveHandleOffset = 0.5;
-const double RotateHandleOffset = 0.5;
+// 初始值 真实使用值会实时更新
+const double EdgeRectPadding = 0.5;// 边缘外框的padding
+const double MinEdgeRectSize = 1;// 最小边缘外框大小
+const double BoundingRectPadding = 3;// 渲染外框的padding
+const double VertexInputDialogSize = 0.5;// 修改点的触发大小
+const double HandleSize = 2;// handle会根据scene自动调整; 不需要修改
+const double MoveHandleOffset = 0.5;// 移动handle的位置偏移
+const double RotateHandleOffset = 0.5;// 旋转handle的位置偏移
 
 enum class EditMode { None, Scale, Move, Rotate };
 
@@ -46,6 +46,7 @@ public:
     }
 
     void setEditItems(std::vector < std::shared_ptr < GraphicsItem>> items) {
+        this->autoParamsAdjust ();
         prepareGeometryChange();
         m_editItems = std::move(items);
         if (m_editItems.empty()) {
@@ -66,39 +67,32 @@ public:
     }
 
     QRectF boundingRect() const override {
-        return m_editRect.adjusted(-BoundingRectPadding, -BoundingRectPadding, BoundingRectPadding, BoundingRectPadding);
+        return m_editRect.adjusted(-this->m_adjustedBoundingRectPadding, -this->m_adjustedBoundingRectPadding, this->m_adjustedBoundingRectPadding, this->m_adjustedBoundingRectPadding);
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget * = nullptr) override {
+        this->autoParamsAdjust ();
         painter->setRenderHint(QPainter::Antialiasing);
         QPen pen(Qt::gray, 1, Qt::DashLine);
         pen.setCosmetic(true);
         painter->setPen(pen);
         painter->setBrush(Qt::NoBrush);
-        QRectF displayRect = m_editRect.adjusted(-EdgeRectPadding,
-                             -EdgeRectPadding,
-                             EdgeRectPadding,
-                             EdgeRectPadding);
+        QRectF displayRect = m_editRect.adjusted(-this->m_adjustedEdgeRectPadding,
+                             -this->m_adjustedEdgeRectPadding,
+                             this->m_adjustedEdgeRectPadding,
+                             this->m_adjustedEdgeRectPadding);
         painter->drawRect(displayRect);
-        // editrect的编辑边框和handle在缩放时不发生变化
-        // qreal scale = SceneController::getIns().getSceneScale().first;
-        // DEBUG_VAR(scale);
-        // qreal handleSize = 8.0 / scale;
         painter->setPen(Qt::NoPen);
         for (int i = 0; i < 6; ++i) {
             painter->setBrush(getHandleColor(i));
             QRectF rect = handleRect(i);
             painter->drawRect(rect);
-            // QPointF center = rect.center();
-            // QRectF fixedRect(center.x() - handleSize / 2,
-            //                  center.y() - handleSize / 2,
-            //                  handleSize, handleSize);
-            // painter->drawRect(fixedRect);
         }
     }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
+        this->autoParamsAdjust ();
         if (event->button() == Qt::LeftButton) {
             m_currentHandleIndex = hitTestHandles(event->pos());
             m_lastPressedScenePos = event->scenePos();
@@ -121,7 +115,7 @@ protected:
                         Vertex v = gItem->getVertexInScene(i);
                         QPointF scenePoint = v.point;
                         QPointF localPoint = mapFromScene(scenePoint);
-                        if (QRectF(localPoint - QPointF(VertexInputDialogSize, VertexInputDialogSize), QSizeF(VertexInputDialogSize*2, VertexInputDialogSize*2))
+                        if (QRectF(localPoint - QPointF(this->m_adjustedVertexInputDialogSize, this->m_adjustedVertexInputDialogSize), QSizeF(this->m_adjustedVertexInputDialogSize*2, this->m_adjustedVertexInputDialogSize*2))
                                 .contains(event->pos())) {
                             openVertexInputDialog(*gItem, i, v); // 触发输入框
                             event->accept();
@@ -135,6 +129,7 @@ protected:
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
+        this->autoParamsAdjust ();
         QPointF deltaScene = event->scenePos() - m_lastPressedScenePos;
         QPointF deltaLocal = event->pos() - m_lastPressedLocalPos;
         switch (m_editMode) {
@@ -157,6 +152,7 @@ protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
+        this->autoParamsAdjust ();
         int handleIndex = hitTestHandles(event->pos());
         switch (handleIndex) {
             case 0: // 左上角
@@ -189,17 +185,37 @@ private:
     QRectF m_editRect;
     EditMode m_editMode = EditMode::None;
     int m_currentHandleIndex = -1;
-
+    //
     QPointF m_lastPressedScenePos;
     QPointF m_lastPressedLocalPos;
     QRectF m_startEditRect;
     qreal m_startRotation = 0.0;
     QPointF m_startPos;
-
+    //
     QCursor m_rotateCursor;
+    // 根据scale调整后的参数
+    double m_adjustedEdgeRectPadding = EdgeRectPadding;
+    double m_adjustedMinEdgeRectSize = MinEdgeRectSize;
+    double m_adjustedBoundingRectPadding = BoundingRectPadding;
+    double m_adjustedVertexInputDialogSize = VertexInputDialogSize;
+    double m_adjustedHandleSize = HandleSize;
+    double m_adjustedMoveHandleOffset = MoveHandleOffset;
+    double m_adjustedRotateHandleOffset = RotateHandleOffset;
 
-    QRectF handleRect(int index) const {
-        QRectF displayRect = m_editRect.adjusted(-EdgeRectPadding, -EdgeRectPadding, EdgeRectPadding, EdgeRectPadding);
+    void autoParamsAdjust(){
+            qreal scale = SceneController::getIns().getSceneScale().first;
+        this->m_adjustedHandleSize = HandleSize/scale;
+        // this->m_adjustedEdgeRectPadding = EdgeRectPadding/scale;
+        // this->m_adjustedMinEdgeRectSize = MinEdgeRectSize/scale;
+        // this->m_adjustedBoundingRectPadding = BoundingRectPadding/scale;
+        // this->m_adjustedVertexInputDialogSize = VertexInputDialogSize/scale;
+        this->m_adjustedMoveHandleOffset = MoveHandleOffset/scale;
+        this->m_adjustedRotateHandleOffset = RotateHandleOffset/scale;
+    }
+
+    QRectF handleRect(int index)  {
+        this->autoParamsAdjust();
+        QRectF displayRect = m_editRect.adjusted(-this->m_adjustedEdgeRectPadding, -this->m_adjustedEdgeRectPadding, this->m_adjustedEdgeRectPadding, this->m_adjustedEdgeRectPadding);
         QPointF pos;
         switch (index) {
             case 0:
@@ -216,28 +232,26 @@ private:
                 break;
             case 4:// rotate
                 pos = (displayRect.topLeft() + displayRect.topRight()) / 2.0;
-                pos.setY(pos.y() - RotateHandleOffset);
+                pos.setY(pos.y() - this->m_adjustedRotateHandleOffset);
                 break;
             case 5: // move
                 pos = (displayRect.bottomLeft() + displayRect.bottomRight()) / 2.0;
-                pos.setY(pos.y() + MoveHandleOffset);
+                pos.setY(pos.y() + this->m_adjustedMoveHandleOffset);
                 break;
         }
-        auto handleRect = QRectF(pos.x() - HandleSize / 2,
-                                 pos.y() - HandleSize / 2,
-                                 HandleSize,
-                                 HandleSize);
-        //把handle的小矩形scale一下 可以根据scene缩放自动缩放
-        qreal scale = SceneController::getIns().getSceneScale().first;
-        qreal handleSize = HandleSize / scale;
+        auto handleRect = QRectF(pos.x() - this->m_adjustedHandleSize / 2,
+                                 pos.y() - this->m_adjustedHandleSize / 2,
+                                 this->m_adjustedHandleSize,
+                                 this->m_adjustedHandleSize);
+
         QPointF center = handleRect.center();
-        QRectF scaledRect(center.x() - handleSize / 2,
-                          center.y() - handleSize / 2,
-                          handleSize,
-                          handleSize);
+        QRectF scaledRect(center.x() - this->m_adjustedHandleSize / 2,
+                          center.y() - this->m_adjustedHandleSize / 2,
+                          this->m_adjustedHandleSize,
+                          this->m_adjustedHandleSize);
         return scaledRect;
     }
-    QColor getHandleColor(int index) const {
+    QColor getHandleColor(int index)  {
         if (index <= 3) {
             return Qt::green;
         }
@@ -249,7 +263,8 @@ private:
         }
         return Qt::black;
     }
-    int hitTestHandles(const QPointF & pos) const {
+
+    int hitTestHandles(const QPointF & pos)  {
         for (int i = 0; i < 6; ++i) {
             if (handleRect(i).contains(pos)) {
                 return i;
@@ -257,6 +272,7 @@ private:
         }
         return -1;
     }
+
     /// \brief applyScale
     /// \param delta
     void applyScale(const QPointF & delta) {
@@ -299,13 +315,13 @@ private:
         // 防止拉动到负宽高（翻转）
         qreal newWidth = std::abs(dx);
         qreal newHeight = std::abs(dy);
-        if (newWidth < MinEdgeRectSize) {
-            newWidth = MinEdgeRectSize;
-            newHeight = MinEdgeRectSize / aspectRatio;
+        if (newWidth < this->m_adjustedMinEdgeRectSize) {
+            newWidth = this->m_adjustedMinEdgeRectSize;
+            newHeight = this->m_adjustedMinEdgeRectSize / aspectRatio;
         }
-        if (newHeight < MinEdgeRectSize) {
-            newHeight = MinEdgeRectSize;
-            newWidth = MinEdgeRectSize * aspectRatio;
+        if (newHeight < this->m_adjustedMinEdgeRectSize) {
+            newHeight = this->m_adjustedMinEdgeRectSize;
+            newWidth = this->m_adjustedMinEdgeRectSize * aspectRatio;
         }
         // 根据handle方向，修正移动点
         QPointF correctedVec;
@@ -327,12 +343,14 @@ private:
         QRectF newRect(fixedPoint, movingPoint);
         m_editRect = newRect.normalized();
     }
+
     /// \brief applyMove
     /// \param deltaScene
     void applyMove(const QPointF & deltaScene) {
         prepareGeometryChange();
         setPos(m_startPos + deltaScene);
     }
+
     /// \brief applyRotate
     /// \param currentScenePos
     void applyRotate(const QPointF & currentScenePos) {
@@ -359,6 +377,7 @@ private:
         QPointF offset = centerInScene - afterRotationCenter;
         setPos(pos() + offset);
     }
+
     /// \brief applyMoveToGraphicsItem
     /// \param item
     void applyMoveToGraphicsItem(GraphicsItem & item, const QPointF & deltaMove) {
@@ -368,6 +387,7 @@ private:
             item.setVertexInScene(i, Vertex{movedPos, vertex.angle});
         }
     }
+
     /// \brief applyRotateToGraphicsItem
     /// \param item
     void applyRotateToGraphicsItem(GraphicsItem & item, qreal deltaRotationDeg, const QPointF & center) {
@@ -409,6 +429,7 @@ private:
             }
         }
     }
+
     /// \brief applyScaleToGraphicsItem
     /// \param item
     void applyScaleToGraphicsItem(GraphicsItem & item,
@@ -455,6 +476,7 @@ private:
             }
         }
     }
+
     /// \brief openVertexInputDialog
     /// \param item
     void openVertexInputDialog(GraphicsItem & item, int index, const Vertex & currentVertex) {

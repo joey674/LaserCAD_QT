@@ -2,6 +2,7 @@
 #include "editcontroller.h"
 
 void EditRect::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    this->autoParamsAdjust ();
     // 忽略右键的操作
     if (event->button() == Qt::LeftButton) {
         if (m_editMode == EditMode::Move) {
