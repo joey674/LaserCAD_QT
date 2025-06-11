@@ -140,6 +140,22 @@ void SceneController::setSceneScale(double x, double y) {
         WARN_MSG("worng scene scale");
         return;
     }
+    if (
+        (x>1 || y>1)
+        &&
+        (this->m_sceneScale.first > 1000 || this->m_sceneScale.second > 1000)
+        ) {
+        WARN_MSG("zoom in too much");
+        return;
+    }
+    if (
+        (x<1 || y<1)
+        &&
+        (this->m_sceneScale.first < 0.5 || this->m_sceneScale.second < 0.5)
+        ) {
+        WARN_MSG("zoom out  too much");
+        return;
+    }
     UiManager::getIns().graphicsView->scale(x, y);
     this->m_sceneScale.first *= x;
     this->m_sceneScale.second *= y;

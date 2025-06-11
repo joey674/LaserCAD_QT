@@ -358,6 +358,7 @@ public:
         }
         return newRect;
     }
+
     std::vector<LaserDeviceCommand> getLaserCommand() override{
         this->animate ();
         auto commandList = GraphicsItem::getLaserCommand();
@@ -412,9 +413,10 @@ public:
 
 protected:
     QRectF boundingRect() const override {
-        if (this->m_paintItemList.empty()) {
+        if (this->m_paintItemList.empty ()) {
             return QRectF();
         }
+
         QRectF newRect = m_paintItemList[0]->boundingRect();
         for (auto &item : this->m_paintItemList) {
             qreal minX = std::min(newRect.left(), item->boundingRect().left());
@@ -423,12 +425,16 @@ protected:
             qreal maxY = std::max(newRect.bottom(), item->boundingRect().bottom());
             newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
         }
+        // if (newRect != QRectF{}) {
+        //     newRect = this->getBoundingRectBasis ();
+        // }
+
         // 包含offsetItem
         newRect = newRect.adjusted(
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

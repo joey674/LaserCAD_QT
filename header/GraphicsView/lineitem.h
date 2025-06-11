@@ -281,10 +281,7 @@ public:
         return 2;
     }
     QRectF getBoundingRectBasis() const override {
-        if (!this->m_paintItem) {
-            return QRectF();
-        }
-        QRectF newRect = m_paintItem->boundingRect();
+        QRectF newRect = QRectF {this->getVertexInScene (0).point,this->getVertexInScene (1).point};
         return newRect;
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override
@@ -345,13 +342,13 @@ protected:
         if (!this->m_paintItem) {
             return QRectF();
         }
-        QRectF newRect = m_paintItem->boundingRect();
+        QRectF newRect = this->getBoundingRectBasis ();
         // 包含offsetItem
         newRect = newRect.adjusted(
-            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
-            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount,
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount);
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

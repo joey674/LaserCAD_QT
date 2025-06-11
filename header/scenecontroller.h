@@ -7,6 +7,8 @@
 #include "protocol.h"
 #include <utility>
 
+const int SCALE_FACTOR = 6;
+
 class SceneController {
     friend class ProjectManager;
 

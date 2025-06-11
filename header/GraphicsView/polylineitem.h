@@ -434,10 +434,10 @@ public:
         }
         // 包含offsetItem
         newRect = newRect.adjusted(
-            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
-            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+            -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+            abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

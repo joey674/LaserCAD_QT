@@ -250,12 +250,9 @@ void ProjectManager::newGraphicsView() {
     //
     UiManager::getIns().graphicsView->setMouseTracking(true);
 
-    // 放大一点视图(这里直接执行并不生效 很奇怪)
     // 缩放到合适的位置(好像并没有作用 但是会影响到editrect的handle大小 因为handle大小是按照这个来的
-    QTimer::singleShot(10, []() { SceneController::getIns().setSceneScale(2, 2); });
-
-    // 在窗口缩放时对准坐标中心
-    // SceneController::getIns().setSceneToCenter();
+    SceneController::getIns().setSceneScale(SCALE_FACTOR, SCALE_FACTOR);// 别动!! 不知道之前怎么设置的了 虽然这个不直接生效 但是会影响dragScene
+    QTimer::singleShot(12, []() { SceneController::getIns().setSceneScale(2, 2); });
 
     // 绘制坐标轴
     QPen pen = []() {

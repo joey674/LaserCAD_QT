@@ -296,7 +296,7 @@ public:
         return Vertex{point, 0};
     }
     QPointF getCenterInScene() const override { return this->m_center.point; }
-    double getRadius() {
+    double getRadius()const {
         return this->m_radius;
     }
     QString getName() const override {
@@ -309,10 +309,13 @@ public:
         return 1;
     }
     QRectF getBoundingRectBasis() const override {
-        if (!this->m_paintItem) {
-            return QRectF();
-        }
-        QRectF newRect = m_paintItem->boundingRect();
+        QPointF center = this->getCenterInScene();
+        double radius = this->getRadius();
+
+        QRectF newRect(center.x() - radius,
+                       center.y() - radius,
+                       2 * radius,
+                       2 * radius);
         return newRect;
     }
     std::vector<LaserDeviceCommand> getLaserCommand() override{
@@ -370,12 +373,16 @@ protected:
             return QRectF();
         }
         QRectF newRect = m_paintItem->boundingRect();
+        if (newRect != QRectF{}) {
+            newRect = this->getBoundingRectBasis ();
+        }
+
         // 包含offsetItem
         newRect = newRect.adjusted(
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

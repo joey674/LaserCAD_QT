@@ -253,7 +253,7 @@ public:
         return 1;
     }
     QRectF getBoundingRectBasis() const override {
-        if (!this->m_paintItem) {
+        if (!this->m_paintItem) { // 点的就不改了
             return QRectF();
         }
         QRectF newRect = m_paintItem->boundingRect();
@@ -308,7 +308,7 @@ protected:
         if (!this->m_paintItem) {
             return QRectF();
         }
-        QRectF newRect = m_paintItem->boundingRect();
+        QRectF newRect = this->getBoundingRectBasis ();
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {

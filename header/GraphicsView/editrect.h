@@ -21,13 +21,13 @@
 #include "scenecontroller.h"
 
 // 初始值 真实使用值会实时更新
-const double EdgeRectPadding = 0.5;// 边缘外框的padding
-const double MinEdgeRectSize = 1;// 最小边缘外框大小
-const double BoundingRectPadding = 3;// 渲染外框的padding
-const double VertexInputDialogSize = 0.5;// 修改点的触发大小
-const double HandleSize = 2;// handle会根据scene自动调整; 不需要修改
-const double MoveHandleOffset = 0.5;// 移动handle的位置偏移
-const double RotateHandleOffset = 0.5;// 旋转handle的位置偏移
+const double HandleSize = 2*SCALE_FACTOR;// 所有拖动handle大小
+const double EdgeRectPadding = 2*SCALE_FACTOR;// 边缘外框的padding
+const double BoundingRectPadding = 4*SCALE_FACTOR;// 渲染外框的padding(包含边缘外框)
+const double MinEdgeRectSize = 1*SCALE_FACTOR;// 最小边缘外框大小
+const double VertexInputDialogSize = 0.5*SCALE_FACTOR;// 修改点的触发大小
+const double MoveHandleOffset = 0.5*SCALE_FACTOR;// 移动handle的位置偏移
+const double RotateHandleOffset = 0.5*SCALE_FACTOR;// 旋转handle的位置偏移
 
 enum class EditMode { None, Scale, Move, Rotate };
 
@@ -46,20 +46,20 @@ public:
     }
 
     void setEditItems(std::vector < std::shared_ptr < GraphicsItem>> items) {
-        this->autoParamsAdjust ();
-        prepareGeometryChange();
         m_editItems = std::move(items);
         if (m_editItems.empty()) {
             m_editRect = QRectF();
             setRotation(0);
             return;
         }
-        QRectF combinedRect = m_editItems[0]->mapRectToScene(m_editItems[0]->getBoundingRectBasis());
+        QRectF combinedRect = m_editItems[0]->getBoundingRectBasis();
         for (size_t i = 1; i < m_editItems.size(); ++i) {
-            QRectF basisRect = m_editItems[i]->mapRectToScene(m_editItems[i]->getBoundingRectBasis());
+            QRectF basisRect = m_editItems[i]->getBoundingRectBasis();
             combinedRect = combinedRect.united(basisRect);
         }
         m_editRect = combinedRect;
+
+        this->autoParamsAdjust ();
         prepareGeometryChange();
         setRotation(0);
         setPos(m_editRect.center());
@@ -67,7 +67,11 @@ public:
     }
 
     QRectF boundingRect() const override {
-        return m_editRect.adjusted(-this->m_adjustedBoundingRectPadding, -this->m_adjustedBoundingRectPadding, this->m_adjustedBoundingRectPadding, this->m_adjustedBoundingRectPadding);
+        auto boundingRect = m_editRect.adjusted(-this->m_adjustedBoundingRectPadding,
+                                                -this->m_adjustedBoundingRectPadding,
+                                                this->m_adjustedBoundingRectPadding,
+                                                this->m_adjustedBoundingRectPadding);
+        return boundingRect;
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget * = nullptr) override {
@@ -93,6 +97,7 @@ public:
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
         this->autoParamsAdjust ();
+
         if (event->button() == Qt::LeftButton) {
             m_currentHandleIndex = hitTestHandles(event->pos());
             m_lastPressedScenePos = event->scenePos();
@@ -130,6 +135,7 @@ protected:
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
         this->autoParamsAdjust ();
+
         QPointF deltaScene = event->scenePos() - m_lastPressedScenePos;
         QPointF deltaLocal = event->pos() - m_lastPressedLocalPos;
         switch (m_editMode) {
@@ -153,6 +159,7 @@ protected:
 
     void hoverMoveEvent(QGraphicsSceneHoverEvent *event) override {
         this->autoParamsAdjust ();
+
         int handleIndex = hitTestHandles(event->pos());
         switch (handleIndex) {
             case 0: // 左上角
@@ -182,7 +189,7 @@ protected:
 
 private:
     std::vector < std::shared_ptr < GraphicsItem>> m_editItems;
-    QRectF m_editRect;
+    QRectF m_editRect;// 只从editItems的boundingRect融合而来
     EditMode m_editMode = EditMode::None;
     int m_currentHandleIndex = -1;
     //
@@ -194,27 +201,34 @@ private:
     //
     QCursor m_rotateCursor;
     // 根据scale调整后的参数
-    double m_adjustedEdgeRectPadding = EdgeRectPadding;
     double m_adjustedMinEdgeRectSize = MinEdgeRectSize;
-    double m_adjustedBoundingRectPadding = BoundingRectPadding;
     double m_adjustedVertexInputDialogSize = VertexInputDialogSize;
     double m_adjustedHandleSize = HandleSize;
     double m_adjustedMoveHandleOffset = MoveHandleOffset;
     double m_adjustedRotateHandleOffset = RotateHandleOffset;
+    double m_adjustedEdgeRectPadding = EdgeRectPadding;
+    double m_adjustedBoundingRectPadding = BoundingRectPadding;
 
     void autoParamsAdjust(){
-            qreal scale = SceneController::getIns().getSceneScale().first;
+        qreal scale = SceneController::getIns().getSceneScale().first;
         this->m_adjustedHandleSize = HandleSize/scale;
-        // this->m_adjustedEdgeRectPadding = EdgeRectPadding/scale;
-        // this->m_adjustedMinEdgeRectSize = MinEdgeRectSize/scale;
-        // this->m_adjustedBoundingRectPadding = BoundingRectPadding/scale;
-        // this->m_adjustedVertexInputDialogSize = VertexInputDialogSize/scale;
+        this->m_adjustedMinEdgeRectSize = MinEdgeRectSize/scale;
+        this->m_adjustedVertexInputDialogSize = VertexInputDialogSize/scale;
         this->m_adjustedMoveHandleOffset = MoveHandleOffset/scale;
         this->m_adjustedRotateHandleOffset = RotateHandleOffset/scale;
+        // this->m_adjustedEdgeRectPadding = EdgeRectPadding/scale;
+        // this->m_adjustedBoundingRectPadding = BoundingRectPadding/scale;
+
+        this->m_adjustedEdgeRectPadding = std::min (m_editRect.width (),m_editRect.height ())/20;
+        this->m_adjustedBoundingRectPadding = std::max(
+            std::min (m_editRect.width (),m_editRect.height ())/5,
+            BoundingRectPadding/scale
+            );
     }
 
     QRectF handleRect(int index)  {
         this->autoParamsAdjust();
+
         QRectF displayRect = m_editRect.adjusted(-this->m_adjustedEdgeRectPadding, -this->m_adjustedEdgeRectPadding, this->m_adjustedEdgeRectPadding, this->m_adjustedEdgeRectPadding);
         QPointF pos;
         switch (index) {

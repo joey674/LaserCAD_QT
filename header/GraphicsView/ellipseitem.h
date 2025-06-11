@@ -374,12 +374,28 @@ public:
         return 1;
     }
     QRectF getBoundingRectBasis() const override {
-        if (!this->m_paintItem) {
-            return QRectF();
-        }
-        QRectF newRect = m_paintItem->boundingRect();
+        QPointF center = m_center.point;
+        double rx = m_radiusX;
+        double ry = m_radiusY;
+
+        // 角度转弧度
+        double theta = qDegreesToRadians(m_rotateAngle);
+        double cosTheta = std::cos(theta);
+        double sinTheta = std::sin(theta);
+
+        // 计算旋转后 AABB 的半宽高
+        double halfWidth = std::sqrt(std::pow(rx * cosTheta, 2) + std::pow(ry * sinTheta, 2));
+        double halfHeight = std::sqrt(std::pow(rx * sinTheta, 2) + std::pow(ry * cosTheta, 2));
+
+        QRectF newRect(center.x() - halfWidth,
+                       center.y() - halfHeight,
+                       2 * halfWidth,
+                       2 * halfHeight);
+
         return newRect;
     }
+
+
     std::vector<LaserDeviceCommand> getLaserCommand() override{
         this->animate ();
         auto commandList = GraphicsItem::getLaserCommand();
@@ -441,12 +457,16 @@ protected:
             return QRectF();
         }
         QRectF newRect = m_paintItem->boundingRect();
+        if (newRect != QRectF{}) {
+            newRect = this->getBoundingRectBasis ();
+        }
+
         // 包含offsetItem
         newRect = newRect.adjusted(
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount - 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1,
-                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount + 1);
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
+                      abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
         // 包含所有 copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {
