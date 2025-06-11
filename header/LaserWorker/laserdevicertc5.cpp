@@ -236,25 +236,25 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
                 mark_ellipse_abs(c.X* transferParamX,c.Y* transferParamY,c.Alpha*transferParamAngle);
             }
             else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                // kHz ==> us ==> bit (1 bit equals 1/64 µs)
-                // ms ==> us ==> bit (1 bit equals 1/64 µs)
-                uint32_t halfPeriod = static_cast<uint32_t>(1e9 / c.frequency / 2 *64);
+                // kHz ==> us ==> bit (1 bit equals 1/64 µs) kHz * 1000 ==> Hz *64/2 ==> bit
+                // ms ==> us ==> bit (1 bit equals 1/64 µs)  ms * 1000 ==> us * 64 ==> bit
+                uint32_t halfPeriod = static_cast<uint32_t>(1e3/ c.frequency / 2 *64);
                 uint32_t pulseLength = static_cast<uint32_t>(c.pulseLength*1e3 *64);
-                INFO_MSG(" set_laser_pulses " + QString::number(halfPeriod) + " " + QString::number(pulseLength));
+                INFO_MSG(" set_laser_pulses(SetLaserPulsesCommand) (halfPeriod pulseLength)" + QString::number(halfPeriod) + " " + QString::number(pulseLength));
                 set_laser_pulses(halfPeriod, pulseLength);
             }
             else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
                 // ms ==> bit(1 bit equals 0.5 µs)
-                uint32_t jumpDelay = static_cast<uint32_t>(std::round(c.jumpDelay * 2000.0));
-                uint32_t markDelay = static_cast<uint32_t>(std::round(c.markDelay * 2000.0));
-                uint32_t polygonDelay = static_cast<uint32_t>(std::round(c.polygonDelay * 2000.0));
+                uint32_t jumpDelay = static_cast<uint32_t>(std::round(c.jumpDelay /** 2000.0*/));
+                uint32_t markDelay = static_cast<uint32_t>(std::round(c.markDelay/* * 2000.0*/));
+                uint32_t polygonDelay = static_cast<uint32_t>(std::round(c.polygonDelay /** 2000.0*/));
                 INFO_MSG(" set_scanner_delays " + QString::number(jumpDelay) + " " + QString::number(markDelay) + " " + QString::number(polygonDelay));
                 set_scanner_delays(jumpDelay, markDelay, polygonDelay);
             }
             else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
                 // ms ==> bit(1 bit equals 0.5 µs)
-                uint32_t laserOnDelay = static_cast<uint32_t>(std::round(c.laserOnDelay * 2000.0));
-                uint32_t laserOffDelay = static_cast<uint32_t>(std::round(c.laserOffDelay * 2000.0));
+                uint32_t laserOnDelay = static_cast<uint32_t>(std::round(c.laserOnDelay /** 2000.0*/));
+                uint32_t laserOffDelay = static_cast<uint32_t>(std::round(c.laserOffDelay /** 2000.0*/));
                 INFO_MSG(" set_laser_delays " + QString::number(laserOnDelay) + " " + QString::number(laserOffDelay));
                 set_laser_delays(laserOnDelay, laserOffDelay);
             }
@@ -272,8 +272,8 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
             }
             else if constexpr (std::is_same_v<T, SetLaserPowerCommand>) {
                 // percentage ==> V
-                // uint32_t voltage =  static_cast<uint32_t>((c.percentage / 100 /2) * (4096));
-                // INFO_MSG(" write_da_1_list(SetLaserPowerCommand) "  + QString::number(voltage));
+                uint32_t voltage =  static_cast<uint32_t>((c.percentage / 100 /2) * (4096));
+                INFO_MSG(" write_da_1_list(SetLaserPowerCommand) 没开"  + QString::number(voltage));
                 // write_da_1_list(voltage);
             }
         },
