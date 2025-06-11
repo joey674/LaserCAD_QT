@@ -68,14 +68,14 @@ enum GraphicsItemType /* 用于识别type */
 using UUID = QString;
 
 struct MarkParams {
-    double markSpeed = 1000;
-    double jumpSpeed = 2000;
-    unsigned int frequency = 1000;
-    unsigned int operateTime = 1; // 1代表打1次 n代表打n次
-    double power = 20;
-    unsigned int pulseLength = 40;
-    unsigned int wobelAml = 0;
-    unsigned int wobelFreq = 100;
+    double markSpeed = 1000;// mm/s
+    double jumpSpeed = 2000;// mm/s
+    double  frequency = 100;// kHz
+    int operateTime = 1; // 1代表打1次 n代表打n次
+    double power = 5;// percentage
+    double pulseLength = 0.001;// ms
+    double wobelAml = 0;
+    double wobelFreq = 100;
 
     bool set(const QString& key, const QVariant& val) {
         if (key == "markSpeed" || key == "MarkParams: markSpeed")        {
@@ -87,11 +87,11 @@ struct MarkParams {
             return true;
         }
         if (key == "frequency" || key == "MarkParams: frequency")        {
-            frequency = val.toInt();
+            frequency = val.toDouble();
             return true;
         }
         if (key == "operateTime" || key == "MarkParams: operateTime")        {
-            operateTime = val.toInt();
+            operateTime = val.toDouble();
             return true;
         }
         if (key == "power" || key == "MarkParams: power")            {
@@ -103,11 +103,11 @@ struct MarkParams {
             return true;
         }
         if (key == "wobelAml" || key == "MarkParams: wobelAml")         {
-            wobelAml = val.toInt();
+            wobelAml = val.toDouble();
             return true;
         }
         if (key == "wobelFreq" || key == "MarkParams: wobelFreq")        {
-            wobelFreq = val.toInt();
+            wobelFreq = val.toDouble();
             return true;
         }
         return false;
@@ -115,31 +115,31 @@ struct MarkParams {
 };
 
 struct DelayParams {
-    unsigned int laserOnDelay = 100; // ms
-    unsigned int laserOffDelay = 120; // ms
-    unsigned int markDelay = 10; // ms
-    unsigned int jumpDelay = 25; // ms
-    unsigned int polygonDelay = 5; // ms
+    double laserOnDelay = 0.1; // ms
+    double laserOffDelay = 0.1; // ms
+    double markDelay = 0.1; // ms
+    double jumpDelay = 0.1; // ms
+    double polygonDelay = 0.1; // ms
 
     bool set(const QString& key, const QVariant& val) {
         if (key == "laserOnDelay" || key == "DelayParams: laserOnDelay")     {
-            laserOnDelay = val.toInt();
+            laserOnDelay = val.toDouble();
             return true;
         }
         if (key == "laserOffDelay" || key == "DelayParams: laserOffDelay")       {
-            laserOffDelay = val.toInt();
+            laserOffDelay = val.toDouble();
             return true;
         }
         if (key == "markDelay" || key == "DelayParams: markDelay")      {
-            markDelay = val.toInt();
+            markDelay = val.toDouble();
             return true;
         }
         if (key == "jumpDelay" || key == "DelayParams: jumpDelay")      {
-            jumpDelay = val.toInt();
+            jumpDelay = val.toDouble();
             return true;
         }
         if (key == "polygonDelay" || key == "DelayParams: polygonDelay")   {
-            polygonDelay = val.toInt();
+            polygonDelay = val.toDouble();
             return true;
         }
         return false;

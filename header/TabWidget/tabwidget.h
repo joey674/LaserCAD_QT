@@ -61,21 +61,24 @@ public:
 
         QDoubleSpinBox* directionVecXSpin = new QDoubleSpinBox();
         directionVecXSpin->setRange(-1000, 1000);
+        directionVecXSpin->setDecimals (4);
          directionVecXSpin->setValue(vParams.dir.x ());
         QDoubleSpinBox* directionVecYSpin = new QDoubleSpinBox();
         directionVecYSpin->setRange(-1000, 1000);
+        directionVecYSpin->setDecimals (4);
         directionVecYSpin->setValue(vParams.dir.y ());
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
-        spacingSpin->setRange(0, 99999);
+        spacingSpin->setRange(0, 1e9);
+        spacingSpin->setDecimals (4);
         spacingSpin->setValue(vParams.spacing);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(1, 99999);
+        countSpin->setRange(0, 1e9);
         countSpin->setValue(vParams.count);
         QPushButton* vectorConfirmBtn = new QPushButton("Confirm");
         vectorLayout->addRow("Direction x:", directionVecXSpin);
         vectorLayout->addRow("Direction y:", directionVecYSpin);
         vectorLayout->addRow("Spacing[mm]:", spacingSpin);
-        vectorLayout->addRow("Count[]:", countSpin);
+        vectorLayout->addRow("Count[time]:", countSpin);
         vectorLayout->addRow("", vectorConfirmBtn);
         // 连接 vectorConfirmBtn 点击事件
         QObject::connect(vectorConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
@@ -90,18 +93,25 @@ public:
         QFormLayout* matrixLayout = new QFormLayout(matrixPage);
         QLineEdit* horizontalVecEdit = new QLineEdit("1, 0");
         QLineEdit* verticalVecEdit = new QLineEdit("0, 1");
+
         QDoubleSpinBox* hSpacingSpin = new QDoubleSpinBox();
-        hSpacingSpin->setRange(0, 99999);
+        hSpacingSpin->setRange(0, 1e9);
+        hSpacingSpin->setDecimals (4);
         hSpacingSpin->setValue(mParams.hSpacing);
+
         QDoubleSpinBox* vSpacingSpin = new QDoubleSpinBox();
-        vSpacingSpin->setRange(0, 99999);
+        vSpacingSpin->setRange(0, 1e9);
+        vSpacingSpin->setDecimals (4);
         vSpacingSpin->setValue(mParams.vSpacing);
+
         QSpinBox* hCountSpin = new QSpinBox();
-        hCountSpin->setRange(1, 99999);
+        hCountSpin->setRange(0, 1e9);
         hCountSpin->setValue(mParams.hCount);
+
         QSpinBox* vCountSpin = new QSpinBox();
-        vCountSpin->setRange(1, 99999);
+        vCountSpin->setRange(0, 1e9);
         vCountSpin->setValue(mParams.vCount);
+
         QComboBox* copyOrderCombo = new QComboBox();
         copyOrderCombo->addItem("Zig-Zag by Row", 0);
         copyOrderCombo->addItem("Zig-Zag by Column", 1);
@@ -112,8 +122,8 @@ public:
         matrixLayout->addRow("Vertical Vector:", verticalVecEdit);
         matrixLayout->addRow("Horizontal Spacing[mm]:", hSpacingSpin);
         matrixLayout->addRow("Vertical Spacing[mm]:", vSpacingSpin);
-        matrixLayout->addRow("Horizontal Count[]:", hCountSpin);
-        matrixLayout->addRow("Vertical Count[]:", vCountSpin);
+        matrixLayout->addRow("Horizontal Count[time]:", hCountSpin);
+        matrixLayout->addRow("Vertical Count[time]:", vCountSpin);
         matrixLayout->addRow("Copy Order:", copyOrderCombo);
         matrixLayout->addRow("", matrixConfirmBtn);
         QObject::connect(matrixConfirmBtn, &QPushButton::clicked, copyTab, [ = ]() {
@@ -141,10 +151,10 @@ public:
 
         // 默认值处理
         auto offset = item->getContourFillParams().offset;
-        auto offsetCount = item->getContourFillParams().offsetCount;
-        if (offset == 0 && offsetCount == 0) {
+        auto contourCount = item->getContourFillParams().offsetCount;
+        if (offset == 0 && contourCount == 0) {
             offset = 1;
-            offsetCount = 3;
+            contourCount = 3;
         }
 
         auto fillSpacing = item->getFillParams().spacing;
@@ -169,31 +179,35 @@ public:
         QWidget* contourWidget = new QWidget();
         QFormLayout* offsetForm = new QFormLayout(contourWidget);
         QDoubleSpinBox* spacingSpin = new QDoubleSpinBox();
-        spacingSpin->setRange(-9999, 9999);
+        spacingSpin->setRange(-1e4, 1e4);
+        spacingSpin->setDecimals (4);
         spacingSpin->setValue(offset);
         QSpinBox* countSpin = new QSpinBox();
-        countSpin->setRange(0, 9999);
-        countSpin->setValue(offsetCount);
+        countSpin->setRange(0, 1e9);
+        countSpin->setValue(contourCount);
         offsetForm->addRow("Offset[mm]:", spacingSpin);
-        offsetForm->addRow("Offset Count[]:", countSpin);
+        offsetForm->addRow("Offset Count[time]:", countSpin);
 
         // fill 输入区域
         QWidget* hatchWidget = new QWidget();
         QFormLayout* fillForm = new QFormLayout(hatchWidget);
         QDoubleSpinBox* fillSpacingSpin = new QDoubleSpinBox();
-        fillSpacingSpin->setRange(0.0, 9999.0);
+        fillSpacingSpin->setRange(0.0, 1e9);
+        fillSpacingSpin->setDecimals (4);
         fillSpacingSpin->setValue(fillSpacing);
         QDoubleSpinBox* fillAngleSpin = new QDoubleSpinBox();
         fillAngleSpin->setRange(0.0, 360.0);
+        fillAngleSpin->setDecimals (1);
         fillAngleSpin->setValue(fillAngle);
         QSpinBox* fillOperateCountSpin = new QSpinBox();
         fillOperateCountSpin->setRange(0, 9999);
         fillOperateCountSpin->setValue(fillOperateCount);
         QDoubleSpinBox* fillAccumulateAngleSpin = new QDoubleSpinBox();
         fillAccumulateAngleSpin->setRange(0.0, 360.0);
+        fillAccumulateAngleSpin->setDecimals (1);
         fillAccumulateAngleSpin->setValue(fillAccumulateAngle);
         fillForm->addRow("Spacing[mm]:", fillSpacingSpin);
-        fillForm->addRow("Operate Count[]:", fillOperateCountSpin);
+        fillForm->addRow("Operate Count[time]:", fillOperateCountSpin);
         fillForm->addRow("Start Angle[°]:", fillAngleSpin);
         fillForm->addRow ("Step Angle[°]:", fillAccumulateAngleSpin);
 
@@ -241,73 +255,7 @@ public:
     void addMarkParamsTab(const UUID uuid) {
         auto item = ItemManager::getIns().itemMapFind(uuid);
         auto params = item->getMarkParams();
-        //
-        QWidget* markTab = new QWidget();
-        QVBoxLayout* mainLayout = new QVBoxLayout(markTab);
-        // 表单布局
-        QFormLayout* formLayout = new QFormLayout();
-        QDoubleSpinBox* markSpeedSpin = new QDoubleSpinBox();
-        markSpeedSpin->setRange(0, 100000);
-        markSpeedSpin->setValue(params.markSpeed);
-        QDoubleSpinBox* jumpSpeedSpin = new QDoubleSpinBox();
-        jumpSpeedSpin->setRange(0, 100000);
-        jumpSpeedSpin->setValue(params.jumpSpeed);
-        QSpinBox* frequencySpin = new QSpinBox();
-        frequencySpin->setRange(0, 1000000);
-        frequencySpin->setValue(params.frequency);
-        QSpinBox* wobelAmlSpin = new QSpinBox();
-        wobelAmlSpin->setRange(0, 100000);
-        wobelAmlSpin->setValue(params.wobelAml);
-        QSpinBox* repetTimeSpin = new QSpinBox();
-        repetTimeSpin->setRange(1, 1000);
-        repetTimeSpin->setValue(params.operateTime);
-        QDoubleSpinBox* powerSpin = new QDoubleSpinBox();
-        powerSpin->setRange(0, 100);
-        powerSpin->setDecimals(2);
-        powerSpin->setValue(params.power);
-        QDoubleSpinBox* pulseWidthSpin = new QDoubleSpinBox();
-        pulseWidthSpin->setRange(0, 1000);
-        pulseWidthSpin->setDecimals(2);
-        pulseWidthSpin->setValue(params.pulseLength);
-        QSpinBox* wobelFreqSpin = new QSpinBox();
-        wobelFreqSpin->setRange(0, 100000);
-        wobelFreqSpin->setValue(params.wobelFreq);
-        // Confirm 按钮
-        QPushButton* confirmBtn = new QPushButton("Confirm");
-        // 添加到表单布局
-        formLayout->addRow("Mark Speed[mm/s]:", markSpeedSpin);
-        formLayout->addRow("Jump Speed[mm/s]:", jumpSpeedSpin);
-        formLayout->addRow("Power[%]:", powerSpin);
-        formLayout->addRow("Frequency[kHz]:", frequencySpin);
-        formLayout->addRow("Pulse Width[ms]:", pulseWidthSpin);
-        formLayout->addRow("Repet Time[]:", repetTimeSpin);
-        // formLayout->addRow("Wobel Aml:", wobelAmlSpin);
-        // formLayout->addRow("Wobel Freq:", wobelFreqSpin);
-        // vector dependent 区域横排
-        QHBoxLayout* vectorLayout = new QHBoxLayout();
-        formLayout->addRow("", vectorLayout);
-        mainLayout->addLayout(formLayout);
-        mainLayout->addWidget(confirmBtn);
-        // 点击事件绑定
-        connect(confirmBtn, &QPushButton::clicked, markTab, [=]() {
-            MarkParams params = MarkParams{
-                markSpeedSpin->value(),
-                jumpSpeedSpin->value(),
-                static_cast<unsigned int>(frequencySpin->value()),
-                static_cast<unsigned int>(repetTimeSpin->value()),
-                powerSpin->value(),
-                static_cast<unsigned int>(pulseWidthSpin->value()),
-                static_cast<unsigned int>(wobelAmlSpin->value()),
-                static_cast<unsigned int>(wobelFreqSpin->value()),
-            };
-            EditController::getIns().onTabWidgetMarkParamsTab(params);
-        });
-        this->addTab(markTab, "MarkParams");
-    }
 
-    void addDelayParamsTab(const UUID uuid) {
-        auto item = ItemManager::getIns().itemMapFind(uuid);
-        auto params = item->getDelayParams();
         QWidget* tab = new QWidget();
         QVBoxLayout* tabLayout = new QVBoxLayout(tab);
         QScrollArea* scrollArea = new QScrollArea();
@@ -317,38 +265,124 @@ public:
         layout->setAlignment(Qt::AlignTop);
         layout->setSpacing(10);
         QFormLayout* formLayout = new QFormLayout();
-        QSpinBox* startDelaySpin = new QSpinBox();
-        startDelaySpin->setRange(0, 1000000);
+
+        QDoubleSpinBox* markSpeedSpin = new QDoubleSpinBox();
+        markSpeedSpin->setRange(0, 1e9);
+        markSpeedSpin->setDecimals(4);
+        markSpeedSpin->setValue(params.markSpeed);
+        QDoubleSpinBox* jumpSpeedSpin = new QDoubleSpinBox();
+        jumpSpeedSpin->setRange(0, 1e9);
+        jumpSpeedSpin->setDecimals(4);
+        jumpSpeedSpin->setValue(params.jumpSpeed);
+        QDoubleSpinBox* frequencySpin = new QDoubleSpinBox();
+        frequencySpin->setRange(0, 1e9);
+        frequencySpin->setDecimals(4);
+        frequencySpin->setValue(params.frequency);
+        QSpinBox* repetTimeSpin = new QSpinBox();
+        repetTimeSpin->setRange(1, 1e6);
+        repetTimeSpin->setValue(params.operateTime);
+        QDoubleSpinBox* powerSpin = new QDoubleSpinBox();
+        powerSpin->setRange(0, 100);
+        powerSpin->setDecimals(4);
+        powerSpin->setValue(params.power);
+        QDoubleSpinBox* pulseWidthSpin = new QDoubleSpinBox();
+        pulseWidthSpin->setRange(0, 1e9);
+        pulseWidthSpin->setDecimals(4);
+        pulseWidthSpin->setValue(params.pulseLength);
+        // QDoubleSpinBox* wobelAmlSpin = new QDoubleSpinBox();
+        // wobelAmlSpin->setRange(0, 1e9);
+        // wobelAmlSpin->setValue(params.wobelAml);
+        // QDoubleSpinBox* wobelFreqSpin = new QDoubleSpinBox();
+        // wobelFreqSpin->setRange(0, 1e9);
+        // wobelFreqSpin->setValue(params.wobelFreq);
+        // Confirm 按钮
+        QPushButton* confirmBtn = new QPushButton("Confirm");
+        // 添加到表单布局
+        formLayout->addRow("Mark Speed[mm/s]:", markSpeedSpin);
+        formLayout->addRow("Jump Speed[mm/s]:", jumpSpeedSpin);
+        formLayout->addRow("Power[%]:", powerSpin);
+        formLayout->addRow("Frequency[kHz]:", frequencySpin);
+        formLayout->addRow("Pulse Width[ms]:", pulseWidthSpin);
+        formLayout->addRow("Repet Time[time]:", repetTimeSpin);
+        // formLayout->addRow("Wobel Aml:", wobelAmlSpin);
+        // formLayout->addRow("Wobel Freq:", wobelFreqSpin);
+        // vector dependent 区域横排
+        QHBoxLayout* vectorLayout = new QHBoxLayout();
+        formLayout->addRow("", vectorLayout);
+        layout->addLayout(formLayout);
+        layout->addWidget(confirmBtn);
+        // 点击事件绑定
+        connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
+            MarkParams params = MarkParams{
+                markSpeedSpin->value(),
+                jumpSpeedSpin->value(),
+                frequencySpin->value(),
+                repetTimeSpin->value(),
+                powerSpin->value(),
+                pulseWidthSpin->value(),
+                // wobelAmlSpin->value(),
+                // wobelFreqSpin->value(),
+            };
+            EditController::getIns().onTabWidgetMarkParamsTab(params);
+        });
+
+        content->setLayout(layout);
+        scrollArea->setWidget(content);
+        tabLayout->addWidget(scrollArea);
+        this->addTab(tab, "MarkParams");
+    }
+
+    void addDelayParamsTab(const UUID uuid) {
+        auto item = ItemManager::getIns().itemMapFind(uuid);
+        auto params = item->getDelayParams();
+
+        QWidget* tab = new QWidget();
+        QVBoxLayout* tabLayout = new QVBoxLayout(tab);
+        QScrollArea* scrollArea = new QScrollArea();
+        scrollArea->setWidgetResizable(true);
+        QWidget* content = new QWidget();
+        QVBoxLayout* layout = new QVBoxLayout(content);
+        layout->setAlignment(Qt::AlignTop);
+        layout->setSpacing(10);
+        QFormLayout* formLayout = new QFormLayout();
+
+        QDoubleSpinBox* startDelaySpin = new QDoubleSpinBox();
+        startDelaySpin->setRange(0, 1e9);
+        startDelaySpin->setDecimals(4);
         startDelaySpin->setValue(params.laserOnDelay);
         formLayout->addRow("Start Delay[ms]:", startDelaySpin);
-        QSpinBox* endDelaySpin = new QSpinBox();
-        endDelaySpin->setRange(0, 1000000);
+        QDoubleSpinBox* endDelaySpin = new QDoubleSpinBox();
+        endDelaySpin->setRange(0, 1e9);
+        endDelaySpin->setDecimals(4);
         endDelaySpin->setValue(params.laserOffDelay);
         formLayout->addRow("End Delay[ms]:", endDelaySpin);
-        QSpinBox* polygonDelaySpin = new QSpinBox();
-        polygonDelaySpin->setRange(0, 1000000);
+        QDoubleSpinBox* polygonDelaySpin = new QDoubleSpinBox();
+        polygonDelaySpin->setRange(0, 1e9);
+        polygonDelaySpin->setDecimals(4);
         polygonDelaySpin->setValue(params.polygonDelay);
         formLayout->addRow("Polygon Delay[ms]:", polygonDelaySpin);
-        QSpinBox* markDelaySpin = new QSpinBox();
-        markDelaySpin->setRange(0, 1000000);
+        QDoubleSpinBox* markDelaySpin = new QDoubleSpinBox();
+        markDelaySpin->setRange(0, 1e9);
+        markDelaySpin->setDecimals(4);
         markDelaySpin->setValue(params.markDelay);
         formLayout->addRow("Mark Delay[ms]:", markDelaySpin);
-        QSpinBox* jumpDelaySpin = new QSpinBox();
-        jumpDelaySpin->setRange(0, 1000000);
+        QDoubleSpinBox* jumpDelaySpin = new QDoubleSpinBox();
+        jumpDelaySpin->setRange(0, 1e9);
+        jumpDelaySpin->setDecimals(4);
         jumpDelaySpin->setValue(params.jumpDelay);
         formLayout->addRow("Jump Delay[ms]:", jumpDelaySpin);
         layout->addLayout(formLayout);
         QPushButton* confirmBtn = new QPushButton("Confirm");
-        confirmBtn->setFixedWidth(100);
         layout->addWidget(confirmBtn, 0, Qt::AlignCenter);
         connect(confirmBtn, &QPushButton::clicked, tab, [=]() {
-            DelayParams params = {static_cast<unsigned int>(startDelaySpin->value()),
-                                  static_cast<unsigned int>(endDelaySpin->value()),
-                                  static_cast<unsigned int>(polygonDelaySpin->value()),
-                                  static_cast<unsigned int>(markDelaySpin->value()),
-                                  static_cast<unsigned int>(jumpDelaySpin->value())};
+            DelayParams params = {startDelaySpin->value(),
+                                  endDelaySpin->value(),
+                                  polygonDelaySpin->value(),
+                                  markDelaySpin->value(),
+                                  jumpDelaySpin->value()};
             EditController::getIns().onTabWidgetDelayParamsTab(params);
         });
+
         content->setLayout(layout);
         scrollArea->setWidget(content);
         tabLayout->addWidget(scrollArea);
@@ -367,21 +401,25 @@ public:
         // 起点
         QDoubleSpinBox* startX = new QDoubleSpinBox();
         startX->setRange(-1e6, 1e6);
+        startX->setDecimals (4);
         startX->setValue(v0.x ());
         QDoubleSpinBox* startY = new QDoubleSpinBox();
         startY->setRange(-1e6, 1e6);
+        startY->setDecimals (4);
         startY->setValue(v0.y ());
         // 终点
         QDoubleSpinBox* endX = new QDoubleSpinBox();
         endX->setRange(-1e6, 1e6);
+        endX->setDecimals (4);
         endX->setValue(v1.x ());
         QDoubleSpinBox* endY = new QDoubleSpinBox();
         endY->setRange(-1e6, 1e6);
+        endY->setDecimals (4);
         endY->setValue(v1.y ());
         // angle
         QDoubleSpinBox* angleSpin = new QDoubleSpinBox();
-        angleSpin->setRange(-359.99, 359.99);
-        angleSpin->setDecimals(2);
+        angleSpin->setRange(-359.9, 359.9);
+        angleSpin->setDecimals(1);
         angleSpin->setValue(angle);
         // 按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
@@ -418,14 +456,17 @@ public:
         // 圆心 X
         QDoubleSpinBox* centerX = new QDoubleSpinBox();
         centerX->setRange(-1e6, 1e6);
+        centerX->setDecimals (4);
         centerX->setValue(center.x ());
         // 圆心 Y
         QDoubleSpinBox* centerY = new QDoubleSpinBox();
         centerY->setRange(-1e6, 1e6);
+        centerY->setDecimals (4);
         centerY->setValue(center.y ());
         // 半径
         QDoubleSpinBox* radiusSpin = new QDoubleSpinBox();
-        radiusSpin->setRange(0.001, 1e6);
+        radiusSpin->setRange(1e-4, 1e6);
+        radiusSpin->setDecimals (4);
         radiusSpin->setValue(radius);
         // 按钮
         QPushButton* confirmBtn = new QPushButton("Confirm");
@@ -454,15 +495,19 @@ public:
         QFormLayout* formLayout = new QFormLayout();
         QDoubleSpinBox* v0x = new QDoubleSpinBox();
         v0x->setRange(-1e6, 1e6);
+        v0x->setDecimals (4);
         v0x->setValue(v0.x ());
         QDoubleSpinBox* v0y = new QDoubleSpinBox();
         v0y->setRange(-1e6, 1e6);
+        v0y->setDecimals (4);
         v0y->setValue(v0.y ());
         QDoubleSpinBox* v1x = new QDoubleSpinBox();
         v1x->setRange(-1e6, 1e6);
+        v1x->setDecimals (4);
         v1x->setValue(v1.x ());
         QDoubleSpinBox* v1y = new QDoubleSpinBox();
         v1y->setRange(-1e6, 1e6);
+        v1y->setDecimals (4);
         v1y->setValue(v1.y ());
         QPushButton* confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("Vertex0 X:", v0x);
@@ -488,9 +533,11 @@ public:
         QFormLayout* formLayout = new QFormLayout();
         QDoubleSpinBox* xSpin = new QDoubleSpinBox();
         xSpin->setRange(-1e6, 1e6);
+        xSpin->setDecimals (4);
         xSpin->setValue(v0.x());
         QDoubleSpinBox* ySpin = new QDoubleSpinBox();
         ySpin->setRange(-1e6, 1e6);
+        ySpin->setDecimals (4);
         ySpin->setValue(v0.y());
         QPushButton* confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("X:", xSpin);
@@ -505,93 +552,93 @@ public:
     }
 
     void addPolylineGeometryTab(const UUID uuid) {
-        auto itemPtr = ItemManager::getIns().itemMapFind(uuid);
-        auto item = static_cast < PolylineItem * > (itemPtr.get());
-        uint count = item->getVertexCount();
-        // 创建 scroll 区域
-        QScrollArea *scrollArea = new QScrollArea();
-        QWidget *innerWidget = new QWidget();
-        QVBoxLayout *mainLayout = new QVBoxLayout(innerWidget);
-        // 存储每个 vertex 的输入组件
-        struct VertexInput {
-            QDoubleSpinBox *x;
-            QDoubleSpinBox *y;
-            QDoubleSpinBox *angle;
-        };
-        QVector < VertexInput > vertexInputs;
-        for (uint i = 0; i < count; ++i) {
-            QPointF pos = item->getVertexInScene(i).point;
-            double angle = item->getVertexInScene(i).angle;
-            QDoubleSpinBox *vx = new QDoubleSpinBox();
-            vx->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
-                              "0; height: 0;  }");
-            QDoubleSpinBox *vy = new QDoubleSpinBox();
-            vy->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
-                              "0; height: 0;  }");
-            QDoubleSpinBox *va = new QDoubleSpinBox();
-            va->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
-                              "0; height: 0;  }");
-            vx->setRange(-1e6, 1e6);
-            vy->setRange(-1e6, 1e6);
-            va->setRange(-360, 360);
-            vx->setDecimals(3);
-            vy->setDecimals(3);
-            va->setDecimals(2);
-            vx->setValue(pos.x());
-            vy->setValue(pos.y());
-            va->setValue(i == 0 ? 0.0 : angle); // 第一个点 angle 固定为 0
-            if (i == 0) {
-                va->setEnabled(false);    // 不让编辑
-            }
-            // 横向布局: "Vertex i: X [ ] Y [ ] Angle [ ]"
-            QHBoxLayout *lineLayout = new QHBoxLayout();
-            QLabel *label = new QLabel(QString("Vertex %1:").arg(i));
-            label->setMinimumWidth(60);
-            QLabel *xLabel = new QLabel("X:");
-            QLabel *yLabel = new QLabel("Y:");
-            QLabel *aLabel = new QLabel("Angle:");
-            xLabel->setMinimumWidth(10);
-            yLabel->setMinimumWidth(10);
-            aLabel->setMinimumWidth(50);
-            vx->setFixedWidth(60);
-            vy->setFixedWidth(60);
-            va->setFixedWidth(60);
-            lineLayout->addWidget(label);
-            lineLayout->addWidget(xLabel);
-            lineLayout->addWidget(vx);
-            lineLayout->addWidget(yLabel);
-            lineLayout->addWidget(vy);
-            lineLayout->addWidget(aLabel);
-            lineLayout->addWidget(va);
-            lineLayout->addStretch();
-            mainLayout->addLayout(lineLayout);
-            vertexInputs.append(VertexInput{vx, vy, va});
-        }
-        // Confirm 按钮
-        QPushButton *confirmBtn = new QPushButton("Confirm");
-        confirmBtn->setFixedWidth(100);
-        confirmBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        mainLayout->addWidget(confirmBtn, 0, Qt::AlignCenter);
-        // 设置 scroll 区域
-        scrollArea->setWidget(innerWidget);
-        scrollArea->setWidgetResizable(true);
-        // 加入 tab
-        QWidget *tab = new QWidget();
-        QVBoxLayout *layout = new QVBoxLayout(tab);
-        layout->addWidget(scrollArea);
-        // 点击事件
-        connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
-            std::vector < Vertex > result;
-            for (int i = 0; i < vertexInputs.size(); ++i) {
-                const auto &w = vertexInputs[i];
-                Vertex v;
-                v.point = QPointF(w.x->value(), w.y->value());
-                v.angle = (i == 0 ? 0.0 : w.angle->value());
-                result.push_back(v);
-            }
-            EditController::getIns().onTabWidgetPolylineGeometryTab(result);
-        });
-        this->addTab(tab, "Geometry");
+        // auto itemPtr = ItemManager::getIns().itemMapFind(uuid);
+        // auto item = static_cast < PolylineItem * > (itemPtr.get());
+        // uint count = item->getVertexCount();
+        // // 创建 scroll 区域
+        // QScrollArea *scrollArea = new QScrollArea();
+        // QWidget *innerWidget = new QWidget();
+        // QVBoxLayout *mainLayout = new QVBoxLayout(innerWidget);
+        // // 存储每个 vertex 的输入组件
+        // struct VertexInput {
+        //     QDoubleSpinBox *x;
+        //     QDoubleSpinBox *y;
+        //     QDoubleSpinBox *angle;
+        // };
+        // QVector < VertexInput > vertexInputs;
+        // for (uint i = 0; i < count; ++i) {
+        //     QPointF pos = item->getVertexInScene(i).point;
+        //     double angle = item->getVertexInScene(i).angle;
+        //     QDoubleSpinBox *vx = new QDoubleSpinBox();
+        //     vx->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+        //                       "0; height: 0;  }");
+        //     QDoubleSpinBox *vy = new QDoubleSpinBox();
+        //     vy->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+        //                       "0; height: 0;  }");
+        //     QDoubleSpinBox *va = new QDoubleSpinBox();
+        //     va->setStyleSheet("QAbstractSpinBox::up-button, QAbstractSpinBox::down-button { width: "
+        //                       "0; height: 0;  }");
+        //     vx->setRange(-1e6, 1e6);
+        //     vy->setRange(-1e6, 1e6);
+        //     va->setRange(-360, 360);
+        //     vx->setDecimals(3);
+        //     vy->setDecimals(3);
+        //     va->setDecimals(2);
+        //     vx->setValue(pos.x());
+        //     vy->setValue(pos.y());
+        //     va->setValue(i == 0 ? 0.0 : angle); // 第一个点 angle 固定为 0
+        //     if (i == 0) {
+        //         va->setEnabled(false);    // 不让编辑
+        //     }
+        //     // 横向布局: "Vertex i: X [ ] Y [ ] Angle [ ]"
+        //     QHBoxLayout *lineLayout = new QHBoxLayout();
+        //     QLabel *label = new QLabel(QString("Vertex %1:").arg(i));
+        //     label->setMinimumWidth(60);
+        //     QLabel *xLabel = new QLabel("X:");
+        //     QLabel *yLabel = new QLabel("Y:");
+        //     QLabel *aLabel = new QLabel("Angle:");
+        //     xLabel->setMinimumWidth(10);
+        //     yLabel->setMinimumWidth(10);
+        //     aLabel->setMinimumWidth(50);
+        //     vx->setFixedWidth(60);
+        //     vy->setFixedWidth(60);
+        //     va->setFixedWidth(60);
+        //     lineLayout->addWidget(label);
+        //     lineLayout->addWidget(xLabel);
+        //     lineLayout->addWidget(vx);
+        //     lineLayout->addWidget(yLabel);
+        //     lineLayout->addWidget(vy);
+        //     lineLayout->addWidget(aLabel);
+        //     lineLayout->addWidget(va);
+        //     lineLayout->addStretch();
+        //     mainLayout->addLayout(lineLayout);
+        //     vertexInputs.append(VertexInput{vx, vy, va});
+        // }
+        // // Confirm 按钮
+        // QPushButton *confirmBtn = new QPushButton("Confirm");
+        // confirmBtn->setFixedWidth(100);
+        // confirmBtn->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        // mainLayout->addWidget(confirmBtn, 0, Qt::AlignCenter);
+        // // 设置 scroll 区域
+        // scrollArea->setWidget(innerWidget);
+        // scrollArea->setWidgetResizable(true);
+        // // 加入 tab
+        // QWidget *tab = new QWidget();
+        // QVBoxLayout *layout = new QVBoxLayout(tab);
+        // layout->addWidget(scrollArea);
+        // // 点击事件
+        // connect(confirmBtn, &QPushButton::clicked, tab, [ = ]() {
+        //     std::vector < Vertex > result;
+        //     for (int i = 0; i < vertexInputs.size(); ++i) {
+        //         const auto &w = vertexInputs[i];
+        //         Vertex v;
+        //         v.point = QPointF(w.x->value(), w.y->value());
+        //         v.angle = (i == 0 ? 0.0 : w.angle->value());
+        //         result.push_back(v);
+        //     }
+        //     EditController::getIns().onTabWidgetPolylineGeometryTab(result);
+        // });
+        // this->addTab(tab, "Geometry");
     }
 
     void addEllipseGeometryTab(const UUID uuid) {
@@ -607,21 +654,25 @@ public:
         // 中心点
         QDoubleSpinBox *centerX = new QDoubleSpinBox();
         centerX->setRange(-1e6, 1e6);
+        centerX->setDecimals (4);
         centerX->setValue(center.x());
         QDoubleSpinBox *centerY = new QDoubleSpinBox();
         centerY->setRange(-1e6, 1e6);
+        centerY->setDecimals (4);
         centerY->setValue(center.y());
         // 半径
         QDoubleSpinBox *radiusXSpin = new QDoubleSpinBox();
-        radiusXSpin->setRange(0.01, 1e6);
+        radiusXSpin->setRange(1e-4, 1e6);
+        radiusXSpin->setDecimals (4);
         radiusXSpin->setValue(radiusX);
         QDoubleSpinBox *radiusYSpin = new QDoubleSpinBox();
-        radiusYSpin->setRange(0.01, 1e6);
+        radiusYSpin->setRange(1e-4, 1e6);
+        radiusYSpin->setDecimals (4);
         radiusYSpin->setValue(radiusY);
         // 角度
         QDoubleSpinBox *angleSpin = new QDoubleSpinBox();
-        angleSpin->setRange(0, 359.99);
-        angleSpin->setDecimals(2);
+        angleSpin->setRange(1e-1, 359.9);
+        angleSpin->setDecimals(1);
         angleSpin->setValue(angle);
         // 按钮
         QPushButton *confirmBtn = new QPushButton("Confirm");
@@ -657,17 +708,25 @@ public:
         // 左上点
         QDoubleSpinBox *topLeftX = new QDoubleSpinBox();
         topLeftX->setRange(-1e6, 1e6);
+        topLeftX->setDecimals(4);
         topLeftX->setValue(topLeft.x());
+
         QDoubleSpinBox *topLeftY = new QDoubleSpinBox();
         topLeftY->setRange(-1e6, 1e6);
+        topLeftY->setDecimals(4);
         topLeftY->setValue(topLeft.y());
+
         // 右下点
         QDoubleSpinBox *bottomRightX = new QDoubleSpinBox();
         bottomRightX->setRange(-1e6, 1e6);
+        bottomRightX->setDecimals(4);
         bottomRightX->setValue(bottomRight.x());
+
         QDoubleSpinBox *bottomRightY = new QDoubleSpinBox();
         bottomRightY->setRange(-1e6, 1e6);
+        bottomRightY->setDecimals(4);
         bottomRightY->setValue(bottomRight.y());
+
         // 按钮
         QPushButton *confirmBtn = new QPushButton("Confirm");
         // 添加到 form layout
@@ -704,28 +763,37 @@ public:
         // 中心点
         QDoubleSpinBox *centerX = new QDoubleSpinBox();
         centerX->setRange(-1e6, 1e6);
+        centerX->setDecimals(4);
         centerX->setValue(center.x());
+
         QDoubleSpinBox *centerY = new QDoubleSpinBox();
         centerY->setRange(-1e6, 1e6);
+        centerY->setDecimals(4);
         centerY->setValue(center.y());
+
         // 起始半径
         QDoubleSpinBox *startRadius = new QDoubleSpinBox();
         startRadius->setRange(0.001, 1e6);
+        startRadius->setDecimals(4);
         startRadius->setValue(r0);
+
         // 终止半径
         QDoubleSpinBox *endRadius = new QDoubleSpinBox();
         endRadius->setRange(0.001, 1e6);
+        endRadius->setDecimals(4);
         endRadius->setValue(r1);
+
         // 圈数
-        QDoubleSpinBox *turnsSpin = new QDoubleSpinBox();
-        turnsSpin->setRange(0.1, 100);
-        turnsSpin->setDecimals(2);
+        QSpinBox *turnsSpin = new QSpinBox();
+        turnsSpin->setRange(1, 100);
         turnsSpin->setValue(turns);
+
         // 步进角度
         QDoubleSpinBox *stepSpin = new QDoubleSpinBox();
-        stepSpin->setRange(0.1, 90.0);
-        stepSpin->setDecimals(2);
+        stepSpin->setRange(1e-1, 90.0);
+        stepSpin->setDecimals(1);
         stepSpin->setValue(step);
+
         // 按钮
         QPushButton *confirmBtn = new QPushButton("Confirm");
         // 加入表单
@@ -733,7 +801,7 @@ public:
         formLayout->addRow("Center Y:", centerY);
         formLayout->addRow("Start Radius[°]:", startRadius);
         formLayout->addRow("End Radius[°]:", endRadius);
-        formLayout->addRow("Turns[]:", turnsSpin);
+        formLayout->addRow("Turns[time]:", turnsSpin);
         formLayout->addRow("Step Angle[°]:", stepSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
@@ -765,13 +833,16 @@ public:
         // 中心点
         QDoubleSpinBox *centerX = new QDoubleSpinBox();
         centerX->setRange(-1e6, 1e6);
+        centerX->setDecimals (4);
         centerX->setValue(center.x());
         QDoubleSpinBox *centerY = new QDoubleSpinBox();
         centerY->setRange(-1e6, 1e6);
+        centerY->setDecimals (4);
         centerY->setValue(center.y());
         // 半径
         QDoubleSpinBox *radiusSpin = new QDoubleSpinBox();
-        radiusSpin->setRange(0.001, 1e6);
+        radiusSpin->setRange(1e-4, 1e6);
+        radiusSpin->setDecimals (4);
         radiusSpin->setValue(radius);
         // 边数
         QSpinBox *edgeCountSpin = new QSpinBox();
@@ -779,14 +850,14 @@ public:
         edgeCountSpin->setValue(static_cast < int > (edgeCount));
         // 旋转角度
         QDoubleSpinBox *angleSpin = new QDoubleSpinBox();
-        angleSpin->setRange(0.0, 359.99);
-        angleSpin->setDecimals(2);
+        angleSpin->setRange(0.0, 359.9);
+        angleSpin->setDecimals(1);
         angleSpin->setValue(angle);
         QPushButton *confirmBtn = new QPushButton("Confirm");
         formLayout->addRow("Center X:", centerX);
         formLayout->addRow("Center Y:", centerY);
         formLayout->addRow("Radius:[mm]", radiusSpin);
-        formLayout->addRow("Edge Count[]:", edgeCountSpin);
+        formLayout->addRow("Edge Count[time]:", edgeCountSpin);
         formLayout->addRow("Angle [°]:", angleSpin);
         mainLayout->addLayout(formLayout);
         mainLayout->addWidget(confirmBtn);
@@ -814,6 +885,7 @@ public:
             QDoubleSpinBox *deltaSpin;
         };
         QMap < QString, FieldWidgets > fields;
+
         // 创建 scroll 区域包裹 form layout
         QScrollArea* scrollArea = new QScrollArea();
         scrollArea->setWidgetResizable(true);
@@ -823,57 +895,73 @@ public:
         scrollArea->setWidget(scrollWidget);
         scrollArea->setMinimumHeight(300);
         mainLayout->addWidget(scrollArea);
+
         auto addField = [&](const QString & name, double defaultValue = 0.0) {
             QCheckBox* check = new QCheckBox(name);
             QDoubleSpinBox* valueSpin = new QDoubleSpinBox();
             QSlider* valueSlider = new QSlider(Qt::Horizontal);
             QDoubleSpinBox* deltaSpin = new QDoubleSpinBox();
+
             // 设置范围/精度
-            double min = -9999.0;
-            double max = 9999.0;
+            double min = -1e6;
+            double max = 1e6;
             valueSpin->setRange(min, max);
-            valueSpin->setDecimals(3);
+            valueSpin->setDecimals(4);
             deltaSpin->setRange(min, max);
-            deltaSpin->setDecimals(3);
-            valueSlider->setRange(static_cast < int > (min * 100), static_cast < int > (max * 100));
-            // 同步 slider <-> spinbox
-            connect(valueSpin, QOverload < double >::of(&QDoubleSpinBox::valueChanged),
-            [ = ](double val) {
-                valueSlider->setValue(static_cast < int > (val * 100));
-            });
+            deltaSpin->setDecimals(4);
+            valueSlider->setRange(static_cast<int>(min * 100), static_cast<int>(max * 100));
+
+            // 同步 spin 和 slider
+            connect(valueSpin, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+                    [=](double val) {
+                        valueSlider->setValue(static_cast<int>(val * 100));
+                    });
             connect(valueSlider, &QSlider::valueChanged,
-            [ = ](int val) {
-                valueSpin->setValue(val / 100.0);
-            });
-            // 默认值
+                    [=](int val) {
+                        valueSpin->setValue(val / 100.0);
+                    });
+
             valueSpin->setValue(defaultValue);
-            valueSlider->setValue(static_cast < int > (defaultValue * 100));
+            valueSlider->setValue(static_cast<int>(defaultValue * 100));
             deltaSpin->setValue(0);
-            // 禁用逻辑
+
             valueSpin->setEnabled(false);
             valueSlider->setEnabled(false);
             deltaSpin->setEnabled(false);
             connect(check, &QCheckBox::toggled, valueSpin, &QDoubleSpinBox::setEnabled);
             connect(check, &QCheckBox::toggled, valueSlider, &QSlider::setEnabled);
             connect(check, &QCheckBox::toggled, deltaSpin, &QDoubleSpinBox::setEnabled);
-            // 控件宽度
+
             check->setMinimumWidth(180);
             valueSpin->setFixedWidth(80);
             deltaSpin->setFixedWidth(80);
-            // 布局组装
+
+            // 第二行控件布局
             QVBoxLayout* sliderLayout = new QVBoxLayout();
             sliderLayout->setSpacing(2);
             sliderLayout->setContentsMargins(0, 0, 0, 0);
             sliderLayout->addWidget(valueSpin);
             sliderLayout->addWidget(valueSlider);
+
             QHBoxLayout* hLayout = new QHBoxLayout();
             hLayout->addLayout(sliderLayout);
             hLayout->addSpacing(10);
             hLayout->addWidget(new QLabel("+"));
             hLayout->addWidget(deltaSpin);
-            formLayout->addRow(check, hLayout);
+
+            // 新增：每个字段整体用 VBox 组合
+            QVBoxLayout* fieldLayout = new QVBoxLayout();
+            fieldLayout->addWidget(check);
+            fieldLayout->addLayout(hLayout);
+
+            // 用 QWidget 包起来以便添加到 FormLayout（现在不再用 QFormLayout）
+            QWidget* container = new QWidget();
+            container->setLayout(fieldLayout);
+            formLayout->addRow(container);  // 每行一个完整字段（上下两行）
+
             fields[name] = FieldWidgets{check, valueSpin, deltaSpin};
         };
+
         // 添加字段
         addField("Position.x");
         addField("Position.y");
@@ -1029,7 +1117,7 @@ public:
         QString* correctionFilePath = new QString();
 
         connect(loadCorrectionButton, &QPushButton::clicked, [=]() {
-            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.ct5 *.ctb);;All Files (*)");
+            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.ct5 );All Files (*)");
             if (!path.isEmpty()) {
                 *correctionFilePath = path;
                 loadCorrectionButton->setText(QFileInfo(path).fileName());

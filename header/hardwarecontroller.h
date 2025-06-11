@@ -4,6 +4,7 @@
 ///
 /// 主要是用于切割ui和hardware操作
 ///
+#include <QWidget>
 
 class HardwareController
 {
@@ -13,6 +14,9 @@ private:
 public:
     void setOperationTime(int num);
     void prepareMarkCurrentLayer();
+
+public:
+    void onMarkButtonClicked(QWidget* widget);
 
 private:
     static HardwareController ins;

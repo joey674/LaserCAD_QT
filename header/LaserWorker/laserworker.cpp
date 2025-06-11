@@ -62,5 +62,6 @@ LaserWorker::~LaserWorker()
     stopLaserWorker();
     if (m_thread.joinable()) {
         m_thread.join();
+        INFO_MSG("LaserWorker Stopped");
     }
 }

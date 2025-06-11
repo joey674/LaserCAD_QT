@@ -49,14 +49,14 @@ do {                                                             \
 * BUSY     表示正在打印; 如果pause了也将保持BUSY
 * USED     执行完成
  *****************************************************************************/
-const unsigned int LOAD1   = (1 << 0);  // Bit 0
-const unsigned int LOAD2   = (1 << 1);  // Bit 1
-const unsigned int READY1  = (1 << 2);  // Bit 2
-const unsigned int READY2  = (1 << 3);  // Bit 3
-const unsigned int BUSY1   = (1 << 4);  // Bit 4
-const unsigned int BUSY2   = (1 << 5);  // Bit 5
-const unsigned int USED1   = (1 << 6);  // Bit 6
-const unsigned int USED2   = (1 << 7);  // Bit 7
+const uint32_t LOAD1   = (1 << 0);  // Bit 0
+const uint32_t LOAD2   = (1 << 1);  // Bit 1
+const uint32_t READY1  = (1 << 2);  // Bit 2
+const uint32_t READY2  = (1 << 3);  // Bit 3
+const uint32_t BUSY1   = (1 << 4);  // Bit 4
+const uint32_t BUSY2   = (1 << 5);  // Bit 5
+const uint32_t USED1   = (1 << 6);  // Bit 6
+const uint32_t USED2   = (1 << 7);  // Bit 7
 
 
 
@@ -64,39 +64,39 @@ const unsigned int USED2   = (1 << 7);  // Bit 7
 * 确认好的protocol params
  *****************************************************************************/
 const double Pi = 3.14159265358979323846;
-const unsigned int LaserModeCO2 = 0;       //  CO2 mode
-const unsigned int LaserModeYAG1 = 1;       //  YAG 1 mode
-const unsigned int LaserModeYAG2 = 2;       //  YAG 2 mode
-const unsigned int LaserModeYAG3 = 3;       //  YAG 3 mode
-const unsigned int LaserMode4 = 4;       //
-const unsigned int LaserModeYAG5 = 5;       //  YAG 5 mode
-const unsigned int LaserMode6 = 6;       //
+const uint32_t LaserModeCO2 = 0;       //  CO2 mode
+const uint32_t LaserModeYAG1 = 1;       //  YAG 1 mode
+const uint32_t LaserModeYAG2 = 2;       //  YAG 2 mode
+const uint32_t LaserModeYAG3 = 3;       //  YAG 3 mode
+const uint32_t LaserMode4 = 4;       //
+const uint32_t LaserModeYAG5 = 5;       //  YAG 5 mode
+const uint32_t LaserMode6 = 6;       //
 
-const unsigned int DefaultCard = 1;     //  number of default card
+const uint32_t DefaultCard = 1;     //  number of default card
 
 
 /*****************************************************************************
 * example
  *****************************************************************************/
 // Change these values according to your system
-const unsigned int ListMemory = 10000;  //  size of list 1 memory (default 4000)
-const unsigned int LaserControl = 0x18; //  Laser signals LOW active (Bits #3 and #4)
-const unsigned int StartGap = 1000;     //  gap ahead between input_pointer and out_pointer
-const unsigned int LoadGap = 100;       //  gap ahead between out_pointer and input_pointer
-const unsigned int PointerCount = 0x3F; //  pointer mask for checking the gap
+const double ListMemory = 10000;  //  size of list 1 memory (default 4000)
+const double LaserControl = 0x18; //  Laser signals LOW active (Bits #3 and #4)
+const double StartGap = 1000;     //  gap ahead between input_pointer and out_pointer
+const double LoadGap = 100;       //  gap ahead between out_pointer and input_pointer
+const double PointerCount = 0x3F; //  pointer mask for checking the gap
 // RTC4 compatibility mode assumed
-const unsigned int AnalogOutChannel = 1;       //  AnalogOut Channel 1 used
-const unsigned int AnalogOutValue = 640;       //  Standard Pump Source Value
-const unsigned int AnalogOutStandby = 0;       //  Standby Pump Source Value
-const unsigned int WarmUpTime = 2000000 / 10;  //    2  s [10 us]
-const unsigned int LaserHalfPeriod = 50 * 8;   //   50 us [1/8 us] must be at least 13
-const unsigned int LaserPulseWidth = 5 * 8;    //    5 us [1/8 us]
-const unsigned int FirstPulseKiller = 200 * 8; //  200 us [1/8 us]
+const double AnalogOutChannel = 1;       //  AnalogOut Channel 1 used
+const double AnalogOutValue = 640;       //  Standard Pump Source Value
+const double AnalogOutStandby = 0;       //  Standby Pump Source Value
+const double WarmUpTime = 2000000 / 10;  //    2  s [10 us]
+const double LaserHalfPeriod = 50 * 8;   //   50 us [1/8 us] must be at least 13
+const double LaserPulseWidth = 5 * 8;    //    5 us [1/8 us]
+const double FirstPulseKiller = 200 * 8; //  200 us [1/8 us]
 const long LaserOnDelay = 100 * 1;     //  100 us [1 us]
-const unsigned int LaserOffDelay = 100 * 1; //  100 us [1 us]
-const unsigned int JumpDelay = 250 / 10;    //  250 us [10 us]
-const unsigned int MarkDelay = 100 / 10;    //  100 us [10 us]
-const unsigned int PolygonDelay = 50 / 10;  //   50 us [10 us]
+const double LaserOffDelay = 100 * 1; //  100 us [1 us]
+const double JumpDelay = 250 / 10;    //  250 us [10 us]
+const double MarkDelay = 100 / 10;    //  100 us [10 us]
+const double PolygonDelay = 50 / 10;  //   50 us [10 us]
 const double MarkSpeed = 250.0;        //  [16 Bits/ms]
 const double JumpSpeed = 1000.0;       //  [16 Bits/ms]
 // End Locus of a Line
@@ -143,41 +143,41 @@ struct EllipseCommand {
 
 struct SetLaserPulsesCommand
 {
-    unsigned int halfPeriod;
-    unsigned int pulseLength;
+    double frequency;
+    double pulseLength;
 };
 
 struct SetScannerDelaysCommand
 {
-    unsigned int jumpDelay;
-    unsigned int markDelay;
-    unsigned int polygonDelay;
+    double jumpDelay;
+    double markDelay;
+    double polygonDelay;
 };
 
 struct SetLaserDelaysCommand
 {
-    unsigned int laserOnDelay;
-    unsigned int laserOffDelay;
+    double laserOnDelay;
+    double laserOffDelay;
 };
 
 struct SetJumpSpeedCommand
 {
-    unsigned int jumpSpeed;
+    double jumpSpeed;
 };
 
 struct SetMarkSpeedCommand
 {
-    unsigned int markSpeed;
+    double markSpeed;
 };
 
 struct LongDelayCommand
 {
-    unsigned int time;
+    double time;
 };
 
 struct SetLaserPowerCommand {
-    unsigned int port;
-    unsigned int voltage;
+    double port;
+    double percentage;
 };
 
 // RTC5命令; 不考虑list,以及一些初始化命令1, 只负责设置参数和打印命令

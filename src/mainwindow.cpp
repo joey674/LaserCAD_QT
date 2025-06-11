@@ -42,7 +42,7 @@ void MainWindow::onDrawTestLineButtonClicked() {
 /// \brief MainWindow::MainWindow
 ///
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
-    QWidget *container = new QWidget(this); // 容器交给 UiManager 布局使用
+    QWidget *container = new QWidget(this);
     UiManager::getIns().initLayout(container);
     this->setCentralWidget(container);
     //
@@ -1138,51 +1138,7 @@ void MainWindow::onLoopButtonClicked() {
 
 void MainWindow::onMarkButtonClicked()
 {
-    //
-    if (!LaserWorker::getIns ().getDeviceConnectStatus ()){
-        return;
-    }
-    //
-    QDialog dialog(this);
-    dialog.setWindowTitle("MarkPanel");
-
-    QPushButton *startButton = new QPushButton("start");
-    QPushButton *pauseButton = new QPushButton("pause");
-    QPushButton *resumeButton = new QPushButton("resume");
-    QPushButton *abortButton = new QPushButton("abort");
-
-    QVBoxLayout *layout = new QVBoxLayout;
-    layout->addWidget(startButton);
-    layout->addWidget(pauseButton);
-    layout->addWidget(resumeButton);
-    layout->addWidget(abortButton);
-    dialog.setLayout(layout);
-
-    QObject::connect(startButton, &QPushButton::clicked,&dialog, [&]() {
-        if (!startButton->isEnabled())
-            return;
-        DEBUG_MSG("start execute LaserDeviceCommand");
-        HardwareController::getIns ().prepareMarkCurrentLayer ();
-        LaserWorker::getIns().setDeviceWorking();
-        startButton->setEnabled(false);
-        QTimer::singleShot(1000, startButton, [startButton]() {
-            startButton->setEnabled(true);
-        });
-    });
-    QObject::connect(pauseButton, &QPushButton::clicked,&dialog, [&]() {
-        DEBUG_MSG("pause execute LaserDeviceCommand");
-        LaserWorker::getIns().setDevicePaused();
-    });
-    QObject::connect(resumeButton, &QPushButton::clicked,&dialog, [&]() {
-        DEBUG_MSG("resume execute LaserDeviceCommand");
-        LaserWorker::getIns().setDeviceWorking();
-    });
-    QObject::connect(abortButton, &QPushButton::clicked,&dialog, [&]() {
-        DEBUG_MSG("abort execute LaserDeviceCommand");
-        LaserWorker::getIns().setDeviceAbort();
-    });
-
-    dialog.exec();
+    HardwareController::getIns ().onMarkButtonClicked (this);
 }
 
 

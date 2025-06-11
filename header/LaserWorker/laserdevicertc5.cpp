@@ -205,50 +205,76 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
     const long transferParamY = R*(1);
     const long transferParamAngle = (-1);
     const long transferParamSpeed = R*(1)/1000;
+
     std::visit(
         [&](const auto &c) {
             using T = std::decay_t<decltype(c)>;
             if constexpr (std::is_same_v<T, JumpCommand>) {
+                // mm ==> bit
                 INFO_MSG(" jump_abs " + QString::number(c.x) + " " + QString::number(c.y));
                 DEBUG_VAR(c.x * transferParamX);
                 DEBUG_VAR(c.y *transferParamY );
                 jump_abs(c.x * transferParamX, c.y *transferParamY );
-            } else if constexpr (std::is_same_v<T, MarkCommand>) {
+            }
+            else if constexpr (std::is_same_v<T, MarkCommand>) {
+                // mm ==> bit
                 INFO_MSG(" mark_abs " + QString::number(c.x) + " " + QString::number(c.y));
+                DEBUG_VAR(c.x  * transferParamX);
+                DEBUG_VAR(c.y *transferParamY);
                 mark_abs(c.x  * transferParamX, c.y *transferParamY );
-            } else if constexpr (std::is_same_v<T, ArcCommand>) {
+            }
+            else if constexpr (std::is_same_v<T, ArcCommand>) {
+                // mm ==> bit
                 INFO_MSG(" arc_abs " + QString::number(c.x) + " " + QString::number(c.y) + " " + QString::number(c.angle));
                 arc_abs(c.x * transferParamX, c.y * transferParamY , c.angle *transferParamAngle);
-            } else if constexpr (std::is_same_v<T, EllipseCommand>) {
+            }
+            else if constexpr (std::is_same_v<T, EllipseCommand>) {
+                // mm ==> bit
                 INFO_MSG("set_ellipse" + QString::number(c.a) + " " + QString::number(c.b) + " " + QString::number(c.phi0)+ " " + QString::number(c.phi));
                 INFO_MSG(" mark_ellipse_abs " + QString::number(c.X) + " " + QString::number(c.Y) + " " + QString::number(c.Alpha));
                 set_ellipse(c.a * transferParamX, c.b * transferParamY , c.phi0 *transferParamAngle, c.phi);
                 mark_ellipse_abs(c.X* transferParamX,c.Y* transferParamY,c.Alpha*transferParamAngle);
-            } else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                INFO_MSG(" set_laser_pulses " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseLength));
-                set_laser_pulses(c.halfPeriod, c.pulseLength);
-                // INFO_MSG(" set_laser_pulses_ctrl " + QString::number(c.halfPeriod) + " " + QString::number(c.pulseLength));
-                // set_laser_pulses_ctrl(c.halfPeriod, c.pulseLength);
-            } else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
-                INFO_MSG(" set_scanner_delays " + QString::number(c.jumpDelay) + " " + QString::number(c.markDelay) + " " + QString::number(c.polygonDelay));
-                set_scanner_delays(c.jumpDelay, c.markDelay, c.polygonDelay);
-            } else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
-                INFO_MSG(" set_laser_delays " + QString::number(c.laserOnDelay) + " " + QString::number(c.laserOffDelay));
-                set_laser_delays(c.laserOnDelay, c.laserOffDelay);
-            } else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
+            }
+            else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
+                // kHz ==> us ==> bit (1 bit equals 1/64 µs)
+                // ms ==> us ==> bit (1 bit equals 1/64 µs)
+                uint32_t halfPeriod = static_cast<uint32_t>(1e9 / c.frequency / 2 *64);
+                uint32_t pulseLength = static_cast<uint32_t>(c.pulseLength*1e3 *64);
+                INFO_MSG(" set_laser_pulses " + QString::number(halfPeriod) + " " + QString::number(pulseLength));
+                set_laser_pulses(halfPeriod, pulseLength);
+            }
+            else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
+                // ms ==> bit(1 bit equals 0.5 µs)
+                uint32_t jumpDelay = static_cast<uint32_t>(std::round(c.jumpDelay * 2000.0));
+                uint32_t markDelay = static_cast<uint32_t>(std::round(c.markDelay * 2000.0));
+                uint32_t polygonDelay = static_cast<uint32_t>(std::round(c.polygonDelay * 2000.0));
+                INFO_MSG(" set_scanner_delays " + QString::number(jumpDelay) + " " + QString::number(markDelay) + " " + QString::number(polygonDelay));
+                set_scanner_delays(jumpDelay, markDelay, polygonDelay);
+            }
+            else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
+                // ms ==> bit(1 bit equals 0.5 µs)
+                uint32_t laserOnDelay = static_cast<uint32_t>(std::round(c.laserOnDelay * 2000.0));
+                uint32_t laserOffDelay = static_cast<uint32_t>(std::round(c.laserOffDelay * 2000.0));
+                INFO_MSG(" set_laser_delays " + QString::number(laserOnDelay) + " " + QString::number(laserOffDelay));
+                set_laser_delays(laserOnDelay, laserOffDelay);
+            }
+            else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
                 INFO_MSG(" set_jump_speed " + QString::number(c.jumpSpeed));
                 set_jump_speed(c.jumpSpeed* transferParamSpeed);
-            } else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
+            }
+            else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
                 INFO_MSG(" set_mark_speed " + QString::number(c.markSpeed));
                 set_mark_speed(c.markSpeed* transferParamSpeed);
-            } else if constexpr (std::is_same_v<T, LongDelayCommand>) {
-                INFO_MSG(" long_delay " + QString::number(c.time));
+            }
+            else if constexpr (std::is_same_v<T, LongDelayCommand>) {
+                INFO_MSG(" long_delay() " + QString::number(c.time));
                 long_delay(c.time);
-            } else if constexpr (std::is_same_v<T, SetLaserPowerCommand>) {
-                // INFO_MSG(" write_da_x_list " + QString::number(c.port) + " " + QString::number(c.voltage));
-                // write_da_x_list(c.port,c.voltage);
-                INFO_MSG(" write_da_1_list "  + QString::number(c.voltage));
-                write_da_1_list(c.voltage);
+            }
+            else if constexpr (std::is_same_v<T, SetLaserPowerCommand>) {
+                // percentage ==> V
+                // uint32_t voltage =  static_cast<uint32_t>((c.percentage / 100 /2) * (4096));
+                // INFO_MSG(" write_da_1_list(SetLaserPowerCommand) "  + QString::number(voltage));
+                // write_da_1_list(voltage);
             }
         },
         cmd

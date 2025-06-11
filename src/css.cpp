@@ -24,6 +24,11 @@ void initGlobalStyle()
         QPushButton:pressed {
             background-color: #3e8e41;
         }
+        QPushButton:disabled {
+            background-color: #9E9E9E;
+            color: #ffffff;
+            border: none;
+        }
 
         QLabel {
             color: #222222;
@@ -36,7 +41,7 @@ void initGlobalStyle()
         }
 
         QMainWindow {
-            background-color: #F5F5F5;
+            background-color:#EDEDED /*#F5F5F5*/;
         }
     )");
 }

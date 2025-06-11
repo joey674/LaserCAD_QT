@@ -77,10 +77,12 @@ public:
         QGridLayout *gridLayout = new QGridLayout(central);
         parent->setLayout(new QVBoxLayout());
         parent->layout()->addWidget(central);
+
         /// 第一行
         ///
         QHBoxLayout *firstHLayout = new QHBoxLayout();
         // projectButton
+        // DEBUG_MSG("1");
         createProjectButton = new QToolButton(central);
         firstHLayout->addWidget(createProjectButton);
         openProjectButton = new QToolButton(central);
@@ -91,17 +93,21 @@ public:
         splitLine1->setFrameShape(QFrame::VLine);
         splitLine1->setFrameShadow(QFrame::Sunken);
         firstHLayout->addWidget(splitLine1);
+
         // layerButton
+        // DEBUG_MSG("2");
         addLayerButton = new QToolButton(central);
         firstHLayout->addWidget(addLayerButton);
         deleteLayerButton = new QToolButton(central);
         firstHLayout->addWidget(deleteLayerButton);
         firstHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
         gridLayout->addLayout(firstHLayout, 0, 0, 1, 3);
+
         /// 第二行
         ///
         QHBoxLayout *secondHLayout = new QHBoxLayout();
         // copy/pasteButton
+        // DEBUG_MSG("3");
         copyButton = new QToolButton(central);
         secondHLayout->addWidget(copyButton);
         cutButton = new QToolButton(central);
@@ -114,7 +120,9 @@ public:
         splitLine3->setFrameShape(QFrame::VLine);
         splitLine3->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine3);
+
         // combined break button
+                // DEBUG_MSG("4");
         combineButton = new QToolButton(central);
         secondHLayout->addWidget(combineButton);
         breakButton = new QToolButton(central);
@@ -129,7 +137,9 @@ public:
         splitLine3_1->setFrameShape(QFrame::VLine);
         splitLine3_1->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine3_1);
+
         // toolButton
+                // DEBUG_MSG("5");
         editButton = new QToolButton(central);
         secondHLayout->addWidget(editButton);
         mirrorHorizontalButton = new QToolButton(central);
@@ -142,10 +152,14 @@ public:
         splitLine4->setFrameShape(QFrame::VLine);
         splitLine4->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine4);
+
         // sceneButton
+                // DEBUG_MSG("6");
         dragSceneButton = new QToolButton(central);
         secondHLayout->addWidget(dragSceneButton);
+
         // utilsButton
+                // DEBUG_MSG("7");
         drawTestLineButton = new QToolButton(central);
         secondHLayout->addWidget(drawTestLineButton);
         // redoButton = new QToolButton(central);
@@ -156,7 +170,9 @@ public:
         splitLine5->setFrameShape(QFrame::VLine);
         splitLine5->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine5);
+
         // signalButton
+                // DEBUG_MSG("8");
         delayTimeButton = new QToolButton(central);
         secondHLayout->addWidget(delayTimeButton);
         digitalInButton = new QToolButton(central);
@@ -169,24 +185,31 @@ public:
         secondHLayout->addWidget(loopButton);
         motionButton = new QToolButton(central);
         secondHLayout->addWidget(motionButton);
-        secondHLayout->addSpacerItem(
-            new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
         QFrame *splitLine6 = new QFrame(central); // 插入分隔线
         splitLine6->setFrameShape(QFrame::VLine);
         splitLine6->setFrameShadow(QFrame::Sunken);
         secondHLayout->addWidget(splitLine6);
+
         // hardwareButton
+                // DEBUG_MSG("9");
         markButton = new QToolButton(central);
         secondHLayout->addWidget(markButton);
+        secondHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+
+        //
         gridLayout->addLayout(secondHLayout, 1, 0, 1, 3);
+
         // 主控件布局
-        QHBoxLayout *mainLayout = new QHBoxLayout(central);
+                // DEBUG_MSG("10");
+        QHBoxLayout *mainLayout = new QHBoxLayout();
         treeView = new TreeView(central); // 左：TreeView，占比 1
         mainLayout->addWidget(treeView, /*stretch=*/1);
+
         // tabwidgets
         // editTabWidget = new TabWidget(central);// 中：TabWidget，占比 1
         // mainLayout->addWidget(editTabWidget, /*stretch=*/1);
         // 中间：两个 TabWidget 垂直堆叠，占 1 宽度
+                // DEBUG_MSG("11");
         QWidget *tabContainer = new QWidget(central);
         QVBoxLayout *tabContainerLayout = new QVBoxLayout(tabContainer);
         systemTabWidget = new TabWidget(central);        // 上方 TabWidget
@@ -194,7 +217,9 @@ public:
         editTabWidget = new TabWidget(central);        // 下方TabWidget
         tabContainerLayout->addWidget(editTabWidget, /*stretch=*/1);
         mainLayout->addWidget(tabContainer, /*stretch=*/1);
+
         //
+                // DEBUG_MSG("12");
         graphicsView = new GraphicsView(central); // 右：GraphicsView，占比 3
         mainLayout->addWidget(graphicsView, /*stretch=*/3);
         QVBoxLayout *drawButtonLayout = new QVBoxLayout();// 最右：绘图按钮栏，占最小固定宽度
@@ -220,7 +245,9 @@ public:
         QWidget *drawContainer = new QWidget(central);
         drawContainer->setLayout(drawButtonLayout);
         gridLayout->addLayout(mainLayout, 2, 0, 1, 3);
+
         //
+                // DEBUG_MSG("13");
         drawContainer->setMinimumWidth(60);
         mainLayout->addWidget(drawContainer, /*stretch=*/0);
         // 状态栏
@@ -228,6 +255,7 @@ public:
         // if (auto *mainWindow = qobject_cast < QMainWindow * > (parent)) {
         //     mainWindow->setStatusBar(statusBar);
         // }
+        DEBUG_MSG("layout init finish");
     }
 
 public:

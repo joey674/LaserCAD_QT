@@ -6,7 +6,6 @@
 #include <QLabel>
 #include <qgraphicsitem.h>
 #include <QTreeView>
-#include "titlebar.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT

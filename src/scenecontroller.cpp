@@ -124,9 +124,9 @@ void SceneController::setSceneToCenter()
 {
     // UiManager::getIns().graphicsView->centerOn(QPointF(0, 0));
     // SceneController::getIns().setSceneScale(0.1615, 0.1615);
-    // QTimer::singleShot(12, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
-    // QTimer::singleShot(14, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
-    // QTimer::singleShot(16, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    QTimer::singleShot(12, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    QTimer::singleShot(14, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
+    // QTimer::singleShot(16, []() { SceneController::getIns().setSceneScale(1.1, 1.1); });
     // QTimer::singleShot(18, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
     // QTimer::singleShot(20, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });
     // QTimer::singleShot(22, []() { SceneController::getIns().setSceneScale(1.2, 1.2); });

@@ -158,30 +158,18 @@ public:
     {
         std::vector<LaserDeviceCommand> commandList;
 
-        double period_us = 1000.0 / m_markParams.frequency;
-        uint32_t laserHalfPeriod = static_cast<uint32_t>((period_us / 2.0) * 64);
-        double pulse_us = m_markParams.pulseLength * 1000.0;
-        uint32_t laserPulseLength = static_cast<uint32_t>(pulse_us * 64);
-        commandList.emplace_back(SetLaserPulsesCommand{laserHalfPeriod, laserPulseLength});
-
-        // 设置laserPower; 暂时对1口输出一下; 且输出比率暂时是0-5v(RTC5最高可输出10v)
-        uint32_t voltage =  static_cast<uint32_t>((m_markParams.power / 100 /2) * (4096));
-        commandList.emplace_back (SetLaserPowerCommand{1,voltage});
-
-        // 设置delay
-        auto msToBits = [](double ms) -> uint32_t {
-            return static_cast<uint32_t>(std::round(ms * 2000.0));
-        };
-        commandList.emplace_back(SetScannerDelaysCommand{msToBits(m_delayParams.jumpDelay),
-                                                         msToBits(m_delayParams.markDelay),
-                                                         msToBits(m_delayParams.polygonDelay)});
+        commandList.emplace_back(SetLaserPulsesCommand{m_markParams.frequency, m_markParams.pulseLength});
+        commandList.emplace_back (SetLaserPowerCommand{1,m_markParams.power});
+        commandList.emplace_back(SetScannerDelaysCommand{m_delayParams.jumpDelay,
+                                                         m_delayParams.markDelay,
+                                                         m_delayParams.polygonDelay});
         commandList.emplace_back(
-            SetLaserDelaysCommand{msToBits(m_delayParams.laserOnDelay), msToBits(m_delayParams.laserOffDelay)});
+            SetLaserDelaysCommand{m_delayParams.laserOnDelay, m_delayParams.laserOffDelay});
 
         commandList.emplace_back(
-            SetJumpSpeedCommand{static_cast<unsigned int>(m_markParams.jumpSpeed)});
+            SetJumpSpeedCommand{m_markParams.jumpSpeed});
         commandList.emplace_back(
-            SetMarkSpeedCommand{static_cast<unsigned int>(m_markParams.markSpeed)});
+            SetMarkSpeedCommand{m_markParams.markSpeed});
 
         return commandList;
     }
