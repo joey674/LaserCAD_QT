@@ -14,8 +14,8 @@ struct RTCSettings {
     QString executeMode;
 };
 
-const unsigned int List1Size = 4000U;
-const unsigned int List2Size = 4000U;// 如果使用双链表切换 就用这个
+const unsigned int List1Size = 10000U;
+const unsigned int List2Size = 10000U;// 如果使用双链表切换 就用这个
 
 class LaserDeviceRTC5: public LaserDevice
 {
@@ -38,8 +38,8 @@ public:
     bool executeCommandListByCircleList(const std::vector<LaserDeviceCommand> &cmdList);
 public:
     RTCSettings m_settings;
-    unsigned int m_calibrationFactor=0;
-    unsigned int m_focalLength=0;
+    uint32_t m_calibrationFactor=0;
+    uint32_t m_focalLength=0;
 };
 
 #endif // LASERDEVICERTC5_H

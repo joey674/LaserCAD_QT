@@ -34,11 +34,13 @@ public:
 
         if (! this->m_device->loadDLL()) {
             WARN_MSG("fail to load dll");
+            this->m_device->unloadDLL ();
             this->m_device = nullptr;
             return;
         }
         if (! this->m_device->connectCard()) {
             WARN_MSG("fail to connect card");
+            this->m_device->unloadDLL ();
             this->m_device = nullptr;
             return;
         }

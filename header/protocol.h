@@ -68,8 +68,8 @@ enum GraphicsItemType /* 用于识别type */
 using UUID = QString;
 
 struct MarkParams {
-    double markSpeed = 1000;// mm/s
-    double jumpSpeed = 2000;// mm/s
+    double markSpeed = 100;// mm/s
+    double jumpSpeed = 200;// mm/s
     double  frequency = 100;// kHz
     int operateTime = 1; // 1代表打1次 n代表打n次
     double power = 5;// percentage

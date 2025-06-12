@@ -43,10 +43,9 @@ bool LaserDeviceRTC5::connectCard()
                 }
             }
         }
-        free_rtc5_dll();
         return false;
     }
-    INFO_MSG("connect to card success");
+    // INFO_MSG("connect to card success");
 
     // 说明选择目标卡后的设置是否成功
     if (DefaultCard != select_rtc(DefaultCard)) {
@@ -56,13 +55,11 @@ bool LaserDeviceRTC5::connectCard()
             ErrorCode = n_load_program_file(DefaultCard, 0); //  current working path
         } else {
             PRINT_RTC5_ERROR_INFO(ErrorCode,DefaultCard);
-            free_rtc5_dll();
             return false;
         }
 
         if (ErrorCode != RTC5_NO_ERROR) {
             PRINT_RTC5_ERROR_INFO(ErrorCode,DefaultCard);
-            free_rtc5_dll();
             return false;
         } else { //  n_load_program_file was successfull
             (void) select_rtc(DefaultCard);
@@ -70,7 +67,7 @@ bool LaserDeviceRTC5::connectCard()
     }
 
     //  for RTC4 compatibility
-    set_rtc4_mode();
+    // set_rtc4_mode();// 禁用
 
     //  If the DefaultCard has been used previously by another application
     //  a list might still be running. This would prevent load_program_file
@@ -81,8 +78,7 @@ bool LaserDeviceRTC5::connectCard()
     QString workPath = QDir::currentPath();
     ErrorCode = load_program_file(workPath.toUtf8().constData());
     if (ErrorCode) {
-        WARN_MSG("load_program_file");
-        free_rtc5_dll();
+        WARN_MSG("load_program_file fail");
         return false;
     }
 
@@ -90,8 +86,7 @@ bool LaserDeviceRTC5::connectCard()
     QString correctionFilePath = m_settings.correctionFilePath;
     ErrorCode = load_correction_file(correctionFilePath.toUtf8().constData(), 1, 3);
     if (ErrorCode) {
-        WARN_MSG("load_correction_file");
-        free_rtc5_dll();
+        WARN_MSG("load_correction_file fail");
         return false;
     }
 
@@ -114,39 +109,13 @@ bool LaserDeviceRTC5::connectCard()
 
     stop_execution();
 
-    // auto xcor = m_settings.scaleCorX;
-    // auto ycor = m_settings.scaleCorY;
-    // auto xyrotate = m_settings.rotation;
-    // set_matrix(0, xcor*cos(xyrotate*Pi/180), -xcor*sin(xyrotate*Pi/180), ycor*sin(xyrotate*Pi/180), ycor*cos(xyrotate*Pi/180), 1);
-
-    // auto xoffset = m_settings.offsetX;
-    // auto yoffset = m_settings.offsetY;
-    // auto scale = m_settings.scale * this->m_calibrationFactor;
-    // set_offset(0, xoffset*scale, yoffset*scale, 1);
-
-    // set_default_pixel(0);
-
-    // set_port_default(0,0);
-
-    unsigned int lasermode = UINT_MAX;
+    uint32_t lasermode = UINT_MAX;
     if (m_settings.laserMode == "CO2") lasermode = LaserModeCO2;
     else if (m_settings.laserMode == "YAG1") lasermode = LaserModeYAG1;
     else if (m_settings.laserMode == "YAG2") lasermode = LaserModeYAG2;
     else if (m_settings.laserMode == "YAG3") lasermode = LaserModeYAG3;
     else WARN_MSG("unknow lasermode");
     set_laser_mode(lasermode);
-
-    // /// testcode 判断到底需不需要    set_start_list( 1U );
-    // set_start_list( 1U );
-    // set_laser_pulses( LaserHalfPeriod, LaserPulseWidth );
-    // set_scanner_delays( JumpDelay, MarkDelay, PolygonDelay );
-    // set_laser_delays( LaserOnDelay, LaserOffDelay );
-    // set_jump_speed( JumpSpeed );
-    // set_mark_speed( MarkSpeed );
-    // jump_abs(0,0);
-    // set_end_of_list();
-    // execute_list( 1U );
-    // /// testcode 判断到底需不需要    set_start_list( 1U );
 
     ErrorCode = n_get_last_error(DefaultCard);
     if (ErrorCode) {
@@ -166,7 +135,6 @@ bool LaserDeviceRTC5::checkCard()
     if (errorCode != RTC5_NO_ERROR) {
         WARN_MSG("RTC5 has error");
         PRINT_RTC5_ERROR_INFO(errorCode,DefaultCard);
-        free_rtc5_dll();
         return false;
     } else {
         INFO_MSG("RTC5 has no error");
@@ -189,7 +157,7 @@ bool LaserDeviceRTC5::configList() {
     if (this->m_settings.executeMode == "SingleList") {
         config_list(-1,-1); // 把空间全部分配给list1
     } else if (this->m_settings.executeMode == "DoubleLists") {
-        config_list( List1Size, List2Size ); // 两个list各分4000
+        config_list( List1Size, List2Size ); // 两个list的大小
     } else if (this->m_settings.executeMode  == "CircleList") {
 
     }
@@ -197,31 +165,34 @@ bool LaserDeviceRTC5::configList() {
 }
 
 bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
-    // 坐标要乘以一个转换系数,这个数从correctionfile中读到; 不然输入是以mm为单位 但是内部执行是bit
     // 同时由于对graphicsview做了matrx transform(坐标右上为正),需要把角度做反再传回去
-    // 我们这里坐标是(double,double), 用mm做单位; 输入的时候变成(long,long),用bit做单位
-    const long R = static_cast<long>(this->m_calibrationFactor * this->m_settings.scale);
-    const long transferParamX = R*(1);
-    const long transferParamY = R*(1);
-    const long transferParamAngle = (-1);
-    const long transferParamSpeed = R*(1)/1000;
+    const double transferParamX = this->m_calibrationFactor
+                                                                 * this->m_settings.scale
+                                                                 *(1);
+    const double transferParamY = this->m_calibrationFactor
+                                                                 * this->m_settings.scale
+                                                                 *(1);
+    const double transferParamAngle = (-1);// graphicsView的方向转换
+    const double transferParamSpeed = this->m_calibrationFactor // Speed是绝对速度 不参与scale
+                                                                            * (1) // graphicsView的方向转换
+                                                                            / 1000;
 
     std::visit(
         [&](const auto &c) {
             using T = std::decay_t<decltype(c)>;
             if constexpr (std::is_same_v<T, JumpCommand>) {
-                // mm ==> bit
-                INFO_MSG(" jump_abs " + QString::number(c.x) + " " + QString::number(c.y));
-                DEBUG_VAR(c.x * transferParamX);
-                DEBUG_VAR(c.y *transferParamY );
-                jump_abs(c.x * transferParamX, c.y *transferParamY );
+                // mm * K(bits per mm) ==> bit
+                double x = c.x * transferParamX;
+                double y = c.y *transferParamY;
+                INFO_MSG(" jump_abs(test) " + QString::number(x) + " " + QString::number(y));
+                jump_abs(x,y);
             }
             else if constexpr (std::is_same_v<T, MarkCommand>) {
-                // mm ==> bit
-                INFO_MSG(" mark_abs " + QString::number(c.x) + " " + QString::number(c.y));
-                DEBUG_VAR(c.x  * transferParamX);
-                DEBUG_VAR(c.y *transferParamY);
-                mark_abs(c.x  * transferParamX, c.y *transferParamY );
+                // mm * K(bits per mm) ==> bit
+                double x = c.x * transferParamX;
+                double y = c.y *transferParamY;
+                INFO_MSG(" mark_abs(test) " + QString::number(x) + " " + QString::number(y));
+                mark_abs(x,y);
             }
             else if constexpr (std::is_same_v<T, ArcCommand>) {
                 // mm ==> bit
@@ -236,35 +207,39 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
                 mark_ellipse_abs(c.X* transferParamX,c.Y* transferParamY,c.Alpha*transferParamAngle);
             }
             else if constexpr (std::is_same_v<T, SetLaserPulsesCommand>) {
-                // kHz ==> us ==> bit (1 bit equals 1/64 µs) kHz * 1000 ==> Hz *64/2 ==> bit
-                // ms ==> us ==> bit (1 bit equals 1/64 µs)  ms * 1000 ==> us * 64 ==> bit
+                //  (1 bit equals 1/64 µs) 1/kHz /2 ==> ms *1000 ==> us *64 ==>bit
+                // (1 bit equals 1/64 µs)  ms * 1000 ==> us * 64 ==> bit
                 uint32_t halfPeriod = static_cast<uint32_t>(1e3/ c.frequency / 2 *64);
                 uint32_t pulseLength = static_cast<uint32_t>(c.pulseLength*1e3 *64);
-                INFO_MSG(" set_laser_pulses(SetLaserPulsesCommand) (halfPeriod pulseLength)" + QString::number(halfPeriod) + " " + QString::number(pulseLength));
+                INFO_MSG(" set_laser_pulses(halfPeriod pulseLength)(already tested)" + QString::number(halfPeriod) + " " + QString::number(pulseLength));
                 set_laser_pulses(halfPeriod, pulseLength);
             }
             else if constexpr (std::is_same_v<T, SetScannerDelaysCommand>) {
-                // ms ==> bit(1 bit equals 0.5 µs)
-                uint32_t jumpDelay = static_cast<uint32_t>(std::round(c.jumpDelay /** 2000.0*/));
-                uint32_t markDelay = static_cast<uint32_t>(std::round(c.markDelay/* * 2000.0*/));
-                uint32_t polygonDelay = static_cast<uint32_t>(std::round(c.polygonDelay /** 2000.0*/));
-                INFO_MSG(" set_scanner_delays " + QString::number(jumpDelay) + " " + QString::number(markDelay) + " " + QString::number(polygonDelay));
+                // (1 bit equals 10 µs) ms *1000 ==> us /10  ==> bit
+                uint32_t jumpDelay = static_cast<uint32_t>(c.jumpDelay * 1000 /10);
+                uint32_t markDelay = static_cast<uint32_t>(c.markDelay * 1000 /10);
+                uint32_t polygonDelay = static_cast<uint32_t>(c.polygonDelay  * 1000 /10);
+                INFO_MSG(" set_scanner_delays(already tested)" + QString::number(jumpDelay) + " " + QString::number(markDelay) + " " + QString::number(polygonDelay));
                 set_scanner_delays(jumpDelay, markDelay, polygonDelay);
             }
             else if constexpr (std::is_same_v<T, SetLaserDelaysCommand>) {
-                // ms ==> bit(1 bit equals 0.5 µs)
-                uint32_t laserOnDelay = static_cast<uint32_t>(std::round(c.laserOnDelay /** 2000.0*/));
-                uint32_t laserOffDelay = static_cast<uint32_t>(std::round(c.laserOffDelay /** 2000.0*/));
-                INFO_MSG(" set_laser_delays " + QString::number(laserOnDelay) + " " + QString::number(laserOffDelay));
+                // (1 bit equals 0.5 µs) ms *1000 ==> us *2 ==> bit
+                uint32_t laserOnDelay = static_cast<uint32_t>(c.laserOnDelay * 2000.0);
+                uint32_t laserOffDelay = static_cast<uint32_t>(c.laserOffDelay * 2000.0);
+                INFO_MSG(" set_laser_delays(already tested)" + QString::number(laserOnDelay) + " " + QString::number(laserOffDelay));
                 set_laser_delays(laserOnDelay, laserOffDelay);
             }
             else if constexpr (std::is_same_v<T, SetJumpSpeedCommand>) {
-                INFO_MSG(" set_jump_speed " + QString::number(c.jumpSpeed));
-                set_jump_speed(c.jumpSpeed* transferParamSpeed);
+                // mm/s /1000  ==> m/s *K(bit/mm) ==> bit/ms
+                double speed = c.jumpSpeed* transferParamSpeed;
+                INFO_MSG(" set_jump_speed " + QString::number(speed));
+                set_jump_speed(speed);
             }
             else if constexpr (std::is_same_v<T, SetMarkSpeedCommand>) {
-                INFO_MSG(" set_mark_speed " + QString::number(c.markSpeed));
-                set_mark_speed(c.markSpeed* transferParamSpeed);
+                // mm/s /1000  ==> m/s *K(bit/mm) ==> bit/ms
+                double speed = c.markSpeed* transferParamSpeed;
+                INFO_MSG(" set_mark_speed " + QString::number(speed));
+                set_mark_speed(speed);
             }
             else if constexpr (std::is_same_v<T, LongDelayCommand>) {
                 INFO_MSG(" long_delay() " + QString::number(c.time));
@@ -273,12 +248,18 @@ bool LaserDeviceRTC5::executeCommand(const LaserDeviceCommand &cmd) {
             else if constexpr (std::is_same_v<T, SetLaserPowerCommand>) {
                 // percentage ==> V
                 uint32_t voltage =  static_cast<uint32_t>((c.percentage / 100 /2) * (4096));
-                INFO_MSG(" write_da_1_list(SetLaserPowerCommand) 没开"  + QString::number(voltage));
-                // write_da_1_list(voltage);
+                INFO_MSG(" write_da_1_list(SetLaserPowerCommand) (test)"  + QString::number(voltage));
+                write_da_1_list(voltage);
+                write_da_2_list(voltage);
             }
         },
         cmd
         );
+    uint32_t ErrorCode = get_last_error();
+    if (ErrorCode != RTC5_NO_ERROR) {
+        PRINT_RTC5_ERROR_INFO(ErrorCode,1);
+        return false;
+    }
     return true;
 }
 
@@ -299,7 +280,7 @@ bool LaserDeviceRTC5::executeCommandListByDoubleLists(const std::vector<LaserDev
     int list = 1;
     bool firstTime = true;
     int listLevel = 0;
-    const int maxListLevel = List1Size;
+    const uint32_t maxListLevel = List1Size;
 
     auto flushCurrentList = [&]() {
         set_end_of_list();
@@ -350,7 +331,7 @@ void LaserDeviceRTC5::abortExecution() {
 }
 
 bool LaserDeviceRTC5::getListStatus() {
-    unsigned int result = read_status();
+    uint32_t result = read_status();
     if ((result & BUSY1) || (result & BUSY2) ){
         return true;// 繁忙返回1
     } else if ((result & USED1) || (result & USED2)){

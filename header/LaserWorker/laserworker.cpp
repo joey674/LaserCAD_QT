@@ -14,8 +14,10 @@ void LaserWorker::startLaserWorker()
 void LaserWorker::stopLaserWorker()
 {
     m_workerIsRunning = false;
-    this->m_device->disconnectCard();
-    this->m_device->unloadDLL();
+    if (this->m_device){
+        this->m_device->disconnectCard();
+        this->m_device->unloadDLL();
+    }
 }
 
 ///
@@ -62,6 +64,5 @@ LaserWorker::~LaserWorker()
     stopLaserWorker();
     if (m_thread.joinable()) {
         m_thread.join();
-        INFO_MSG("LaserWorker Stopped");
     }
 }

@@ -241,7 +241,7 @@ public: // 编辑回调
         if (this->m_currentEditItemGroup.empty()) {
             return;
         }
-        DEBUG_MSG(m_currentEditItemGroup.size());
+        // DEBUG_MSG(m_currentEditItemGroup.size());
         for (size_t i = 0; i < m_currentEditItemGroup.size(); ++i) {
             auto item = m_currentEditItemGroup[i];
             MarkParams mark = item->getMarkParams();
@@ -281,7 +281,7 @@ public: // 编辑回调
             }
             item->setMarkParams(mark);
             item->setDelayParams(delay);
-            DEBUG_VAR(pos);
+            // DEBUG_VAR(pos);
             item->setCenterInScene(pos);
         }
         this->updateEditRect();

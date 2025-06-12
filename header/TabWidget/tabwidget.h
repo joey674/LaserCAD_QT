@@ -671,7 +671,7 @@ public:
         radiusYSpin->setValue(radiusY);
         // 角度
         QDoubleSpinBox *angleSpin = new QDoubleSpinBox();
-        angleSpin->setRange(1e-1, 359.9);
+        angleSpin->setRange(0, 359.9);
         angleSpin->setDecimals(1);
         angleSpin->setValue(angle);
         // 按钮
@@ -1128,7 +1128,7 @@ public:
 
         // === 参数区域 ===
         QGridLayout* paramLayout = new QGridLayout();
-        QLineEdit* scaleEdit = new QLineEdit("0.1");
+        QLineEdit* scaleEdit = new QLineEdit("1");
         QLineEdit* scaleCorX = new QLineEdit("1.0");
         QLineEdit* scaleCorY = new QLineEdit("1.0");
         QLineEdit* rotationEdit = new QLineEdit("0.0");
