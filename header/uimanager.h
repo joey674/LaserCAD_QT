@@ -11,6 +11,7 @@
 #include "graphicsview.h"
 #include "tabwidget.h"
 #include "treeview.h"
+
 class UiManager {
 private:
     std::vector < QToolButton * > m_drawButtons;
@@ -73,31 +74,60 @@ public:
 public:
     void initLayout(QWidget *parent)
     {
+        // 左侧栏容器
         QWidget *sideBar = new QWidget;
-        QVBoxLayout *btnLayout = new QVBoxLayout(sideBar);
-        btnLayout->setSpacing(0);
-        btnLayout->setMargin(0);
+        sideBar->setFixedWidth(100);
+        sideBar->setStyleSheet(R"(
+        background-color: #2b2b2b;
+    )");
 
-        QToolButton *btnProject = new QToolButton;
-        btnProject->setCheckable(true);
-        btnProject->setChecked(true);
-        QToolButton *btnEditor = new QToolButton;
-        btnEditor->setCheckable(true);
+        QVBoxLayout *btnLayout = new QVBoxLayout(sideBar);
+        btnLayout->setSpacing(10);
+        btnLayout->setContentsMargins(10, 20, 10, 20);
+
+        auto createButton = [](const QString &text) {
+            QToolButton *btn = new QToolButton;
+            btn->setText(text);
+            btn->setCheckable(true);
+            btn->setFixedSize(100, 40);
+            btn->setStyleSheet(R"(
+            QToolButton {
+                color: white;
+                background: transparent;
+                font-size: 16px;
+                border: none;
+            }
+            QToolButton:hover {
+                background-color: #444;
+            }
+            QToolButton:checked {
+                background-color: #007acc;
+            }
+        )");
+            return btn;
+        };
+
+        QToolButton *btnProject = createButton("draw");
+        QToolButton *btnEditor = createButton("control");
+        btnProject->setChecked(true); // 初始选中
 
         btnLayout->addWidget(btnProject);
         btnLayout->addWidget(btnEditor);
         btnLayout->addStretch();
 
+        // 页面栈区域
         QStackedWidget *stack = new QStackedWidget;
         stack->addWidget(initDrawPage());
         stack->addWidget(initControlPage());
-        // TO BE ADD
 
-        QHBoxLayout *widgetBLayout3 = new QHBoxLayout(parent);
-        widgetBLayout3->setMargin(0);
-        widgetBLayout3->addWidget(sideBar);
-        widgetBLayout3->addWidget(stack);
+        // 总体布局
+        QHBoxLayout *mainLayout = new QHBoxLayout(parent);
+        mainLayout->setMargin(0);
+        mainLayout->setSpacing(0);
+        mainLayout->addWidget(sideBar);
+        mainLayout->addWidget(stack);
 
+        // 页面切换逻辑
         parent->connect(btnProject, &QToolButton::clicked, parent, [=]() {
             btnProject->setChecked(true);
             btnEditor->setChecked(false);
@@ -113,8 +143,8 @@ public:
     QWidget *initDrawPage()
     {
         QWidget *page = new QWidget;
-        QGridLayout *mainGridLayout = new QGridLayout(page);
-        page->setLayout(mainGridLayout);
+        QGridLayout *mainGLayout = new QGridLayout(page);
+        page->setLayout(mainGLayout);
 
         /* *******************************************************************************
         第一行按钮布局
@@ -144,7 +174,7 @@ public:
         // 剩余区域补齐
         buttonHLayout1->addSpacerItem(
             new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        mainGridLayout->addLayout(buttonHLayout1, 0, 0, 1, 3);
+        mainGLayout->addLayout(buttonHLayout1, 0, 0, 1, 3);
 
         /* *******************************************************************************
         第二行按钮布局
@@ -242,28 +272,31 @@ public:
         buttonHLayout2->addSpacerItem(
             new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-        mainGridLayout->addLayout(buttonHLayout2, 1, 0, 1, 3);
+        mainGLayout->addLayout(buttonHLayout2, 1, 0, 1, 3);
 
         /* *******************************************************************************
         第三行控件布局
         ******************************************************************************* */
         QHBoxLayout *widgetBLayout3 = new QHBoxLayout();
-        treeView = new TreeView(page); // 左：TreeView，占比 1
-        widgetBLayout3->addWidget(treeView, /*stretch=*/1);
+        QWidget *container1 = new QWidget(page);
 
-        // tabwidgets
-        QWidget *tabContainer = new QWidget(page);
-        QVBoxLayout *tabContainerLayout = new QVBoxLayout(tabContainer);
-        systemTabWidget = new TabWidget(page); // 上方 TabWidget
-        tabContainerLayout->addWidget(systemTabWidget, /*stretch=*/1);
+        // 第一列控件
+        QVBoxLayout *container1Layout = new QVBoxLayout(container1);
+
+        treeView = new TreeView(page);
+        container1Layout->addWidget(treeView, /*stretch=*/1);
+
         editTabWidget = new TabWidget(page); // 下方TabWidget
-        tabContainerLayout->addWidget(editTabWidget, /*stretch=*/1);
-        widgetBLayout3->addWidget(tabContainer, /*stretch=*/1);
+        container1Layout->addWidget(editTabWidget, /*stretch=*/1);
 
-        // graphicview
+        widgetBLayout3->addWidget(container1, /*stretch=*/1);
+
+        // 第二列控件 graphicview
         graphicsView = new GraphicsView(page); // 右：GraphicsView，占比 3
         widgetBLayout3->addWidget(graphicsView, /*stretch=*/3);
-        QVBoxLayout *drawButtonLayout = new QVBoxLayout();// 最右：绘图按钮栏，占最小固定宽度
+
+        // 第三列控件 buttons
+        QVBoxLayout *drawButtonLayout = new QVBoxLayout(); // 最右：绘图按钮栏，占最小固定宽度
         drawPointButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawPointButton);
         drawLineButton = new QToolButton(page);
@@ -282,22 +315,28 @@ public:
         drawButtonLayout->addWidget(drawPolygonButton);
         drawSpiralButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawSpiralButton);
-        drawButtonLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+        drawButtonLayout->addSpacerItem(
+            new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
         QWidget *drawContainer = new QWidget(page);
         drawContainer->setLayout(drawButtonLayout);
-        mainGridLayout->addLayout(widgetBLayout3, 2, 0, 1, 3);
-
         drawContainer->setMinimumWidth(60);
         widgetBLayout3->addWidget(drawContainer, /*stretch=*/0);
 
+        //
+        mainGLayout->addLayout(widgetBLayout3, 2, 0, 1, 3);
+
+        //
         return page;
     }
 
     QWidget *initControlPage()
     {
         QWidget *page = new QWidget;
-        QGridLayout *mainGridLayout = new QGridLayout(page);
-        page->setLayout(mainGridLayout);
+        QGridLayout *mainGLayout = new QGridLayout(page);
+        page->setLayout(mainGLayout);
+
+        systemTabWidget = new TabWidget(page);
+        mainGLayout->addWidget(systemTabWidget);
 
         return page;
     }

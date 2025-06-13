@@ -593,13 +593,14 @@ void MainWindow::initTableViewModel() {
 void MainWindow::initTabWidget() {
     //编辑tab
     auto *editTabWidget = UiManager::getIns().editTabWidget;
-    editTabWidget->setFixedWidth(500);
+    editTabWidget->setFixedWidth(400);
     connect(editTabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
         EditController::getIns().setTabIndex(index);
     });
+
     // 系统tab/硬件tab
     auto *systemTabWidget = UiManager::getIns().systemTabWidget;
-    systemTabWidget->setFixedWidth(500);
+    systemTabWidget->setFixedWidth(400);
     systemTabWidget->addSystemControlTab ();
     systemTabWidget->addRTCControlTab ();
     systemTabWidget->addStageControlTab ();
