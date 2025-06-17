@@ -1,17 +1,17 @@
 #ifndef UIMANAGER_H
 #define UIMANAGER_H
 
-#include <QMainWindow>
-#include <QToolButton>
-#include <QWidget>
 #include <QGridLayout>
-#include "graphicsview.h"
-#include "treeview.h"
-#include "tabwidget.h"
 #include <QHBoxLayout>
-#include <QHBoxLayout>
+#include <QMainWindow>
 #include <QSpacerItem>
 #include <QStatusBar>
+#include <QToolButton>
+#include <QWidget>
+#include "graphicsview.h"
+#include "tabwidget.h"
+#include "treeview.h"
+
 class UiManager {
 private:
     std::vector < QToolButton * > m_drawButtons;
@@ -72,190 +72,273 @@ public:
     TabWidget *systemTabWidget;
 
 public:
-    void initLayout(QWidget *parent) {
-        QWidget *central = new QWidget(parent);
-        QGridLayout *gridLayout = new QGridLayout(central);
-        parent->setLayout(new QVBoxLayout());
-        parent->layout()->addWidget(central);
+    void initLayout(QWidget *parent)
+    {
+        // 左侧栏容器
+        QWidget *sideBar = new QWidget;
+        sideBar->setFixedWidth(100);
+        sideBar->setStyleSheet(R"(
+        background-color: #2b2b2b;
+    )");
 
-        /// 第一行
-        ///
-        QHBoxLayout *firstHLayout = new QHBoxLayout();
+        QVBoxLayout *btnLayout = new QVBoxLayout(sideBar);
+        btnLayout->setSpacing(10);
+        btnLayout->setContentsMargins(10, 20, 10, 20);
+
+        auto createButton = [](const QString &text) {
+            QToolButton *btn = new QToolButton;
+            btn->setText(text);
+            btn->setCheckable(true);
+            btn->setFixedSize(100, 40);
+            btn->setStyleSheet(R"(
+            QToolButton {
+                color: white;
+                background: transparent;
+                font-size: 16px;
+                border: none;
+            }
+            QToolButton:hover {
+                background-color: #444;
+            }
+            QToolButton:checked {
+                background-color: #007acc;
+            }
+        )");
+            return btn;
+        };
+
+        QToolButton *btnProject = createButton("draw");
+        QToolButton *btnEditor = createButton("control");
+        btnProject->setChecked(true); // 初始选中
+
+        btnLayout->addWidget(btnProject);
+        btnLayout->addWidget(btnEditor);
+        btnLayout->addStretch();
+
+        // 页面栈区域
+        QStackedWidget *stack = new QStackedWidget;
+        stack->addWidget(initDrawPage());
+        stack->addWidget(initControlPage());
+
+        // 总体布局
+        QHBoxLayout *mainLayout = new QHBoxLayout(parent);
+        mainLayout->setMargin(0);
+        mainLayout->setSpacing(0);
+        mainLayout->addWidget(sideBar);
+        mainLayout->addWidget(stack);
+
+        // 页面切换逻辑
+        parent->connect(btnProject, &QToolButton::clicked, parent, [=]() {
+            btnProject->setChecked(true);
+            btnEditor->setChecked(false);
+            stack->setCurrentIndex(0);
+        });
+        parent->connect(btnEditor, &QToolButton::clicked, parent, [=]() {
+            btnEditor->setChecked(true);
+            btnProject->setChecked(false);
+            stack->setCurrentIndex(1);
+        });
+    }
+
+    QWidget *initDrawPage()
+    {
+        QWidget *page = new QWidget;
+        QGridLayout *mainGLayout = new QGridLayout(page);
+        page->setLayout(mainGLayout);
+
+        /* *******************************************************************************
+        第一行按钮布局
+        ******************************************************************************* */
+        QHBoxLayout *buttonHLayout1 = new QHBoxLayout();
+
         // projectButton
-        // DEBUG_MSG("1");
-        createProjectButton = new QToolButton(central);
-        firstHLayout->addWidget(createProjectButton);
-        openProjectButton = new QToolButton(central);
-        firstHLayout->addWidget(openProjectButton);
-        saveProjectButton = new QToolButton(central);
-        firstHLayout->addWidget(saveProjectButton);
-        QFrame *splitLine1 = new QFrame(central);// 插入分隔线
+        createProjectButton = new QToolButton(page);
+        buttonHLayout1->addWidget(createProjectButton);
+        openProjectButton = new QToolButton(page);
+        buttonHLayout1->addWidget(openProjectButton);
+        saveProjectButton = new QToolButton(page);
+        buttonHLayout1->addWidget(saveProjectButton);
+
+        // 分隔线
+        QFrame *splitLine1 = new QFrame(page);
         splitLine1->setFrameShape(QFrame::VLine);
         splitLine1->setFrameShadow(QFrame::Sunken);
-        firstHLayout->addWidget(splitLine1);
+        buttonHLayout1->addWidget(splitLine1);
 
         // layerButton
-        // DEBUG_MSG("2");
-        addLayerButton = new QToolButton(central);
-        firstHLayout->addWidget(addLayerButton);
-        deleteLayerButton = new QToolButton(central);
-        firstHLayout->addWidget(deleteLayerButton);
-        firstHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        gridLayout->addLayout(firstHLayout, 0, 0, 1, 3);
+        addLayerButton = new QToolButton(page);
+        buttonHLayout1->addWidget(addLayerButton);
+        deleteLayerButton = new QToolButton(page);
+        buttonHLayout1->addWidget(deleteLayerButton);
 
-        /// 第二行
-        ///
-        QHBoxLayout *secondHLayout = new QHBoxLayout();
+        // 剩余区域补齐
+        buttonHLayout1->addSpacerItem(
+            new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        mainGLayout->addLayout(buttonHLayout1, 0, 0, 1, 3);
+
+        /* *******************************************************************************
+        第二行按钮布局
+        ******************************************************************************* */
+        QHBoxLayout *buttonHLayout2 = new QHBoxLayout();
+
         // copy/pasteButton
-        // DEBUG_MSG("3");
-        copyButton = new QToolButton(central);
-        secondHLayout->addWidget(copyButton);
-        cutButton = new QToolButton(central);
-        secondHLayout->addWidget(cutButton);
-        pasteButton = new QToolButton(central);
-        secondHLayout->addWidget(pasteButton);
-        deleteButton = new QToolButton(central);
-        secondHLayout->addWidget(deleteButton);
-        QFrame *splitLine3 = new QFrame(central);// 插入分隔线
+        copyButton = new QToolButton(page);
+        buttonHLayout2->addWidget(copyButton);
+        cutButton = new QToolButton(page);
+        buttonHLayout2->addWidget(cutButton);
+        pasteButton = new QToolButton(page);
+        buttonHLayout2->addWidget(pasteButton);
+        deleteButton = new QToolButton(page);
+        buttonHLayout2->addWidget(deleteButton);
+
+        QFrame *splitLine3 = new QFrame(page); // 插入分隔线
         splitLine3->setFrameShape(QFrame::VLine);
         splitLine3->setFrameShadow(QFrame::Sunken);
-        secondHLayout->addWidget(splitLine3);
+        buttonHLayout2->addWidget(splitLine3);
 
         // combined break button
-                // DEBUG_MSG("4");
-        combineButton = new QToolButton(central);
-        secondHLayout->addWidget(combineButton);
-        breakButton = new QToolButton(central);
-        secondHLayout->addWidget(breakButton);
-        breakCopiedItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakCopiedItemButton);
-        breakContourFillItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakContourFillItemButton);
-        breakHatchFillItemButton = new QToolButton(central);
-        secondHLayout->addWidget(breakHatchFillItemButton);
-        QFrame *splitLine3_1 = new QFrame(central);// 插入分隔线
+        combineButton = new QToolButton(page);
+        buttonHLayout2->addWidget(combineButton);
+        breakButton = new QToolButton(page);
+        buttonHLayout2->addWidget(breakButton);
+        breakCopiedItemButton = new QToolButton(page);
+        buttonHLayout2->addWidget(breakCopiedItemButton);
+        breakContourFillItemButton = new QToolButton(page);
+        buttonHLayout2->addWidget(breakContourFillItemButton);
+        breakHatchFillItemButton = new QToolButton(page);
+        buttonHLayout2->addWidget(breakHatchFillItemButton);
+
+        QFrame *splitLine3_1 = new QFrame(page); // 插入分隔线
         splitLine3_1->setFrameShape(QFrame::VLine);
         splitLine3_1->setFrameShadow(QFrame::Sunken);
-        secondHLayout->addWidget(splitLine3_1);
+        buttonHLayout2->addWidget(splitLine3_1);
 
         // toolButton
-                // DEBUG_MSG("5");
-        editButton = new QToolButton(central);
-        secondHLayout->addWidget(editButton);
-        mirrorHorizontalButton = new QToolButton(central);
-        secondHLayout->addWidget(mirrorHorizontalButton);
-        mirrorVerticalButton = new QToolButton(central);
-        secondHLayout->addWidget(mirrorVerticalButton);
-        centerButton = new QToolButton(central);
-        secondHLayout->addWidget(centerButton);
-        QFrame *splitLine4 = new QFrame(central);// 插入分隔线
+        editButton = new QToolButton(page);
+        buttonHLayout2->addWidget(editButton);
+        mirrorHorizontalButton = new QToolButton(page);
+        buttonHLayout2->addWidget(mirrorHorizontalButton);
+        mirrorVerticalButton = new QToolButton(page);
+        buttonHLayout2->addWidget(mirrorVerticalButton);
+        centerButton = new QToolButton(page);
+        buttonHLayout2->addWidget(centerButton);
+
+        QFrame *splitLine4 = new QFrame(page); // 插入分隔线
         splitLine4->setFrameShape(QFrame::VLine);
         splitLine4->setFrameShadow(QFrame::Sunken);
-        secondHLayout->addWidget(splitLine4);
+        buttonHLayout2->addWidget(splitLine4);
 
         // sceneButton
-                // DEBUG_MSG("6");
-        dragSceneButton = new QToolButton(central);
-        secondHLayout->addWidget(dragSceneButton);
+        dragSceneButton = new QToolButton(page);
+        buttonHLayout2->addWidget(dragSceneButton);
 
         // utilsButton
-                // DEBUG_MSG("7");
-        drawTestLineButton = new QToolButton(central);
-        secondHLayout->addWidget(drawTestLineButton);
-        // redoButton = new QToolButton(central);
-        // secondHLayout->addWidget(redoButton);
-        // undoButton = new QToolButton(central);
-        // secondHLayout->addWidget(undoButton);
-        QFrame *splitLine5 = new QFrame(central);// 插入分隔线
+        drawTestLineButton = new QToolButton(page);
+        buttonHLayout2->addWidget(drawTestLineButton);
+        // redoButton = new QToolButton(page);
+        // buttonHLayout2->addWidget(redoButton);
+        // undoButton = new QToolButton(page);
+        // buttonHLayout2->addWidget(undoButton);
+
+        QFrame *splitLine5 = new QFrame(page); // 插入分隔线
         splitLine5->setFrameShape(QFrame::VLine);
         splitLine5->setFrameShadow(QFrame::Sunken);
-        secondHLayout->addWidget(splitLine5);
+        buttonHLayout2->addWidget(splitLine5);
 
         // signalButton
-                // DEBUG_MSG("8");
-        delayTimeButton = new QToolButton(central);
-        secondHLayout->addWidget(delayTimeButton);
-        digitalInButton = new QToolButton(central);
-        secondHLayout->addWidget(digitalInButton);
-        digitalOutButton = new QToolButton(central);
-        secondHLayout->addWidget(digitalOutButton);
-        doPauseButton = new QToolButton(central);
-        secondHLayout->addWidget(doPauseButton);
-        loopButton = new QToolButton(central);
-        secondHLayout->addWidget(loopButton);
-        motionButton = new QToolButton(central);
-        secondHLayout->addWidget(motionButton);
-        QFrame *splitLine6 = new QFrame(central); // 插入分隔线
+        delayTimeButton = new QToolButton(page);
+        buttonHLayout2->addWidget(delayTimeButton);
+        digitalInButton = new QToolButton(page);
+        buttonHLayout2->addWidget(digitalInButton);
+        digitalOutButton = new QToolButton(page);
+        buttonHLayout2->addWidget(digitalOutButton);
+        doPauseButton = new QToolButton(page);
+        buttonHLayout2->addWidget(doPauseButton);
+        loopButton = new QToolButton(page);
+        buttonHLayout2->addWidget(loopButton);
+        motionButton = new QToolButton(page);
+        buttonHLayout2->addWidget(motionButton);
+
+        QFrame *splitLine6 = new QFrame(page); // 插入分隔线
         splitLine6->setFrameShape(QFrame::VLine);
         splitLine6->setFrameShadow(QFrame::Sunken);
-        secondHLayout->addWidget(splitLine6);
+        buttonHLayout2->addWidget(splitLine6);
 
         // hardwareButton
-                // DEBUG_MSG("9");
-        markButton = new QToolButton(central);
-        secondHLayout->addWidget(markButton);
-        secondHLayout->addSpacerItem(new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
+        markButton = new QToolButton(page);
+        buttonHLayout2->addWidget(markButton);
 
         //
-        gridLayout->addLayout(secondHLayout, 1, 0, 1, 3);
+        buttonHLayout2->addSpacerItem(
+            new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-        // 主控件布局
-                // DEBUG_MSG("10");
-        QHBoxLayout *mainLayout = new QHBoxLayout();
-        treeView = new TreeView(central); // 左：TreeView，占比 1
-        mainLayout->addWidget(treeView, /*stretch=*/1);
+        mainGLayout->addLayout(buttonHLayout2, 1, 0, 1, 3);
 
-        // tabwidgets
-        // editTabWidget = new TabWidget(central);// 中：TabWidget，占比 1
-        // mainLayout->addWidget(editTabWidget, /*stretch=*/1);
-        // 中间：两个 TabWidget 垂直堆叠，占 1 宽度
-                // DEBUG_MSG("11");
-        QWidget *tabContainer = new QWidget(central);
-        QVBoxLayout *tabContainerLayout = new QVBoxLayout(tabContainer);
-        systemTabWidget = new TabWidget(central);        // 上方 TabWidget
-        tabContainerLayout->addWidget(systemTabWidget, /*stretch=*/1);
-        editTabWidget = new TabWidget(central);        // 下方TabWidget
-        tabContainerLayout->addWidget(editTabWidget, /*stretch=*/1);
-        mainLayout->addWidget(tabContainer, /*stretch=*/1);
+        /* *******************************************************************************
+        第三行控件布局
+        ******************************************************************************* */
+        QHBoxLayout *widgetBLayout3 = new QHBoxLayout();
+        QWidget *container1 = new QWidget(page);
 
-        //
-                // DEBUG_MSG("12");
-        graphicsView = new GraphicsView(central); // 右：GraphicsView，占比 3
-        mainLayout->addWidget(graphicsView, /*stretch=*/3);
-        QVBoxLayout *drawButtonLayout = new QVBoxLayout();// 最右：绘图按钮栏，占最小固定宽度
-        drawPointButton = new QToolButton(central);
+        // 第一列控件
+        QVBoxLayout *container1Layout = new QVBoxLayout(container1);
+
+        treeView = new TreeView(page);
+        container1Layout->addWidget(treeView, /*stretch=*/1);
+
+        editTabWidget = new TabWidget(page); // 下方TabWidget
+        container1Layout->addWidget(editTabWidget, /*stretch=*/1);
+
+        widgetBLayout3->addWidget(container1, /*stretch=*/1);
+
+        // 第二列控件 graphicview
+        graphicsView = new GraphicsView(page); // 右：GraphicsView，占比 3
+        widgetBLayout3->addWidget(graphicsView, /*stretch=*/3);
+
+        // 第三列控件 buttons
+        QVBoxLayout *drawButtonLayout = new QVBoxLayout(); // 最右：绘图按钮栏，占最小固定宽度
+        drawPointButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawPointButton);
-        drawLineButton = new QToolButton(central);
+        drawLineButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawLineButton);
-        drawArcButton = new QToolButton(central);
+        drawArcButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawArcButton);
-        drawPolylineButton = new QToolButton(central);
+        drawPolylineButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawPolylineButton);
-        drawCircleButton = new QToolButton(central);
+        drawCircleButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawCircleButton);
-        drawRectButton = new QToolButton(central);
+        drawRectButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawRectButton);
-        drawEllipseButton = new QToolButton(central);
+        drawEllipseButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawEllipseButton);
-        drawPolygonButton = new QToolButton(central);
+        drawPolygonButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawPolygonButton);
-        drawSpiralButton = new QToolButton(central);
+        drawSpiralButton = new QToolButton(page);
         drawButtonLayout->addWidget(drawSpiralButton);
-        drawButtonLayout->addSpacerItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
-        QWidget *drawContainer = new QWidget(central);
+        drawButtonLayout->addSpacerItem(
+            new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+        QWidget *drawContainer = new QWidget(page);
         drawContainer->setLayout(drawButtonLayout);
-        gridLayout->addLayout(mainLayout, 2, 0, 1, 3);
+        drawContainer->setMinimumWidth(60);
+        widgetBLayout3->addWidget(drawContainer, /*stretch=*/0);
 
         //
-                // DEBUG_MSG("13");
-        drawContainer->setMinimumWidth(60);
-        mainLayout->addWidget(drawContainer, /*stretch=*/0);
-        // 状态栏
-        // statusBar = new QStatusBar(parent);
-        // if (auto *mainWindow = qobject_cast < QMainWindow * > (parent)) {
-        //     mainWindow->setStatusBar(statusBar);
-        // }
-        DEBUG_MSG("layout init finish");
+        mainGLayout->addLayout(widgetBLayout3, 2, 0, 1, 3);
+
+        //
+        return page;
+    }
+
+    QWidget *initControlPage()
+    {
+        QWidget *page = new QWidget;
+        QGridLayout *mainGLayout = new QGridLayout(page);
+        page->setLayout(mainGLayout);
+
+        systemTabWidget = new TabWidget(page);
+        mainGLayout->addWidget(systemTabWidget);
+
+        return page;
     }
 
 public:

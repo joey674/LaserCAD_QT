@@ -164,3 +164,4 @@ add_custom_command(TARGET LaserCAD POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLL.dll
             $<TARGET_FILE_DIR:LaserCAD>)
+add_subdirectory(example/leftSideBarLayout)
