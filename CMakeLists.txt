@@ -61,15 +61,16 @@ set(PROJECT_SOURCES
         header/scenecontroller.h                               src/scenecontroller.cpp
         header/drawcontroller.h                                src/drawcontroller.cpp
         header/projectmanager.h                                src/projectmanager.cpp
-
+        header/hardwarecontroller.h                       header/hardwarecontroller.cpp
+        header/MotionStageWorker/motionstageworker.h header/MotionStageWorker/motionstageworker.cpp
 )
-set(RTC_SOURCES
-    # RTC5
+set(RTC5_SOURCES
     lib/RTC5/RTC5expl.h             lib/RTC5/RTC5expl.cpp
-    # RTC4
-    # lib/RTC4/RTC4expl.h            lib/RTC4/RTC4expl.cpp
 )
 set(RTC6_SOURCES
+)
+set(GTS_SOURCES
+  lib/GTS/gts.h
 )
 set (CAVC_SOURCES
   lib/CavalierContours/cavaliercontours.cpp
@@ -91,35 +92,40 @@ set (CAVC_SOURCES
 
 include_directories(${PROJECT_SOURCE_DIR})
 
-if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(LaserCAD
-        MANUAL_FINALIZATION
-        ${PROJECT_SOURCES}
-        ${RTC_SOURCES}
-        ${CAVC_SOURCES}
-    )
+# if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+#     qt_add_executable(LaserCAD
+#         MANUAL_FINALIZATION
+        # ${PROJECT_SOURCES}
+        # ${RTC5_SOURCES}
+        # ${CAVC_SOURCES}
+    # )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET LaserCAD APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
 #                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
 # For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
-else()
-    if(ANDROID)
-        add_library(LaserCAD SHARED
-            ${PROJECT_SOURCES}
-        )
+# else()
+#     if(ANDROID)
+#         add_library(LaserCAD SHARED
+#             # ${PROJECT_SOURCES}
+#         )
 # Define properties for Android with Qt 5 after find_package() calls as:
 #    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
+    # else()
         add_executable(LaserCAD
             ${PROJECT_SOURCES}
-            ${RTC_SOURCES}
+            ${RTC5_SOURCES}
             ${CAVC_SOURCES}
-            header/hardwarecontroller.h header/hardwarecontroller.cpp
+            ${GTS_SOURCES}
+            header/MotionStageWorker/motionstagedevicegoogol.h header/MotionStageWorker/motionstagedevicegoogol.cpp
+            header/MotionStageWorker/motionstagedevice.h header/MotionStageWorker/motionstagedevice.cpp
+            header/MotionStageWorker/motionstagedevicethorlabs.h header/MotionStageWorker/motionstagedevicethorlabs.cpp
+            header/MotionStageWorker/motionstagedevicetest.h header/MotionStageWorker/motionstagedevicetest.cpp
         )
-    endif()
-endif()
+#     endif()
+# endif()
 
 target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/GTS/gts.lib)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
@@ -129,11 +135,12 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/Utils)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidget)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
-
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MotionStageWorker)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
 # target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/GTS)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
@@ -164,4 +171,7 @@ add_custom_command(TARGET LaserCAD POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
             ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLL.dll
             $<TARGET_FILE_DIR:LaserCAD>)
-add_subdirectory(example/leftSideBarLayout)
+add_custom_command(TARGET LaserCAD POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${PROJECT_SOURCE_DIR}/lib/GTS/GTS.dll
+            $<TARGET_FILE_DIR:LaserCAD>)

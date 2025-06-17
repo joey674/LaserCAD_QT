@@ -2,7 +2,7 @@
 #include <QThread>
 
 
-void LaserWorker::startLaserWorker()
+void LaserWorker::start()
 {
     std::call_once(m_startOnce, [this]() {
         m_workerIsRunning = true;
@@ -11,7 +11,7 @@ void LaserWorker::startLaserWorker()
     });
 }
 
-void LaserWorker::stopLaserWorker()
+void LaserWorker::stop()
 {
     m_workerIsRunning = false;
     if (this->m_device){
@@ -61,7 +61,7 @@ LaserWorker &LaserWorker::getIns()
 
 LaserWorker::~LaserWorker()
 {
-    stopLaserWorker();
+    stop();
     if (m_thread.joinable()) {
         m_thread.join();
     }

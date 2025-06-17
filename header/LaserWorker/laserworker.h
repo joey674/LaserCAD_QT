@@ -18,8 +18,9 @@ enum class DeviceStatus {Working,Paused,Free};
 class LaserWorker
 {
 public:
-    void startLaserWorker();
-    void stopLaserWorker();
+    void start();
+    void stop();
+public:
     void enqueueCommand(const LaserDeviceCommand &cmd) { this->m_commandQueue.push(cmd); }
     void enqueueCommand(const std::vector<LaserDeviceCommand> &cmdList)
     {

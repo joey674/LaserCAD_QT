@@ -12,6 +12,10 @@
 #include "tabwidget.h"
 #include "treeview.h"
 #include "css.h"
+#include "motionstageworker.h"
+#include  "motionstagedevicegoogol.h"
+#include "motionstagedevicethorlabs.h"
+#include "motionstagedevicetest.h"
 
 class UiManager {
 private:
@@ -127,20 +131,24 @@ private:
             return btn;
         };
 
-        QToolButton *btnProject = createButton("Draw");
-        QToolButton *btnEditor = createButton("Control");
+        QToolButton *btnDraw = createButton("Draw");
+        QToolButton *btnControl = createButton("Control");
+        QToolButton *btnSetting = createButton("Setting");
+
         QToolButton *markButton = createLabeledIconButton("Mark", ":/button/markButton.png");
 
-        btnProject->setChecked(true);
+        btnDraw->setChecked(true);
 
-        btnLayout->addWidget(btnProject);
-        btnLayout->addWidget(btnEditor);
+        btnLayout->addWidget(btnDraw);
+        btnLayout->addWidget(btnControl);
+        btnLayout->addWidget(btnSetting);
         btnLayout->addStretch();
         btnLayout->addWidget(markButton);
 
         QStackedWidget *stack = new QStackedWidget;
         stack->addWidget(createDrawPage());
         stack->addWidget(createControlPage());
+        stack->addWidget (createSettingPage());
 
         QHBoxLayout *mainLayout = new QHBoxLayout(parent);
         mainLayout->setMargin(0);
@@ -149,15 +157,23 @@ private:
         mainLayout->addWidget(stack);
 
         // 信号
-        parent->connect(btnProject, &QToolButton::clicked, parent, [=]() {
-            btnProject->setChecked(true);
-            btnEditor->setChecked(false);
+        parent->connect(btnDraw, &QToolButton::clicked, parent, [=]() {
+            btnDraw->setChecked(true);
+            btnControl->setChecked(false);
+            btnSetting->setChecked(false);
             stack->setCurrentIndex(0);
         });
-        parent->connect(btnEditor, &QToolButton::clicked, parent, [=]() {
-            btnEditor->setChecked(true);
-            btnProject->setChecked(false);
+        parent->connect(btnControl, &QToolButton::clicked, parent, [=]() {
+            btnControl->setChecked(true);
+            btnDraw->setChecked(false);
+            btnSetting->setChecked(false);
             stack->setCurrentIndex(1);
+        });
+        parent->connect(btnSetting, &QToolButton::clicked, parent, [=]() {
+            btnControl->setChecked(false);
+            btnDraw->setChecked(false);
+            btnSetting->setChecked(true);
+            stack->setCurrentIndex(2);
         });
 
         QObject::connect(markButton, &QToolButton::clicked, parent, [=]() {
@@ -355,13 +371,8 @@ private:
         QWidget *page = new QWidget;
         QHBoxLayout *mainLayout = new QHBoxLayout(page);
         page->setLayout(mainLayout);
-        // mainLayout->setSpacing(10);
-        // mainLayout->setContentsMargins(5, 5, 5, 5);
 
         mainLayout->addWidget(wrapWithTitle("System Control", createSystemControlWidget()));
-        mainLayout->addWidget(createVerticalLine());
-
-        mainLayout->addWidget(wrapWithTitle("RTC Control", createRTCControlWidget()));
         mainLayout->addWidget(createVerticalLine());
 
         mainLayout->addWidget(wrapWithTitle("Stage Control", createStageControlWidget()));
@@ -371,6 +382,24 @@ private:
 
         return page;
     }
+
+    QWidget *createSettingPage()
+    {
+        QWidget *page = new QWidget;
+        QHBoxLayout *mainLayout = new QHBoxLayout(page);
+        page->setLayout(mainLayout);
+
+        mainLayout->addWidget(wrapWithTitle("RTC Setting", createRTCSettingWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addWidget(wrapWithTitle("MotionStage Setting", createMotionStageSettingWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addStretch();
+
+        return page;
+    }
+
 
     QFrame *createVerticalLine(QWidget *parent = nullptr) {
         QFrame *line = new QFrame(parent);
@@ -383,7 +412,7 @@ private:
     QWidget *wrapWithTitle(const QString &title, QWidget *contentWidget)
     {
         QWidget *container = new QWidget;
-        container->setMaximumWidth (500);
+        container->setMaximumWidth (600);
         QVBoxLayout *layout = new QVBoxLayout(container);
         layout->setSpacing(5);
         layout->setContentsMargins(0, 0, 0, 0);
@@ -405,8 +434,8 @@ private:
         button->setText(title);
         button->setIcon(QIcon(iconPath));
         button->setIconSize(QSize(60, 60));
-        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);  // 图标在上，文字在下
-        button->setFixedSize(150, 150); // 可根据需要调整
+        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+        button->setFixedSize(150, 100);
         button->setStyleSheet(R"(
         QToolButton {
             background: transparent;
@@ -421,8 +450,6 @@ private:
     )");
         return button;
     }
-
-
 
     void setDrawToolButtonStyle() {
         QString buttonStyle = buttonStyle1;
@@ -786,11 +813,173 @@ private:
         saveProjectButton->setToolTip("");
     }
 
-    QWidget* createRTCControlWidget() {
+
+    QWidget* createSystemControlWidget(){
+        QWidget *widget = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(widget);
+
+        // ========== Hardware Status Group ==========
+        QGroupBox *hardwareStatusGroup = new QGroupBox("Hardware Status");
+        QVBoxLayout *hardwareLayout = new QVBoxLayout(hardwareStatusGroup);
+
+        QHBoxLayout *laserLayout = new QHBoxLayout();
+        QLabel *labelLaser = new QLabel("LaserDevice");
+        QLabel *statusIndicator = new QLabel();
+        statusIndicator->setFixedSize(16, 16);
+        statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+        laserLayout->addWidget(labelLaser);
+        laserLayout->addWidget(statusIndicator);
+        hardwareLayout->addLayout(laserLayout);
+
+        QHBoxLayout *motionaxisLayout = new QHBoxLayout();
+        QLabel *labelMotionAxis = new QLabel("MotionAxis");
+        QLabel *statusIndicator1 = new QLabel();
+        statusIndicator1->setFixedSize(16, 16);
+        statusIndicator1->setStyleSheet("background-color: red; border-radius: 8px;");
+        motionaxisLayout->addWidget(labelMotionAxis);
+        motionaxisLayout->addWidget(statusIndicator1);
+        hardwareLayout->addLayout(motionaxisLayout);
+
+        mainLayout->addWidget(hardwareStatusGroup);
+
+        // ========== 控制参数输入 ==========
+        QGroupBox *controlGroup = new QGroupBox("Control Parameters");
+        QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
+        mainLayout->addWidget(controlGroup);
+
+        // 执行次数
+        QLabel *timesLabel = new QLabel("Total Executions:");
+        QLineEdit *timesInput = new QLineEdit();
+        timesInput->setText("1");
+        timesInput->setValidator(new QIntValidator(1, 9999, timesInput));
+        controlLayout->addWidget(timesLabel);
+        controlLayout->addWidget(timesInput);
+
+        // apply按钮
+        QPushButton *applyButton = new QPushButton("Apply");
+        controlLayout->addWidget(applyButton);
+        QObject::connect(applyButton, &QPushButton::clicked, widget, [=]() {
+            // 执行次数
+            int value = timesInput->text().toInt();
+            if (value <= 0) {
+                WARN_MSG("Invalid execution count");
+                return;
+            }
+            HardwareController::getIns().setOperationTime(value);
+        });
+
+        // 填充空白
+        mainLayout->addStretch ();
+
+        // ========== 状态监控定时器 ==========
+        QTimer *statusTimer = new QTimer(widget);
+        statusTimer->setInterval(1000);
+        QObject::connect(statusTimer, &QTimer::timeout, widget, [=]() {
+            bool isLaserWorkerConnected = LaserWorker::getIns().getDeviceConnectStatus();
+            if (isLaserWorkerConnected)
+                statusIndicator->setStyleSheet("background-color: green; border-radius: 8px;");
+            else
+                statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+
+            bool isStageWorkerConnected = MotionStageWorker::getIns().getDeviceConnectStatus();
+            if (isStageWorkerConnected)
+                statusIndicator1->setStyleSheet("background-color: green; border-radius: 8px;");
+            else
+                statusIndicator1->setStyleSheet("background-color: red; border-radius: 8px;");
+        });
+        statusTimer->start();
+
+        return widget;
+    };
+
+    QWidget* createStageControlWidget()
+    {
         QWidget* widget = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(widget);
 
-        // === 控制卡类型选择区 ===
+        double* curX = new double(0);
+        double* curY = new double(0);
+        double* curZ = new double(0);
+
+        // XY按钮区域
+        QGroupBox* xyGroup = new QGroupBox("XY Move");
+        QGridLayout* moveLayout = new QGridLayout(xyGroup);
+
+        QPushButton* btnXPos = new QPushButton("X+");
+        QPushButton* btnXNeg = new QPushButton("X-");
+        QPushButton* btnYPos = new QPushButton("Y+");
+        QPushButton* btnYNeg = new QPushButton("Y-");
+
+        moveLayout->addWidget(btnYPos, 0, 1);
+        moveLayout->addWidget(btnXNeg, 1, 0);
+        moveLayout->addWidget(btnXPos, 1, 2);
+        moveLayout->addWidget(btnYNeg, 2, 1);
+
+        mainLayout->addWidget(xyGroup);
+
+        // Z按钮区域
+        QGroupBox* zGroup = new QGroupBox("Z Move");
+        QVBoxLayout* zLayout = new QVBoxLayout(zGroup);
+
+        QPushButton* btnZPos = new QPushButton("Z+");
+        QPushButton* btnZNeg = new QPushButton("Z-");
+        zLayout->addWidget(btnZPos);
+        zLayout->addWidget(btnZNeg);
+
+        mainLayout->addWidget(zGroup);
+
+        // 步长输入区域
+        QGroupBox* stepGroup = new QGroupBox("Step Size (mm)");
+        QHBoxLayout* stepLayout = new QHBoxLayout(stepGroup);
+
+        QLineEdit* stepEdit = new QLineEdit("5.0");
+        stepEdit->setValidator(new QDoubleValidator(0.01, 1000.0, 2, stepEdit));
+        stepLayout->addWidget(new QLabel("Step:"));
+        stepLayout->addWidget(stepEdit);
+
+        mainLayout->addWidget(stepGroup);
+
+        // 显示区域
+        QGroupBox* posGroup = new QGroupBox("Current Position");
+        QHBoxLayout* posLayout = new QHBoxLayout(posGroup);
+
+        QLabel* posLabel = new QLabel("X=0.00  Y=0.00  Z=0.00");
+        posLayout->addWidget(posLabel);
+
+        mainLayout->addWidget(posGroup);
+        mainLayout->addStretch ();
+
+        // 绑定信号
+        auto moveAxis = [=](const QString& axis, int dir) {
+            double step = stepEdit->text().toDouble();
+            if (axis == "X") *curX += dir * step;
+            if (axis == "Y") *curY += dir * step;
+            if (axis == "Z") *curZ += dir * step;
+
+            MotionStageWorker::getIns().setPos(*curX, *curY, *curZ);
+
+            posLabel->setText(QString("X=%1  Y=%2  Z=%3")
+                                  .arg(*curX, 0, 'f', 2)
+                                  .arg(*curY, 0, 'f', 2)
+                                  .arg(*curZ, 0, 'f', 2));
+        };
+
+        QObject::connect(btnXPos, &QPushButton::clicked, [=]() { moveAxis("X", +1); });
+        QObject::connect(btnXNeg, &QPushButton::clicked, [=]() { moveAxis("X", -1); });
+        QObject::connect(btnYPos, &QPushButton::clicked, [=]() { moveAxis("Y", +1); });
+        QObject::connect(btnYNeg, &QPushButton::clicked, [=]() { moveAxis("Y", -1); });
+        QObject::connect(btnZPos, &QPushButton::clicked, [=]() { moveAxis("Z", +1); });
+        QObject::connect(btnZNeg, &QPushButton::clicked, [=]() { moveAxis("Z", -1); });
+
+        return widget;
+    }
+
+
+    QWidget* createRTCSettingWidget() {
+        QWidget* widget = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(widget);
+
+        // 控制卡类型选择
         QGroupBox* cardBox = new QGroupBox("Control Card:");
         QHBoxLayout* cardLayout = new QHBoxLayout(cardBox);
 
@@ -802,71 +991,93 @@ private:
         cardLayout->addWidget(rtc5Radio);
         cardLayout->addWidget(rtc6Radio);
         cardLayout->addWidget(testRadio);
-        cardLayout->addStretch();
 
         mainLayout->addWidget(cardBox);
-        // === 加载文件 ===
-        QFormLayout* formLayout = new QFormLayout();
+
+
+        // 校正文件选择
+        QGroupBox* fileGroup = new QGroupBox("Correction File:");
+        QHBoxLayout* fileLayout = new QHBoxLayout(fileGroup);
 
         QPushButton* loadCorrectionButton = new QPushButton("Load Correction File");
         QString* correctionFilePath = new QString();
 
-        QObject::connect(loadCorrectionButton, &QPushButton::clicked,widget, [=]() {
-            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.ct5 );All Files (*)");
+        QObject::connect(loadCorrectionButton, &QPushButton::clicked, widget, [=]() {
+            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.ct5);;All Files (*)");
             if (!path.isEmpty()) {
                 *correctionFilePath = path;
                 loadCorrectionButton->setText(QFileInfo(path).fileName());
             }
         });
-        formLayout->addRow("Correction File:", loadCorrectionButton);
-        mainLayout->addLayout(formLayout);
 
-        // === 参数区域 ===
-        QGridLayout* paramLayout = new QGridLayout();
+        fileLayout->addWidget(loadCorrectionButton);
+        fileLayout->addStretch();
+        mainLayout->addWidget(fileGroup);
+
+
+        // 参数设置
+        QGroupBox* paramGroup = new QGroupBox("Parameters:");
+        QGridLayout* paramLayout = new QGridLayout(paramGroup);
+
         QLineEdit* scaleEdit = new QLineEdit("1");
         QLineEdit* scaleCorX = new QLineEdit("1.0");
         QLineEdit* scaleCorY = new QLineEdit("1.0");
         QLineEdit* rotationEdit = new QLineEdit("0.0");
         QLineEdit* offsetX = new QLineEdit("0.0");
         QLineEdit* offsetY = new QLineEdit("0.0");
+
         QComboBox* laserModeBox = new QComboBox();
-        laserModeBox->addItems({ "YAG1","YAG2","YAG3","CO2"});
+        laserModeBox->addItems({ "YAG1", "YAG2", "YAG3", "CO2" });
 
-        // QCheckBox* flipX = new QCheckBox("FlipX");
-        // QCheckBox* flipY = new QCheckBox("FlipY");
+        QComboBox* executeModeBox = new QComboBox();
+        executeModeBox->addItems({ "DoubleLists", "SingleList", "CircleList" });
 
-        paramLayout->addWidget(new QLabel("Scale:"), 0, 0);
-        paramLayout->addWidget(scaleEdit, 0, 1);
-        paramLayout->addWidget(new QLabel("ScaleCor:"), 0, 2);
-        paramLayout->addWidget(scaleCorX, 0, 3);
-        paramLayout->addWidget(scaleCorY, 0, 4);
+        QWidget* scaleCorWidget = new QWidget();
+        QHBoxLayout* scaleCorLayout = new QHBoxLayout(scaleCorWidget);
+        scaleCorLayout->setContentsMargins(0, 0, 0, 0);
+        scaleCorLayout->setSpacing(6);
+        scaleCorLayout->addWidget(scaleCorX);
+        scaleCorLayout->addWidget(scaleCorY);
 
-        paramLayout->addWidget(new QLabel("Rotation:"), 1, 0);
-        paramLayout->addWidget(rotationEdit, 1, 1);
-        paramLayout->addWidget(new QLabel("Offset:"), 1, 2);
-        paramLayout->addWidget(offsetX, 1, 3);
-        paramLayout->addWidget(offsetY, 1, 4);
+        QWidget* offsetWidget = new QWidget();
+        QHBoxLayout* offsetLayout = new QHBoxLayout(offsetWidget);
+        offsetLayout->setContentsMargins(0, 0, 0, 0);
+        offsetLayout->setSpacing(6);
+        offsetLayout->addWidget(offsetX);
+        offsetLayout->addWidget(offsetY);
 
-        paramLayout->addWidget(new QLabel("Laser Mode:"), 2, 0);
-        paramLayout->addWidget(laserModeBox, 2, 1);
+        paramLayout->addWidget(new QLabel("Scale:"),       0, 0);
+        paramLayout->addWidget(scaleEdit,                  0, 1);
 
-        // 模式选择
-        QLabel *executeModeLabel = new QLabel("Execute Mode:");
-        QComboBox *executeModeBox = new QComboBox();
-        executeModeBox->addItem("DoubleLists");
-        executeModeBox->addItem("SingleList");
-        executeModeBox->addItem("CircleList");
-        paramLayout->addWidget(executeModeLabel);
-        paramLayout->addWidget(executeModeBox);
+        paramLayout->addWidget(new QLabel("ScaleCor:"),    1, 0);
+        paramLayout->addWidget(scaleCorWidget,             1, 1, 1, 3);  // 合并3列宽
 
-        QGroupBox* paramGroup = new QGroupBox();
-        paramGroup->setLayout(paramLayout);
+        paramLayout->addWidget(new QLabel("Rotation:"),    2, 0);
+        paramLayout->addWidget(rotationEdit,               2, 1);
+
+        paramLayout->addWidget(new QLabel("Offset:"),      3, 0);
+        paramLayout->addWidget(offsetWidget,               3, 1, 1, 3);
+
+        paramLayout->addWidget(new QLabel("Laser Mode:"),  4, 0);
+        paramLayout->addWidget(laserModeBox,               4, 1);
+
+        paramLayout->addWidget(new QLabel("Execute Mode:"),5, 0);
+        paramLayout->addWidget(executeModeBox,             5, 1);
+
         mainLayout->addWidget(paramGroup);
 
-        // === Apply 按钮 ===
+
+
+        // 添加间隔
+        mainLayout->addStretch ();
+
+
+        // Apply 按钮
         QPushButton* applyButton = new QPushButton("Apply");
         mainLayout->addWidget(applyButton);
 
+
+        // 绑定信号
         QObject::connect(applyButton, &QPushButton::clicked,widget, [=]() {
             RTCSettings settings;
             settings.correctionFilePath = *correctionFilePath;
@@ -897,85 +1108,47 @@ private:
         return widget;
     };
 
-    QWidget* createStageControlWidget(){
+    QWidget* createMotionStageSettingWidget() {
         QWidget* widget = new QWidget();
-        return widget;
-    };
+        QVBoxLayout* mainLayout = new QVBoxLayout(widget);
 
-    QWidget* createSystemControlWidget(){
-        QWidget *widget = new QWidget();
-        QVBoxLayout *mainLayout = new QVBoxLayout(widget);
+        // === 控制器类型选择 ===
+        QGroupBox* stageBox = new QGroupBox("Motion Stage:");
+        QHBoxLayout* controllerLayout = new QHBoxLayout(stageBox);
 
-        // ========== Hardware Status Group ==========
-        QGroupBox *hardwareStatusGroup = new QGroupBox("Hardware Status");
-        QVBoxLayout *hardwareLayout = new QVBoxLayout(hardwareStatusGroup);
+        QRadioButton* googolRadio = new QRadioButton("Googol");
+        QRadioButton* thorlabsRadio = new QRadioButton("Thorlabs");
+        QRadioButton* testRadio = new QRadioButton("Test");
+        googolRadio->setChecked(true); // 默认选中 Googol
 
-        QHBoxLayout *laserLayout = new QHBoxLayout();
-        QLabel *labelLaser = new QLabel("LaserDevice");
-        QLabel *statusIndicator = new QLabel();
-        statusIndicator->setFixedSize(16, 16);
-        statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
-        laserLayout->addWidget(labelLaser);
-        laserLayout->addWidget(statusIndicator);
-        laserLayout->addStretch();
-        hardwareLayout->addLayout(laserLayout);
+        controllerLayout->addWidget(googolRadio);
+        controllerLayout->addWidget(thorlabsRadio);
+        controllerLayout->addWidget(testRadio);
+        controllerLayout->addStretch();
 
-        QHBoxLayout *motionaxisLayout = new QHBoxLayout();
-        QLabel *labelMotionAxis = new QLabel("MotionAxis");
-        QLabel *statusIndicator1 = new QLabel();
-        statusIndicator1->setFixedSize(16, 16);
-        statusIndicator1->setStyleSheet("background-color: red; border-radius: 8px;");
-        motionaxisLayout->addWidget(labelMotionAxis);
-        motionaxisLayout->addWidget(statusIndicator1);
-        motionaxisLayout->addStretch();
-        hardwareLayout->addLayout(motionaxisLayout);
+        mainLayout->addWidget(stageBox);
 
-        mainLayout->addWidget(hardwareStatusGroup);
+        // 添加间隔
+        mainLayout->addStretch ();
 
-        // ========== 控制参数输入 ==========
-        QGroupBox *controlGroup = new QGroupBox("Control Parameters");
-        QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
-
-        // 执行次数
-        QLabel *timesLabel = new QLabel("Total Executions:");
-        QLineEdit *timesInput = new QLineEdit();
-        timesInput->setText("1");
-        timesInput->setValidator(new QIntValidator(1, 9999, timesInput));
-        controlLayout->addWidget(timesLabel);
-        controlLayout->addWidget(timesInput);
-
-        // apply按钮
-        QPushButton *applyButton = new QPushButton("Apply");
-        controlLayout->addWidget(applyButton);
-        controlLayout->addStretch();
-
-        mainLayout->addWidget(controlGroup);
-
-        // 绑定 Apply 按钮行为
+        // === Apply 按钮 ===
+        QPushButton* applyButton = new QPushButton("Apply");
+        mainLayout->addWidget(applyButton);
         QObject::connect(applyButton, &QPushButton::clicked, widget, [=]() {
-            // 执行次数
-            int value = timesInput->text().toInt();
-            if (value <= 0) {
-                WARN_MSG("Invalid execution count");
-                return;
+            if (googolRadio->isChecked()) {
+                auto device = std::make_unique<MotionStageDeviceGoogol>();
+                MotionStageWorker::getIns().setDevice(std::move(device));
+            } else if (thorlabsRadio->isChecked()) {
+                auto device = std::make_unique<MotionStageDeviceThorlabs>();
+                MotionStageWorker::getIns().setDevice(std::move(device));
+            } else if (testRadio->isChecked()) {
+                auto device = std::make_unique<MotionStageDeviceTest>();
+                MotionStageWorker::getIns().setDevice(std::move(device));
             }
-            HardwareController::getIns().setOperationTime(value);
         });
-
-        // ========== 状态监控定时器 ==========
-        QTimer *statusTimer = new QTimer(widget);
-        statusTimer->setInterval(1000);
-        QObject::connect(statusTimer, &QTimer::timeout, widget, [=]() {
-            bool isConnected = LaserWorker::getIns().getDeviceConnectStatus();
-            if (isConnected)
-                statusIndicator->setStyleSheet("background-color: green; border-radius: 8px;");
-            else
-                statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
-        });
-        statusTimer->start();
 
         return widget;
-    };
+    }
 
 public:
     void registerDrawButton(QToolButton* btn) {

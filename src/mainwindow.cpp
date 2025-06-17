@@ -55,8 +55,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initEditToolButton();
     initLayerButton();
     initSignalButton();
-    // initHardWareButton();
-    // initTableViewModel();
+    //
     initTitleBar();
     initStatusBar();
 }
