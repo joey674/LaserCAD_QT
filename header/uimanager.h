@@ -11,6 +11,7 @@
 #include "graphicsview.h"
 #include "tabwidget.h"
 #include "treeview.h"
+#include "css.h"
 
 class UiManager {
 private:
@@ -52,7 +53,6 @@ public:
     QToolButton *digitalOutButton;
     QToolButton *doPauseButton;
     QToolButton *loopButton;
-    QToolButton *markButton;
     QToolButton *motionButton;
     // DrawButton
     QToolButton *drawArcButton;
@@ -74,28 +74,48 @@ public:
 public:
     void initLayout(QWidget *parent)
     {
+        // 设置全局layout
+        this->setBasicLayout (parent);
+
+        //设置组件样式
+
+        // 设置按钮样式
+        this->setDrawToolButtonStyle();
+        this->setEditToolButtonStyle ();
+        this->setLayerButtonStyle ();
+        this->setSignalButtonStyle ();
+        this->setProjectButtonStyle ();
+    }
+
+private:
+    void setBasicLayout(QWidget *parent)
+    {
         // 左侧栏容器
         QWidget *sideBar = new QWidget;
-        sideBar->setFixedWidth(100);
+        sideBar->setFixedWidth(150);
         sideBar->setStyleSheet(R"(
-        background-color: #2b2b2b;
-    )");
+            background-color: #2b2b2b;
+        )");
 
         QVBoxLayout *btnLayout = new QVBoxLayout(sideBar);
         btnLayout->setSpacing(10);
-        btnLayout->setContentsMargins(10, 20, 10, 20);
+        btnLayout->setContentsMargins(0, 20, 0, 20);
 
         auto createButton = [](const QString &text) {
             QToolButton *btn = new QToolButton;
             btn->setText(text);
             btn->setCheckable(true);
-            btn->setFixedSize(100, 40);
+            btn->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+            btn->setMinimumHeight(50);
             btn->setStyleSheet(R"(
             QToolButton {
                 color: white;
                 background: transparent;
-                font-size: 16px;
+                font-size: 18px;
+                font-weight: bold;
                 border: none;
+                qproperty-iconSize: 24px;
+                text-align: center;
             }
             QToolButton:hover {
                 background-color: #444;
@@ -107,27 +127,28 @@ public:
             return btn;
         };
 
-        QToolButton *btnProject = createButton("draw");
-        QToolButton *btnEditor = createButton("control");
-        btnProject->setChecked(true); // 初始选中
+        QToolButton *btnProject = createButton("Draw");
+        QToolButton *btnEditor = createButton("Control");
+        QToolButton *markButton = createLabeledIconButton("Mark", ":/button/markButton.png");
+
+        btnProject->setChecked(true);
 
         btnLayout->addWidget(btnProject);
         btnLayout->addWidget(btnEditor);
         btnLayout->addStretch();
+        btnLayout->addWidget(markButton);
 
-        // 页面栈区域
         QStackedWidget *stack = new QStackedWidget;
-        stack->addWidget(initDrawPage());
-        stack->addWidget(initControlPage());
+        stack->addWidget(createDrawPage());
+        stack->addWidget(createControlPage());
 
-        // 总体布局
         QHBoxLayout *mainLayout = new QHBoxLayout(parent);
         mainLayout->setMargin(0);
         mainLayout->setSpacing(0);
         mainLayout->addWidget(sideBar);
         mainLayout->addWidget(stack);
 
-        // 页面切换逻辑
+        // 信号
         parent->connect(btnProject, &QToolButton::clicked, parent, [=]() {
             btnProject->setChecked(true);
             btnEditor->setChecked(false);
@@ -138,9 +159,13 @@ public:
             btnProject->setChecked(false);
             stack->setCurrentIndex(1);
         });
+
+        QObject::connect(markButton, &QToolButton::clicked, parent, [=]() {
+            HardwareController::getIns ().onMarkButtonClicked (parent);
+        });
     }
 
-    QWidget *initDrawPage()
+    QWidget *createDrawPage()
     {
         QWidget *page = new QWidget;
         QGridLayout *mainGLayout = new QGridLayout(page);
@@ -174,7 +199,7 @@ public:
         // 剩余区域补齐
         buttonHLayout1->addSpacerItem(
             new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
-        mainGLayout->addLayout(buttonHLayout1, 0, 0, 1, 3);
+        mainGLayout->addLayout(buttonHLayout1, 0, 0);
 
         /* *******************************************************************************
         第二行按钮布局
@@ -264,15 +289,11 @@ public:
         splitLine6->setFrameShadow(QFrame::Sunken);
         buttonHLayout2->addWidget(splitLine6);
 
-        // hardwareButton
-        markButton = new QToolButton(page);
-        buttonHLayout2->addWidget(markButton);
-
         //
         buttonHLayout2->addSpacerItem(
             new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum));
 
-        mainGLayout->addLayout(buttonHLayout2, 1, 0, 1, 3);
+        mainGLayout->addLayout(buttonHLayout2, 1, 0);
 
         /* *******************************************************************************
         第三行控件布局
@@ -323,23 +344,638 @@ public:
         widgetBLayout3->addWidget(drawContainer, /*stretch=*/0);
 
         //
-        mainGLayout->addLayout(widgetBLayout3, 2, 0, 1, 3);
+        mainGLayout->addLayout(widgetBLayout3, 2, 0);
 
         //
         return page;
     }
 
-    QWidget *initControlPage()
+    QWidget *createControlPage()
     {
         QWidget *page = new QWidget;
-        QGridLayout *mainGLayout = new QGridLayout(page);
-        page->setLayout(mainGLayout);
+        QHBoxLayout *mainLayout = new QHBoxLayout(page);
+        page->setLayout(mainLayout);
+        // mainLayout->setSpacing(10);
+        // mainLayout->setContentsMargins(5, 5, 5, 5);
 
-        systemTabWidget = new TabWidget(page);
-        mainGLayout->addWidget(systemTabWidget);
+        mainLayout->addWidget(wrapWithTitle("System Control", createSystemControlWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addWidget(wrapWithTitle("RTC Control", createRTCControlWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addWidget(wrapWithTitle("Stage Control", createStageControlWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addStretch();
 
         return page;
     }
+
+    QFrame *createVerticalLine(QWidget *parent = nullptr) {
+        QFrame *line = new QFrame(parent);
+        line->setFrameShape(QFrame::VLine);
+        line->setFrameShadow(QFrame::Sunken);
+        line->setLineWidth(1);
+        return line;
+    }
+
+    QWidget *wrapWithTitle(const QString &title, QWidget *contentWidget)
+    {
+        QWidget *container = new QWidget;
+        container->setMaximumWidth (500);
+        QVBoxLayout *layout = new QVBoxLayout(container);
+        layout->setSpacing(5);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        QLabel *label = new QLabel(title);
+        label->setAlignment(Qt::AlignHCenter);
+        label->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        label->setStyleSheet("font-weight: bold; font-size: 20px;");
+
+        layout->addWidget(label);
+        layout->addWidget(contentWidget);
+
+        return container;
+    }
+
+    QToolButton *createLabeledIconButton(const QString &title, const QString &iconPath)
+    {
+        QToolButton *button = new QToolButton;
+        button->setText(title);
+        button->setIcon(QIcon(iconPath));
+        button->setIconSize(QSize(60, 60));
+        button->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);  // 图标在上，文字在下
+        button->setFixedSize(150, 150); // 可根据需要调整
+        button->setStyleSheet(R"(
+        QToolButton {
+            background: transparent;
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        QToolButton:hover {
+            background-color: #444;
+        }
+    )");
+        return button;
+    }
+
+
+
+    void setDrawToolButtonStyle() {
+        QString buttonStyle = buttonStyle1;
+        // 绘制工具
+        QToolButton *drawPolylineButton = this-> drawPolylineButton;
+        drawPolylineButton->setIcon(QIcon(":/button/drawPolylineButton.svg"));
+        drawPolylineButton->setIconSize(QSize(30, 30));
+        drawPolylineButton->setStyleSheet(buttonStyle);
+        drawPolylineButton->setCheckable(true);
+        drawPolylineButton->setAutoExclusive(false);
+        drawPolylineButton->setToolTip(drawPolylineButtonToolTip);
+        this->registerDrawButton(drawPolylineButton);
+        //
+        QToolButton *drawLineButton = this-> drawLineButton;
+        drawLineButton->setIcon(QIcon(":/button/drawLineButton.svg"));
+        drawLineButton->setIconSize(QSize(30, 30));
+        drawLineButton->setStyleSheet(buttonStyle);
+        drawLineButton->setCheckable(true);
+        drawLineButton->setAutoExclusive(false);
+        drawLineButton->setToolTip(drawLineButtonToolTip);
+        this->registerDrawButton(drawLineButton);
+        //
+        QToolButton *drawArcButton = this-> drawArcButton;
+        drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
+        drawArcButton->setIconSize(QSize(30, 30));
+        drawArcButton->setStyleSheet(buttonStyle);
+        drawArcButton->setCheckable(true);
+        drawArcButton->setAutoExclusive(false);
+        drawArcButton->setToolTip(drawArcButtonToolTip);
+        this->registerDrawButton(drawArcButton);
+        //
+        QToolButton *drawPointButton = this-> drawPointButton;
+        drawPointButton->setIcon(QIcon(":/button/drawPointButton.svg"));
+        drawPointButton->setIconSize(QSize(30, 30));
+        drawPointButton->setStyleSheet(buttonStyle);
+        drawPointButton->setCheckable(true);
+        drawPointButton->setAutoExclusive(false);
+        this->registerDrawButton(drawPointButton);
+        //
+        QToolButton *drawCircleButton = this-> drawCircleButton;
+        drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
+        drawCircleButton->setIconSize(QSize(30, 30));
+        drawCircleButton->setStyleSheet(buttonStyle);
+        drawCircleButton->setCheckable(true);
+        drawCircleButton->setAutoExclusive(false);
+        drawCircleButton->setToolTip(drawCircleButtonToolTip);
+        this->registerDrawButton(drawCircleButton);
+        //
+        QToolButton *drawEllipseButton = this-> drawEllipseButton;
+        drawEllipseButton->setIcon(QIcon(":/button/drawEllipseButton.svg"));
+        drawEllipseButton->setIconSize(QSize(30, 30));
+        drawEllipseButton->setStyleSheet(buttonStyle);
+        drawEllipseButton->setCheckable(true);
+        drawEllipseButton->setAutoExclusive(false);
+        drawEllipseButton->setToolTip(drawEllipseButtonToolTip);
+        this->registerDrawButton(drawEllipseButton);
+        //
+        QToolButton *drawRectButton = this-> drawRectButton;
+        drawRectButton->setIcon(QIcon(":/button/drawRectButton.svg"));
+        drawRectButton->setIconSize(QSize(30, 30));
+        drawRectButton->setStyleSheet(buttonStyle);
+        drawRectButton->setCheckable(true);
+        drawRectButton->setAutoExclusive(false);
+        drawRectButton->setToolTip(drawRectButtonToolTip);
+        this->registerDrawButton(drawRectButton);
+        //
+        QToolButton *drawPolygonButton = this-> drawPolygonButton;
+        drawPolygonButton->setIcon(QIcon(":/button/drawPolygonButton.svg"));
+        drawPolygonButton->setIconSize(QSize(30, 30));
+        drawPolygonButton->setStyleSheet(buttonStyle);
+        drawPolygonButton->setCheckable(true);
+        drawPolygonButton->setAutoExclusive(false);
+        drawPolygonButton->setToolTip(drawPolygonButtonToolTip);
+        this->registerDrawButton(drawPolygonButton);
+        //
+        QToolButton *drawSpiralButton = this-> drawSpiralButton;
+        drawSpiralButton->setIcon(QIcon(":/button/drawSpiralButton.svg"));
+        drawSpiralButton->setIconSize(QSize(30, 30));
+        drawSpiralButton->setStyleSheet(buttonStyle);
+        drawSpiralButton->setCheckable(true);
+        drawSpiralButton->setAutoExclusive(false);
+        drawSpiralButton->setToolTip(drawSpiralButtonToolTip);
+        this->registerDrawButton(drawSpiralButton);
+    }
+
+    void setEditToolButtonStyle() {
+        QString buttonStyle = buttonStyle1;
+        //
+        QToolButton *editButton = this-> editButton;
+        editButton->setIcon(QIcon(":/button/editButton.svg"));
+        editButton->setIconSize(QSize(30, 30));
+        editButton->setStyleSheet(buttonStyle);
+        editButton->setCheckable(true);
+        editButton->setAutoExclusive(false);
+        editButton->setToolTip("编辑模式");
+        this->registerToolButton(editButton);
+        //
+        QToolButton *dragSceneButton = this-> dragSceneButton;
+        dragSceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
+        dragSceneButton->setIconSize(QSize(30, 30));
+        dragSceneButton->setStyleSheet(buttonStyle);
+        dragSceneButton->setCheckable(true);
+        dragSceneButton->setAutoExclusive(false);
+        dragSceneButton->setToolTip("拖动画布；左键拖拽");
+        this->registerToolButton(dragSceneButton);
+        //
+        QToolButton *deleteButton = this-> deleteButton;
+        deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
+        deleteButton->setIconSize(QSize(30, 30));
+        deleteButton->setStyleSheet(buttonStyle);
+        deleteButton->setCheckable(true);
+        deleteButton->setAutoExclusive(false);
+        deleteButton->setToolTip("删除对象");
+        this->registerToolButton(deleteButton);
+        //
+        QToolButton *drawTestLineButton = this-> drawTestLineButton;
+        drawTestLineButton->setIcon(QIcon(":/button/drawTestLineButton.svg"));
+        drawTestLineButton->setIconSize(QSize(30, 30));
+        drawTestLineButton->setStyleSheet(buttonStyle);
+        drawTestLineButton->setCheckable(true);
+        drawTestLineButton->setAutoExclusive(false);
+        drawTestLineButton->setToolTip("测试按钮");
+        this->registerToolButton(drawTestLineButton);
+        //
+        QToolButton *centerButton = this-> centerButton;
+        centerButton->setIcon(QIcon(":/button/centerButton.svg"));
+        centerButton->setIconSize(QSize(30, 30));
+        centerButton->setStyleSheet(buttonStyle);
+        centerButton->setCheckable(true);
+        centerButton->setAutoExclusive(false);
+        centerButton->setToolTip("移动对象到中心点");
+        this->registerToolButton(centerButton);
+        //
+        // QToolButton *redoButton = this-> redoButton;
+        // redoButton->setIcon(QIcon(":/button/redoButton.svg"));
+        // redoButton->setIconSize(QSize(30, 30));
+        // redoButton->setStyleSheet(buttonStyle);
+        // redoButton->setCheckable(true);
+        // redoButton->setAutoExclusive(false);
+        // redoButton->setToolTip("");
+        // this->registerToolButton(redoButton);
+        // connect(redoButton, &QToolButton::clicked, this, &MainWindow::onRedoButtonClicked);
+        //
+        // QToolButton *undoButton = this-> undoButton;
+        // undoButton->setIcon(QIcon(":/button/undoButton.svg"));
+        // undoButton->setIconSize(QSize(30, 30));
+        // undoButton->setStyleSheet(buttonStyle);
+        // undoButton->setCheckable(true);
+        // undoButton->setAutoExclusive(false);
+        // undoButton->setToolTip("");
+        // this->registerToolButton(undoButton);
+        // connect(undoButton, &QToolButton::clicked, this, &MainWindow::onUndoButtonClicked);
+        //
+        QToolButton *breakCopiedItemButton = this-> breakCopiedItemButton;
+        breakCopiedItemButton->setIcon(QIcon(":/button/breakCopiedItemButton.png"));
+        breakCopiedItemButton->setIconSize(QSize(30, 30));
+        breakCopiedItemButton->setStyleSheet(buttonStyle);
+        breakCopiedItemButton->setCheckable(true);
+        breakCopiedItemButton->setAutoExclusive(false);
+        breakCopiedItemButton->setToolTip("打散复制对象组");
+        this->registerToolButton(breakCopiedItemButton);
+        //
+        QToolButton *breakContourFillItemButton = this-> breakContourFillItemButton;
+        breakContourFillItemButton->setIcon(QIcon(":/button/breakContourFillItemButton.png"));
+        breakContourFillItemButton->setIconSize(QSize(30, 30));
+        breakContourFillItemButton->setStyleSheet(buttonStyle);
+        breakContourFillItemButton->setCheckable(true);
+        breakContourFillItemButton->setAutoExclusive(false);
+        breakContourFillItemButton->setToolTip("打散轮廓填充");
+        this->registerToolButton(breakContourFillItemButton);
+        //
+        QToolButton *breakHatchFillItemButton = this-> breakHatchFillItemButton;
+        breakHatchFillItemButton->setIcon(QIcon(":/button/breakHatchFillItemButton.png"));
+        breakHatchFillItemButton->setIconSize(QSize(30, 30));
+        breakHatchFillItemButton->setStyleSheet(buttonStyle);
+        breakHatchFillItemButton->setCheckable(true);
+        breakHatchFillItemButton->setAutoExclusive(false);
+        breakHatchFillItemButton->setToolTip("打散线段填充");
+        this->registerToolButton(breakHatchFillItemButton);
+        /// 粘贴 复制 剪切
+        ///
+        ///
+        QToolButton *cutButton = this-> cutButton;
+        cutButton->setIcon(QIcon(":/button/cutButton.png"));
+        cutButton->setIconSize(QSize(30, 30));
+        cutButton->setStyleSheet(buttonStyle);
+        cutButton->setCheckable(true);
+        cutButton->setAutoExclusive(false);
+        cutButton->setToolTip("");
+        this->registerToolButton(cutButton);
+        //
+        QToolButton *copyButton = this-> copyButton;
+        copyButton->setIcon(QIcon(":/button/copyButton.png"));
+        copyButton->setIconSize(QSize(30, 30));
+        copyButton->setStyleSheet(buttonStyle);
+        copyButton->setCheckable(true);
+        copyButton->setAutoExclusive(false);
+        copyButton->setToolTip("");
+        this->registerToolButton(copyButton);
+        //
+        QToolButton *pasteButton = this-> pasteButton;
+        pasteButton->setIcon(QIcon(":/button/pasteButton.png"));
+        pasteButton->setIconSize(QSize(30, 30));
+        pasteButton->setStyleSheet(buttonStyle);
+        pasteButton->setCheckable(true);
+        pasteButton->setAutoExclusive(false);
+        pasteButton->setToolTip("");
+        this->registerToolButton(pasteButton);
+        //
+        QToolButton *combineButton = this->combineButton;
+        combineButton->setIcon(QIcon(":/button/combineButton.png"));
+        combineButton->setIconSize(QSize(30, 30));
+        combineButton->setStyleSheet(buttonStyle);
+        combineButton->setCheckable(true);
+        combineButton->setAutoExclusive(false);
+        combineButton->setToolTip("");
+        //
+        QToolButton *breakButton = this->breakButton;
+        breakButton->setIcon(QIcon(":/button/breakButton.png"));
+        breakButton->setIconSize(QSize(30, 30));
+        breakButton->setStyleSheet(buttonStyle);
+        breakButton->setCheckable(true);
+        breakButton->setAutoExclusive(false);
+        breakButton->setToolTip("");
+        //
+        //
+        QToolButton *mirrorHorizontalButton = this-> mirrorHorizontalButton;
+        mirrorHorizontalButton->setIcon(QIcon(":/button/mirrorHorizontalButton.png"));
+        mirrorHorizontalButton->setIconSize(QSize(30, 30));
+        mirrorHorizontalButton->setStyleSheet(buttonStyle);
+        mirrorHorizontalButton->setCheckable(true);
+        mirrorHorizontalButton->setAutoExclusive(false);
+        mirrorHorizontalButton->setToolTip("");
+        this->registerToolButton(mirrorHorizontalButton);
+        //
+        QToolButton *mirrorVerticalButton = this-> mirrorVerticalButton;
+        mirrorVerticalButton->setIcon(QIcon(":/button/mirrorVerticalButton.png"));
+        mirrorVerticalButton->setIconSize(QSize(30, 30));
+        mirrorVerticalButton->setStyleSheet(buttonStyle);
+        mirrorVerticalButton->setCheckable(true);
+        mirrorVerticalButton->setAutoExclusive(false);
+        mirrorVerticalButton->setToolTip("");
+        this->registerToolButton(mirrorVerticalButton);
+    }
+
+    void setLayerButtonStyle() {
+        auto buttonStyle = buttonStyle1;
+        //
+        QToolButton *addLayerButton = this-> addLayerButton;
+        addLayerButton->setIcon(QIcon(":/button/addLayerButton.png"));
+        addLayerButton->setIconSize(QSize(30, 30));
+        addLayerButton->setStyleSheet(buttonStyle);
+        addLayerButton->setCheckable(false);
+        addLayerButton->setToolTip("");
+        this->registerToolButton(addLayerButton);
+        //
+        QToolButton *deleteLayerButton = this-> deleteLayerButton;
+        deleteLayerButton->setIcon(QIcon(":/button/deleteLayerButton.png"));
+        deleteLayerButton->setIconSize(QSize(30, 30));
+        deleteLayerButton->setStyleSheet(buttonStyle);
+        deleteLayerButton->setCheckable(false);
+        deleteLayerButton->setToolTip("");
+        this->registerToolButton(deleteLayerButton);
+        //
+        // QToolButton *setLayerColorButton = this-> setLayerColorButton;
+        // setLayerColorButton->setIcon(QIcon(":/button/setLayerColorButton.png"));
+        // setLayerColorButton->setIconSize(QSize(30, 30));
+        // setLayerColorButton->setStyleSheet(buttonStyle);
+        // setLayerColorButton->setCheckable(false);
+        // setLayerColorButton->setToolTip("");
+        // this->registerToolButton(setLayerColorButton);
+        // connect(breakContourFillItemButton, &QToolButton::clicked,
+        //         this, &MainWindow::onBreakContourFillItemButtonClicked);
+        //
+    }
+
+    void setSignalButtonStyle() {
+        QString buttonStyle = buttonStyle1;
+        QToolButton *digitalInButton = this-> digitalInButton;
+        digitalInButton->setIcon(QIcon(":/button/digitalInButton.png"));
+        digitalInButton->setIconSize(QSize(30, 30));
+        digitalInButton->setStyleSheet(buttonStyle);
+        digitalInButton->setCheckable(true);
+        digitalInButton->setAutoExclusive(false);
+        digitalInButton->setToolTip("");
+        this->registerToolButton(digitalInButton);
+        //
+        QToolButton *digitalOutButton = this-> digitalOutButton;
+        digitalOutButton->setIcon(QIcon(":/button/digitalOutButton.png"));
+        digitalOutButton->setIconSize(QSize(30, 30));
+        digitalOutButton->setStyleSheet(buttonStyle);
+        digitalOutButton->setCheckable(true);
+        digitalOutButton->setAutoExclusive(false);
+        digitalOutButton->setToolTip("");
+        this->registerToolButton(digitalOutButton);
+        //
+        QToolButton *doPauseButton = this-> doPauseButton;
+        doPauseButton->setIcon(QIcon(":/button/doPauseButton.png"));
+        doPauseButton->setIconSize(QSize(30, 30));
+        doPauseButton->setStyleSheet(buttonStyle);
+        doPauseButton->setCheckable(true);
+        doPauseButton->setAutoExclusive(false);
+        doPauseButton->setToolTip("");
+        this->registerToolButton(doPauseButton);
+        //
+        QToolButton *delayTimeButton = this-> delayTimeButton;
+        delayTimeButton->setIcon(QIcon(":/button/delayTimeButton.png"));
+        delayTimeButton->setIconSize(QSize(30, 30));
+        delayTimeButton->setStyleSheet(buttonStyle);
+        delayTimeButton->setCheckable(true);
+        delayTimeButton->setAutoExclusive(false);
+        delayTimeButton->setToolTip("");
+        this->registerToolButton(delayTimeButton);
+        //
+        QToolButton *motionButton = this-> motionButton;
+        motionButton->setIcon(QIcon(":/button/motionButton.png"));
+        motionButton->setIconSize(QSize(30, 30));
+        motionButton->setStyleSheet(buttonStyle);
+        motionButton->setCheckable(true);
+        motionButton->setAutoExclusive(false);
+        motionButton->setToolTip("");
+        this->registerToolButton(motionButton);
+        //
+        QToolButton *loopButton = this-> loopButton;
+        loopButton->setIcon(QIcon(":/button/loopButton.png"));
+        loopButton->setIconSize(QSize(30, 30));
+        loopButton->setStyleSheet(buttonStyle);
+        loopButton->setCheckable(true);
+        loopButton->setAutoExclusive(false);
+        loopButton->setToolTip("");
+        this->registerToolButton(loopButton);
+    }
+
+    void setProjectButtonStyle() {
+        QString buttonStyle = buttonStyle1;
+        //
+        QToolButton *createProjectButton = UiManager::getIns(). createProjectButton;
+        createProjectButton->setIcon(QIcon(":/button/createProjectButton.png"));
+        createProjectButton->setIconSize(QSize(30, 30));
+        createProjectButton->setStyleSheet(buttonStyle1);
+        createProjectButton->setCheckable(false);
+        createProjectButton->setAutoExclusive(false);
+        createProjectButton->setToolTip("");
+        //
+        //
+        QToolButton *openProjectButton = UiManager::getIns(). openProjectButton;
+        openProjectButton->setIcon(QIcon(":/button/openProjectButton.png"));
+        openProjectButton->setIconSize(QSize(30, 30));
+        openProjectButton->setStyleSheet(buttonStyle1);
+        openProjectButton->setCheckable(false);
+        openProjectButton->setAutoExclusive(false);
+        openProjectButton->setToolTip("");
+        //
+        //
+        QToolButton *saveProjectButton = UiManager::getIns(). saveProjectButton;
+        saveProjectButton->setIcon(QIcon(":/button/saveProjectButton.png"));
+        saveProjectButton->setIconSize(QSize(30, 30));
+        saveProjectButton->setStyleSheet(buttonStyle1);
+        saveProjectButton->setCheckable(false);
+        saveProjectButton->setAutoExclusive(false);
+        saveProjectButton->setToolTip("");
+    }
+
+    QWidget* createRTCControlWidget() {
+        QWidget* widget = new QWidget();
+        QVBoxLayout* mainLayout = new QVBoxLayout(widget);
+
+        // === 控制卡类型选择区 ===
+        QGroupBox* cardBox = new QGroupBox("Control Card:");
+        QHBoxLayout* cardLayout = new QHBoxLayout(cardBox);
+
+        QRadioButton* rtc5Radio = new QRadioButton("RTC5");
+        QRadioButton* rtc6Radio = new QRadioButton("RTC6");
+        QRadioButton* testRadio = new QRadioButton("Test");
+        rtc5Radio->setChecked(true);
+
+        cardLayout->addWidget(rtc5Radio);
+        cardLayout->addWidget(rtc6Radio);
+        cardLayout->addWidget(testRadio);
+        cardLayout->addStretch();
+
+        mainLayout->addWidget(cardBox);
+        // === 加载文件 ===
+        QFormLayout* formLayout = new QFormLayout();
+
+        QPushButton* loadCorrectionButton = new QPushButton("Load Correction File");
+        QString* correctionFilePath = new QString();
+
+        QObject::connect(loadCorrectionButton, &QPushButton::clicked,widget, [=]() {
+            QString path = QFileDialog::getOpenFileName(nullptr, "Choose Correction File", QDir::currentPath(), "Correction Files (*.ct5 );All Files (*)");
+            if (!path.isEmpty()) {
+                *correctionFilePath = path;
+                loadCorrectionButton->setText(QFileInfo(path).fileName());
+            }
+        });
+        formLayout->addRow("Correction File:", loadCorrectionButton);
+        mainLayout->addLayout(formLayout);
+
+        // === 参数区域 ===
+        QGridLayout* paramLayout = new QGridLayout();
+        QLineEdit* scaleEdit = new QLineEdit("1");
+        QLineEdit* scaleCorX = new QLineEdit("1.0");
+        QLineEdit* scaleCorY = new QLineEdit("1.0");
+        QLineEdit* rotationEdit = new QLineEdit("0.0");
+        QLineEdit* offsetX = new QLineEdit("0.0");
+        QLineEdit* offsetY = new QLineEdit("0.0");
+        QComboBox* laserModeBox = new QComboBox();
+        laserModeBox->addItems({ "YAG1","YAG2","YAG3","CO2"});
+
+        // QCheckBox* flipX = new QCheckBox("FlipX");
+        // QCheckBox* flipY = new QCheckBox("FlipY");
+
+        paramLayout->addWidget(new QLabel("Scale:"), 0, 0);
+        paramLayout->addWidget(scaleEdit, 0, 1);
+        paramLayout->addWidget(new QLabel("ScaleCor:"), 0, 2);
+        paramLayout->addWidget(scaleCorX, 0, 3);
+        paramLayout->addWidget(scaleCorY, 0, 4);
+
+        paramLayout->addWidget(new QLabel("Rotation:"), 1, 0);
+        paramLayout->addWidget(rotationEdit, 1, 1);
+        paramLayout->addWidget(new QLabel("Offset:"), 1, 2);
+        paramLayout->addWidget(offsetX, 1, 3);
+        paramLayout->addWidget(offsetY, 1, 4);
+
+        paramLayout->addWidget(new QLabel("Laser Mode:"), 2, 0);
+        paramLayout->addWidget(laserModeBox, 2, 1);
+
+        // 模式选择
+        QLabel *executeModeLabel = new QLabel("Execute Mode:");
+        QComboBox *executeModeBox = new QComboBox();
+        executeModeBox->addItem("DoubleLists");
+        executeModeBox->addItem("SingleList");
+        executeModeBox->addItem("CircleList");
+        paramLayout->addWidget(executeModeLabel);
+        paramLayout->addWidget(executeModeBox);
+
+        QGroupBox* paramGroup = new QGroupBox();
+        paramGroup->setLayout(paramLayout);
+        mainLayout->addWidget(paramGroup);
+
+        // === Apply 按钮 ===
+        QPushButton* applyButton = new QPushButton("Apply");
+        mainLayout->addWidget(applyButton);
+
+        QObject::connect(applyButton, &QPushButton::clicked,widget, [=]() {
+            RTCSettings settings;
+            settings.correctionFilePath = *correctionFilePath;
+            settings.scale = scaleEdit->text().toDouble();
+            settings.scaleCorX = scaleCorX->text().toDouble();
+            settings.scaleCorY = scaleCorY->text().toDouble();
+            settings.rotation = rotationEdit->text().toDouble();
+            settings.offsetX = offsetX->text().toDouble();
+            settings.offsetY = offsetY->text().toDouble();
+            settings.laserMode = laserModeBox->currentText();
+            settings.executeMode = executeModeBox->currentText();
+
+            // 调用laserWoker部分;
+            if (rtc5Radio->isChecked()){
+                auto device = std::make_unique<LaserDeviceRTC5> ();
+                device->m_settings = settings;
+                LaserWorker::getIns().setDevice(std::move(device));
+            } else if (rtc6Radio->isChecked()){
+                // auto device = std::make_unique<LaserDeviceRTC6> ();
+                // device->m_settings = settings;
+                // LaserWorker::getIns().setDevice(std::move(device));
+            } else if (testRadio->isChecked()) {
+                auto device = std::make_unique<LaserDeviceTest> ();
+                LaserWorker::getIns().setDevice(std::move(device));
+            }
+        });
+
+        return widget;
+    };
+
+    QWidget* createStageControlWidget(){
+        QWidget* widget = new QWidget();
+        return widget;
+    };
+
+    QWidget* createSystemControlWidget(){
+        QWidget *widget = new QWidget();
+        QVBoxLayout *mainLayout = new QVBoxLayout(widget);
+
+        // ========== Hardware Status Group ==========
+        QGroupBox *hardwareStatusGroup = new QGroupBox("Hardware Status");
+        QVBoxLayout *hardwareLayout = new QVBoxLayout(hardwareStatusGroup);
+
+        QHBoxLayout *laserLayout = new QHBoxLayout();
+        QLabel *labelLaser = new QLabel("LaserDevice");
+        QLabel *statusIndicator = new QLabel();
+        statusIndicator->setFixedSize(16, 16);
+        statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+        laserLayout->addWidget(labelLaser);
+        laserLayout->addWidget(statusIndicator);
+        laserLayout->addStretch();
+        hardwareLayout->addLayout(laserLayout);
+
+        QHBoxLayout *motionaxisLayout = new QHBoxLayout();
+        QLabel *labelMotionAxis = new QLabel("MotionAxis");
+        QLabel *statusIndicator1 = new QLabel();
+        statusIndicator1->setFixedSize(16, 16);
+        statusIndicator1->setStyleSheet("background-color: red; border-radius: 8px;");
+        motionaxisLayout->addWidget(labelMotionAxis);
+        motionaxisLayout->addWidget(statusIndicator1);
+        motionaxisLayout->addStretch();
+        hardwareLayout->addLayout(motionaxisLayout);
+
+        mainLayout->addWidget(hardwareStatusGroup);
+
+        // ========== 控制参数输入 ==========
+        QGroupBox *controlGroup = new QGroupBox("Control Parameters");
+        QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
+
+        // 执行次数
+        QLabel *timesLabel = new QLabel("Total Executions:");
+        QLineEdit *timesInput = new QLineEdit();
+        timesInput->setText("1");
+        timesInput->setValidator(new QIntValidator(1, 9999, timesInput));
+        controlLayout->addWidget(timesLabel);
+        controlLayout->addWidget(timesInput);
+
+        // apply按钮
+        QPushButton *applyButton = new QPushButton("Apply");
+        controlLayout->addWidget(applyButton);
+        controlLayout->addStretch();
+
+        mainLayout->addWidget(controlGroup);
+
+        // 绑定 Apply 按钮行为
+        QObject::connect(applyButton, &QPushButton::clicked, widget, [=]() {
+            // 执行次数
+            int value = timesInput->text().toInt();
+            if (value <= 0) {
+                WARN_MSG("Invalid execution count");
+                return;
+            }
+            HardwareController::getIns().setOperationTime(value);
+        });
+
+        // ========== 状态监控定时器 ==========
+        QTimer *statusTimer = new QTimer(widget);
+        statusTimer->setInterval(1000);
+        QObject::connect(statusTimer, &QTimer::timeout, widget, [=]() {
+            bool isConnected = LaserWorker::getIns().getDeviceConnectStatus();
+            if (isConnected)
+                statusIndicator->setStyleSheet("background-color: green; border-radius: 8px;");
+            else
+                statusIndicator->setStyleSheet("background-color: red; border-radius: 8px;");
+        });
+        statusTimer->start();
+
+        return widget;
+    };
 
 public:
     void registerDrawButton(QToolButton* btn) {
@@ -351,6 +987,7 @@ public:
             btn->setChecked(checked);
         }
     }
+
     void registerToolButton(QToolButton* btn) {
         m_toolButtons.push_back(btn);
     }
@@ -360,7 +997,7 @@ public:
             btn->setChecked(checked);
         }
     }
-/// ItemManager Initialization
+
 private:
     static UiManager ins;
     UiManager() {};

@@ -24,7 +24,6 @@ private: // 初始化组件./绑定硬件
     void initTreeViewModel();
     void initTableViewModel();
     void initTabWidget();
-    void initHardWareButton();
     void initProjectButton();
 
 public: // 把编辑/绘制模式下几个按钮按下的逻辑的初始化抽象一下
@@ -81,8 +80,6 @@ private slots: // 硬件信号按钮
     void onDelayTimeButtonClicked();
     void onMotionButtonClicked();
     void onLoopButtonClicked();
-private slots: // 硬件操作按钮
-    void onMarkButtonClicked();
 private slots: //图层按钮
     void onAddLayerButtonClicked();
     void onDeleteLayerButtonClicked();

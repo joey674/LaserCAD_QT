@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
     initEditToolButton();
     initLayerButton();
     initSignalButton();
-    initHardWareButton();
+    // initHardWareButton();
     // initTableViewModel();
     initTitleBar();
     initStatusBar();
@@ -64,18 +64,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent) {
 MainWindow::~MainWindow() {
     // 不用delete,由unique ptr管理内存
     // delete UiManager::getIns().UI();
-}
-
-void MainWindow::initTitleBar() {
-    // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
-    // setAttribute(Qt::WA_TranslucentBackground);
-    // setAttribute(Qt::WA_DeleteOnClose);
-    // this->titleBar = new TitleBar(this);
-    // this->titleBar->move(0, 0);
-    // connect(m_titleBar, SIGNAL(signalButtonMinClicked()), this, SLOT(onButtonMinClicked()));
-    // connect(m_titleBar, SIGNAL(signalButtonRestoreClicked()), this, SLOT(onButtonRestoreClicked()));
-    // connect(m_titleBar, SIGNAL(signalButtonMaxClicked()), this, SLOT(onButtonMaxClicked()));
-    // connect(m_titleBar, SIGNAL(signalButtonCloseClicked()), this, SLOT(onButtonCloseClicked()));
 }
 
 void MainWindow::initGraphicsView() {
@@ -108,8 +96,6 @@ void MainWindow::initGraphicsView() {
 void MainWindow::initTreeViewModel() {
     ProjectManager::getIns().newTreeViewModel();
     auto *view = UiManager::getIns(). treeView;
-    view->setFixedWidth(400);
-    // 连接组件信号
     //  contextmenu
     view->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(view,
@@ -129,425 +115,162 @@ void MainWindow::initTreeViewModel() {
     });
 }
 
+void MainWindow::initTabWidget() {
+    //编辑tab
+    auto *editTabWidget = UiManager::getIns().editTabWidget;
+    connect(editTabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
+        EditController::getIns().setTabIndex(index);
+    });
+}
+
 void MainWindow::initDrawToolButton() {
-    QString buttonStyle = buttonStyle1;
-    // 绘制工具
     QToolButton *drawPolylineButton = UiManager::getIns(). drawPolylineButton;
-    drawPolylineButton->setIcon(QIcon(":/button/drawPolylineButton.svg"));
-    drawPolylineButton->setIconSize(QSize(30, 30));
-    drawPolylineButton->setStyleSheet(buttonStyle);
-    drawPolylineButton->setCheckable(true);
-    drawPolylineButton->setAutoExclusive(false);
-    drawPolylineButton->setToolTip(drawPolylineButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawPolylineButton);
     connect(drawPolylineButton, &QToolButton::clicked, this, &MainWindow::onDrawPolylineButtonClicked);
     //
     QToolButton *drawLineButton = UiManager::getIns(). drawLineButton;
-    drawLineButton->setIcon(QIcon(":/button/drawLineButton.svg"));
-    drawLineButton->setIconSize(QSize(30, 30));
-    drawLineButton->setStyleSheet(buttonStyle);
-    drawLineButton->setCheckable(true);
-    drawLineButton->setAutoExclusive(false);
-    drawLineButton->setToolTip(drawLineButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawLineButton);
     connect(drawLineButton, &QToolButton::clicked, this, &MainWindow::onDrawLineButtonClicked);
     //
     QToolButton *drawArcButton = UiManager::getIns(). drawArcButton;
-    drawArcButton->setIcon(QIcon(":/button/drawArcButton.svg"));
-    drawArcButton->setIconSize(QSize(30, 30));
-    drawArcButton->setStyleSheet(buttonStyle);
-    drawArcButton->setCheckable(true);
-    drawArcButton->setAutoExclusive(false);
-    drawArcButton->setToolTip(drawArcButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawArcButton);
     connect(drawArcButton, &QToolButton::clicked, this, &MainWindow::onDrawArcButtonClicked);
     //
     QToolButton *drawPointButton = UiManager::getIns(). drawPointButton;
-    drawPointButton->setIcon(QIcon(":/button/drawPointButton.svg"));
-    drawPointButton->setIconSize(QSize(30, 30));
-    drawPointButton->setStyleSheet(buttonStyle);
-    drawPointButton->setCheckable(true);
-    drawPointButton->setAutoExclusive(false);
-    UiManager::getIns().registerDrawButton(drawPointButton);
     connect(drawPointButton, &QToolButton::clicked, this, &MainWindow::onDrawPointButtonClicked);
     //
     QToolButton *drawCircleButton = UiManager::getIns(). drawCircleButton;
-    drawCircleButton->setIcon(QIcon(":/button/drawCircleButton.svg"));
-    drawCircleButton->setIconSize(QSize(30, 30));
-    drawCircleButton->setStyleSheet(buttonStyle);
-    drawCircleButton->setCheckable(true);
-    drawCircleButton->setAutoExclusive(false);
-    drawCircleButton->setToolTip(drawCircleButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawCircleButton);
     connect(drawCircleButton, &QToolButton::clicked, this, &MainWindow::onDrawCircleButtonClicked);
     //
     QToolButton *drawEllipseButton = UiManager::getIns(). drawEllipseButton;
-    drawEllipseButton->setIcon(QIcon(":/button/drawEllipseButton.svg"));
-    drawEllipseButton->setIconSize(QSize(30, 30));
-    drawEllipseButton->setStyleSheet(buttonStyle);
-    drawEllipseButton->setCheckable(true);
-    drawEllipseButton->setAutoExclusive(false);
-    drawEllipseButton->setToolTip(drawEllipseButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawEllipseButton);
     connect(drawEllipseButton, &QToolButton::clicked, this, &MainWindow::onDrawEllipseButtonClicked);
     //
     QToolButton *drawRectButton = UiManager::getIns(). drawRectButton;
-    drawRectButton->setIcon(QIcon(":/button/drawRectButton.svg"));
-    drawRectButton->setIconSize(QSize(30, 30));
-    drawRectButton->setStyleSheet(buttonStyle);
-    drawRectButton->setCheckable(true);
-    drawRectButton->setAutoExclusive(false);
-    drawRectButton->setToolTip(drawRectButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawRectButton);
     connect(drawRectButton, &QToolButton::clicked, this, &MainWindow::onDrawRectButtonClicked);
     //
     QToolButton *drawPolygonButton = UiManager::getIns(). drawPolygonButton;
-    drawPolygonButton->setIcon(QIcon(":/button/drawPolygonButton.svg"));
-    drawPolygonButton->setIconSize(QSize(30, 30));
-    drawPolygonButton->setStyleSheet(buttonStyle);
-    drawPolygonButton->setCheckable(true);
-    drawPolygonButton->setAutoExclusive(false);
-    drawPolygonButton->setToolTip(drawPolygonButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawPolygonButton);
     connect(drawPolygonButton, &QToolButton::clicked, this, &MainWindow::onDrawPolygonButtonClicked);
     //
     QToolButton *drawSpiralButton = UiManager::getIns(). drawSpiralButton;
-    drawSpiralButton->setIcon(QIcon(":/button/drawSpiralButton.svg"));
-    drawSpiralButton->setIconSize(QSize(30, 30));
-    drawSpiralButton->setStyleSheet(buttonStyle);
-    drawSpiralButton->setCheckable(true);
-    drawSpiralButton->setAutoExclusive(false);
-    drawSpiralButton->setToolTip(drawSpiralButtonToolTip);
-    UiManager::getIns().registerDrawButton(drawSpiralButton);
     connect(drawSpiralButton, &QToolButton::clicked, this, &MainWindow::onDrawSpiralButtonClicked);
 }
 
 void MainWindow::initEditToolButton() {
-    QString buttonStyle = buttonStyle1;
-    //
     QToolButton *editButton = UiManager::getIns(). editButton;
-    editButton->setIcon(QIcon(":/button/editButton.svg"));
-    editButton->setIconSize(QSize(30, 30));
-    editButton->setStyleSheet(buttonStyle);
-    editButton->setCheckable(true);
-    editButton->setAutoExclusive(false);
-    editButton->setToolTip("编辑模式");
-    UiManager::getIns().registerToolButton(editButton);
     connect(editButton, &QToolButton::clicked, this, &MainWindow::onEditButtonClicked);
     //
     QToolButton *dragSceneButton = UiManager::getIns(). dragSceneButton;
-    dragSceneButton->setIcon(QIcon(":/button/dragSceneButton.svg"));
-    dragSceneButton->setIconSize(QSize(30, 30));
-    dragSceneButton->setStyleSheet(buttonStyle);
-    dragSceneButton->setCheckable(true);
-    dragSceneButton->setAutoExclusive(false);
-    dragSceneButton->setToolTip("拖动画布；左键拖拽");
-    UiManager::getIns().registerToolButton(dragSceneButton);
     connect(dragSceneButton, &QToolButton::clicked, this, &MainWindow::onDragSceneButtonClicked);
     //
     QToolButton *deleteButton = UiManager::getIns(). deleteButton;
-    deleteButton->setIcon(QIcon(":/button/deleteButton.svg"));
-    deleteButton->setIconSize(QSize(30, 30));
-    deleteButton->setStyleSheet(buttonStyle);
-    deleteButton->setCheckable(true);
-    deleteButton->setAutoExclusive(false);
-    deleteButton->setToolTip("删除对象");
-    UiManager::getIns().registerToolButton(deleteButton);
     connect(deleteButton, &QToolButton::clicked, this, &MainWindow::onDeleteButtonClicked);
     //
     QToolButton *drawTestLineButton = UiManager::getIns(). drawTestLineButton;
-    drawTestLineButton->setIcon(QIcon(":/button/drawTestLineButton.svg"));
-    drawTestLineButton->setIconSize(QSize(30, 30));
-    drawTestLineButton->setStyleSheet(buttonStyle);
-    drawTestLineButton->setCheckable(true);
-    drawTestLineButton->setAutoExclusive(false);
-    drawTestLineButton->setToolTip("测试按钮");
-    UiManager::getIns().registerToolButton(drawTestLineButton);
     connect(drawTestLineButton, &QToolButton::clicked, this, &MainWindow::onDrawTestLineButtonClicked);
     //
     QToolButton *centerButton = UiManager::getIns(). centerButton;
-    centerButton->setIcon(QIcon(":/button/centerButton.svg"));
-    centerButton->setIconSize(QSize(30, 30));
-    centerButton->setStyleSheet(buttonStyle);
-    centerButton->setCheckable(true);
-    centerButton->setAutoExclusive(false);
-    centerButton->setToolTip("移动对象到中心点");
-    UiManager::getIns().registerToolButton(centerButton);
     connect(centerButton, &QToolButton::clicked, this, &MainWindow::onCenterButtonClicked);
     //
     // QToolButton *redoButton = UiManager::getIns(). redoButton;
-    // redoButton->setIcon(QIcon(":/button/redoButton.svg"));
-    // redoButton->setIconSize(QSize(30, 30));
-    // redoButton->setStyleSheet(buttonStyle);
-    // redoButton->setCheckable(true);
-    // redoButton->setAutoExclusive(false);
-    // redoButton->setToolTip("");
-    // UiManager::getIns().registerToolButton(redoButton);
     // connect(redoButton, &QToolButton::clicked, this, &MainWindow::onRedoButtonClicked);
     //
     // QToolButton *undoButton = UiManager::getIns(). undoButton;
-    // undoButton->setIcon(QIcon(":/button/undoButton.svg"));
-    // undoButton->setIconSize(QSize(30, 30));
-    // undoButton->setStyleSheet(buttonStyle);
-    // undoButton->setCheckable(true);
-    // undoButton->setAutoExclusive(false);
-    // undoButton->setToolTip("");
-    // UiManager::getIns().registerToolButton(undoButton);
     // connect(undoButton, &QToolButton::clicked, this, &MainWindow::onUndoButtonClicked);
     //
     QToolButton *breakCopiedItemButton = UiManager::getIns(). breakCopiedItemButton;
-    breakCopiedItemButton->setIcon(QIcon(":/button/breakCopiedItemButton.png"));
-    breakCopiedItemButton->setIconSize(QSize(30, 30));
-    breakCopiedItemButton->setStyleSheet(buttonStyle);
-    breakCopiedItemButton->setCheckable(true);
-    breakCopiedItemButton->setAutoExclusive(false);
-    breakCopiedItemButton->setToolTip("打散复制对象组");
-    UiManager::getIns().registerToolButton(breakCopiedItemButton);
     connect(breakCopiedItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakCopiedItemButtonClicked);
     //
     QToolButton *breakContourFillItemButton = UiManager::getIns(). breakContourFillItemButton;
-    breakContourFillItemButton->setIcon(QIcon(":/button/breakContourFillItemButton.png"));
-    breakContourFillItemButton->setIconSize(QSize(30, 30));
-    breakContourFillItemButton->setStyleSheet(buttonStyle);
-    breakContourFillItemButton->setCheckable(true);
-    breakContourFillItemButton->setAutoExclusive(false);
-    breakContourFillItemButton->setToolTip("打散轮廓填充");
-    UiManager::getIns().registerToolButton(breakContourFillItemButton);
     connect(breakContourFillItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakContourFillItemButtonClicked);
     //
     QToolButton *breakHatchFillItemButton = UiManager::getIns(). breakHatchFillItemButton;
-    breakHatchFillItemButton->setIcon(QIcon(":/button/breakHatchFillItemButton.png"));
-    breakHatchFillItemButton->setIconSize(QSize(30, 30));
-    breakHatchFillItemButton->setStyleSheet(buttonStyle);
-    breakHatchFillItemButton->setCheckable(true);
-    breakHatchFillItemButton->setAutoExclusive(false);
-    breakHatchFillItemButton->setToolTip("打散线段填充");
-    UiManager::getIns().registerToolButton(breakHatchFillItemButton);
     connect(breakHatchFillItemButton, &QToolButton::clicked,
             this, &MainWindow::onBreakHatchFillItemButtonClicked);
     /// 粘贴 复制 剪切
     ///
     ///
     QToolButton *cutButton = UiManager::getIns(). cutButton;
-    cutButton->setIcon(QIcon(":/button/cutButton.png"));
-    cutButton->setIconSize(QSize(30, 30));
-    cutButton->setStyleSheet(buttonStyle);
-    cutButton->setCheckable(true);
-    cutButton->setAutoExclusive(false);
-    cutButton->setToolTip("");
-    UiManager::getIns().registerToolButton(cutButton);
     connect(cutButton, &QToolButton::clicked,
             this, &MainWindow::onCutButtonClicked);
     //
     QToolButton *copyButton = UiManager::getIns(). copyButton;
-    copyButton->setIcon(QIcon(":/button/copyButton.png"));
-    copyButton->setIconSize(QSize(30, 30));
-    copyButton->setStyleSheet(buttonStyle);
-    copyButton->setCheckable(true);
-    copyButton->setAutoExclusive(false);
-    copyButton->setToolTip("");
-    UiManager::getIns().registerToolButton(copyButton);
     connect(copyButton, &QToolButton::clicked,
             this, &MainWindow::onCopyButtonClicked);
     //
     QToolButton *pasteButton = UiManager::getIns(). pasteButton;
-    pasteButton->setIcon(QIcon(":/button/pasteButton.png"));
-    pasteButton->setIconSize(QSize(30, 30));
-    pasteButton->setStyleSheet(buttonStyle);
-    pasteButton->setCheckable(true);
-    pasteButton->setAutoExclusive(false);
-    pasteButton->setToolTip("");
-    UiManager::getIns().registerToolButton(pasteButton);
     connect(pasteButton, &QToolButton::clicked,
             this, &MainWindow::onPasteButtonClicked);
     //
     QToolButton *combineButton = UiManager::getIns().combineButton;
-    combineButton->setIcon(QIcon(":/button/combineButton.png"));
-    combineButton->setIconSize(QSize(30, 30));
-    combineButton->setStyleSheet(buttonStyle);
-    combineButton->setCheckable(true);
-    combineButton->setAutoExclusive(false);
-    combineButton->setToolTip("");
-    UiManager::getIns().registerToolButton(combineButton);
     connect(combineButton, &QToolButton::clicked, this, &MainWindow::onCombineButtonClicked);
     //
     QToolButton *breakButton = UiManager::getIns().breakButton;
-    breakButton->setIcon(QIcon(":/button/breakButton.png"));
-    breakButton->setIconSize(QSize(30, 30));
-    breakButton->setStyleSheet(buttonStyle);
-    breakButton->setCheckable(true);
-    breakButton->setAutoExclusive(false);
-    breakButton->setToolTip("");
-    UiManager::getIns().registerToolButton(breakButton);
     connect(breakButton, &QToolButton::clicked, this, &MainWindow::onBreakButtonClicked);
     //
     //
     QToolButton *mirrorHorizontalButton = UiManager::getIns(). mirrorHorizontalButton;
-    mirrorHorizontalButton->setIcon(QIcon(":/button/mirrorHorizontalButton.png"));
-    mirrorHorizontalButton->setIconSize(QSize(30, 30));
-    mirrorHorizontalButton->setStyleSheet(buttonStyle);
-    mirrorHorizontalButton->setCheckable(true);
-    mirrorHorizontalButton->setAutoExclusive(false);
-    mirrorHorizontalButton->setToolTip("");
-    UiManager::getIns().registerToolButton(mirrorHorizontalButton);
     connect(mirrorHorizontalButton, &QToolButton::clicked,
             this, &MainWindow::onMirrorHorizontalButtonClicked);
     //
     QToolButton *mirrorVerticalButton = UiManager::getIns(). mirrorVerticalButton;
-    mirrorVerticalButton->setIcon(QIcon(":/button/mirrorVerticalButton.png"));
-    mirrorVerticalButton->setIconSize(QSize(30, 30));
-    mirrorVerticalButton->setStyleSheet(buttonStyle);
-    mirrorVerticalButton->setCheckable(true);
-    mirrorVerticalButton->setAutoExclusive(false);
-    mirrorVerticalButton->setToolTip("");
-    UiManager::getIns().registerToolButton(mirrorVerticalButton);
     connect(mirrorVerticalButton, &QToolButton::clicked,
             this, &MainWindow::onMirrorVerticalButtonClicked);
 }
 
 void MainWindow::initLayerButton() {
-    auto buttonStyle = buttonStyle1;
-    //
     QToolButton *addLayerButton = UiManager::getIns(). addLayerButton;
-    addLayerButton->setIcon(QIcon(":/button/addLayerButton.png"));
-    addLayerButton->setIconSize(QSize(30, 30));
-    addLayerButton->setStyleSheet(buttonStyle);
-    addLayerButton->setCheckable(false);
-    addLayerButton->setToolTip("");
-    UiManager::getIns().registerToolButton(addLayerButton);
     connect(addLayerButton, &QToolButton::clicked,
             this, &MainWindow::onAddLayerButtonClicked);
     //
     QToolButton *deleteLayerButton = UiManager::getIns(). deleteLayerButton;
-    deleteLayerButton->setIcon(QIcon(":/button/deleteLayerButton.png"));
-    deleteLayerButton->setIconSize(QSize(30, 30));
-    deleteLayerButton->setStyleSheet(buttonStyle);
-    deleteLayerButton->setCheckable(false);
-    deleteLayerButton->setToolTip("");
-    UiManager::getIns().registerToolButton(deleteLayerButton);
     connect(deleteLayerButton, &QToolButton::clicked,
             this, &MainWindow::onDeleteLayerButtonClicked);
     //
     // QToolButton *setLayerColorButton = UiManager::getIns(). setLayerColorButton;
-    // setLayerColorButton->setIcon(QIcon(":/button/setLayerColorButton.png"));
-    // setLayerColorButton->setIconSize(QSize(30, 30));
-    // setLayerColorButton->setStyleSheet(buttonStyle);
-    // setLayerColorButton->setCheckable(false);
-    // setLayerColorButton->setToolTip("");
-    // UiManager::getIns().registerToolButton(setLayerColorButton);
     // connect(breakContourFillItemButton, &QToolButton::clicked,
     //         this, &MainWindow::onBreakContourFillItemButtonClicked);
     //
 }
 
 void MainWindow::initSignalButton() {
-    QString buttonStyle = buttonStyle1;
     QToolButton *digitalInButton = UiManager::getIns(). digitalInButton;
-    digitalInButton->setIcon(QIcon(":/button/digitalInButton.png"));
-    digitalInButton->setIconSize(QSize(30, 30));
-    digitalInButton->setStyleSheet(buttonStyle);
-    digitalInButton->setCheckable(true);
-    digitalInButton->setAutoExclusive(false);
-    digitalInButton->setToolTip("");
-    UiManager::getIns().registerToolButton(digitalInButton);
     connect(digitalInButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onDigitalInButtonClicked);
     //
     QToolButton *digitalOutButton = UiManager::getIns(). digitalOutButton;
-    digitalOutButton->setIcon(QIcon(":/button/digitalOutButton.png"));
-    digitalOutButton->setIconSize(QSize(30, 30));
-    digitalOutButton->setStyleSheet(buttonStyle);
-    digitalOutButton->setCheckable(true);
-    digitalOutButton->setAutoExclusive(false);
-    digitalOutButton->setToolTip("");
-    UiManager::getIns().registerToolButton(digitalOutButton);
     connect(digitalOutButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onDigitalOutButtonClicked);
     //
     QToolButton *doPauseButton = UiManager::getIns(). doPauseButton;
-    doPauseButton->setIcon(QIcon(":/button/doPauseButton.png"));
-    doPauseButton->setIconSize(QSize(30, 30));
-    doPauseButton->setStyleSheet(buttonStyle);
-    doPauseButton->setCheckable(true);
-    doPauseButton->setAutoExclusive(false);
-    doPauseButton->setToolTip("");
-    UiManager::getIns().registerToolButton(doPauseButton);
     connect(doPauseButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onDoPauseButtonClicked);
     //
     QToolButton *delayTimeButton = UiManager::getIns(). delayTimeButton;
-    delayTimeButton->setIcon(QIcon(":/button/delayTimeButton.png"));
-    delayTimeButton->setIconSize(QSize(30, 30));
-    delayTimeButton->setStyleSheet(buttonStyle);
-    delayTimeButton->setCheckable(true);
-    delayTimeButton->setAutoExclusive(false);
-    delayTimeButton->setToolTip("");
-    UiManager::getIns().registerToolButton(delayTimeButton);
     connect(delayTimeButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onDelayTimeButtonClicked);
     //
     QToolButton *motionButton = UiManager::getIns(). motionButton;
-    motionButton->setIcon(QIcon(":/button/motionButton.png"));
-    motionButton->setIconSize(QSize(30, 30));
-    motionButton->setStyleSheet(buttonStyle);
-    motionButton->setCheckable(true);
-    motionButton->setAutoExclusive(false);
-    motionButton->setToolTip("");
-    UiManager::getIns().registerToolButton(motionButton);
     connect(motionButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onMotionButtonClicked);
     //
     QToolButton *loopButton = UiManager::getIns(). loopButton;
-    loopButton->setIcon(QIcon(":/button/loopButton.png"));
-    loopButton->setIconSize(QSize(30, 30));
-    loopButton->setStyleSheet(buttonStyle);
-    loopButton->setCheckable(true);
-    loopButton->setAutoExclusive(false);
-    loopButton->setToolTip("");
-    UiManager::getIns().registerToolButton(loopButton);
     connect(loopButton,
             &QToolButton::clicked,
             this,
             &MainWindow::onLoopButtonClicked);
 }
 
-void MainWindow::initHardWareButton() {
-    //
-    QToolButton *markButton = UiManager::getIns(). markButton;
-    markButton->setIcon(QIcon(":/button/markButton.png"));
-    markButton->setIconSize(QSize(30, 30));
-    markButton->setStyleSheet(buttonStyle1);
-    markButton->setCheckable(false);
-    markButton->setAutoExclusive(false);
-    markButton->setToolTip("");
-    connect(markButton,
-            &QToolButton::clicked,
-            this,
-            &MainWindow::onMarkButtonClicked);
-}
-
 void MainWindow::initProjectButton() {
-    QString buttonStyle = buttonStyle1;
-    //
     QToolButton *createProjectButton = UiManager::getIns(). createProjectButton;
-    createProjectButton->setIcon(QIcon(":/button/createProjectButton.png"));
-    createProjectButton->setIconSize(QSize(30, 30));
-    createProjectButton->setStyleSheet(buttonStyle1);
-    createProjectButton->setCheckable(false);
-    createProjectButton->setAutoExclusive(false);
-    createProjectButton->setToolTip("");
     connect(createProjectButton,
             &QToolButton::clicked,
             this,
@@ -555,22 +278,10 @@ void MainWindow::initProjectButton() {
     //
     //
     QToolButton *openProjectButton = UiManager::getIns(). openProjectButton;
-    openProjectButton->setIcon(QIcon(":/button/openProjectButton.png"));
-    openProjectButton->setIconSize(QSize(30, 30));
-    openProjectButton->setStyleSheet(buttonStyle1);
-    openProjectButton->setCheckable(false);
-    openProjectButton->setAutoExclusive(false);
-    openProjectButton->setToolTip("");
     connect(openProjectButton, &QToolButton::clicked, this, &MainWindow::onOpenProjectButtonClicked);
     //
     //
     QToolButton *saveProjectButton = UiManager::getIns(). saveProjectButton;
-    saveProjectButton->setIcon(QIcon(":/button/saveProjectButton.png"));
-    saveProjectButton->setIconSize(QSize(30, 30));
-    saveProjectButton->setStyleSheet(buttonStyle1);
-    saveProjectButton->setCheckable(false);
-    saveProjectButton->setAutoExclusive(false);
-    saveProjectButton->setToolTip("");
     connect(saveProjectButton, &QToolButton::clicked, this, &MainWindow::onSaveProjectButtonClicked);
 }
 
@@ -590,21 +301,19 @@ void MainWindow::initTableViewModel() {
     // UiManager::getIns(). tableView->setColumnWidth(1, 190);
 }
 
-void MainWindow::initTabWidget() {
-    //编辑tab
-    auto *editTabWidget = UiManager::getIns().editTabWidget;
-    editTabWidget->setFixedWidth(400);
-    connect(editTabWidget->tabBar(), &QTabBar::tabBarClicked, this, [=](int index) {
-        EditController::getIns().setTabIndex(index);
-    });
-
-    // 系统tab/硬件tab
-    auto *systemTabWidget = UiManager::getIns().systemTabWidget;
-    systemTabWidget->setFixedWidth(400);
-    systemTabWidget->addSystemControlTab ();
-    systemTabWidget->addRTCControlTab ();
-    systemTabWidget->addStageControlTab ();
+void MainWindow::initTitleBar() {
+    // this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+    // setAttribute(Qt::WA_TranslucentBackground);
+    // setAttribute(Qt::WA_DeleteOnClose);
+    // this->titleBar = new TitleBar(this);
+    // this->titleBar->move(0, 0);
+    // connect(m_titleBar, SIGNAL(signalButtonMinClicked()), this, SLOT(onButtonMinClicked()));
+    // connect(m_titleBar, SIGNAL(signalButtonRestoreClicked()), this, SLOT(onButtonRestoreClicked()));
+    // connect(m_titleBar, SIGNAL(signalButtonMaxClicked()), this, SLOT(onButtonMaxClicked()));
+    // connect(m_titleBar, SIGNAL(signalButtonCloseClicked()), this, SLOT(onButtonCloseClicked()));
 }
+
+
 ///
 /// \brief MainWindow::keyPressEvent
 /// \param event
@@ -1137,12 +846,6 @@ void MainWindow::onLoopButtonClicked() {
     ItemManager::getIns().addItem("Loop", "Signal");
 }
 
-void MainWindow::onMarkButtonClicked()
-{
-    HardwareController::getIns ().onMarkButtonClicked (this);
-}
-
-
 
 void MainWindow::onAddLayerButtonClicked() {
     SceneController::getIns().addLayer();
@@ -1155,7 +858,6 @@ void MainWindow::onDeleteLayerButtonClicked() {
 void MainWindow::onCreateProjectButtonClicked() {
     ProjectManager::getIns().createProject();
 }
-
 
 void MainWindow::onOpenProjectButtonClicked() {
     QString path = QFileDialog::getOpenFileName(this,
