@@ -701,7 +701,7 @@ public:
     void addRectGeometryTab(const UUID uuid) {
         auto item = ItemManager::getIns().itemMapFind(uuid);
         QPointF topLeft = item->getVertexInScene(0).point;
-        QPointF bottomRight = item->getVertexInScene(1).point;
+        QPointF bottomRight = item->getVertexInScene(2).point;
         QWidget *rectTab = new QWidget();
         QVBoxLayout *mainLayout = new QVBoxLayout(rectTab);
         QFormLayout *formLayout = new QFormLayout();

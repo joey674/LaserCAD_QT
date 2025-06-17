@@ -23,7 +23,7 @@
 // 初始值 真实使用值会实时更新
 const double HandleSize = 2*SCALE_FACTOR;// 所有拖动handle大小
 const double EdgeRectPadding = 2*SCALE_FACTOR;// 边缘外框的padding
-const double BoundingRectPadding = 4*SCALE_FACTOR;// 渲染外框的padding(包含边缘外框)
+const double BoundingRectPadding = 3*SCALE_FACTOR;// 渲染外框的padding(包含边缘外框)
 const double MinEdgeRectSize = 1*SCALE_FACTOR;// 最小边缘外框大小
 const double VertexInputDialogSize = 0.5*SCALE_FACTOR;// 修改点的触发大小
 const double MoveHandleOffset = 0.5*SCALE_FACTOR;// 移动handle的位置偏移

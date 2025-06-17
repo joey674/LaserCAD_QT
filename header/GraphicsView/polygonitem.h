@@ -426,7 +426,7 @@ protected:
                       -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
-        // 包含所有 copiedItem
+        // 包含copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {
                 newRect = newRect.united(item->boundingRect());

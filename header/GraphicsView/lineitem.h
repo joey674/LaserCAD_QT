@@ -281,9 +281,32 @@ public:
         return 2;
     }
     QRectF getBoundingRectBasis() const override {
-        QRectF newRect = QRectF {this->getVertexInScene (0).point,this->getVertexInScene (1).point};
-        return newRect;
+        QPointF p1 = this->getVertexInScene(0).point;
+        QPointF p2 = this->getVertexInScene(1).point;
+
+        qreal left   = std::min(p1.x(), p2.x());
+        qreal right  = std::max(p1.x(), p2.x());
+        qreal top    = std::min(p1.y(), p2.y());
+        qreal bottom = std::max(p1.y(), p2.y());
+
+        qreal width = right - left;
+        qreal height = bottom - top;
+
+        // 如果是横线或竖线，宽或高为 0 则设为 0.01
+        if (width == 0) {
+            left -= 0.05;
+            // right += 0.05;
+            width = 0.1;
+        }
+        if (height == 0) {
+            top -= 0.05;
+            // bottom += 0.05;
+            height = 0.1;
+        }
+
+        return QRectF(QPointF(left, top), QSizeF(width, height));
     }
+
     std::vector<LaserDeviceCommand> getLaserCommand() override
     {
         this->animate ();
@@ -349,7 +372,7 @@ protected:
             -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount,
             abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount,
             abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount);
-        // 包含所有 copiedItem
+        // 包含copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {
                 newRect = newRect.united(item->boundingRect());

@@ -68,8 +68,8 @@ enum GraphicsItemType /* 用于识别type */
 using UUID = QString;
 
 struct MarkParams {
-    double markSpeed = 100;// mm/s
-    double jumpSpeed = 200;// mm/s
+    double markSpeed = 1000;// mm/s
+    double jumpSpeed = 2000;// mm/s
     double  frequency = 100;// kHz
     int operateTime = 1; // 1代表打1次 n代表打n次
     double power = 5;// percentage
@@ -116,7 +116,7 @@ struct MarkParams {
 
 struct DelayParams {
     double laserOnDelay = 0.1; // ms
-    double laserOffDelay = 0.1; // ms
+    double laserOffDelay = 1; // ms
     double markDelay = 0.1; // ms
     double jumpDelay = 0.1; // ms
     double polygonDelay = 0.1; // ms
@@ -152,11 +152,10 @@ struct ContourFillParams {
 };
 
 struct HatchFillParams{
-    double spacing = 0; // 填充线段间隔
-    double startAngle = 0;
+    double spacing = 0; // mm 填充线段间隔
+    double startAngle = 0; // degree
     double sideLength = 0;// 填充线段相对于填充多边形的距离
-    // 均匀打印功能: 可以旋转打印填充线段
-    double accumulateAngle = 0;
+    double accumulateAngle = 0; // 均匀打印功能: 可以旋转打印填充线段
     int operateCount = 1; // 填充次数(设置为0就是不填充)
 };
 
@@ -178,8 +177,8 @@ struct VectorCopyParams {
 struct MatrixCopyParams {
     QPointF hVec= {0,0};
     QPointF vVec= {0,0};
-    double hSpacing = 0;
-    double vSpacing=0;
+    double hSpacing = 0;// mm
+    double vSpacing=0; // mm
     int hCount=0;
     int vCount=0;
     int copiedOrder=0;

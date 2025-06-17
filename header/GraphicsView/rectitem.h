@@ -158,18 +158,11 @@ protected:
             QPointF v1 = m_vertexList[i].point;
             QPointF v2 = m_vertexList[i + 1].point;
             double angle = m_vertexList[i + 1].angle;
-            if (std::abs(angle) < 1e-20) {
-                auto lineItem = std::make_shared < QGraphicsLineItem > (
-                                    QLineF(v1, v2)
-                                );
-                lineItem->setPen(this->getPen());
-                m_paintItemList.push_back(std::move(lineItem));
-            } else {
-                QPainterPath arcPath = createArcPath(v1, v2, angle);
-                auto pathItem = std::make_shared < QGraphicsPathItem > (arcPath);
-                pathItem->setPen(this->getPen());
-                m_paintItemList.push_back(std::move(pathItem));
-            }
+            auto lineItem = std::make_shared < QGraphicsLineItem > (
+                                QLineF(v1, v2)
+                            );
+            lineItem->setPen(this->getPen());
+            m_paintItemList.push_back(std::move(lineItem));
         }
         return true;
     }
@@ -348,14 +341,15 @@ public:
         if (this->m_paintItemList.empty()) {
             return QRectF();
         }
-        QRectF newRect = m_paintItemList[0]->boundingRect();
-        for (auto& item : this->m_paintItemList) {
-            qreal minX = std::min(newRect.left(), item->boundingRect().left());
-            qreal minY = std::min(newRect.top(), item->boundingRect().top());
-            qreal maxX = std::max(newRect.right(), item->boundingRect().right());
-            qreal maxY = std::max(newRect.bottom(), item->boundingRect().bottom());
-            newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
-        }
+        QRectF newRect;
+        QPointF p0  = m_paintItemList[0]->line ().p1 ();
+        QPointF p1  = m_paintItemList[2]->line ().p1 ();
+        qreal minX = std::min(p0.x(), p1.x());
+        qreal minY = std::min(p0.y(), p1.y());
+        qreal maxX = std::max(p0.x(), p1.x());
+        qreal maxY = std::max(p0.y(), p1.y());
+        newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
+
         return newRect;
     }
 
@@ -404,7 +398,12 @@ public:
     std::vector<std::shared_ptr<QGraphicsItem>> getPaintItemList() override
     {
         this->animate();
-        std::vector<std::shared_ptr<QGraphicsItem>> list = m_paintItemList;
+
+        std::vector<std::shared_ptr<QGraphicsItem>> list;
+        list.reserve(m_paintItemList.size() + m_contourFillItemList.size () + m_copiedItemList.size ()+  m_hatchFillItemList.size ());
+        for (const auto& item : m_paintItemList) {
+            list.push_back(std::static_pointer_cast<QGraphicsItem>(item));
+        }
         list.insert(list.end(), m_contourFillItemList.begin(), m_contourFillItemList.end());
         list.insert(list.end(), m_copiedItemList.begin(), m_copiedItemList.end());
         list.insert(list.end(), m_hatchFillItemList.begin(), m_hatchFillItemList.end());
@@ -417,25 +416,15 @@ protected:
             return QRectF();
         }
 
-        QRectF newRect = m_paintItemList[0]->boundingRect();
-        for (auto &item : this->m_paintItemList) {
-            qreal minX = std::min(newRect.left(), item->boundingRect().left());
-            qreal minY = std::min(newRect.top(), item->boundingRect().top());
-            qreal maxX = std::max(newRect.right(), item->boundingRect().right());
-            qreal maxY = std::max(newRect.bottom(), item->boundingRect().bottom());
-            newRect = QRectF(QPointF(minX, minY), QPointF(maxX, maxY));
-        }
-        // if (newRect != QRectF{}) {
-        //     newRect = this->getBoundingRectBasis ();
-        // }
+        QRectF newRect = this->getBoundingRectBasis ();
 
-        // 包含offsetItem
+        // 包含contourFillItem
         newRect = newRect.adjusted(
                       -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount );
-        // 包含所有 copiedItem
+        // 包含copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {
                 newRect = newRect.united(item->boundingRect());
@@ -474,7 +463,7 @@ private:
         Vertex{QPointF(0, 100), 0},
         Vertex{QPointF(0, 0), 0},
     };
-    std::vector < std::shared_ptr < QGraphicsItem>> m_paintItemList;
+    std::vector < std::shared_ptr < QGraphicsLineItem>> m_paintItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_contourFillItemList;
     std::vector < std::shared_ptr < RectItem>> m_copiedItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;

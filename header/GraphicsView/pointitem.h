@@ -309,7 +309,7 @@ protected:
             return QRectF();
         }
         QRectF newRect = this->getBoundingRectBasis ();
-        // 包含所有 copiedItem
+        // 包含copiedItem
         for (const auto &item : m_copiedItemList) {
             if (item) {
                 newRect = newRect.united(item->boundingRect());
