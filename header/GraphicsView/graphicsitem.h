@@ -5,6 +5,7 @@
 #include <QJsonObject>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QPropertyAnimation>
 #include "laserworker.h"
 #include "protocol.h"
 #include "utils.hpp"
@@ -12,7 +13,9 @@
 #include <qgraphicsitem.h>
 #include <qgraphicsscene.h>
 
-class GraphicsItem : public QGraphicsItem {
+class GraphicsItem : public QGraphicsObject {
+    Q_OBJECT
+    Q_PROPERTY(QColor color READ getAnimateColor WRITE setAnimateColor)
 public:
     GraphicsItem() {
         this->m_uuid = GenerateUUID();
@@ -24,6 +27,7 @@ public:
         // 拷贝基础字段;  不可以拷贝copyparams
         this->m_uuid = GenerateUUID();
         this->m_color = other.getColor();
+        this->m_animateColor = other.getColor ();
         this->setFlags(other.flags());
         this->m_markParams = other.m_markParams;
         this->m_delayParams = other.m_delayParams;
@@ -64,6 +68,12 @@ public:
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() {};
     bool setColor(QColor color) {
         this->m_color = color;
+        this->m_animateColor = color;
+        this->animate();
+        return true;
+    };
+    bool setAnimateColor(QColor color) {
+        this->m_animateColor = color;
         this->animate();
         return true;
     };
@@ -93,6 +103,35 @@ public:
         this->m_hatchFillParams = params;
         this->animate ();
         return true;
+    }
+    void setSelectedAnimation(bool isSelected) {
+        if (isSelected) {
+            // 若已有旧动画，先停止
+            if (m_selectAnim) {
+                m_selectAnim->stop();
+                m_selectAnim->deleteLater();
+                m_selectAnim = nullptr;
+            }
+
+            m_selectAnim = new QPropertyAnimation(this, "color");
+            m_selectAnim->setDuration(1000);
+            m_selectAnim->setStartValue(this->m_color);
+            m_selectAnim->setKeyValueAt(0.3, QColor(Qt::lightGray));
+            m_selectAnim->setKeyValueAt(0.5, QColor(Qt::darkGray));
+            m_selectAnim->setKeyValueAt(0.7, QColor(Qt::darkGray));
+            m_selectAnim->setEndValue(this->m_color);
+            m_selectAnim->setEasingCurve(QEasingCurve::InOutSine);
+            m_selectAnim->setLoopCount(-1);
+            m_selectAnim->start();
+
+        } else {
+            if (m_selectAnim) {
+                m_selectAnim->stop();
+                m_selectAnim->deleteLater();
+                m_selectAnim = nullptr;
+            }
+            this->setColor(this->m_color);
+        }
     }
 /// ********************
 /// \brief update
@@ -136,8 +175,11 @@ public:
     const QColor getColor() const {
         return this->m_color;
     }
+    const QColor getAnimateColor() const {
+        return this->m_animateColor;
+    }
     const QPen getPen() const {
-        QPen pen(this->m_color, 1);
+        QPen pen(this->m_animateColor, 1);
         pen.setCosmetic(true);
         return pen;
     }
@@ -194,6 +236,8 @@ protected:
 protected:
     QString m_uuid;
     QColor m_color = Qt::black;
+    QColor m_animateColor= Qt::black;
+    QPropertyAnimation* m_selectAnim = nullptr;
     MarkParams m_markParams;
     DelayParams m_delayParams;
     ContourFillParams m_contourFillParams;

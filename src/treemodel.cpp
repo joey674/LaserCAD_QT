@@ -118,7 +118,7 @@ bool TreeModel::setData(const QModelIndex & nodeIndex, const QVariant & value, i
     // 第3列设置当前layer颜色
     else if (nodeIndex.column() == 3 && role == Qt::BackgroundRole && itemType == "Layer") {
         QColor color = value.value < QColor > ();
-        DEBUG_VAR(color);
+        // DEBUG_VAR(color);
         std::vector < TreeNode * > nodeList = this->getAllChildNodes(nodeIndex);
         nodeList.push_back(node);
         for (const auto node : nodeList) {

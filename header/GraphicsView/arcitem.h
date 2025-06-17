@@ -7,6 +7,7 @@
 #include "protocol.h"
 #include "utils.hpp"
 #include <polylineoffset.hpp>
+#include <QPropertyAnimation>
 #include "combineditem.h"
 
 class ArcItem: public GraphicsItem {
@@ -82,6 +83,7 @@ public:
         this->animate();
         return true;
     }
+
     std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
         // 获取当前最新的copiedItem
         this->animate();
@@ -141,121 +143,8 @@ public:
 
 protected:
     bool updateContourFillItem() override;
-    bool updatePaintItem() override {
-        //
-        this->m_paintItem = nullptr;
-        //
-        auto v1 = m_vertexPair[0].point;
-        auto v2 = m_vertexPair[1].point;
-        double angle = m_vertexPair[1].angle;
-        QPainterPath arcPath = createArcPath(v1, v2, angle);
-        this->m_paintItem = std::make_shared < QGraphicsPathItem > (arcPath);
-        this->m_paintItem->setPen(this->getPen());
-        return true;
-    }
-    bool updateCopiedItem() override {
-        this->m_copiedItemList.clear();
-        //
-        if (this->m_vectorCopyParams.checkEmpty() && this->m_matrixCopyParams.checkEmpty()) {
-            return true;
-        } else if ((!this->m_vectorCopyParams.checkEmpty())
-                   && (!this->m_matrixCopyParams.checkEmpty())) {
-            WARN_MSG("should not happen");
-            return false;
-        }
-        //
-        if (!this->m_vectorCopyParams.checkEmpty()) {
-            m_copiedItemList.clear();
-            //
-            QPointF unitOffset =
-                this->m_vectorCopyParams.dir * this->m_vectorCopyParams.spacing;
-            for (int i = 1; i <= this->m_vectorCopyParams.count; ++i) {
-                // DEBUG_VAR(this->getUUID());
-                auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->clone());
-                QPointF offset = unitOffset * i;
-                copiedItem->m_vertexPair[0].point += offset;
-                copiedItem->m_vertexPair[1].point += offset;
-                copiedItem->animate();
-                // DEBUG_VAR(copiedItem->getUUID());
-                m_copiedItemList.push_back(copiedItem);
-            }
-            return true;
-        }
-        //
-        if (!this->m_matrixCopyParams.checkEmpty()) {
-            m_copiedItemList.clear();
-            QPointF hOffset = this->m_matrixCopyParams.hVec * this->m_matrixCopyParams. hSpacing;
-            QPointF vOffset = this->m_matrixCopyParams.vVec * this->m_matrixCopyParams.vSpacing;
-            std::vector < std::vector < QPointF>> offsetMatrix(this->m_matrixCopyParams.vCount,
-                    std::vector < QPointF > (this->m_matrixCopyParams.hCount));
-            for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
-                for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
-                    offsetMatrix[row][col] = hOffset * col + vOffset * row;
-                }
-            }
-            auto insertCopy = [&](int row, int col) {
-                if (row == 0 && col == 0) {
-                    return;    // 跳过原始位置后开始复制
-                }
-                auto copiedItem = std::dynamic_pointer_cast < ArcItem > (this->clone());
-                if (!copiedItem) {
-                    return;
-                }
-                QPointF offset = offsetMatrix[row][col];
-                copiedItem->m_vertexPair[0].point += offset;
-                copiedItem->m_vertexPair[1].point += offset;
-                copiedItem->animate();
-                m_copiedItemList.push_back(copiedItem);
-            };
-            switch (this->m_matrixCopyParams.copiedOrder) {
-                case 0: // 行优先，蛇形
-                    for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
-                        if (row % 2 == 0) {
-                            for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
-                                insertCopy(row, col);
-                            }
-                        } else {
-                            for (int col = this->m_matrixCopyParams.hCount - 1; col >= 0; --col) {
-                                insertCopy(row, col);
-                            }
-                        }
-                    }
-                    break;
-                case 1: // 列优先，蛇形
-                    for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
-                        if (col % 2 == 0) {
-                            for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
-                                insertCopy(row, col);
-                            }
-                        } else {
-                            for (int row = this->m_matrixCopyParams.vCount - 1; row >= 0; --row) {
-                                insertCopy(row, col);
-                            }
-                        }
-                    }
-                    break;
-                case 2: // 行优先，顺序
-                    for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
-                        for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
-                            insertCopy(row, col);
-                        }
-                    }
-                    break;
-                case 3: // 列优先，顺序
-                    for (int col = 0; col < this->m_matrixCopyParams.hCount; ++col) {
-                        for (int row = 0; row < this->m_matrixCopyParams.vCount; ++row) {
-                            insertCopy(row, col);
-                        }
-                    }
-                    break;
-                default:
-                    WARN_MSG("Unknown copiedOrder value");
-                    break;
-            }
-            return true;
-        }
-        return false;
-    }
+    bool updatePaintItem() override;
+    bool updateCopiedItem() override;
     bool updateHatchFillItem() override;
 
 public:

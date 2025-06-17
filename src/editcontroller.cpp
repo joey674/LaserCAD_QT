@@ -93,6 +93,23 @@ void EditController::updateTableViewModel() {
     // }
 }
 
+void EditController::updateEditRect()
+{
+    // 初始化
+    if (!m_editRect) {
+        m_editRect = std::make_unique<EditRect>();
+        SceneController::getIns().scene->addItem(m_editRect.get());
+    }
+    //
+    if (!m_currentEditItemGroup.empty()) {
+        m_editRect->setEditItems(m_currentEditItemGroup);
+        m_editRect->show();
+    } else {
+        m_editRect->setEditItems(std::vector<std::shared_ptr<GraphicsItem>>());
+        m_editRect->hide();
+    }
+}
+
 void EditController::onTreeViewModelSelectionChanged(
     const QItemSelection &selected,
     const QItemSelection &deselected) {
@@ -194,6 +211,8 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
         treeView->expandToIndex(index);
         // 设置curEditItemGroup,添加item
         this->m_currentEditItemGroup.push_back(item);
+        // 设置动画
+        item->setSelectedAnimation (true);
     } else {
         // 设置treeview中取消选中
         treeView->selectionModel()->select(index,
@@ -207,6 +226,8 @@ void EditController::onGraphicsItemSelectedHasChanged(UUID uuid, bool selected) 
             return ptr == item;
         });
         this->m_currentEditItemGroup.erase(it, this->m_currentEditItemGroup.end());
+        // 设置动画
+        item->setSelectedAnimation (false);
     }
     //
     this->updateTabWidget();

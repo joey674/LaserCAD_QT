@@ -21,13 +21,132 @@ bool ArcItem::updateContourFillItem()
         // 获取结果
         for (const auto &polyline : results) {
             auto item = FromCavcForm(polyline);
-            item->setColor(this->getColor());
+            item->setColor(this->m_color);
             item->setMarkParams (this->getMarkParams ());
             item->setDelayParams (this->getDelayParams ());
             this->m_contourFillItemList.push_back(std::move(item));
         }
     }
     return true;
+}
+
+bool ArcItem::updatePaintItem()
+{
+    //
+    this->m_paintItem = nullptr;
+    //
+    auto v1 = m_vertexPair[0].point;
+    auto v2 = m_vertexPair[1].point;
+    double angle = m_vertexPair[1].angle;
+    QPainterPath arcPath = createArcPath(v1, v2, angle);
+    this->m_paintItem = std::make_shared<QGraphicsPathItem>(arcPath);
+    this->m_paintItem->setPen(this->getPen());
+    return true;
+}
+
+bool ArcItem::updateCopiedItem()
+{
+    this->m_copiedItemList.clear();
+    //
+    if (this->m_vectorCopyParams.checkEmpty() && this->m_matrixCopyParams.checkEmpty()) {
+        return true;
+    } else if ((!this->m_vectorCopyParams.checkEmpty())
+               && (!this->m_matrixCopyParams.checkEmpty())) {
+        WARN_MSG("should not happen");
+        return false;
+    }
+    //
+    if (!this->m_vectorCopyParams.checkEmpty()) {
+        m_copiedItemList.clear();
+        //
+        QPointF unitOffset = this->m_vectorCopyParams.dir * this->m_vectorCopyParams.spacing;
+        for (int i = 1; i <= this->m_vectorCopyParams.count; ++i) {
+            // DEBUG_VAR(this->getUUID());
+            auto copiedItem = std::dynamic_pointer_cast<ArcItem>(this->clone());
+            QPointF offset = unitOffset * i;
+            copiedItem->m_vertexPair[0].point += offset;
+            copiedItem->m_vertexPair[1].point += offset;
+            copiedItem->animate();
+            // DEBUG_VAR(copiedItem->getUUID());
+            m_copiedItemList.push_back(copiedItem);
+        }
+        return true;
+    }
+    //
+    if (!this->m_matrixCopyParams.checkEmpty()) {
+        m_copiedItemList.clear();
+        QPointF hOffset = this->m_matrixCopyParams.hVec * this->m_matrixCopyParams.hSpacing;
+        QPointF vOffset = this->m_matrixCopyParams.vVec * this->m_matrixCopyParams.vSpacing;
+        std::vector<std::vector<QPointF>> offsetMatrix(this->m_matrixCopyParams.vCount+1,
+                                                       std::vector<QPointF>(
+                                                           this->m_matrixCopyParams.hCount+1));
+        for (int row = 0; row < this->m_matrixCopyParams.vCount+1; ++row) {
+            for (int col = 0; col < this->m_matrixCopyParams.hCount+1; ++col) {
+                offsetMatrix[row][col] = hOffset * col + vOffset * row;
+            }
+        }
+        auto insertCopy = [&](int row, int col) {
+            if (row == 0 && col == 0) {
+                return; // 跳过原始位置后开始复制
+            }
+            auto copiedItem = std::dynamic_pointer_cast<ArcItem>(this->clone());
+            if (!copiedItem) {
+                return;
+            }
+            QPointF offset = offsetMatrix[row][col];
+            copiedItem->m_vertexPair[0].point += offset;
+            copiedItem->m_vertexPair[1].point += offset;
+            copiedItem->animate();
+            m_copiedItemList.push_back(copiedItem);
+        };
+        switch (this->m_matrixCopyParams.copiedOrder) {
+        case 0: // 行优先，蛇形
+            for (int row = 0; row < this->m_matrixCopyParams.vCount+1; ++row) {
+                if (row % 2 == 0) {
+                    for (int col = 0; col < this->m_matrixCopyParams.hCount+1; ++col) {
+                        insertCopy(row, col);
+                    }
+                } else {
+                    for (int col = this->m_matrixCopyParams.hCount+1 - 1; col >= 0; --col) {
+                        insertCopy(row, col);
+                    }
+                }
+            }
+            break;
+        case 1: // 列优先，蛇形
+            for (int col = 0; col < this->m_matrixCopyParams.hCount+1; ++col) {
+                if (col % 2 == 0) {
+                    for (int row = 0; row < this->m_matrixCopyParams.vCount+1; ++row) {
+                        insertCopy(row, col);
+                    }
+                } else {
+                    for (int row = this->m_matrixCopyParams.vCount+1 - 1; row >= 0; --row) {
+                        insertCopy(row, col);
+                    }
+                }
+            }
+            break;
+        case 2: // 行优先，顺序
+            for (int row = 0; row < this->m_matrixCopyParams.vCount+1; ++row) {
+                for (int col = 0; col < this->m_matrixCopyParams.hCount+1; ++col) {
+                    insertCopy(row, col);
+                }
+            }
+            break;
+        case 3: // 列优先，顺序
+            for (int col = 0; col < this->m_matrixCopyParams.hCount+1; ++col) {
+                for (int row = 0; row < this->m_matrixCopyParams.vCount+1; ++row) {
+                    insertCopy(row, col);
+                }
+            }
+            break;
+        default:
+            WARN_MSG("Unknown copiedOrder value");
+            break;
+        }
+        return true;
+    }
+    return false;
 }
 
 bool ArcItem::updateHatchFillItem()

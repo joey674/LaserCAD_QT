@@ -34,21 +34,7 @@ private:
 public: // 更新对应的编辑Widget
     void updateTabWidget();
     void updateTableViewModel();
-    void updateEditRect() {
-        // 初始化
-        if (!m_editRect) {
-            m_editRect = std::make_unique < EditRect > ();
-            SceneController::getIns().scene->addItem(m_editRect.get());
-        }
-        //
-        if (!m_currentEditItemGroup.empty()) {
-            m_editRect->setEditItems(m_currentEditItemGroup);
-            m_editRect->show();
-        } else {
-            m_editRect->setEditItems(std::vector < std::shared_ptr < GraphicsItem>>());
-            m_editRect->hide();
-        }
-    }
+    void updateEditRect();
 
 public: // 编辑回调
     /// \brief onTabWidgetCopyTabVectorCopy

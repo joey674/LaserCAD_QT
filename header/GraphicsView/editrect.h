@@ -52,8 +52,8 @@ public:
             setRotation(0);
             return;
         }
-        QRectF combinedRect = m_editItems[0]->getBoundingRectBasis();
-        for (size_t i = 1; i < m_editItems.size(); ++i) {
+        QRectF combinedRect;
+        for (size_t i = 0; i < m_editItems.size(); ++i) {
             QRectF basisRect = m_editItems[i]->getBoundingRectBasis();
             combinedRect = combinedRect.united(basisRect);
         }
