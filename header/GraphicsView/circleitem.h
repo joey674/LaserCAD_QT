@@ -117,7 +117,7 @@ protected:
         }
         for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm();
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input,
                                                                                (-1)* this->m_contourFillParams.offset * offsetIndex);
@@ -274,16 +274,11 @@ protected:
     };
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
         QPointF p1, p2;
-        if (inSceneCoord) {
-            p1 = this->getVertexInScene(0).point - QPointF{this->m_radius, 0};
-            p2 = this->getVertexInScene(1).point + QPointF{this->m_radius, 0};
-        } else {
             p1 = m_center.point - QPointF{this->m_radius, 0};
             p2 = m_center.point + QPointF{this->m_radius, 0};
-        }
         input.addVertex(p1.x(), p1.y(), -1);
         input.addVertex(p2.x(), p2.y(), -1);
         return input;

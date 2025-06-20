@@ -227,7 +227,7 @@ protected:
     bool updateHatchFillItem() override {return true;};
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         return cavc::Polyline < double > ();
     }
     Vertex getVertexInScene(const int index) const override {

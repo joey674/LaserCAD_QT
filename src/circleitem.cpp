@@ -10,7 +10,7 @@ bool CircleItem::updateHatchFillItem() {
     }
 
     // 输入cavc库
-    auto input = this->getCavcForm(true);
+    auto input = this->getCavcForm();
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();

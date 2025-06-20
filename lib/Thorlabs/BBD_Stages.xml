@@ -1,0 +1,5844 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<data-set xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Records>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>127</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>12000001</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>100</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>200000</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>9358541</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDSM100</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>1342177</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>2400</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>4500</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>4000</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>6</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4097</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>30000</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>22938</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>938</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDSM100</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>203</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>123456</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>100</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>200000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>90000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>9358541</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDS100</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>1342177</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>2400</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>4500</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>4000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>6</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4097</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>30000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>22938</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>938</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS100</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>11000128</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>220</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>4400000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>2200000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>2200000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>68719</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>204552</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>40265320</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDS220</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>65535</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>6554</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4144</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>48</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>12800</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>19531</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Actual (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS220</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>149</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>7000204</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>600</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>12000000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>6000000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>68719</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>204552</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>40265320</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDS600</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>65535</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>2032</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>12000</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4144</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>180</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>180</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>9175</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>16390</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>25062</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Actual (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS600</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>92</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>17</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>10000028</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>75</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>1500000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>750000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>750000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>27487</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>34092</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>33553920</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>MLS203 Y Axis</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>65</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>800</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>115</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>3</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>200000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4145</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>4800</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>19531</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>MLS203 Y</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>238</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>16</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>10000007</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>110</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>2200000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>1100000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>1100000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>27487</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>34092</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>33553920</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>MLS203 X Axis</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>175</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>6554</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>5</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>200000</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>48</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>4800</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>19531</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>MLS203 X</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>180</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>21</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>13000001</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>4294967295</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>-1073741824</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>1073741824</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>-1000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>2000000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>67108864</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDR05</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>67108864</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>38178</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>38178</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>65530</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>120</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>25535</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>327670</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4145</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>1200</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>1200</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>800</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>3125</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>16767</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20767</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>Off (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR05</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>156</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>21</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>13000300</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>4294967295</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>-1073741824</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>1073741824</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>-1000</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>1440000</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>35995</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>35995</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>48318382</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDR25</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>48318382</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>28796</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>28796</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>65530</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>120</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>25535</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>327670</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>48</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>1500</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>1500</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>1500</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>2250</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>16767</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20767</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>Off (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR25</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>    <record>
+      <Stage>DDR100</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>233</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>21</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>77000007</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>3276800</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>-2146304000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>2146304000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>3276800</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>45035</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>2000000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>65969691</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDR100</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>64803440</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>42500</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>42500</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>32768</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>3276</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>800</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>120</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>2</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>780000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>48</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>30</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>809</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>30</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>809</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>30</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>809</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>17600</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>4800</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>3200</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>4902</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9800</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>Off (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDR100</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>7000204</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>6000000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>3000000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>68719</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>204552</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>40265320</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDS300</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>65535</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>300</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>2032</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>12000</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4144</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>180</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>180</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>290</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>15</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>9175</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>16390</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>25062</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Actual (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS300</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>238</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>16</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>10000007</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>1000000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>500000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>500000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>34092</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>34092</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>53687091</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDSM50</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>13421773</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>13744</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922337</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>150</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>175</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>6554</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>1000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>5</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>200000</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>48</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>35</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>4800</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>9375</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>19531</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>49</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>9830</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>S-curve (2)</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDSM50</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>151</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>18</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>123456</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>100000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>9358541</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>DDS050</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>1342177</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>2400</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>4500</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>4000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>6</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4097</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>30000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>22938</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>938</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>DDS050</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <!--CTV12 START-->
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>0</Id>
+      <Name>Data set type</Name>
+      <Data>37</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>1</Id>
+      <Name>Checksum for all the above</Name>
+      <Data>151</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>2</Id>
+      <Name>Stage model number and axis</Name>
+      <Data>9999</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>4</Id>
+      <Name>Serial number</Name>
+      <Data>123456</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>8</Id>
+      <Name>Maximum travel</Name>
+      <Data>12</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>12</Id>
+      <Name>Min pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>16</Id>
+      <Name>Max pos (encoder) reading</Name>
+      <Data>24000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>20</Id>
+      <Name>Home pos (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>24</Id>
+      <Name>Home offset (encoder) reading</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>28</Id>
+      <Name>Home reference marker position</Name>
+      <Data>50000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>32</Id>
+      <Name>Encoder count per unit</Name>
+      <Data>2000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>36</Id>
+      <Name>Max acceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>40</Id>
+      <Name>Max deceleration</Name>
+      <Data>10909</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>44</Id>
+      <Name>Max velocity</Name>
+      <Data>9358541</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>48</Id>
+      <Name>Description</Name>
+      <Data>CTV12</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>64</Id>
+      <Name>Reserved</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>68</Id>
+      <Name>InitVelocity</Name>
+      <Data>1342177</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>72</Id>
+      <Name>InitAcceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>76</Id>
+      <Name>InitDeceleration</Name>
+      <Data>1374</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>80</Id>
+      <Name>InitJerk</Name>
+      <Data>922233</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>84</Id>
+      <Name>Position Error Limit</Name>
+      <Data>6553</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>88</Id>
+      <Name>Settle Time</Name>
+      <Data>197</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>90</Id>
+      <Name>Settle Window</Name>
+      <Data>4</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>92</Id>
+      <Name>Tracking Window</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>94</Id>
+      <Name>Start Velocity</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>98</Id>
+      <Name>Encoder To Step Ratio Counts</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>100</Id>
+      <Name>Encoder To Step Ratio Steps</Name>
+      <Data>1</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>102</Id>
+      <Name>Position loop Kp</Name>
+      <Data>2400</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>104</Id>
+      <Name>Position loop Kd</Name>
+      <Data>4500</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>106</Id>
+      <Name>Position loop Ki</Name>
+      <Data>1800</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>108</Id>
+      <Name>Position loop Kout</Name>
+      <Data>4000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>110</Id>
+      <Name>Position loop Kaff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>112</Id>
+      <Name>Position loop Kvff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>114</Id>
+      <Name>Motor Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>116</Id>
+      <Name>Derivative Time</Name>
+      <Data>6</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>118</Id>
+      <Name>Integration Limit</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>122</Id>
+      <Name>Signal Sense</Name>
+      <Data>4097</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>124</Id>
+      <Name>Current Loop PhA Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>126</Id>
+      <Name>Current Loop PhA Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>128</Id>
+      <Name>Current Loop PhA Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>130</Id>
+      <Name>Current Loop PhB Kp</Name>
+      <Data>20</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>132</Id>
+      <Name>Current Loop PhB Ki</Name>
+      <Data>80</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>134</Id>
+      <Name>Current Loop PhB Ilim</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>136</Id>
+      <Name>Current Loop Settled Kp</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>138</Id>
+      <Name>Current Loop Settled Ki</Name>
+      <Data>40</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>140</Id>
+      <Name>Current Loop Settled Ilim</Name>
+      <Data>30000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>142</Id>
+      <Name>Current Loop Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>144</Id>
+      <Name>Current Loop Settled Kff</Name>
+      <Data>500</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>146</Id>
+      <Name>Current Loop Non-Settled Integral Deadband</Name>
+      <Data>50</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>148</Id>
+      <Name>Current Loop Non-Settled Kff</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>150</Id>
+      <Name>Holding Current (motor limit)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>152</Id>
+      <Name>Holding Current (delay)</Name>
+      <Data>32767</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>154</Id>
+      <Name>Current Foldback current limit</Name>
+      <Data>22938</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>156</Id>
+      <Name>Current Feedback energy limit</Name>
+      <Data>19660</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>158</Id>
+      <Name>Phase Counts</Name>
+      <Data>938</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>160</Id>
+      <Name>Phase Initialize Time</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>162</Id>
+      <Name>Phase Initialize Power</Name>
+      <Data>9804</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>164</Id>
+      <Name>Pulse Phase Initialize Ramp Time</Name>
+      <Data>0</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>166</Id>
+      <Name>Pulse Phase Initialize +Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>168</Id>
+      <Name>Pulse Phase Initialize -Pulse Time</Name>
+      <Data>70</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>170</Id>
+      <Name>Pulse Phase Init Level</Name>
+      <Data>20000</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173</Id>
+      <Name>Phase Correction Mode</Name>
+      <Data>Disable (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173.1</Id>
+      <Name>Phase Initialize Mode</Name>
+      <Data>Pulse (2)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173.3</Id>
+      <Name>Commutation Mode</Name>
+      <Data>Sinusoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173.4</Id>
+      <Name>Phase Prescale</Name>
+      <Data>1/64 (1)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173.6</Id>
+      <Name>Current Ctrl Mode Options</Name>
+      <Data>Phase A/B Loops (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>173.7</Id>
+      <Name>Current Ctrl Gain Scheduling</Name>
+      <Data>On (1)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>172</Id>
+      <Name>Motion Complete Mode Options</Name>
+      <Data>Commanded (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>172.1</Id>
+      <Name>Stop Mode Options</Name>
+      <Data>Smooth (2)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>172.3</Id>
+      <Name>Capture Source</Name>
+      <Data>Index (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>172.5</Id>
+      <Name>Actual Position Units</Name>
+      <Data>Steps (1)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>172.6</Id>
+      <Name>Profile Mode</Name>
+      <Data>Trapezoidal (0)</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>175</Id>
+      <Name>Pos Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>174</Id>
+      <Name>Neg Limit Switch Action</Name>
+      <Data>8</Data>
+    </record>
+    <record>
+      <Stage>CTV12</Stage>
+      <Id>176</Id>
+      <Name>PWM frequency</Name>
+      <Data>10000</Data>
+    </record>
+    <!--CTV12 END-->
+  </Records>
+</data-set>

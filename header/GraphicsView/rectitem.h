@@ -103,30 +103,7 @@ public:
         m_contourFillItemList.clear();
         return result;
     };
-    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
-        DEBUG_MSG("break hatch");
-        std::vector < std::shared_ptr < GraphicsItem>> result;
-        //
-        auto startAngle = this->m_hatchFillParams.startAngle;
-        for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
-            this->updateHatchFillItem ();
-            auto combinedItem = std::make_shared<CombinedItem>();
-            // 转换类型
-            std::vector < std::shared_ptr < GraphicsItem>> graphicsItems;
-            graphicsItems.reserve(this->m_hatchFillItemList.size());
-            for (const auto& item : this->m_hatchFillItemList) {
-                graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
-            }
-            // 装进combinedItem,然后装进result
-            combinedItem->combinedItem (graphicsItems);
-            result.push_back (combinedItem);
-            this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
-        }
-        DEBUG_VAR(result.size ());
-        this->m_hatchFillParams.startAngle = startAngle;
-        this->m_hatchFillParams.operateCount = 0;
-        return result;
-    };
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override;;
 
 protected:
     bool updateContourFillItem() override {
@@ -138,7 +115,7 @@ protected:
 
         for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm();
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, (-1)*this->m_contourFillParams.offset * offsetIndex);
             // 获取结果
@@ -278,18 +255,15 @@ protected:
     bool updateHatchFillItem() override;
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
         int count = this->getVertexCount();
         for (int i = 0; i < count; ++i) {
             QPointF p1, p2;
-            if (inSceneCoord) {
-                p1 = this->getVertexInScene(i).point;
-                p2 = this->getVertexInScene((i + 1) % count).point;
-            } else {
+
                 p1 = this->m_vertexList[i].point;
                 p2 = this->m_vertexList[(i + 1) % count].point;
-            }
+
             auto angle = this->m_vertexList[(i + 1) % count].angle;
             if (angle > 180.01 || angle < -180.01) {
                 auto sign = angle > 0 ? 1 : -1;

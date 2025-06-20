@@ -3,15 +3,43 @@
 #include <polyline.hpp>
 #include <polylineoffset.hpp>
 #include <polylinecombine.hpp>
+#include "combineditem.h"
 
-bool RectItem::updateHatchFillItem() {
+std::vector<std::shared_ptr<GraphicsItem>> RectItem::breakHatchFillItem()
+{
+    DEBUG_MSG("break hatch");
+    std::vector<std::shared_ptr<GraphicsItem>> result;
+    //
+    auto startAngle = this->m_hatchFillParams.startAngle;
+    for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+        this->updateHatchFillItem();
+        auto combinedItem = std::make_shared<CombinedItem>();
+        // 转换类型
+        std::vector<std::shared_ptr<GraphicsItem>> graphicsItems;
+        graphicsItems.reserve(this->m_hatchFillItemList.size());
+        for (const auto &item : this->m_hatchFillItemList) {
+            graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
+        }
+        // 装进combinedItem,然后装进result
+        combinedItem->combinedItem(graphicsItems);
+        result.push_back(combinedItem);
+        this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+    }
+    DEBUG_VAR(result.size());
+    this->m_hatchFillParams.startAngle = startAngle;
+    this->m_hatchFillParams.operateCount = 0;
+    return result;
+}
+
+bool RectItem::updateHatchFillItem()
+{
     this->m_hatchFillItemList.clear();
     if (m_hatchFillParams.operateCount == 0 || m_hatchFillParams.spacing == 0){
         return true;
     }
 
     // 输入cavc库
-    auto input = this->getCavcForm(true);
+    auto input = this->getCavcForm();
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();

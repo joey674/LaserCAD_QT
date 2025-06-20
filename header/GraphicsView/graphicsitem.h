@@ -16,6 +16,7 @@
 class GraphicsItem : public QGraphicsObject {
     Q_OBJECT
     Q_PROPERTY(QColor color READ getAnimateColor WRITE setAnimateColor)
+    friend class CombinedItem;
 public:
     GraphicsItem() {
         this->m_uuid = GenerateUUID();
@@ -58,11 +59,6 @@ public:
     /// \brief setCenterInScene
     /// \param point 这里输入的是scene真实位置；不考虑锚点位置;禁止直接修改vertex
     virtual bool setCenterInScene(const QPointF point) = 0;
-    virtual bool setOffsetParams(ContourFillParams params) {
-        this->m_contourFillParams = params;
-        this->animate();
-        return true;
-    }
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() = 0;
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() = 0;
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() {};
@@ -99,6 +95,11 @@ public:
         this->animate();
         return true;
     };
+    bool setFillParams(ContourFillParams params) {
+        this->m_contourFillParams = params;
+        this->animate();
+        return true;
+    }
     bool setFillParams(HatchFillParams params){
         this->m_hatchFillParams = params;
         this->animate ();
@@ -163,7 +164,7 @@ protected:
 /// 只获取信息
 /// ********************
 public:
-    virtual cavc::Polyline < double > getCavcForm(bool inSceneCoord) const = 0;
+    virtual cavc::Polyline < double > getCavcForm() const = 0;
     /// \brief getVertexInScene
     /// \return 这里返回的是在scene中vertex的真实位置;不考虑锚点位置;禁止直接修改vertex
     virtual Vertex getVertexInScene(const int index) const = 0;

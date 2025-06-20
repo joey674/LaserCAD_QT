@@ -300,7 +300,7 @@ protected:
     bool updateHatchFillItem() override{ return true;} // 螺旋线没有Hatch
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > polyline;
         if (m_startRadius >= m_endRadius || m_turns <= 0 || m_angleStepDeg <= 0) {
             return polyline;
@@ -309,7 +309,7 @@ public:
         const double angleStepRad = m_angleStepDeg * M_PI / 180.0;
         const double totalSteps = totalAngleDeg / m_angleStepDeg;
         const double radiusStep = (m_endRadius - m_startRadius) / totalSteps;
-        const QPointF center = inSceneCoord ? getCenterInScene() : m_center.point;
+        const QPointF center = m_center.point;
         for (int i = 0; i <= totalSteps; ++i) {
             double angle = i * angleStepRad;
             double radius = m_startRadius + radiusStep * i;

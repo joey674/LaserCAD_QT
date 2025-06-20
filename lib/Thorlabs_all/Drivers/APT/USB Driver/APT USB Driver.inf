@@ -1,0 +1,120 @@
+; APT USB Driver.inf
+; Copyright © 2015-2019 Thorlabs Ltd.
+; Copyright © 2000-2017 Future Technology Devices International Limited
+;
+
+[Version]
+Signature="$Windows NT$"
+DriverPackageType=PlugAndPlay
+DriverPackageDisplayName=%DESC%
+Class=USB
+ClassGUID={36fc9e60-c465-11cf-8056-444553540000}
+Provider=%Ftdi%
+CatalogFile="APT USB Driver.cat"
+DriverVer=08/16/2017,2.12.28.1
+
+[SourceDisksNames]
+1=%DriversDisk%,"APT USB Driver.cab",,
+
+[SourceDisksFiles]
+ftdibus.sys = 1,i386
+ftbusui.dll = 1,i386
+ftd2xx.dll = 1,i386
+FTLang.Dll = 1,i386
+
+[SourceDisksFiles.amd64]
+ftdibus.sys = 1,amd64
+ftbusui.dll = 1,amd64
+ftd2xx64.dll = 1,amd64
+ftd2xx.dll = 1,i386
+FTLang.Dll = 1,amd64
+
+[DestinationDirs]
+FtdiBus.NT.Copy = 10,system32\drivers
+FtdiBus.NT.Copy2 = 10,system32
+FtdiBus.NTamd64.Copy = 10,system32\drivers
+FtdiBus.NTamd64.Copy2 = 10,system32
+FtdiBus.NTamd64.Copy3 = 10,syswow64
+
+[Manufacturer]
+%Ftdi%=FtdiHw,NTamd64
+
+[FtdiHw]
+%USB\VID_0403&PID_FAF0.DeviceDesc%=FtdiBus.NT,USB\VID_0403&PID_FAF0
+
+[FtdiHw.NTamd64]
+%USB\VID_0403&PID_FAF0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_0403&PID_FAF0
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+[FtdiBus.NT]
+CopyFiles=FtdiBus.NT.Copy,FtdiBus.NT.Copy2
+AddReg=FtdiBus.NT.AddReg
+
+[FtdiBus.NTamd64]
+CopyFiles=FtdiBus.NTamd64.Copy,FtdiBus.NTamd64.Copy2,FtdiBus.NTamd64.Copy3
+AddReg=FtdiBus.NT.AddReg
+
+[FtdiBus.NT.Services]
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+
+[FtdiBus.NTamd64.Services]
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+
+[FtdiBus.NT.AddService]
+DisplayName = %SvcDesc%
+ServiceType = 1 ; SERVICE_KERNEL_DRIVER
+StartType = 3 ; SERVICE_DEMAND_START
+ErrorControl = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary = %10%\system32\drivers\ftdibus.sys
+LoadOrderGroup = Base
+
+[FtdiBus.NT.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,ftdibus.sys
+HKR,,EnumPropPages32,,"ftbusui.dll,FTBUSUIPropPageProvider"
+
+[FtdiBus.NT.EventLog_Inst]
+AddReg = FtdiBus.NT.EventLog_Inst.AddReg
+
+[FtdiBus.NT.EventLog_Inst.AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\ftdibus.sys"
+HKR,,TypesSupported,0x00010001,7
+
+[FtdiBus.NT.HW] 
+AddReg=FtdiBus.NT.HW.AddReg 
+
+[FtdiBus.NTamd64.HW] 
+AddReg=FtdiBus.NT.HW.AddReg 
+
+[FtdiBus.NT.HW.AddReg] 
+HKR,,"ConfigData",0x00010001,1 
+   
+[FtdiBus.NT.Copy]
+ftdibus.sys
+
+[FtdiBus.NT.Copy2]
+ftbusui.dll
+ftd2xx.dll
+FTLang.dll
+
+[FtdiBus.NTamd64.Copy]
+ftdibus.sys
+
+[FtdiBus.NTamd64.Copy2]
+ftbusui.dll
+ftd2xx.dll,ftd2xx64.dll
+FTLang.dll
+
+[FtdiBus.NTamd64.Copy3]
+ftd2xx.dll
+
+[Strings]
+Ftdi="Thorlabs"
+DESC="APT USB Driver Package"
+DriversDisk="APT USB Drivers"
+USB\VID_0403&PID_FAF0.DeviceDesc="APT USB Device"
+
+SvcDesc="USB Serial Converter Driver"
+ClassName="USB"

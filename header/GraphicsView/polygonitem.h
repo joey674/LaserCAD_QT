@@ -161,7 +161,7 @@ protected:
         }
         for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm();
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results
                 = cavc::parallelOffset(input, this->m_contourFillParams.offset * offsetIndex);
@@ -304,14 +304,14 @@ protected:
     bool updateHatchFillItem() override;
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > polyline;
         if (m_edgeCount < 3 || m_radius <= 0) {
             return polyline;
         }
         const double angleStep = 2 * M_PI / m_edgeCount;
         const double rotateRad = m_rotateAngle * M_PI / 180.0;
-        QPointF center = inSceneCoord ? this->getCenterInScene() : m_center.point;
+        QPointF center =  m_center.point;
         for (uint i = 0; i < m_edgeCount; ++i) {
             double angle = rotateRad + angleStep * i;
             QPointF p = center + QPointF(std::cos(angle) * m_radius, std::sin(angle) * m_radius);

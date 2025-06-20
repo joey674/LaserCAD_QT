@@ -7,7 +7,7 @@
 #include <polylineoffset.hpp>
 #include <vector.hpp>
 #include <QJsonArray>
-#include "combineditem.h"
+
 
 class PolylineItem: public GraphicsItem {
 public:
@@ -119,30 +119,7 @@ public:
         m_contourFillItemList.clear();
         return result;
     };
-    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
-        DEBUG_MSG("break hatch");
-        std::vector < std::shared_ptr < GraphicsItem>> result;
-        //
-        auto startAngle = this->m_hatchFillParams.startAngle;
-        for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
-            this->updateHatchFillItem ();
-            auto combinedItem = std::make_shared<CombinedItem>();
-            // 转换类型
-            std::vector < std::shared_ptr < GraphicsItem>> graphicsItems;
-            graphicsItems.reserve(this->m_hatchFillItemList.size());
-            for (const auto& item : this->m_hatchFillItemList) {
-                graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
-            }
-            // 装进combinedItem,然后装进result
-            combinedItem->combinedItem (graphicsItems);
-            result.push_back (combinedItem);
-            this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
-        }
-        DEBUG_VAR(result.size ());
-        this->m_hatchFillParams.startAngle = startAngle;
-        this->m_hatchFillParams.operateCount = 0;
-        return result;
-    };
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override;
 
 protected:
     bool updateContourFillItem() override;
@@ -280,18 +257,13 @@ protected:
     bool updateHatchFillItem() override;
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
         int count = this->getVertexCount();
         for (int i = 0; i < count; ++i) {
             QPointF p1, p2;
-            if (inSceneCoord) {
-                p1 = this->getVertexInScene(i).point;
-                p2 = this->getVertexInScene((i + 1) % count).point;
-            } else {
                 p1 = this->m_vertexList[i].point;
                 p2 = this->m_vertexList[(i + 1) % count].point;
-            }
             auto angle = this->m_vertexList[(i + 1) % count].angle;
             // DEBUG_VAR(QString("V%1: (%2, %3), angle=%4")
             //           .arg(i).arg(p1.x ()).arg(p1.y ()).arg(angle));

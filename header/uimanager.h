@@ -16,6 +16,9 @@
 #include  "motionstagedevicegoogol.h"
 #include "motionstagedevicethorlabs.h"
 #include "motionstagedevicetest.h"
+#include "laserdevicertc5.h"
+#include "hardwarecontroller.h"
+#include "laserdevicetest.h"
 
 class UiManager {
 private:
@@ -324,6 +327,8 @@ private:
         container1Layout->addWidget(treeView, /*stretch=*/1);
 
         editTabWidget = new TabWidget(page); // 下方TabWidget
+        editTabWidget->setMinimumWidth (400);
+        editTabWidget->setMinimumHeight (600);
         container1Layout->addWidget(editTabWidget, /*stretch=*/1);
 
         widgetBLayout3->addWidget(container1, /*stretch=*/1);
@@ -375,7 +380,7 @@ private:
         mainLayout->addWidget(wrapWithTitle("System Control", createSystemControlWidget()));
         mainLayout->addWidget(createVerticalLine());
 
-        mainLayout->addWidget(wrapWithTitle("Stage Control", createStageControlWidget()));
+        mainLayout->addWidget(wrapWithTitle("Stage Control", createMotionStageControlWidget()));
         mainLayout->addWidget(createVerticalLine());
 
         mainLayout->addStretch();
@@ -818,7 +823,9 @@ private:
         QWidget *widget = new QWidget();
         QVBoxLayout *mainLayout = new QVBoxLayout(widget);
 
-        // ========== Hardware Status Group ==========
+        /* *******************************************************************************
+         Hardware Status Group
+        ******************************************************************************* */
         QGroupBox *hardwareStatusGroup = new QGroupBox("Hardware Status");
         QVBoxLayout *hardwareLayout = new QVBoxLayout(hardwareStatusGroup);
 
@@ -842,7 +849,9 @@ private:
 
         mainLayout->addWidget(hardwareStatusGroup);
 
-        // ========== 控制参数输入 ==========
+        /* *******************************************************************************
+         参数输入
+        ******************************************************************************* */
         QGroupBox *controlGroup = new QGroupBox("Control Parameters");
         QHBoxLayout *controlLayout = new QHBoxLayout(controlGroup);
         mainLayout->addWidget(controlGroup);
@@ -871,7 +880,9 @@ private:
         // 填充空白
         mainLayout->addStretch ();
 
-        // ========== 状态监控定时器 ==========
+        /* *******************************************************************************
+         状态定时监视器
+        ******************************************************************************* */
         QTimer *statusTimer = new QTimer(widget);
         statusTimer->setInterval(1000);
         QObject::connect(statusTimer, &QTimer::timeout, widget, [=]() {
@@ -892,7 +903,7 @@ private:
         return widget;
     };
 
-    QWidget* createStageControlWidget()
+    QWidget* createMotionStageControlWidget()
     {
         QWidget* widget = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(widget);
@@ -983,14 +994,14 @@ private:
         QGroupBox* cardBox = new QGroupBox("Control Card:");
         QHBoxLayout* cardLayout = new QHBoxLayout(cardBox);
 
+        QRadioButton* testRadio = new QRadioButton("Test");
         QRadioButton* rtc5Radio = new QRadioButton("RTC5");
         QRadioButton* rtc6Radio = new QRadioButton("RTC6");
-        QRadioButton* testRadio = new QRadioButton("Test");
-        rtc5Radio->setChecked(true);
+        testRadio->setChecked(true);
 
+        cardLayout->addWidget(testRadio);
         cardLayout->addWidget(rtc5Radio);
         cardLayout->addWidget(rtc6Radio);
-        cardLayout->addWidget(testRadio);
 
         mainLayout->addWidget(cardBox);
 
@@ -1112,34 +1123,74 @@ private:
         QWidget* widget = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(widget);
 
-        // === 控制器类型选择 ===
+        /* *******************************************************************************
+         选轴
+        ******************************************************************************* */
         QGroupBox* stageBox = new QGroupBox("Motion Stage:");
         QHBoxLayout* controllerLayout = new QHBoxLayout(stageBox);
 
         QRadioButton* googolRadio = new QRadioButton("Googol");
         QRadioButton* thorlabsRadio = new QRadioButton("Thorlabs");
         QRadioButton* testRadio = new QRadioButton("Test");
-        googolRadio->setChecked(true); // 默认选中 Googol
+        testRadio->setChecked(true);
 
+        controllerLayout->addWidget(testRadio);
         controllerLayout->addWidget(googolRadio);
         controllerLayout->addWidget(thorlabsRadio);
-        controllerLayout->addWidget(testRadio);
         controllerLayout->addStretch();
 
         mainLayout->addWidget(stageBox);
 
-        // 添加间隔
-        mainLayout->addStretch ();
+        /* *******************************************************************************
+         对应参数设置
+        ******************************************************************************* */
+        QGroupBox* paramBox = new QGroupBox("Params Setting:");
+        QVBoxLayout* paramBoxLayout = new QVBoxLayout(paramBox);
+        QStackedWidget* paramStack = new QStackedWidget();
 
-        // === Apply 按钮 ===
+        // Test
+        QWidget* testParamWidget = new QWidget();
+        paramStack->addWidget(testParamWidget);
+
+        // Googol
+        QWidget* googolParamWidget = new QWidget();
+        paramStack->addWidget(googolParamWidget);
+
+        // Thorlabs
+        QWidget* thorlabsParamWidget = new QWidget();
+        QFormLayout* thorlabsForm = new QFormLayout(thorlabsParamWidget);
+        QLineEdit* thorlabsSerialEdit = new QLineEdit("00000000");
+        thorlabsForm->addRow("Serial No:", thorlabsSerialEdit);
+        paramStack->addWidget(thorlabsParamWidget);
+
+        paramBoxLayout->addWidget(paramStack);
+        mainLayout->addWidget(paramBox);
+
+        // 响应 radio 变化切换参数页
+        QObject::connect(testRadio, &QRadioButton::toggled, widget, [=](bool checked){
+            if (checked) paramStack->setCurrentIndex(0);
+        });
+        QObject::connect(googolRadio, &QRadioButton::toggled, widget, [=](bool checked){
+            if (checked) paramStack->setCurrentIndex(1);
+        });
+        QObject::connect(thorlabsRadio, &QRadioButton::toggled, widget, [=](bool checked){
+            if (checked) paramStack->setCurrentIndex(2);
+        });
+
+        /* *******************************************************************************
+         确认
+        ******************************************************************************* */
         QPushButton* applyButton = new QPushButton("Apply");
         mainLayout->addWidget(applyButton);
+
         QObject::connect(applyButton, &QPushButton::clicked, widget, [=]() {
             if (googolRadio->isChecked()) {
                 auto device = std::make_unique<MotionStageDeviceGoogol>();
                 MotionStageWorker::getIns().setDevice(std::move(device));
             } else if (thorlabsRadio->isChecked()) {
+                QString serial = thorlabsSerialEdit->text();
                 auto device = std::make_unique<MotionStageDeviceThorlabs>();
+                strncpy(device->m_serialNo, serial.toStdString().c_str(), sizeof(device->m_serialNo));
                 MotionStageWorker::getIns().setDevice(std::move(device));
             } else if (testRadio->isChecked()) {
                 auto device = std::make_unique<MotionStageDeviceTest>();
@@ -1149,6 +1200,7 @@ private:
 
         return widget;
     }
+
 
 public:
     void registerDrawButton(QToolButton* btn) {

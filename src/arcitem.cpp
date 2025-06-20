@@ -14,7 +14,7 @@ bool ArcItem::updateContourFillItem()
 
     for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
         // 输入cavc库
-        cavc::Polyline<double> input = this->getCavcForm(true);
+        cavc::Polyline<double> input = this->getCavcForm();
         input.isClosed() = false;
         std::vector<cavc::Polyline<double>> results
             = cavc::parallelOffset(input, (-1) * this->m_contourFillParams.offset * offsetIndex);
@@ -157,7 +157,7 @@ bool ArcItem::updateHatchFillItem()
     }
 
     // 输入cavc库
-    auto input = this->getCavcForm(true);
+    auto input = this->getCavcForm();
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();

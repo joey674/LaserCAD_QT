@@ -1,7 +1,34 @@
 #include "polylineitem.h"
+#include "combineditem.h"
 #include <polyline.hpp>
 #include <polylineoffset.hpp>
 #include <polylinecombine.hpp>
+
+std::vector<std::shared_ptr<GraphicsItem>> PolylineItem::breakHatchFillItem()
+{
+    DEBUG_MSG("break hatch");
+    std::vector<std::shared_ptr<GraphicsItem>> result;
+    //
+    auto startAngle = this->m_hatchFillParams.startAngle;
+    for (int hatchIdx = 0; hatchIdx < this->m_hatchFillParams.operateCount; hatchIdx++) {
+        this->updateHatchFillItem();
+        auto combinedItem = std::make_shared<CombinedItem>();
+        // 转换类型
+        std::vector<std::shared_ptr<GraphicsItem>> graphicsItems;
+        graphicsItems.reserve(this->m_hatchFillItemList.size());
+        for (const auto &item : this->m_hatchFillItemList) {
+            graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
+        }
+        // 装进combinedItem,然后装进result
+        combinedItem->combinedItem(graphicsItems);
+        result.push_back(combinedItem);
+        this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
+    }
+    DEBUG_VAR(result.size());
+    this->m_hatchFillParams.startAngle = startAngle;
+    this->m_hatchFillParams.operateCount = 0;
+    return result;
+}
 
 bool PolylineItem::updateContourFillItem()
 {
@@ -14,7 +41,7 @@ bool PolylineItem::updateContourFillItem()
     }
     for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
         // 输入cavc库
-        auto input = this->getCavcForm(false);
+        auto input = this->getCavcForm();
         // 自动判断 如果最后一个点与第一个点重合 那么就认为是close;
         auto vertexCount = this->getVertexCount();
         if (this->m_vertexList[0].point == this->m_vertexList[vertexCount - 1].point) {
@@ -47,7 +74,7 @@ bool PolylineItem::updateHatchFillItem()
     }
 
     // 输入cavc库
-    auto input = this->getCavcForm(false);
+    auto input = this->getCavcForm();
 
     // 获取直径与圆心
     QRectF rect = this->getBoundingRectBasis();

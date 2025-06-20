@@ -1,0 +1,134 @@
+; APT USB Serial Port.inf
+;
+; Copyright © 2015-2019 Thorlabs Ltd.
+; Copyright © 2000-2017 Future Technology Devices International Limited
+;
+
+[Version]
+Signature="$Windows NT$"
+DriverPackageType=PlugAndPlay
+DriverPackageDisplayName=%DESC%
+Class=Ports
+ClassGUID={4d36e978-e325-11ce-bfc1-08002be10318}
+Provider=%Ftdi%
+CatalogFile="APT USB Serial Port.cat"
+DriverVer=08/16/2017,2.12.28
+
+[SourceDisksNames]
+1=%DriversDisk%,"APT USB Serial Port.cab",,
+
+[SourceDisksFiles]
+ftser2k.sys=1,i386
+ftserui2.dll=1,i386
+ftcserco.dll=1,i386
+
+[SourceDisksFiles.amd64]
+ftser2k.sys=1,amd64
+ftserui2.dll=1,amd64
+ftcserco.dll=1,amd64
+
+[DestinationDirs]
+FtdiPort.NT.Copy=10,system32\drivers
+FtdiPort.NT.CopyUI=10,system32
+FtdiPort.NT.CopyCoInst=10,system32
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+[Manufacturer]
+%FTDI%=FtdiHw,NTamd64
+
+[FtdiHw]
+%VID_0403&PID_FAF0.DeviceDesc%=FtdiPort.NT,FTDIBUS\COMPORT&VID_0403&PID_FAF0
+
+[FtdiHw.NTamd64]
+%VID_0403&PID_FAF0.DeviceDesc%=FtdiPort.NTamd64,FTDIBUS\COMPORT&VID_0403&PID_FAF0
+
+[FtdiPort.NT.AddService]
+DisplayName    = %SvcDesc%
+ServiceType    = 1 ; SERVICE_KERNEL_DRIVER
+StartType      = 3 ; SERVICE_DEMAND_START
+ErrorControl   = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %10%\system32\drivers\ftser2k.sys
+LoadOrderGroup = Base
+
+
+; -------------- Serenum Driver install section
+[SerEnum_AddService]
+DisplayName    = %SerEnum.SvcDesc%
+ServiceType    = 1 ; SERVICE_KERNEL_DRIVER
+StartType      = 3 ; SERVICE_DEMAND_START
+ErrorControl   = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\serenum.sys
+LoadOrderGroup = PNP Filter
+
+[FtdiPort.NT.AddReg]
+HKR,,EnumPropPages32,,"ftserui2.dll,SerialPortPropPageProvider"
+
+[FtdiPort.NT.Copy]
+ftser2k.sys
+
+[FtdiPort.NT.CopyUI]
+ftserui2.dll
+
+[FtdiPort.NT.CopyCoInst]
+ftcserco.dll
+
+[FtdiPort.NT]
+CopyFiles=FtdiPort.NT.Copy,FtdiPort.NT.CopyUI
+AddReg=FtdiPort.NT.AddReg
+
+[FtdiPort.NTamd64]
+CopyFiles=FtdiPort.NT.Copy,FtdiPort.NT.CopyUI
+AddReg=FtdiPort.NT.AddReg
+
+[FtdiPort.NT.HW]
+AddReg=FtdiPort.NT.HW.AddReg
+
+[FtdiPort.NTamd64.HW]
+AddReg=FtdiPort.NT.HW.AddReg
+
+
+[FtdiPort.NT.Services]
+AddService = FTSER2K, 0x00000002, FtdiPort.NT.AddService
+AddService = Serenum,,SerEnum_AddService
+DelService = FTSERIAL
+
+[FtdiPort.NTamd64.Services]
+AddService = FTSER2K, 0x00000002, FtdiPort.NT.AddService
+AddService = Serenum,,SerEnum_AddService
+DelService = FTSERIAL
+
+
+[FtdiPort.NT.HW.AddReg]
+HKR,,"UpperFilters",0x00010000,"serenum"
+HKR,,"ConfigData",1,11,00,3F,3F,10,27,00,00,88,13,00,00,C4,09,00,00,E2,04,00,00,71,02,00,00,38,41,00,00,9C,80,00,00,4E,C0,00,00,34,00,00,00,1A,00,00,00,0D,00,00,00,06,40,00,00,03,80,00,00,00,00,00,00,D0,80,00,00
+HKR,,"MinReadTimeout",0x00010001,0
+HKR,,"MinWriteTimeout",0x00010001,0
+HKR,,"LatencyTimer",0x00010001,16
+
+
+[FtdiPort.NT.CoInstallers]
+AddReg=FtdiPort.NT.CoInstallers.AddReg
+CopyFiles=FtdiPort.NT.CopyCoInst
+
+[FtdiPort.NTamd64.CoInstallers]
+AddReg=FtdiPort.NT.CoInstallers.AddReg
+CopyFiles=FtdiPort.NT.CopyCoInst
+
+[FtdiPort.NT.CoInstallers.AddReg]
+HKR,,CoInstallers32,0x00010000,"ftcserco.Dll,FTCSERCoInstaller"
+
+
+;---------------------------------------------------------------;
+
+[Strings]
+Ftdi="Thorlabs"
+DESC="APT USB Driver Package"
+DriversDisk="APT USB Drivers"
+PortsClassName = "Ports (COM & LPT)"
+VID_0403&PID_FAF0.DeviceDesc="APT USB Device Serial Port"
+SvcDesc="USB Serial Port Driver"
+SerEnum.SvcDesc="Serenum Filter Driver"
+
+

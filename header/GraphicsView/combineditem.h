@@ -2,10 +2,9 @@
 #define COMBINEDITEM_H
 
 #include "graphicsitem.h"
-#include "logger.h"
-#include "utils.hpp"
 #include <polylineoffset.hpp>
 #include <vector.hpp>
+#include "polylineitem.h"
 
 class CombinedItem : public GraphicsItem {
 public:
@@ -84,12 +83,12 @@ protected:
         return true;
     }
     // deprecated
-    bool updateContourFillItem() override { return true; };
+    bool updateContourFillItem() override;
     bool updateCopiedItem() override { return true; }
-    bool updateHatchFillItem() override { return true; };
+    bool updateHatchFillItem() override;
 
 public:
-    cavc::Polyline<double> getCavcForm(bool inSceneCoord) const override
+    cavc::Polyline<double> getCavcForm() const override
     {
         return cavc::Polyline<double>();
     }
@@ -156,11 +155,21 @@ protected:
         for (auto &item : this->m_paintItemList) {
             item->paint(painter, &optionx, widget);
         }
+        // 绘制contour
+        for (auto &item : this->m_contourFillItemList) {
+            item->paint(painter, &optionx, widget);
+        }
+        // 绘制hatch
+        for (auto &item : this->m_hatchFillItemList) {
+            item->paint(painter, &optionx, widget);
+        }
     }
 
 private:
     std::vector<std::shared_ptr<GraphicsItem>> m_itemList;
     std::vector<std::shared_ptr<QGraphicsItem>> m_paintItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_contourFillItemList;
+    std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;
 };
 
 #endif // COMBINEDITEM_H

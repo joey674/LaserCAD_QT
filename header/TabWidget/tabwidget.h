@@ -20,9 +20,7 @@
 #include <QButtonGroup>
 #include <QFileDialog>
 #include <QDir>
-#include "laserdevicertc5.h"
-#include "hardwarecontroller.h"
-#include "laserdevicetest.h"
+
 
 class TabWidget : public QTabWidget {
     Q_OBJECT
@@ -238,14 +236,14 @@ public:
             if (modeCombo->currentText() == "Contour Fill") {
                 double offset = spacingSpin->value();
                 int offsetNum = countSpin->value();
-                EditController::getIns().onTabWidgetOffsetTabParallelOffset(ContourFillParams{offset, offsetNum});
+                EditController::getIns().onTabWidgetFillTabContourFill(ContourFillParams{offset, offsetNum});
             } else {
                 HatchFillParams fillParams;
                 fillParams.spacing = fillSpacingSpin->value();
                 fillParams.startAngle = fillAngleSpin->value();
                 fillParams.operateCount = fillOperateCountSpin->value();
                 fillParams.accumulateAngle = fillAccumulateAngleSpin->value();
-                EditController::getIns().onTabWidgetOffsetTabFill(fillParams);
+                EditController::getIns().onTabWidgetOffsetTabHatchFill(fillParams);
             }
         });
 

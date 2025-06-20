@@ -62,7 +62,11 @@ set(PROJECT_SOURCES
         header/drawcontroller.h                                src/drawcontroller.cpp
         header/projectmanager.h                                src/projectmanager.cpp
         header/hardwarecontroller.h                       header/hardwarecontroller.cpp
-        header/MotionStageWorker/motionstageworker.h header/MotionStageWorker/motionstageworker.cpp
+        header/MotionStageWorker/motionstageworker.h    header/MotionStageWorker/motionstageworker.cpp
+        header/MotionStageWorker/motionstagedevicegoogol.h    header/MotionStageWorker/motionstagedevicegoogol.cpp
+        header/MotionStageWorker/motionstagedevice.h    header/MotionStageWorker/motionstagedevice.cpp
+        header/MotionStageWorker/motionstagedevicethorlabs.h    header/MotionStageWorker/motionstagedevicethorlabs.cpp
+        header/MotionStageWorker/motionstagedevicetest.h    header/MotionStageWorker/motionstagedevicetest.cpp
 )
 set(RTC5_SOURCES
     lib/RTC5/RTC5expl.h             lib/RTC5/RTC5expl.cpp
@@ -71,6 +75,9 @@ set(RTC6_SOURCES
 )
 set(GTS_SOURCES
   lib/GTS/gts.h
+)
+set(THORLABS_SOURCES
+  lib/Thorlabs/ThorlabsMotion.h
 )
 set (CAVC_SOURCES
   lib/CavalierContours/cavaliercontours.cpp
@@ -113,19 +120,18 @@ include_directories(${PROJECT_SOURCE_DIR})
     # else()
         add_executable(LaserCAD
             ${PROJECT_SOURCES}
-            ${RTC5_SOURCES}
             ${CAVC_SOURCES}
+            ${RTC5_SOURCES}
             ${GTS_SOURCES}
-            header/MotionStageWorker/motionstagedevicegoogol.h header/MotionStageWorker/motionstagedevicegoogol.cpp
-            header/MotionStageWorker/motionstagedevice.h header/MotionStageWorker/motionstagedevice.cpp
-            header/MotionStageWorker/motionstagedevicethorlabs.h header/MotionStageWorker/motionstagedevicethorlabs.cpp
-            header/MotionStageWorker/motionstagedevicetest.h header/MotionStageWorker/motionstagedevicetest.cpp
+            ${THORLABS_SOURCES}
         )
 #     endif()
 # endif()
 
 target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 target_link_libraries(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/GTS/gts.lib)
+target_link_libraries(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/Thorlabs/ThorlabsMotion.lib)
+
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/GraphicsView)
@@ -141,6 +147,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)
 # target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC6)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/GTS)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/Thorlabs)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
@@ -166,12 +173,3 @@ install(TARGETS LaserCAD
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(LaserCAD)
 endif()
-
-add_custom_command(TARGET LaserCAD POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${PROJECT_SOURCE_DIR}/lib/RTC5/RTC5DLL.dll
-            $<TARGET_FILE_DIR:LaserCAD>)
-add_custom_command(TARGET LaserCAD POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-            ${PROJECT_SOURCE_DIR}/lib/GTS/GTS.dll
-            $<TARGET_FILE_DIR:LaserCAD>)

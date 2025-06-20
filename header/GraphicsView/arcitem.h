@@ -148,17 +148,12 @@ protected:
     bool updateHatchFillItem() override;
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         // 输入cavc库
         cavc::Polyline < double > input;
         QPointF p1, p2;
-        if (inSceneCoord) {
-            p1 = this->getVertexInScene(0).point;
-            p2 = this->getVertexInScene(1).point;
-        } else {
-            p1 = m_vertexPair[0].point;
-            p2 = m_vertexPair[1].point;
-        }
+        p1 = m_vertexPair[0].point;
+        p2 = m_vertexPair[1].point;
         auto angle = m_vertexPair[1].angle;
         if (angle > 180.01 || angle < -180.01) {
             auto sign = angle > 0 ? 1 : -1;

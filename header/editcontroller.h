@@ -55,17 +55,17 @@ public: // 编辑回调
         auto curEditItem = this->m_currentEditItemGroup[0];
         curEditItem->setCopiedParams(params);
     }
-    void onTabWidgetOffsetTabParallelOffset(ContourFillParams params) {
+    void onTabWidgetFillTabContourFill(ContourFillParams params) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
         }
         auto &curEditItem = this->m_currentEditItemGroup[0];
         //
-        curEditItem->setOffsetParams(params);
+        curEditItem->setFillParams(params);
         this->updateTableViewModel();
     }
-    void onTabWidgetOffsetTabFill(HatchFillParams params) {
+    void onTabWidgetOffsetTabHatchFill(HatchFillParams params) {
         //
         if (this->m_currentEditItemGroup.size() != 1) {
             return;
@@ -340,9 +340,9 @@ public: // 编辑回调
         auto aItem = dynamic_cast < GraphicsItem * > (aPtr.get());
         auto bItem = dynamic_cast < GraphicsItem * > (bPtr.get());
         // 转换为 cavc polyline
-        auto cavcA = aItem->getCavcForm(true);
+        auto cavcA = aItem->getCavcForm();
         cavcA.isClosed() = true;
-        auto cavcB = bItem->getCavcForm(true);
+        auto cavcB = bItem->getCavcForm();
         cavcB.isClosed() = true;
         // 执行布尔操作
         cavc::CombineResult < double > result = cavc::combinePolylines(cavcA, cavcB, mode);
@@ -547,7 +547,12 @@ public: // 编辑回调
             && this->m_currentEditItemGroup[0]->type() != GraphicsItemType::Combined) {
             return;
         }
-        auto combinedItem = std::dynamic_pointer_cast<CombinedItem>(this->m_currentEditItemGroup[0]);
+        std::shared_ptr<CombinedItem> combinedItem = std::dynamic_pointer_cast<CombinedItem>(this->m_currentEditItemGroup[0]);
+        if (!combinedItem)
+        {
+            WARN_MSG("not combinedItem type; can not break;");
+            return;
+        }
         auto itemList = combinedItem->breakItem();
         this->onDeleteItemsTriggered();
         for (auto &item : itemList) {

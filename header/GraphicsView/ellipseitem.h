@@ -145,7 +145,7 @@ protected:
         }
         for (int offsetIndex = 1; offsetIndex <= this->m_contourFillParams.offsetCount; offsetIndex++) {
             // 输入cavc库
-            cavc::Polyline < double > input = this->getCavcForm(false);
+            cavc::Polyline < double > input = this->getCavcForm();
             input.isClosed() = true;
             std::vector < cavc::Polyline < double>> results = cavc::parallelOffset(input, this->m_contourFillParams.offset * offsetIndex);
             // 获取结果
@@ -316,16 +316,14 @@ protected:
     };
 
 public:
-    cavc::Polyline < double > getCavcForm(bool inSceneCoord) const override {
+    cavc::Polyline < double > getCavcForm() const override {
         cavc::Polyline < double > input;
         const int segments = 64; // 越多越圆滑
         double angleRad = m_rotateAngle * M_PI / 180.0;
         double cosA = std::cos(angleRad);
         double sinA = std::sin(angleRad);
         QPointF center = m_center.point;
-        if (inSceneCoord) {
-            center += this->scenePos(); // 加上Item的场景偏移
-        }
+
         auto mapPoint = [&](double x, double y) -> QPointF {
             double xr = x * cosA - y * sinA;
             double yr = x * sinA + y * cosA;

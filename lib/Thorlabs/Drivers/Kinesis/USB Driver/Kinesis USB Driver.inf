@@ -1,0 +1,585 @@
+﻿; Kinesis USB Driver.inf
+;
+; Copyright © 2015-2019 Thorlabs.
+; Copyright © 2000-2017 Future Technology Devices International Limited
+; 
+
+[Version]
+Signature="$Windows NT$"
+DriverPackageType=PlugAndPlay
+DriverPackageDisplayName=%DESC%
+Class=USB
+ClassGUID={36fc9e60-c465-11cf-8056-444553540000}
+Provider=%Ftdi%
+CatalogFile="Kinesis USB Driver.cat"
+DriverVer=08/16/2017,2.12.28.1
+
+[SourceDisksNames]
+1=%DriversDisk%,"Kinesis USB Driver.cab",,
+
+[SourceDisksFiles]
+ftdibus.sys = 1,i386
+ftbusui.dll = 1,i386
+ftd2xx.dll = 1,i386
+FTLang.Dll = 1,i386
+
+[SourceDisksFiles.amd64]
+ftdibus.sys = 1,amd64
+ftbusui.dll = 1,amd64
+ftd2xx64.dll = 1,amd64
+ftd2xx.dll = 1,i386
+FTLang.Dll = 1,amd64
+
+[DestinationDirs]
+FtdiBus.NT.Copy = 10,system32\drivers
+FtdiBus.NT.Copy2 = 10,system32
+FtdiBus.NTamd64.Copy = 10,system32\drivers
+FtdiBus.NTamd64.Copy2 = 10,system32
+FtdiBus.NTamd64.Copy3 = 10,syswow64
+
+[Manufacturer]
+%Ftdi%=FtdiHw,NTamd64
+
+[FtdiHw]
+%USB\VID_26D1&PID_0064.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0064
+%USB\VID_26D1&PID_0065.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0065
+%USB\VID_26D1&PID_0066.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0066
+%USB\VID_26D1&PID_0067.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0067
+%USB\VID_26D1&PID_0068.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0068
+%USB\VID_26D1&PID_0069.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0069
+%USB\VID_26D1&PID_006A.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006A
+%USB\VID_26D1&PID_006B.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006B
+%USB\VID_26D1&PID_006C.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006C
+%USB\VID_26D1&PID_006D.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006D
+%USB\VID_26D1&PID_006E.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006E
+%USB\VID_26D1&PID_006F.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_006F
+%USB\VID_26D1&PID_0070.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0070
+%USB\VID_26D1&PID_0071.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0071
+%USB\VID_26D1&PID_0072.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0072
+%USB\VID_26D1&PID_0073.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0073
+%USB\VID_26D1&PID_0074.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0074
+%USB\VID_26D1&PID_0075.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0075
+%USB\VID_26D1&PID_0076.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0076
+%USB\VID_26D1&PID_0077.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0077
+%USB\VID_26D1&PID_0078.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0078
+%USB\VID_26D1&PID_0079.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0079
+%USB\VID_26D1&PID_007A.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007A
+%USB\VID_26D1&PID_007B.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007B
+%USB\VID_26D1&PID_007C.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007C
+%USB\VID_26D1&PID_007D.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007D
+%USB\VID_26D1&PID_007E.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007E
+%USB\VID_26D1&PID_007F.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_007F
+%USB\VID_26D1&PID_0080.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0080
+%USB\VID_26D1&PID_0081.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0081
+%USB\VID_26D1&PID_0082.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0082
+%USB\VID_26D1&PID_0083.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0083
+%USB\VID_26D1&PID_0084.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0084
+%USB\VID_26D1&PID_0085.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0085
+%USB\VID_26D1&PID_0086.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0086
+%USB\VID_26D1&PID_0087.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0087
+%USB\VID_26D1&PID_0088.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0088
+%USB\VID_26D1&PID_0089.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0089
+%USB\VID_26D1&PID_008A.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008A
+%USB\VID_26D1&PID_008B.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008B
+%USB\VID_26D1&PID_008C.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008C
+%USB\VID_26D1&PID_008D.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008D
+%USB\VID_26D1&PID_008E.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008E
+%USB\VID_26D1&PID_008F.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_008F
+%USB\VID_26D1&PID_0090.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0090
+%USB\VID_26D1&PID_0091.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0091
+%USB\VID_26D1&PID_0092.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0092
+%USB\VID_26D1&PID_0093.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0093
+%USB\VID_26D1&PID_0094.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0094
+%USB\VID_26D1&PID_0095.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0095
+%USB\VID_26D1&PID_0096.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0096
+%USB\VID_26D1&PID_0097.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0097
+%USB\VID_26D1&PID_0098.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0098
+%USB\VID_26D1&PID_0099.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_0099
+%USB\VID_26D1&PID_009A.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009A
+%USB\VID_26D1&PID_009B.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009B
+%USB\VID_26D1&PID_009C.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009C
+%USB\VID_26D1&PID_009D.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009D
+%USB\VID_26D1&PID_009E.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009E
+%USB\VID_26D1&PID_009F.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_009F
+%USB\VID_26D1&PID_00A0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A0
+%USB\VID_26D1&PID_00A1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A1
+%USB\VID_26D1&PID_00A2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A2
+%USB\VID_26D1&PID_00A3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A3
+%USB\VID_26D1&PID_00A4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A4
+%USB\VID_26D1&PID_00A5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A5
+%USB\VID_26D1&PID_00A6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A6
+%USB\VID_26D1&PID_00A7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A7
+%USB\VID_26D1&PID_00A8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A8
+%USB\VID_26D1&PID_00A9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00A9
+%USB\VID_26D1&PID_00AA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AA
+%USB\VID_26D1&PID_00AB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AB
+%USB\VID_26D1&PID_00AC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AC
+%USB\VID_26D1&PID_00AD.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AD
+%USB\VID_26D1&PID_00AE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AE
+%USB\VID_26D1&PID_00AF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00AF
+%USB\VID_26D1&PID_00B0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B0
+%USB\VID_26D1&PID_00B1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B1
+%USB\VID_26D1&PID_00B2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B2
+%USB\VID_26D1&PID_00B3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B3
+%USB\VID_26D1&PID_00B4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B4
+%USB\VID_26D1&PID_00B5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B5
+%USB\VID_26D1&PID_00B6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B6
+%USB\VID_26D1&PID_00B7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B7
+%USB\VID_26D1&PID_00B8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B8
+%USB\VID_26D1&PID_00B9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00B9
+%USB\VID_26D1&PID_00BA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BA
+%USB\VID_26D1&PID_00BB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BB
+%USB\VID_26D1&PID_00BC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BC
+%USB\VID_26D1&PID_00BD.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BD
+%USB\VID_26D1&PID_00BE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BE
+%USB\VID_26D1&PID_00BF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00BF
+%USB\VID_26D1&PID_00C0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C0
+%USB\VID_26D1&PID_00C1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C1
+%USB\VID_26D1&PID_00C2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C2
+%USB\VID_26D1&PID_00C3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C3
+%USB\VID_26D1&PID_00C4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C4
+%USB\VID_26D1&PID_00C5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C5
+%USB\VID_26D1&PID_00C6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C6
+%USB\VID_26D1&PID_00C7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C7
+%USB\VID_26D1&PID_00C8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C8
+%USB\VID_26D1&PID_00C9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00C9
+%USB\VID_26D1&PID_00CA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CA
+%USB\VID_26D1&PID_00CB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CB
+%USB\VID_26D1&PID_00CC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CC
+%USB\VID_26D1&PID_00CD.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CD
+%USB\VID_26D1&PID_00CE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CE
+%USB\VID_26D1&PID_00CF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00CF
+%USB\VID_26D1&PID_00D0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D0
+%USB\VID_26D1&PID_00D1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D1
+%USB\VID_26D1&PID_00D2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D2
+%USB\VID_26D1&PID_00D3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D3
+%USB\VID_26D1&PID_00D4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D4
+%USB\VID_26D1&PID_00D5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D5
+%USB\VID_26D1&PID_00D6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D6
+%USB\VID_26D1&PID_00D7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D7
+%USB\VID_26D1&PID_00D8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D8
+%USB\VID_26D1&PID_00D9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00D9
+%USB\VID_26D1&PID_00DA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DA
+%USB\VID_26D1&PID_00DB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DB
+%USB\VID_26D1&PID_00DC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DC
+%USB\VID_26D1&PID_00DD.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DD
+%USB\VID_26D1&PID_00DE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DE
+%USB\VID_26D1&PID_00DF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00DF
+%USB\VID_26D1&PID_00E0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E0
+%USB\VID_26D1&PID_00E1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E1
+%USB\VID_26D1&PID_00E2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E2
+%USB\VID_26D1&PID_00E3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E3
+%USB\VID_26D1&PID_00E4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E4
+%USB\VID_26D1&PID_00E5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E5
+%USB\VID_26D1&PID_00E6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E6
+%USB\VID_26D1&PID_00E7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E7
+%USB\VID_26D1&PID_00E8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E8
+%USB\VID_26D1&PID_00E9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00E9
+%USB\VID_26D1&PID_00EA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00EA
+%USB\VID_26D1&PID_00EB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00EB
+%USB\VID_26D1&PID_00EC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00EC
+%USB\VID_26D1&PID_00ED.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00ED
+%USB\VID_26D1&PID_00EE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00EE
+%USB\VID_26D1&PID_00EF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00EF
+%USB\VID_26D1&PID_00F0.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F0
+%USB\VID_26D1&PID_00F1.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F1
+%USB\VID_26D1&PID_00F2.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F2
+%USB\VID_26D1&PID_00F3.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F3
+%USB\VID_26D1&PID_00F4.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F4
+%USB\VID_26D1&PID_00F5.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F5
+%USB\VID_26D1&PID_00F6.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F6
+%USB\VID_26D1&PID_00F7.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F7
+%USB\VID_26D1&PID_00F8.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F8
+%USB\VID_26D1&PID_00F9.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00F9
+%USB\VID_26D1&PID_00FA.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FA
+%USB\VID_26D1&PID_00FB.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FB
+%USB\VID_26D1&PID_00FC.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FC
+%USB\VID_26D1&PID_00FD.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FD
+%USB\VID_26D1&PID_00FE.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FE
+%USB\VID_26D1&PID_00FF.DeviceDesc%=FtdiBus.NT,USB\VID_26D1&PID_00FF
+
+[FtdiHw.NTamd64]
+%USB\VID_26D1&PID_0064.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0064
+%USB\VID_26D1&PID_0065.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0065
+%USB\VID_26D1&PID_0066.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0066
+%USB\VID_26D1&PID_0067.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0067
+%USB\VID_26D1&PID_0068.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0068
+%USB\VID_26D1&PID_0069.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0069
+%USB\VID_26D1&PID_006A.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006A
+%USB\VID_26D1&PID_006B.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006B
+%USB\VID_26D1&PID_006C.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006C
+%USB\VID_26D1&PID_006D.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006D
+%USB\VID_26D1&PID_006E.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006E
+%USB\VID_26D1&PID_006F.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_006F
+%USB\VID_26D1&PID_0070.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0070
+%USB\VID_26D1&PID_0071.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0071
+%USB\VID_26D1&PID_0072.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0072
+%USB\VID_26D1&PID_0073.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0073
+%USB\VID_26D1&PID_0074.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0074
+%USB\VID_26D1&PID_0075.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0075
+%USB\VID_26D1&PID_0076.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0076
+%USB\VID_26D1&PID_0077.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0077
+%USB\VID_26D1&PID_0078.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0078
+%USB\VID_26D1&PID_0079.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0079
+%USB\VID_26D1&PID_007A.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007A
+%USB\VID_26D1&PID_007B.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007B
+%USB\VID_26D1&PID_007C.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007C
+%USB\VID_26D1&PID_007D.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007D
+%USB\VID_26D1&PID_007E.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007E
+%USB\VID_26D1&PID_007F.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_007F
+%USB\VID_26D1&PID_0080.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0080
+%USB\VID_26D1&PID_0081.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0081
+%USB\VID_26D1&PID_0082.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0082
+%USB\VID_26D1&PID_0083.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0083
+%USB\VID_26D1&PID_0084.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0084
+%USB\VID_26D1&PID_0085.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0085
+%USB\VID_26D1&PID_0086.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0086
+%USB\VID_26D1&PID_0087.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0087
+%USB\VID_26D1&PID_0088.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0088
+%USB\VID_26D1&PID_0089.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0089
+%USB\VID_26D1&PID_008A.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008A
+%USB\VID_26D1&PID_008B.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008B
+%USB\VID_26D1&PID_008C.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008C
+%USB\VID_26D1&PID_008D.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008D
+%USB\VID_26D1&PID_008E.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008E
+%USB\VID_26D1&PID_008F.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_008F
+%USB\VID_26D1&PID_0090.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0090
+%USB\VID_26D1&PID_0091.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0091
+%USB\VID_26D1&PID_0092.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0092
+%USB\VID_26D1&PID_0093.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0093
+%USB\VID_26D1&PID_0094.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0094
+%USB\VID_26D1&PID_0095.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0095
+%USB\VID_26D1&PID_0096.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0096
+%USB\VID_26D1&PID_0097.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0097
+%USB\VID_26D1&PID_0098.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0098
+%USB\VID_26D1&PID_0099.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_0099
+%USB\VID_26D1&PID_009A.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009A
+%USB\VID_26D1&PID_009B.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009B
+%USB\VID_26D1&PID_009C.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009C
+%USB\VID_26D1&PID_009D.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009D
+%USB\VID_26D1&PID_009E.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009E
+%USB\VID_26D1&PID_009F.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_009F
+%USB\VID_26D1&PID_00A0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A0
+%USB\VID_26D1&PID_00A1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A1
+%USB\VID_26D1&PID_00A2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A2
+%USB\VID_26D1&PID_00A3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A3
+%USB\VID_26D1&PID_00A4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A4
+%USB\VID_26D1&PID_00A5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A5
+%USB\VID_26D1&PID_00A6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A6
+%USB\VID_26D1&PID_00A7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A7
+%USB\VID_26D1&PID_00A8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A8
+%USB\VID_26D1&PID_00A9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00A9
+%USB\VID_26D1&PID_00AA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AA
+%USB\VID_26D1&PID_00AB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AB
+%USB\VID_26D1&PID_00AC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AC
+%USB\VID_26D1&PID_00AD.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AD
+%USB\VID_26D1&PID_00AE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AE
+%USB\VID_26D1&PID_00AF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00AF
+%USB\VID_26D1&PID_00B0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B0
+%USB\VID_26D1&PID_00B1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B1
+%USB\VID_26D1&PID_00B2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B2
+%USB\VID_26D1&PID_00B3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B3
+%USB\VID_26D1&PID_00B4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B4
+%USB\VID_26D1&PID_00B5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B5
+%USB\VID_26D1&PID_00B6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B6
+%USB\VID_26D1&PID_00B7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B7
+%USB\VID_26D1&PID_00B8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B8
+%USB\VID_26D1&PID_00B9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00B9
+%USB\VID_26D1&PID_00BA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BA
+%USB\VID_26D1&PID_00BB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BB
+%USB\VID_26D1&PID_00BC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BC
+%USB\VID_26D1&PID_00BD.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BD
+%USB\VID_26D1&PID_00BE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BE
+%USB\VID_26D1&PID_00BF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00BF
+%USB\VID_26D1&PID_00C0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C0
+%USB\VID_26D1&PID_00C1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C1
+%USB\VID_26D1&PID_00C2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C2
+%USB\VID_26D1&PID_00C3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C3
+%USB\VID_26D1&PID_00C4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C4
+%USB\VID_26D1&PID_00C5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C5
+%USB\VID_26D1&PID_00C6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C6
+%USB\VID_26D1&PID_00C7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C7
+%USB\VID_26D1&PID_00C8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C8
+%USB\VID_26D1&PID_00C9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00C9
+%USB\VID_26D1&PID_00CA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CA
+%USB\VID_26D1&PID_00CB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CB
+%USB\VID_26D1&PID_00CC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CC
+%USB\VID_26D1&PID_00CD.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CD
+%USB\VID_26D1&PID_00CE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CE
+%USB\VID_26D1&PID_00CF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00CF
+%USB\VID_26D1&PID_00D0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D0
+%USB\VID_26D1&PID_00D1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D1
+%USB\VID_26D1&PID_00D2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D2
+%USB\VID_26D1&PID_00D3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D3
+%USB\VID_26D1&PID_00D4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D4
+%USB\VID_26D1&PID_00D5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D5
+%USB\VID_26D1&PID_00D6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D6
+%USB\VID_26D1&PID_00D7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D7
+%USB\VID_26D1&PID_00D8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D8
+%USB\VID_26D1&PID_00D9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00D9
+%USB\VID_26D1&PID_00DA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DA
+%USB\VID_26D1&PID_00DB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DB
+%USB\VID_26D1&PID_00DC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DC
+%USB\VID_26D1&PID_00DD.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DD
+%USB\VID_26D1&PID_00DE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DE
+%USB\VID_26D1&PID_00DF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00DF
+%USB\VID_26D1&PID_00E0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E0
+%USB\VID_26D1&PID_00E1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E1
+%USB\VID_26D1&PID_00E2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E2
+%USB\VID_26D1&PID_00E3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E3
+%USB\VID_26D1&PID_00E4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E4
+%USB\VID_26D1&PID_00E5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E5
+%USB\VID_26D1&PID_00E6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E6
+%USB\VID_26D1&PID_00E7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E7
+%USB\VID_26D1&PID_00E8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E8
+%USB\VID_26D1&PID_00E9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00E9
+%USB\VID_26D1&PID_00EA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00EA
+%USB\VID_26D1&PID_00EB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00EB
+%USB\VID_26D1&PID_00EC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00EC
+%USB\VID_26D1&PID_00ED.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00ED
+%USB\VID_26D1&PID_00EE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00EE
+%USB\VID_26D1&PID_00EF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00EF
+%USB\VID_26D1&PID_00F0.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F0
+%USB\VID_26D1&PID_00F1.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F1
+%USB\VID_26D1&PID_00F2.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F2
+%USB\VID_26D1&PID_00F3.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F3
+%USB\VID_26D1&PID_00F4.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F4
+%USB\VID_26D1&PID_00F5.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F5
+%USB\VID_26D1&PID_00F6.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F6
+%USB\VID_26D1&PID_00F7.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F7
+%USB\VID_26D1&PID_00F8.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F8
+%USB\VID_26D1&PID_00F9.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00F9
+%USB\VID_26D1&PID_00FA.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FA
+%USB\VID_26D1&PID_00FB.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FB
+%USB\VID_26D1&PID_00FC.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FC
+%USB\VID_26D1&PID_00FD.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FD
+%USB\VID_26D1&PID_00FE.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FE
+%USB\VID_26D1&PID_00FF.DeviceDesc%=FtdiBus.NTamd64,USB\VID_26D1&PID_00FF
+
+[ControlFlags]
+ExcludeFromSelect=*
+
+[FtdiBus.NT]
+CopyFiles=FtdiBus.NT.Copy,FtdiBus.NT.Copy2
+AddReg=FtdiBus.NT.AddReg
+
+[FtdiBus.NTamd64]
+CopyFiles=FtdiBus.NTamd64.Copy,FtdiBus.NTamd64.Copy2,FtdiBus.NTamd64.Copy3
+AddReg=FtdiBus.NT.AddReg
+
+[FtdiBus.NT.Services]
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+
+[FtdiBus.NTamd64.Services]
+AddService = FTDIBUS, 0x00000002, FtdiBus.NT.AddService, FtdiBus.NT.EventLog_Inst
+
+[FtdiBus.NT.AddService]
+DisplayName = %SvcDesc%
+ServiceType = 1 ; SERVICE_KERNEL_DRIVER
+StartType = 3 ; SERVICE_DEMAND_START
+ErrorControl = 1 ; SERVICE_ERROR_NORMAL
+ServiceBinary = %10%\system32\drivers\ftdibus.sys
+LoadOrderGroup = Base
+
+[FtdiBus.NT.AddReg]
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,ftdibus.sys
+HKR,,EnumPropPages32,,"ftbusui.dll,FTBUSUIPropPageProvider"
+
+[FtdiBus.NT.EventLog_Inst]
+AddReg = FtdiBus.NT.EventLog_Inst.AddReg
+
+[FtdiBus.NT.EventLog_Inst.AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\ftdibus.sys"
+HKR,,TypesSupported,0x00010001,7
+
+[FtdiBus.NT.HW] 
+AddReg=FtdiBus.NT.HW.AddReg 
+
+[FtdiBus.NTamd64.HW] 
+AddReg=FtdiBus.NT.HW.AddReg 
+
+[FtdiBus.NT.HW.AddReg] 
+HKR,,"ConfigData",0x00010001,1
+   
+[FtdiBus.NT.Copy]
+ftdibus.sys
+
+[FtdiBus.NT.Copy2]
+ftbusui.dll
+ftd2xx.dll
+FTLang.dll
+
+[FtdiBus.NTamd64.Copy]
+ftdibus.sys
+
+[FtdiBus.NTamd64.Copy2]
+ftbusui.dll
+ftd2xx.dll,ftd2xx64.dll
+FTLang.dll
+
+[FtdiBus.NTamd64.Copy3]
+ftd2xx.dll
+
+[Strings]
+Ftdi="Thorlabs"
+DESC="Kinesis USB Driver Package"
+DriversDisk="Kinesis USB Drivers Disk"
+USB\VID_26D1&PID_0064.DeviceDesc="Thorlabs Kinesis Voice Coil Controller"
+USB\VID_26D1&PID_0065.DeviceDesc="Thorlabs Motorized XY Stage"
+USB\VID_26D1&PID_0066.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0067.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0068.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0069.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006A.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006B.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006C.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006D.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006E.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_006F.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0070.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0071.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0072.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0073.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0074.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0075.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0076.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0077.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0078.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0079.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007A.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007B.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007C.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007D.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007E.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_007F.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0080.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0081.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0082.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0083.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0084.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0085.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0086.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0087.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0088.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0089.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008A.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008B.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008C.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008D.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008E.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_008F.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0090.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0091.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0092.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0093.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0094.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0095.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0096.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0097.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0098.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_0099.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009A.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009B.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009C.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009D.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009E.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_009F.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00A9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AD.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00AF.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00B9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BD.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00BF.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00C9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CD.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00CF.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00D9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DD.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00DF.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00E9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00EA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00EB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00EC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00ED.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00EE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00EF.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F0.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F1.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F2.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F3.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F4.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F5.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F6.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F7.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F8.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00F9.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FA.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FB.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FC.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FD.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FE.DeviceDesc="Thorlabs Kinesis USB Device"
+USB\VID_26D1&PID_00FF.DeviceDesc="Thorlabs Kinesis USB Device"
+SvcDesc="USB Serial Converter Driver"
+ClassName="USB"

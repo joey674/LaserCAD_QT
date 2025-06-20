@@ -40,13 +40,20 @@ echo Can not find LaserCAD.exe in Build folder. please build the project in Qt f
 exit /b 1
 :found_exe
 
-rem 拷贝 DLL/
-if exist "%DLL_REL_PATH%" (
-    copy "%DLL_REL_PATH%" "%OUTPUT_REL_DIR%\"
-) else (
-    echo Can not find RTC5DLLx64.dll,exit.
-    exit /b 1
+@REM rem 拷贝 DLL/
+@REM if exist "%DLL_REL_PATH%" (
+@REM     copy "%DLL_REL_PATH%" "%OUTPUT_REL_DIR%\"
+@REM ) else (
+@REM     echo Can not find RTC5DLLx64.dll,exit.
+@REM     exit /b 1
+@REM )
+rem 拷贝 lib 文件夹下所有 DLL 和 LIB 文件 
+echo Copying all DLL and LIB files from lib\ to output folder...
+for /r "%PROJECT_ABS_PATH%\lib" %%F in (*.dll *.lib) do (
+    echo Copying: %%~nxF
+    copy "%%F" "%OUTPUT_REL_DIR%\"
 )
+
 
 rem 拷贝 RBF/DAT/OUT
 if exist "%DLL_REL_PATH%" (
@@ -54,7 +61,7 @@ if exist "%DLL_REL_PATH%" (
     copy "%DAT_REL_PATH%" "%OUTPUT_REL_DIR%\"
     copy "%OUT_REL_PATH%" "%OUTPUT_REL_DIR%\"
 ) else (
-    echo Can not find RBF/DATOUT,exit.
+    echo Can not find RBF/DAT/OUT,exit.
     exit /b 1
 )
 
