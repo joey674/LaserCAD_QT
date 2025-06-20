@@ -556,10 +556,11 @@ public: // 编辑回调
         auto itemList = combinedItem->breakItem();
         this->onDeleteItemsTriggered();
         for (auto &item : itemList) {
-            // 这些对象只是指针资源存在 既不在scene中 也不在itemmanager中; 所以同时要设置visible和additem
+            // 这些对象只是指针资源存在 既不在scene中 也不在itemmanager中; 所以要设置additem
+            auto uuid = item->getUUID ();
             SceneController::getIns().scene->addItem(item.get());
-            item->setVisible(true);
             ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
         }
     }
 

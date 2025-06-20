@@ -291,7 +291,7 @@ protected:
     }
     bool updateHatchFillItem() override;
     std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
-        DEBUG_MSG("break hatch");
+        // DEBUG_MSG("break hatch");
         std::vector < std::shared_ptr < GraphicsItem>> result;
         //
         auto startAngle = this->m_hatchFillParams.startAngle;
@@ -309,7 +309,7 @@ protected:
             result.push_back (combinedItem);
             this->m_hatchFillParams.startAngle += this->m_hatchFillParams.accumulateAngle;
         }
-        DEBUG_VAR(result.size ());
+        // DEBUG_VAR(result.size ());
         this->m_hatchFillParams.startAngle = startAngle;
         this->m_hatchFillParams.operateCount = 0;
         return result;

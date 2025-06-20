@@ -19,6 +19,10 @@
 #include "laserdevicertc5.h"
 #include "hardwarecontroller.h"
 #include "laserdevicetest.h"
+#include <QMediaPlayer>
+#include <QVideoWidget>
+#include <QMovie>
+
 
 class UiManager {
 private:
@@ -137,6 +141,7 @@ private:
         QToolButton *btnDraw = createButton("Draw");
         QToolButton *btnControl = createButton("Control");
         QToolButton *btnSetting = createButton("Setting");
+        QToolButton *btnInstruction = createButton("Instruction");//
 
         QToolButton *markButton = createLabeledIconButton("Mark", ":/button/markButton.png");
 
@@ -145,6 +150,7 @@ private:
         btnLayout->addWidget(btnDraw);
         btnLayout->addWidget(btnControl);
         btnLayout->addWidget(btnSetting);
+        btnLayout->addWidget(btnInstruction);//
         btnLayout->addStretch();
         btnLayout->addWidget(markButton);
 
@@ -152,6 +158,7 @@ private:
         stack->addWidget(createDrawPage());
         stack->addWidget(createControlPage());
         stack->addWidget (createSettingPage());
+        stack->addWidget (createInstructionPage());
 
         QHBoxLayout *mainLayout = new QHBoxLayout(parent);
         mainLayout->setMargin(0);
@@ -164,19 +171,29 @@ private:
             btnDraw->setChecked(true);
             btnControl->setChecked(false);
             btnSetting->setChecked(false);
+            btnInstruction->setChecked(false);
             stack->setCurrentIndex(0);
         });
         parent->connect(btnControl, &QToolButton::clicked, parent, [=]() {
             btnControl->setChecked(true);
             btnDraw->setChecked(false);
             btnSetting->setChecked(false);
+            btnInstruction->setChecked(false);
             stack->setCurrentIndex(1);
         });
         parent->connect(btnSetting, &QToolButton::clicked, parent, [=]() {
             btnControl->setChecked(false);
             btnDraw->setChecked(false);
             btnSetting->setChecked(true);
+            btnInstruction->setChecked(false);
             stack->setCurrentIndex(2);
+        });
+        parent->connect(btnInstruction, &QToolButton::clicked, parent, [=]() {
+            btnControl->setChecked(false);
+            btnDraw->setChecked(false);
+            btnSetting->setChecked(false);
+            btnInstruction->setChecked(true);
+            stack->setCurrentIndex(3);
         });
 
         QObject::connect(markButton, &QToolButton::clicked, parent, [=]() {
@@ -398,6 +415,20 @@ private:
         mainLayout->addWidget(createVerticalLine());
 
         mainLayout->addWidget(wrapWithTitle("MotionStage Setting", createMotionStageSettingWidget()));
+        mainLayout->addWidget(createVerticalLine());
+
+        mainLayout->addStretch();
+
+        return page;
+    }
+
+    QWidget *createInstructionPage()
+    {
+        QWidget *page = new QWidget;
+        QHBoxLayout *mainLayout = new QHBoxLayout(page);
+        page->setLayout(mainLayout);
+
+        mainLayout->addWidget(wrapWithTitle("Get Fill Item For Island", createInstruction1Widget()));
         mainLayout->addWidget(createVerticalLine());
 
         mainLayout->addStretch();
@@ -1199,6 +1230,27 @@ private:
         });
 
         return widget;
+    }
+
+
+    QWidget* createInstruction1Widget() {
+        QLabel *gifLabel = new QLabel;
+        gifLabel->setAlignment(Qt::AlignCenter);
+        gifLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+        QString absPath = QDir::current().absoluteFilePath("static/video/Get_Fill_Item_For_Island.gif");
+        DEBUG_MSG(absPath);
+
+        QMovie *movie = new QMovie(absPath);
+        gifLabel->setMovie(movie);
+        movie->start();
+
+        QVBoxLayout *layout = new QVBoxLayout();
+        layout->addWidget(gifLabel);
+
+        QWidget *container = new QWidget;
+        container->setLayout(layout);
+        return container;
     }
 
 

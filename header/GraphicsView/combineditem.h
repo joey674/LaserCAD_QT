@@ -53,6 +53,25 @@ public:
     {
         return std::vector<std::shared_ptr<GraphicsItem>>();
     };
+    std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() override {
+        // DEBUG_MSG("break hatch");
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        this->updateHatchFillItem ();
+
+        auto combinedItem = std::make_shared<CombinedItem>();
+        // 转换类型
+        std::vector < std::shared_ptr < GraphicsItem>> graphicsItems;
+        graphicsItems.reserve(this->m_hatchFillItemList.size());
+        for (const auto& item : this->m_hatchFillItemList) {
+            graphicsItems.push_back(std::static_pointer_cast<GraphicsItem>(item));
+        }
+        // 装进combinedItem,然后装进result
+        combinedItem->combinedItem (graphicsItems);
+        result.push_back (combinedItem);
+
+        this->m_hatchFillParams.operateCount = 0;
+        return result;
+    };
     // 添加item/解散item
     bool combinedItem(std::vector<std::shared_ptr<GraphicsItem>> itemList)
     {

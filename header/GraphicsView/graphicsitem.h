@@ -61,7 +61,7 @@ public:
     virtual bool setCenterInScene(const QPointF point) = 0;
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() = 0;
     virtual std::vector < std::shared_ptr < GraphicsItem>> breakContourFillItem() = 0;
-    virtual std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() {};
+    virtual std::vector < std::shared_ptr < GraphicsItem>> breakHatchFillItem() = 0 ;
     bool setColor(QColor color) {
         this->m_color = color;
         this->m_animateColor = color;

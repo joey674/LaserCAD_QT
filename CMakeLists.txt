@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Core Widgets Multimedia MultimediaWidgets)
 
 set(PROJECT_SOURCES
         src/main.cpp
@@ -128,9 +129,12 @@ include_directories(${PROJECT_SOURCE_DIR})
 #     endif()
 # endif()
 
-target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(LaserCAD PRIVATE Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Multimedia
+  Qt${QT_VERSION_MAJOR}::MultimediaWidgets)
 target_link_libraries(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/GTS/gts.lib)
 target_link_libraries(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/Thorlabs/ThorlabsMotion.lib)
+
 
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TreeViewModel)
