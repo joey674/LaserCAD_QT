@@ -26,10 +26,10 @@ bool MotionStageDeviceThorlabs::disconnect() {
 }
 
 bool MotionStageDeviceThorlabs::setPos(double x, double y, double z) {
-    (void)y; (void)z;
+    (void)x; (void)y;
 
     int deviceUnit = 0;
-    if (ISC_GetDeviceUnitFromRealValue(m_serialNo, x, &deviceUnit, 0) != 0)
+    if (ISC_GetDeviceUnitFromRealValue(m_serialNo, z, &deviceUnit, 0) != 0)
         return false;
 
     if (ISC_SetMoveAbsolutePosition(m_serialNo, deviceUnit) != 0)

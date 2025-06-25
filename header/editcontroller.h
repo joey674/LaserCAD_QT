@@ -356,46 +356,6 @@ public: // 编辑回调
 
     /// \brief 按钮回调 直接操作当前editItemGroup;
     ///
-    void onBreakContourFillItemTriggered() {
-        if (this->m_currentEditItemGroup.size() != 1) {
-            return;
-        }
-        auto &curEditItem = this->m_currentEditItemGroup[0];
-        auto contourItems = curEditItem->breakContourFillItem();
-        for (auto &item : contourItems) {
-            auto uuid = item->getUUID();
-            SceneController::getIns().scene->addItem(item.get());
-            ItemManager::getIns().addItem(std::move(item));
-            ItemManager::getIns().setItemSelectable(uuid, true);
-        }
-    }
-    void onBreakHatchFillItemTriggered() {
-        if (this->m_currentEditItemGroup.size() != 1) {
-            return;
-        }
-        auto &curEditItem = this->m_currentEditItemGroup[0];
-        auto hatchItems = curEditItem->breakHatchFillItem();
-        for (auto &item : hatchItems) {
-            auto uuid = item->getUUID();
-            SceneController::getIns().scene->addItem(item.get());
-            item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
-            ItemManager::getIns().addItem(std::move(item));
-            ItemManager::getIns().setItemSelectable(uuid, true);
-        }
-    }
-    void onBreakCopiedItemTriggered() {
-        if (this->m_currentEditItemGroup.size() != 1) {
-            return;
-        }
-        auto &curEditItem = this->m_currentEditItemGroup[0];
-        auto copiedItems = curEditItem->breakCopiedItem();
-        for (auto &item : copiedItems) {
-            auto uuid = item->getUUID();
-            SceneController::getIns().scene->addItem(item.get());
-            ItemManager::getIns().addItem(std::move(item));
-            ItemManager::getIns().setItemSelectable(uuid, true);
-        }
-    }
     void onCenterToOriginTriggered() {
         if (this->m_currentEditItemGroup.empty()) {
             return;
@@ -541,6 +501,57 @@ public: // 编辑回调
         SceneController::getIns().scene->addItem(itemGroup.get());
         ItemManager::getIns().addItem(std::move(itemGroup));
     }
+    void onBreakContourFillItemTriggered() {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        auto contourItems = curEditItem->breakContourFillItem();
+        for (auto &item : contourItems) {
+            auto uuid = item->getUUID();
+            SceneController::getIns().scene->addItem(item.get());
+            {
+                item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
+                item->setVisible (true);// 可能在删除的时候设置了visible
+            }
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
+        }
+    }
+    void onBreakHatchFillItemTriggered() {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        auto hatchItems = curEditItem->breakHatchFillItem();
+        for (auto &item : hatchItems) {
+            auto uuid = item->getUUID();
+            SceneController::getIns().scene->addItem(item.get());
+            {
+                item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
+                item->setVisible (true);// 可能在删除的时候设置了visible
+            }
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
+        }
+    }
+    void onBreakCopiedItemTriggered() {
+        if (this->m_currentEditItemGroup.size() != 1) {
+            return;
+        }
+        auto &curEditItem = this->m_currentEditItemGroup[0];
+        auto copiedItems = curEditItem->breakCopiedItem();
+        for (auto &item : copiedItems) {
+            auto uuid = item->getUUID();
+            SceneController::getIns().scene->addItem(item.get());
+            {
+                item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
+                item->setVisible (true);// 可能在删除的时候设置了visible
+            }
+            ItemManager::getIns().addItem(std::move(item));
+            ItemManager::getIns().setItemSelectable(uuid, true);
+        }
+    }
     void onBreakItemsTriggered()
     {
         if (this->m_currentEditItemGroup.size() != 1
@@ -559,6 +570,10 @@ public: // 编辑回调
             // 这些对象只是指针资源存在 既不在scene中 也不在itemmanager中; 所以要设置additem
             auto uuid = item->getUUID ();
             SceneController::getIns().scene->addItem(item.get());
+            {
+                item->setCenterInScene (item->getCenterInScene ());// 强制渲染试试
+                item->setVisible (true);// 可能在删除的时候设置了visible
+            }
             ItemManager::getIns().addItem(std::move(item));
             ItemManager::getIns().setItemSelectable(uuid, true);
         }

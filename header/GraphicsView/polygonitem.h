@@ -105,7 +105,6 @@ public:
         std::vector < std::shared_ptr < GraphicsItem>> result;
         result.reserve(this->m_copiedItemList.size());
         for (auto &&item : std::move(this->m_copiedItemList)) {
-            item->setPos(this->pos()); // 把位置也更新了; 作为copiedItem是不会保存这个数据的
             result.emplace_back(std::move(item));
         }
         m_copiedItemList.clear();
@@ -121,7 +120,7 @@ public:
         std::vector < std::shared_ptr < GraphicsItem>> result;
         result.reserve(this->m_contourFillItemList.size());
         for (auto &&item : std::move(this->m_contourFillItemList)) {
-            item->setPos(this->pos()); // 把位置也更新了; 作为offsetItem是不会保存这个数据的
+
             result.emplace_back(std::move(item));
         }
         m_contourFillItemList.clear();
@@ -420,7 +419,7 @@ protected:
             return QRectF();
         }
         QRectF newRect = this->getBoundingRectBasis ();
-        // 包含offsetItem
+        // 包含contourFillItem
         newRect = newRect.adjusted(
                       -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,
                       -abs(this->m_contourFillParams.offset) * this->m_contourFillParams.offsetCount ,

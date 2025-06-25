@@ -11,11 +11,14 @@ public:
     CombinedItem() {}
     std::shared_ptr<GraphicsItem> clone() const override
     {
-        // auto item = std::make_shared<CombinedItem>();
-        // // 拷贝基类字段
-        // item->cloneBaseParams(*this);
-        // item->animate();
-        // return item;
+        auto combinedItem = std::make_shared<CombinedItem>();
+        // 拷贝基类字段
+        combinedItem->cloneBaseParams(*this);
+        for (auto & item: this->m_itemList) {
+            combinedItem->m_itemList.push_back (item->clone ());
+        }
+        combinedItem->animate();
+        return combinedItem;
     }
     std::shared_ptr<GraphicsItem> createFromJson(QJsonObject obj) override
     {
@@ -45,9 +48,20 @@ public:
         return true;
     }
     // deprecated
-    std::vector<std::shared_ptr<GraphicsItem>> breakCopiedItem() override
-    {
-        return std::vector<std::shared_ptr<GraphicsItem>>();
+    std::vector < std::shared_ptr < GraphicsItem>> breakCopiedItem() override {
+        // 获取当前最新的copiedItem
+        this->updateCopiedItem ();
+        // 设置Params为空
+        m_vectorCopyParams.setEmpty();
+        m_matrixCopyParams.setEmpty();
+        // 获取当前copiedItem  如果没有copiedItem就返回空数组
+        std::vector < std::shared_ptr < GraphicsItem>> result;
+        result.reserve(this->m_copiedItemList.size());
+        for (auto &&item : std::move(this->m_copiedItemList)) {
+            result.emplace_back(std::move(item));
+        }
+        m_copiedItemList.clear();
+        return result;
     }
     std::vector<std::shared_ptr<GraphicsItem>> breakContourFillItem() override
     {
@@ -103,8 +117,8 @@ protected:
     }
     // deprecated
     bool updateContourFillItem() override;
-    bool updateCopiedItem() override { return true; }
-    bool updateHatchFillItem() override;
+    bool updateCopiedItem() override;
+    bool updateHatchFillItem() override ;//
 
 public:
     cavc::Polyline<double> getCavcForm() const override
@@ -162,6 +176,12 @@ protected:
         for (const auto &item : m_itemList) {
             newRect = newRect.united(item->boundingRect());
         }
+        // 包含copiedItem
+        for (const auto &item : m_copiedItemList) {
+            if (item) {
+                newRect = newRect.united(item->boundingRect());
+            }
+        }
         return newRect;
     }
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override
@@ -182,6 +202,10 @@ protected:
         for (auto &item : this->m_hatchFillItemList) {
             item->paint(painter, &optionx, widget);
         }
+        // 绘制copied
+        for (auto &item : this->m_copiedItemList) {
+            item->paint(painter, &optionx, widget);
+        }
     }
 
 private:
@@ -189,6 +213,7 @@ private:
     std::vector<std::shared_ptr<QGraphicsItem>> m_paintItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_contourFillItemList;
     std::vector < std::shared_ptr < PolylineItem>> m_hatchFillItemList;
+    std::vector < std::shared_ptr < CombinedItem>> m_copiedItemList;
 };
 
 #endif // COMBINEDITEM_H
