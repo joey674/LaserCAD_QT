@@ -68,6 +68,12 @@ set(PROJECT_SOURCES
         header/MotionStageWorker/motionstagedevice.h    header/MotionStageWorker/motionstagedevice.cpp
         header/MotionStageWorker/motionstagedevicethorlabs.h    header/MotionStageWorker/motionstagedevicethorlabs.cpp
         header/MotionStageWorker/motionstagedevicetest.h    header/MotionStageWorker/motionstagedevicetest.cpp
+
+        header/MediaPlayer/histogramwidget.cpp header/MediaPlayer/histogramwidget.h
+        header/MediaPlayer/player.cpp header/MediaPlayer/player.h
+        header/MediaPlayer/playercontrols.cpp header/MediaPlayer/playercontrols.h
+        header/MediaPlayer/videowidget.cpp header/MediaPlayer/videowidget.h
+        header/MediaPlayer/playlistmodel.cpp header/MediaPlayer/playlistmodel.h
 )
 set(RTC5_SOURCES
     lib/RTC5/RTC5expl.h             lib/RTC5/RTC5expl.cpp
@@ -146,6 +152,7 @@ target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TableVi
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/TabWidget)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/LaserWorker)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MotionStageWorker)
+target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/header/MediaPlayer)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/CavalierContours)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC4)
 target_include_directories(LaserCAD PRIVATE ${PROJECT_SOURCE_DIR}/lib/RTC5)

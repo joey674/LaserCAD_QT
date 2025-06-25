@@ -40,6 +40,8 @@ void MotionStageWorker::setDevice(std::unique_ptr<MotionStageDevice> device)
         return;
     }
 
+    this->setPos (0,0,0);
+
     INFO_MSG("set stage device success");
 }
 

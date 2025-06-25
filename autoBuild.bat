@@ -16,6 +16,7 @@ set "OUT_REL_PATH=static\RTC5\RTC5OUT.out"
 set "DAT_REL_PATH=static\RTC5\RTC5DAT.dat"
 set "RBF_REL_PATH=static\RTC5\RTC5RBF.rbf"
 set "CORRECTIONFILE_REL_DIR=static\CorrectionFiles"
+set "VIDEO_REL_DIR=static\Video"
 
 rem env是32bit的
 @REM set "QT_ENV=E:\Repo\Qt\5.15.18\mingw81_32\bin\qtenv2.bat"
@@ -47,7 +48,7 @@ exit /b 1
 @REM     echo Can not find RTC5DLLx64.dll,exit.
 @REM     exit /b 1
 @REM )
-rem 拷贝 lib 文件夹下所有 DLL 和 LIB 文件 
+rem 拷贝 lib 文件夹下所有 DLL 和 LIB 文件
 echo Copying all DLL and LIB files from lib\ to output folder...
 for /r "%PROJECT_ABS_PATH%\lib" %%F in (*.dll *.lib) do (
     echo Copying: %%~nxF
@@ -70,6 +71,14 @@ if exist "%CORRECTIONFILE_REL_DIR%" (
     xcopy /E /I /Y "%CORRECTIONFILE_REL_DIR%" "%OUTPUT_REL_DIR%\CorrectionFiles"
 ) else (
     echo CorrectionFiles folder not found.
+    exit /b 1
+)
+
+rem 拷贝 Video
+if exist "%VIDEO_REL_DIR%" (
+    xcopy /E /I /Y "%VIDEO_REL_DIR%" "%OUTPUT_REL_DIR%\Video"
+) else (
+    echo Video folder not found.
     exit /b 1
 )
 

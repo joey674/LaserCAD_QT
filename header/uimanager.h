@@ -19,9 +19,11 @@
 #include "laserdevicertc5.h"
 #include "hardwarecontroller.h"
 #include "laserdevicetest.h"
+#include "player.h"
 #include <QMediaPlayer>
 #include <QVideoWidget>
 #include <QMovie>
+#include <QListWidget>
 
 
 class UiManager {
@@ -422,19 +424,69 @@ private:
         return page;
     }
 
-    QWidget *createInstructionPage()
+    QWidget* createInstructionPage()
     {
         QWidget *page = new QWidget;
         QHBoxLayout *mainLayout = new QHBoxLayout(page);
-        page->setLayout(mainLayout);
 
-        mainLayout->addWidget(wrapWithTitle("Get Fill Item For Island", createInstruction1Widget()));
+        // 左侧列表
+        QListWidget *videoList = new QListWidget;
+
+        // 扫描 Video/ 目录下所有视频文件
+        QString videoDir = QDir::current().absoluteFilePath("Video");
+        QDir dir(videoDir);
+        QStringList filters = { "*.avi", "*.mp4", "*.mkv" };  // 可根据需要添加格式
+        QFileInfoList fileList = dir.entryInfoList(filters, QDir::Files | QDir::Readable, QDir::Name);
+
+        // 映射：显示用的名称 -> 文件完整路径
+        QMap<QString, QString> videoMap;
+        for (const QFileInfo &fileInfo : fileList) {
+            QString nameWithoutExt = fileInfo.completeBaseName();
+            videoList->addItem(nameWithoutExt);
+            videoMap[nameWithoutExt] = fileInfo.absoluteFilePath();
+        }
+
+        // 右侧播放器区域
+        Player *player = new Player();
+        player->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+        // 右侧布局封装
+        QVBoxLayout *rightLayout = new QVBoxLayout;
+        rightLayout->addWidget(player);
+        QWidget *rightWidget = new QWidget;
+        rightWidget->setLayout(rightLayout);
+
+        // 布局组装
+        mainLayout->addWidget(videoList, 1);
         mainLayout->addWidget(createVerticalLine());
+        mainLayout->addWidget(rightWidget, 3);
 
-        mainLayout->addStretch();
+        // 信号槽连接：点击列表项时切换视频
+        QObject::connect(videoList, &QListWidget::itemClicked, [=](QListWidgetItem *item) {
+            QString name = item->text();
+            if (videoMap.contains(name)) {
+                QList<QUrl> urls = { QUrl::fromLocalFile(videoMap[name]) };
+                player->clearPlaylist ();
+                player->addToPlaylist(urls);
+            } else {
+                WARN_MSG("video not found in map");
+            }
+        });
+
+        // 默认选中第一个并播放
+        if (videoList->count() > 0) {
+            videoList->setCurrentRow(0);
+            QString name = videoList->item(0)->text();
+            if (videoMap.contains(name)) {
+                QList<QUrl> urls = { QUrl::fromLocalFile(videoMap[name]) };
+                player->addToPlaylist(urls);
+            }
+        }
 
         return page;
     }
+
+
 
 
     QFrame *createVerticalLine(QWidget *parent = nullptr) {
@@ -991,12 +1043,39 @@ private:
         mainLayout->addWidget(posGroup);
         mainLayout->addStretch ();
 
+        // xyz 死区位置
+        const double zMin = 0;
+        const double zMax =  40.0;
+        const double xMin = 0;
+        const double xMax =  500;
+        const double yMin = 0;
+        const double yMax =  500;
         // 绑定信号
         auto moveAxis = [=](const QString& axis, int dir) {
             double step = stepEdit->text().toDouble();
-            if (axis == "X") *curX += dir * step;
-            if (axis == "Y") *curY += dir * step;
-            if (axis == "Z") *curZ += dir * step;
+
+            if (axis == "Z") {
+                double newZ = *curZ + dir * step;
+                if (newZ < zMin || newZ > zMax) {
+                    WARN_MSG("z axis move cross dead zone, will skip operation");
+                    return;
+                }
+                *curZ = newZ;
+            } else if (axis == "X") {
+                double newX = *curX + dir * step;
+                if (newX < xMin || newX > xMax) {
+                    WARN_MSG("x axis move cross dead zone, will skip operation");
+                    return;
+                }
+                *curX = newX;
+            } else if (axis == "Y") {
+                double newY = *curY + dir * step;
+                if (newY < yMin || newY > yMax) {
+                    WARN_MSG("y axis move cross dead zone, will skip operation");
+                    return;
+                }
+                *curY = newY;
+            }
 
             MotionStageWorker::getIns().setPos(*curX, *curY, *curZ);
 
@@ -1234,24 +1313,29 @@ private:
 
 
     QWidget* createInstruction1Widget() {
-        QLabel *gifLabel = new QLabel;
-        gifLabel->setAlignment(Qt::AlignCenter);
-        gifLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-        QString absPath = QDir::current().absoluteFilePath("static/video/Get_Fill_Item_For_Island.gif");
-        DEBUG_MSG(absPath);
-
-        QMovie *movie = new QMovie(absPath);
-        gifLabel->setMovie(movie);
-        movie->start();
-
         QVBoxLayout *layout = new QVBoxLayout();
-        layout->addWidget(gifLabel);
+
+        // 创建 Player 实例
+        Player *player = new Player();
+        player->setMinimumSize(1000, 1000);
+
+        // 加载并直接播放指定视频
+        QString videoPath = QDir::current().absoluteFilePath("Video/Get_Fill_Item_For_Island.avi");
+        if (QFile::exists(videoPath)) {
+            QList<QUrl> urls = { QUrl::fromLocalFile(videoPath) };
+            player->addToPlaylist(urls);
+        } else {
+            qWarning() << "视频文件不存在：" << videoPath;
+        }
+
+        layout->addWidget(player);
 
         QWidget *container = new QWidget;
         container->setLayout(layout);
         return container;
     }
+
+
 
 
 public:
