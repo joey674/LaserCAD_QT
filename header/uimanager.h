@@ -1270,14 +1270,35 @@ private:
         paramStack->addWidget(googolParamWidget);
 
         // Thorlabs
+        // QWidget* thorlabsParamWidget = new QWidget();
+        // QFormLayout* thorlabsForm = new QFormLayout(thorlabsParamWidget);
+        // QLineEdit* thorlabsSerialEdit = new QLineEdit("00000000");
+        // thorlabsForm->addRow("Serial No:", thorlabsSerialEdit);
+        // paramStack->addWidget(thorlabsParamWidget);
+        // paramBoxLayout->addWidget(paramStack);
+        // mainLayout->addWidget(paramBox);
+
         QWidget* thorlabsParamWidget = new QWidget();
         QFormLayout* thorlabsForm = new QFormLayout(thorlabsParamWidget);
-        QLineEdit* thorlabsSerialEdit = new QLineEdit("00000000");
-        thorlabsForm->addRow("Serial No:", thorlabsSerialEdit);
+        QLineEdit* thorlabsSerialEdit = new QLineEdit;
+        thorlabsSerialEdit->setVisible(false);
+        QComboBox* thorlabsSerialCombo = new QComboBox;
+        std::vector<std::string> serialList = MotionStageDeviceThorlabs::getStageList();
+        for (const auto& serial : serialList) {
+            thorlabsSerialCombo->addItem(QString::fromStdString(serial));
+        }
+        if (!serialList.empty()) {
+            thorlabsSerialEdit->setText(QString::fromStdString(serialList[0]));
+        }
+        QObject::connect(thorlabsSerialCombo, &QComboBox::currentTextChanged, [=](const QString &text) {
+            thorlabsSerialEdit->setText(text);
+        });
+        thorlabsForm->addRow("Serial No:", thorlabsSerialCombo);
+        thorlabsForm->addRow(thorlabsSerialEdit);
         paramStack->addWidget(thorlabsParamWidget);
-
         paramBoxLayout->addWidget(paramStack);
         mainLayout->addWidget(paramBox);
+
 
         // 响应 radio 变化切换参数页
         QObject::connect(testRadio, &QRadioButton::toggled, widget, [=](bool checked){

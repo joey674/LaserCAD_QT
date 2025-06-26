@@ -5,7 +5,45 @@
 #include <chrono>
 #include "logger.h"
 
-bool MotionStageDeviceThorlabs::connect() {
+std::vector<std::string> MotionStageDeviceThorlabs::getStageList() {
+    DEBUG_MSG("get stage list");
+    std::vector<std::string> serialList;
+
+    int ret = TLI_BuildDeviceList();
+    if (ret != 0) {
+        WARN_MSG("TLI_BuildDeviceList failed");
+        return serialList;
+    }
+
+    int nDevices = TLI_GetDeviceListSize();
+    if (nDevices <= 0) {
+        WARN_MSG("No devices found");
+        return serialList;
+    }
+
+    // 获取序列号字符串
+    char serialNos[256] = {0};
+    int getListRet = TLI_GetDeviceListExt(serialNos, sizeof(serialNos));
+
+    if (getListRet != 0 || strlen(serialNos) == 0) {
+        WARN_MSG("No matching devices or TLI_GetDeviceListByTypeExt failed");
+        return serialList;
+    }
+
+    char* context = nullptr;
+    char* p = strtok_s(serialNos, ",", &context);
+
+    while (p != nullptr) {
+        serialList.emplace_back(p);
+        p = strtok_s(nullptr, ",", &context);
+    }
+
+    return serialList;
+}
+
+
+bool MotionStageDeviceThorlabs::connect()
+{
     if (TLI_BuildDeviceList() != 0) return false;
 
     if (ISC_Open(m_serialNo) != 0) return false;
