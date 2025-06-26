@@ -40,8 +40,6 @@ void MotionStageWorker::setDevice(std::unique_ptr<MotionStageDevice> device)
         return;
     }
 
-    this->setPos (0,0,0);
-
     INFO_MSG("set stage device success");
 }
 
@@ -52,6 +50,13 @@ bool MotionStageWorker::getDeviceConnectStatus()
     } else {
         return false;
     }
+}
+
+std::tuple<double, double, double> MotionStageWorker::getPos() {
+    if (!this->m_device) {
+        return std::make_tuple(0, 0, 0);
+    }
+    return this->m_device->getPos ();
 }
 
 void MotionStageWorker::threadMain()

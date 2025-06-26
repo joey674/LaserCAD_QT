@@ -21,6 +21,7 @@ public:
     void setPos(double x_mm, double y_mm, double z_mm);
     void setDevice(std::unique_ptr<MotionStageDevice> device);
     bool getDeviceConnectStatus();
+    std::tuple<double, double, double> getPos();
 
 private:
     void threadMain();

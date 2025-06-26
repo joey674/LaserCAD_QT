@@ -13,6 +13,8 @@ public:
     bool connect() override;
     bool disconnect() override;
     bool setPos(double x,double y,double z) override;
+    bool resetPos() override;
+    bool checkStatus();
 };
 
 #endif // MOTIONSTAGEDEVICEGOOGOL_H

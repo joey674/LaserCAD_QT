@@ -991,10 +991,6 @@ private:
         QWidget* widget = new QWidget();
         QVBoxLayout* mainLayout = new QVBoxLayout(widget);
 
-        double* curX = new double(0);
-        double* curY = new double(0);
-        double* curZ = new double(0);
-
         // XY按钮区域
         QGroupBox* xyGroup = new QGroupBox("XY Move");
         QGridLayout* moveLayout = new QGridLayout(xyGroup);
@@ -1022,6 +1018,18 @@ private:
 
         mainLayout->addWidget(zGroup);
 
+        // Reset 区域
+        QGroupBox* resetGroup = new QGroupBox("Reset");
+        QHBoxLayout* resetLayout = new QHBoxLayout(resetGroup);
+
+        QPushButton* btnReset = new QPushButton("Reset Position");
+        resetLayout->addWidget(btnReset);
+
+        QObject::connect(btnReset, &QPushButton::clicked, [=]() {
+            MotionStageWorker::getIns().setPos(0, 0, 0);
+        });
+        mainLayout->addWidget(resetGroup);
+
         // 步长输入区域
         QGroupBox* stepGroup = new QGroupBox("Step Size (mm)");
         QHBoxLayout* stepLayout = new QHBoxLayout(stepGroup);
@@ -1033,56 +1041,50 @@ private:
 
         mainLayout->addWidget(stepGroup);
 
-        // 显示区域
+        // 轴位置显示区域
         QGroupBox* posGroup = new QGroupBox("Current Position");
         QHBoxLayout* posLayout = new QHBoxLayout(posGroup);
-
-        QLabel* posLabel = new QLabel("X=0.00  Y=0.00  Z=0.00");
+        QLabel* posLabel = new QLabel;
         posLayout->addWidget(posLabel);
-
         mainLayout->addWidget(posGroup);
-        mainLayout->addStretch ();
+        QTimer* timer = new QTimer(widget);
+        timer->setInterval(1000);
+        QObject::connect(timer, &QTimer::timeout, [=]() {
+            auto [updatedX, updatedY, updatedZ] = MotionStageWorker::getIns().getPos();
+            posLabel->setText(QString("X=%1  Y=%2  Z=%3")
+                                  .arg(updatedX, 0, 'f', 2)
+                                  .arg(updatedY, 0, 'f', 2)
+                                  .arg(updatedZ, 0, 'f', 2));
+        });
+        timer->start();
 
-        // xyz 死区位置
-        const double zMin = 0;
-        const double zMax =  40.0;
-        const double xMin = 0;
-        const double xMax =  500;
-        const double yMin = 0;
-        const double yMax =  500;
-        // 绑定信号
+        //
+        mainLayout->addStretch();
+
+        // 绑定按钮逻辑
         auto moveAxis = [=](const QString& axis, int dir) {
             double step = stepEdit->text().toDouble();
+            auto [curX, curY, curZ] = MotionStageWorker::getIns().getPos();
 
-            if (axis == "Z") {
-                double newZ = *curZ + dir * step;
-                if (newZ < zMin || newZ > zMax) {
-                    WARN_MSG("z axis move cross dead zone, will skip operation");
-                    return;
-                }
-                *curZ = newZ;
-            } else if (axis == "X") {
-                double newX = *curX + dir * step;
-                if (newX < xMin || newX > xMax) {
-                    WARN_MSG("x axis move cross dead zone, will skip operation");
-                    return;
-                }
-                *curX = newX;
+            double newX = curX;
+            double newY = curY;
+            double newZ = curZ;
+
+            if (axis == "X") {
+                newX += dir * step;
             } else if (axis == "Y") {
-                double newY = *curY + dir * step;
-                if (newY < yMin || newY > yMax) {
-                    WARN_MSG("y axis move cross dead zone, will skip operation");
-                    return;
-                }
-                *curY = newY;
+                newY += dir * step;
+            } else if (axis == "Z") {
+                newZ += dir * step;
             }
 
-            MotionStageWorker::getIns().setPos(*curX, *curY, *curZ);
+            MotionStageWorker::getIns().setPos(newX, newY, newZ);
 
+            auto [updatedX, updatedY, updatedZ] = MotionStageWorker::getIns().getPos();
             posLabel->setText(QString("X=%1  Y=%2  Z=%3")
-                                  .arg(*curX, 0, 'f', 2)
-                                  .arg(*curY, 0, 'f', 2)
-                                  .arg(*curZ, 0, 'f', 2));
+                                  .arg(updatedX, 0, 'f', 2)
+                                  .arg(updatedY, 0, 'f', 2)
+                                  .arg(updatedZ, 0, 'f', 2));
         };
 
         QObject::connect(btnXPos, &QPushButton::clicked, [=]() { moveAxis("X", +1); });
@@ -1094,6 +1096,7 @@ private:
 
         return widget;
     }
+
 
 
     QWidget* createRTCSettingWidget() {
