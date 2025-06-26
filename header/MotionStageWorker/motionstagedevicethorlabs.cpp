@@ -6,7 +6,7 @@
 #include "logger.h"
 
 std::vector<std::string> MotionStageDeviceThorlabs::getStageList() {
-    DEBUG_MSG("get stage list");
+    // DEBUG_MSG("get stage list");
     std::vector<std::string> serialList;
 
     int ret = TLI_BuildDeviceList();
@@ -104,9 +104,4 @@ bool MotionStageDeviceThorlabs::setPos(double x, double y, double z) {
     this->m_z = z;
     INFO_MSG("motion stage of Thorlabs: set pos");
     return true;
-}
-
-std::tuple<double, double, double> MotionStageDeviceThorlabs::getPos()
-{
-    return std::make_tuple(m_x, m_y, m_z);
 }

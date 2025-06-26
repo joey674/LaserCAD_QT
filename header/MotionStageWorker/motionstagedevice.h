@@ -11,7 +11,7 @@ public:
     virtual bool setPos(double x,double y,double z){};
     virtual bool setSpeed(){};
     virtual bool resetPos(){};
-    virtual std::tuple<double, double, double> getPos(){
+    std::tuple<double, double, double> getPos(){
         return std::make_tuple(m_x, m_y, m_z);
     };
 

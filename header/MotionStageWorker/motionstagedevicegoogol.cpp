@@ -14,13 +14,17 @@ bool MotionStageDeviceGoogol::connect()
         return false;
     }
 
-    const int axes[] = {AXIS_X, AXIS_Y, AXIS_Z};
+    // 清除各轴的报警和限位
+    /*ErrorCode = */GT_ClrSts(1, 8);
 
+    //
+    /*ErrorCode = */  GT_Reset();
+
+    //
+    const int axes[] = {AXIS_X, AXIS_Y, AXIS_Z};
     for (int i = 0; i < 3; ++i) {
         int axis = axes[i];
 
-        // 清除各轴的报警和限位
-        ErrorCode = GT_ClrSts(1, 8);
         // 伺服使能
         ErrorCode = GT_AxisOn(axis);
         // 位置清零
@@ -36,9 +40,6 @@ bool MotionStageDeviceGoogol::connect()
         trap.smoothTime = 25;
         // 设置点位运动参数
         ErrorCode = GT_SetTrapPrm(axis, &trap);
-
-        // 设置报警
-        ErrorCode = GT_AlarmOn (axis);
     }
 
     INFO_MSG("motion device connect success");
@@ -53,52 +54,78 @@ bool MotionStageDeviceGoogol::disconnect() {
     return true;
 }
 
-// 脉冲加方向的形式;也就是说 这里的需要转换
 bool MotionStageDeviceGoogol::setPos(double x, double y, double z) {
     short ErrorCode;
     const int PULSE_PER_MM = 2000;
 
-    auto dx = x - this->m_x;
-    auto dy = x - this->m_y;
-    auto dz = x - this->m_z;
+    long x_pulse = static_cast<long>((x) * PULSE_PER_MM);
+    long y_pulse = static_cast<long>((y) * PULSE_PER_MM);
+    long z_pulse = static_cast<long>((z) * PULSE_PER_MM);
 
-    long posX = static_cast<long>(dx * PULSE_PER_MM);
-    long posY = static_cast<long>(dy * PULSE_PER_MM);
-    long posZ = static_cast<long>(dz * PULSE_PER_MM);
+    if (x_pulse != 0) {
+        ErrorCode = GT_SetPos(AXIS_X, x_pulse);
+        DEBUG_MSG("GT_SetPos X " + QString::number(x_pulse) + " ErrorCode:" + QString::number(ErrorCode));
 
-    // 设置目标位置
-    ErrorCode = GT_SetPos(AXIS_X, posX);
-    DEBUG_MSG("GT_SetPos X " +QString::number(posX) +" ErrorCode:" + QString::number(ErrorCode));
+        GT_SetVel(AXIS_X, 100);
+        GT_Update(1 << (AXIS_X - 1));
 
-    ErrorCode = GT_SetPos(AXIS_Y, posY);
-    DEBUG_MSG("GT_SetPos Y " +QString::number(posY)+" ErrorCode:" + QString::number(ErrorCode));
+        long sts;
+        double prfPos;
+        do
+        {
+            // 读取AXIS轴的状态
+            /*ErrorCode = */GT_GetSts(AXIS_X, &sts);
+            // 读取AXIS轴的规划位置
+            /*ErrorCode = */GT_GetPrfPos(AXIS_X, &prfPos);
+            printf("sts=0x%-10lxprfPos=%-10.1lf\r", sts, prfPos);
+        }while(sts&0x400);// 等待AXIS轴规划停止
+    }
 
-    ErrorCode = GT_SetPos(AXIS_Z, posZ);
-    DEBUG_MSG("GT_SetPos Z " +QString::number(posZ)+" ErrorCode:" + QString::number(ErrorCode));
+    if (y_pulse != 0) {
+        ErrorCode = GT_SetPos(AXIS_Y, y_pulse);
+        DEBUG_MSG("GT_SetPos Y " + QString::number(y_pulse) + " ErrorCode:" + QString::number(ErrorCode));
 
-    // 设置目标速度（单位：pulse/ms）
-    ErrorCode = GT_SetVel(AXIS_X, 100);
-    // DEBUG_MSG("GT_SetVel X " + QString::number(ErrorCode));
+        GT_SetVel(AXIS_Y, 100);
+        GT_Update(1 << (AXIS_Y - 1));
 
-    ErrorCode = GT_SetVel(AXIS_Y, 100);
-    // DEBUG_MSG("GT_SetVel Y " + QString::number(ErrorCode));
+        long sts;
+        double prfPos;
+        do
+        {
+            // 读取AXIS轴的状态
+            /*ErrorCode = */GT_GetSts(AXIS_Y, &sts);
+            // 读取AXIS轴的规划位置
+            /*ErrorCode = */GT_GetPrfPos(AXIS_Y, &prfPos);
+            printf("等待AXIS轴规划停止 sts=0x%-10lxprfPos=%-10.1lf\r", sts, prfPos);
+        }while(sts&0x400);
+    }
 
-    ErrorCode = GT_SetVel(AXIS_Z, 100);
-    // DEBUG_MSG("GT_SetVel Z " + QString::number(ErrorCode));
+    if (z_pulse != 0) {
+        ErrorCode = GT_SetPos(AXIS_Z, z_pulse);
+        DEBUG_MSG("GT_SetPos Z " + QString::number(z_pulse) + " ErrorCode:" + QString::number(ErrorCode));
 
-    // 同时启动 XYZ 三轴
-    int mask = (1 << (AXIS_X - 1)) | (1 << (AXIS_Y - 1)) | (1 << (AXIS_Z - 1));
-    ErrorCode = GT_Update(mask);
-    // DEBUG_MSG("GT_Update XYZ  ErrorCode:" + QString::number(ErrorCode));
+        GT_SetVel(AXIS_Z, 100);
+        GT_Update(1 << (AXIS_Z - 1));
 
-    // 检查状态
-    this->checkStatus ();
+        long sts;
+        double prfPos;
+        do
+        {
+            // 读取AXIS轴的状态
+            /*ErrorCode = */GT_GetSts(AXIS_Z, &sts);
+            // 读取AXIS轴的规划位置
+            /*ErrorCode = */GT_GetPrfPos(AXIS_Z, &prfPos);
+            printf("等待AXIS轴规划停止 sts=0x%-10lxprfPos=%-10.1lf\r", sts, prfPos);
+        }while(sts&0x400);
+    }
+
 
     this->m_x = x;
     this->m_y = y;
     this->m_z = z;
     return true;
 }
+
 
 bool MotionStageDeviceGoogol::resetPos() {
     // auto ErrorCode = GT_Reset();
