@@ -3,8 +3,6 @@
 **LaserCAD** is a highly customizable laser control CAD software designed for industrial-grade laser processing, precision positioning, and automation control.  
 It provides powerful drawing capabilities, advanced laser command configuration, and support for multiple high-precision motion axes.
 
----
-
 ##  Key Features
 
 ###  Arbitrary Shape Drawing
