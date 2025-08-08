@@ -1,13 +1,32 @@
 # LaserCAD
 
-## 使用指南
-- 绘制图形:  先点击对应的绘制按钮
-    - 绘制点: 左键点击绘制
-    - 绘制直线: 左键点击设置第一个点;再次点击左键绘制第二个点
-    - 绘制弧: 采用三点画弧法, 三次左键点击即可
-    - 绘制多段线: 左键点击绘制点, 右键点击绘制最后一个点; 按住ctrl绘制半弧;点按caps切换弧的方向
-    - 绘制矩形: 左键两次点击确定矩形左上角和右下角
-    - 绘制圆: 左键点击确定圆心 再次点击确定半径
-    - 绘制椭圆: 左键点击确定圆心;再两次点击确定互相垂直的两个方向上的轴长
-- 编辑功能: 任意情况下右键连击两次,或者点击编辑按钮
-    - 只有此模式下可以拖拽图形
+**LaserCAD** is a highly customizable laser control CAD software designed for industrial-grade laser processing, precision positioning, and automation control.  
+It provides powerful drawing capabilities, advanced laser command configuration, and support for multiple high-precision motion axes.
+
+---
+
+##  Key Features
+
+###  Arbitrary Shape Drawing
+- Supports lines, circles, rectangles, polygons, curves shapes.
+- Advanced geometry editing: scale, rotate, stretch, and boolean operations.
+- Supports grouped objects and combined shapes for complex patterns.
+- Layer management for organized and efficient design.
+
+### Multi-Command Laser Configuration
+- Configure multiple laser commands for different shapes or paths.
+- Supports custom parameters such as power, speed, frequency, pulse width, and so on.
+- Assign distinct laser settings to different layers or objects.
+- Preview and validate laser paths before execution.
+
+###  Multi-Axis Motion System Support
+- Compatible with various high-precision motion axes and positioning systems.
+- Flexible device adapter layer for easy integration of new hardware.
+- Supports synchronized control between laser output and motion systems.
+- Real-time monitoring of axis position and system status.
+
+### Highly Customizable Command System
+- Define your own laser commands and execution sequences.
+- Fully scriptable workflows for automation.
+- Optimized for both high-speed marking and ultra-fine precision work.
+
